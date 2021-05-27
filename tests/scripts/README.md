@@ -1,4 +1,4 @@
-# Scripts to test the xPack GCC
+# Scripts to test the xPack clang
 
 The binaries can be available from one of the pre-releases:
 
@@ -9,12 +9,12 @@ The binaries can be available from one of the pre-releases:
 The test script is part of the GCC xPack:
 
 ```sh
-rm -rf ~/Downloads/gcc-xpack.git; \
+rm -rf ~/Downloads/clang-xpack.git; \
 git clone \
   --recurse-submodules \
   --branch xpack-develop \
-  https://github.com/xpack-dev-tools/gcc-xpack.git  \
-  ~/Downloads/gcc-xpack.git
+  https://github.com/xpack-dev-tools/clang-xpack.git  \
+  ~/Downloads/clang-xpack.git
 ```
 
 ## Start a local test
@@ -22,9 +22,9 @@ git clone \
 To check if GCC starts on the current platform, run a native test:
 
 ```sh
-rm ~/Work/cache/xpack-gcc-*
+rm ~/Work/cache/xpack-clang-*
 
-bash ~/Downloads/gcc-xpack.git/tests/scripts/native-test.sh \
+bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
   "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 ```
 
@@ -39,7 +39,7 @@ The multi-platform test runs on Travis CI; it is configured to not fire on
 git actions, but only via a manual POST to the Travis API.
 
 ```sh
-bash ~/Downloads/gcc-xpack.git/tests/scripts/travis-trigger.sh
+bash ~/Downloads/clang-xpack.git/tests/scripts/travis-trigger.sh
 ```
 
 For convenience, on macOS this can be invoked from Finder, using

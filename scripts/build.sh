@@ -44,7 +44,7 @@ helper_folder_path="${script_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-# Script to build the xPack GCC distribution packages.
+# Script to build the xPack clang distribution packages.
 #
 # Developed on macOS 10.15 Catalina, but intended to run on
 # macOS 10.10 Yosemite and Ubuntu 12 via XBB v3.1. 
@@ -52,7 +52,7 @@ helper_folder_path="${script_folder_path}/helper"
 # -----------------------------------------------------------------------------
 
 echo
-echo "xPack GCC distribution build script."
+echo "xPack clang distribution build script."
 
 host_functions_script_path="${helper_folder_path}/host-functions-source.sh"
 source "${host_functions_script_path}"

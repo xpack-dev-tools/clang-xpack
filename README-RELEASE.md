@@ -2,8 +2,8 @@
 
 ## Release schedule
 
-The xPack GCC release schedule generally follows the original GNU
-[releases](https://gcc.gnu.org/releases.html), but with a
+The xPack clang release schedule generally follows the original GNU
+[releases](https://clang.gnu.org/releases.html), but with a
 several weeks filter, which means that releases that are shortly
 overwritten are skipped. Also initial x.y.0 releases are skipped.
 
@@ -27,7 +27,7 @@ the package on the `npm` server.
 
 Check GitHub issues and pull requests:
 
-- <https://github.com/xpack-dev-tools/gcc-xpack/issues/>
+- <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
 and fix them; assign them to a milestone (like `8.5.0-1`).
 
@@ -70,15 +70,15 @@ With Sourcetree, go to the helper repo and update to the latest master commit.
 Before the real build, run a test build on the development machine (`wks`):
 
 ```sh
-sudo rm -rf ~/Work/gcc-*
+sudo rm -rf ~/Work/clang-*
 
-caffeinate bash ~/Downloads/gcc-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --all
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --all
 
-caffeinate bash ~/Downloads/gcc-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --osx
 
-caffeinate bash ~/Downloads/gcc-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
 
-caffeinate bash ~/Downloads/gcc-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux32 --win32
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux32 --win32
 ```
 
 Work on the scripts until all 4 platforms pass the build.
@@ -106,14 +106,14 @@ caffeinate ssh xbba
 On all machines, clone the `xpack-develop` branch and remove previous builds
 
 ```sh
-rm -rf ~/Downloads/gcc-xpack.git; \
+rm -rf ~/Downloads/clang-xpack.git; \
 git clone \
   --recurse-submodules \
   --branch xpack-develop \
-  https://github.com/xpack-dev-tools/gcc-xpack.git \
-  ~/Downloads/gcc-xpack.git
+  https://github.com/xpack-dev-tools/clang-xpack.git \
+  ~/Downloads/clang-xpack.git
 
-sudo rm -rf ~/Work/gcc-*
+sudo rm -rf ~/Work/clang-*
 ```
 
 Empty trash.
@@ -121,7 +121,7 @@ Empty trash.
 On the macOS machine (`xbbm`):
 
 ```sh
-caffeinate bash ~/Downloads/gcc-xpack.git/scripts/build.sh --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --osx
 ```
 
 A typical run takes about 30 minutes.
@@ -129,12 +129,12 @@ A typical run takes about 30 minutes.
 On `xbbi`:
 
 ```sh
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --all
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --all
 
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --linux64
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --win64
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --linux32
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --win32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --linux64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --win64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --linux32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --win32
 ```
 
 A typical run on the Intel machine takes about 50 minutes.
@@ -142,10 +142,10 @@ A typical run on the Intel machine takes about 50 minutes.
 On `xbba`:
 
 ```sh
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --all
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --all
 
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --arm64
-bash ~/Downloads/gcc-xpack.git/scripts/build.sh --arm32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm32
 ```
 
 A typical run on the Arm machine takes about 110 minutes.
@@ -156,7 +156,7 @@ On the development machine (`wks`) clear the folder where binaries from all
 build machines will be collected.
 
 ```sh
-rm -f ~/Downloads/xpack-binaries/gcc/*
+rm -f ~/Downloads/xpack-binaries/clang/*
 ```
 
 ### Copy the binaries to the development machine
@@ -164,7 +164,7 @@ rm -f ~/Downloads/xpack-binaries/gcc/*
 On all three machines:
 
 ```sh
-(cd ~/Work/gcc-*/deploy; scp * ilg@wks:Downloads/xpack-binaries/gcc)
+(cd ~/Work/clang-*/deploy; scp * ilg@wks:Downloads/xpack-binaries/clang)
 ```
 
 ## Run the pre-release native tests
@@ -174,16 +174,16 @@ Publish the archives on the
 project, and run the native tests on all platforms:
 
 ```sh
-rm -rf ~/Downloads/gcc-xpack.git; \
+rm -rf ~/Downloads/clang-xpack.git; \
 git clone \
   --recurse-submodules \
   --branch xpack-develop \
-  https://github.com/xpack-dev-tools/gcc-xpack.git  \
-  ~/Downloads/gcc-xpack.git
+  https://github.com/xpack-dev-tools/clang-xpack.git  \
+  ~/Downloads/clang-xpack.git
 
-rm ~/Work/cache/xpack-gcc-*
+rm ~/Work/cache/xpack-clang-*
 
-bash ~/Downloads/gcc-xpack.git/tests/scripts/native-test.sh \
+bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
   "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 ```
 
@@ -191,17 +191,17 @@ bash ~/Downloads/gcc-xpack.git/tests/scripts/native-test.sh \
 
 - in `CHANGELOG.md`, add release date
 - commit and push the `xpack-develop` branch
-- go to the GitHub [releases](https://github.com/xpack-dev-tools/gcc-xpack/releases/) page
+- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - click **Draft a new release**, in the `xpack-develop` branch
 - name the tag like **v8.5.0-1** (mind the dash in the middle!)
-- name the release like **xPack GCC v8.5.0-1**
+- name the release like **xPack clang v8.5.0-1**
 (mind the dash)
 - as description, use:
 
 ```markdown
-![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/gcc-xpack/v8.5.0-1/total.svg)
+![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v8.5.0-1/total.svg)
 
-Version v8.5.0-1 is a new release of the **xPack GCC** package, following the GCC release.
+Version v8.5.0-1 is a new release of the **xPack clang** package, following the GCC release.
 
 _At this moment these binaries are provided for tests only!_
 ```
@@ -219,15 +219,15 @@ watching this project.
 Run the native tests on all platforms:
 
 ```sh
-rm -rf ~/Downloads/gcc-xpack.git; \
+rm -rf ~/Downloads/clang-xpack.git; \
 git clone --recurse-submodules -b xpack-develop \
-  https://github.com/xpack-dev-tools/gcc-xpack.git  \
-  ~/Downloads/gcc-xpack.git
+  https://github.com/xpack-dev-tools/clang-xpack.git  \
+  ~/Downloads/clang-xpack.git
 
-rm ~/Work/cache/xpack-gcc-*
+rm ~/Work/cache/xpack-clang-*
 
-bash ~/Downloads/gcc-xpack.git/tests/scripts/native-test.sh \
-  "https://github.com/xpack-dev-tools/gcc-xpack/releases/download/v8.5.0-1/"
+bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
+  "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v8.5.0-1/"
 ```
 
 ## Run the release CI tests
@@ -247,17 +247,17 @@ For more details, see `tests/scripts/README.md`.
 In the `xpack/web-jekyll` GitHub repo:
 
 - select the `develop` branch
-- add a new file to `_posts/gcc/releases`
-- name the file like `2021-05-17-gcc-v8-5-0-1-released.md`
-- name the post like: **xPack GCC v8.5.0-1 released**
-- as `download_url` use the tagged URL like `https://github.com/xpack-dev-tools/gcc-xpack/releases/tag/v8.5.0-1/`
+- add a new file to `_posts/clang/releases`
+- name the file like `2021-05-17-clang-v8-5-0-1-released.md`
+- name the post like: **xPack clang v8.5.0-1 released**
+- as `download_url` use the tagged URL like `https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v8.5.0-1/`
 - update the `date:` field with the current date
 - update the Travis URLs using the actual test pages
 - update the SHA sums via copy/paste from the original build machines
 (it is very important to use the originals!)
 
 If any, refer to closed
-[issues](https://github.com/xpack-dev-tools/gcc-xpack/issues/)
+[issues](https://github.com/xpack-dev-tools/clang-xpack/issues/)
 as:
 
 - **[Issue:\[#1\]\(...\)]**.
@@ -267,7 +267,7 @@ as:
 On the development machine (`wks`):
 
 ```sh
-cat ~/Downloads/xpack-binaries/gcc/*.sha
+cat ~/Downloads/xpack-binaries/clang/*.sha
 ```
 
 Copy/paste the build report at the end of the post as:
@@ -277,31 +277,31 @@ Copy/paste the build report at the end of the post as:
 The SHA-256 hashes for the files are:
 
 0a2a2550ec99b908c92811f8dbfde200956a22ab3d9af1c92ce9926bf8feddf9
-xpack-gcc-8.5.0-1-darwin-x64.tar.gz
+xpack-clang-8.5.0-1-darwin-x64.tar.gz
 
 254588cbcd685748598dd7bbfaf89280ab719bfcd4dabeb0269fdb97a52b9d7a
-xpack-gcc-8.5.0-1-linux-arm.tar.gz
+xpack-clang-8.5.0-1-linux-arm.tar.gz
 
 10e30128d626f9640c0d585e6b65ac943de59fbdce5550386add015bcce408fa
-xpack-gcc-8.5.0-1-linux-arm64.tar.gz
+xpack-clang-8.5.0-1-linux-arm64.tar.gz
 
 50f2e399382c29f8cdc9c77948e1382dfd5db20c2cb25c5980cb29774962483f
-xpack-gcc-8.5.0-1-linux-ia32.tar.gz
+xpack-clang-8.5.0-1-linux-ia32.tar.gz
 
 9b147443780b7f825eec333857ac7ff9e9e9151fd17c8b7ce2a1ecb6e3767fd6
-xpack-gcc-8.5.0-1-linux-x64.tar.gz
+xpack-clang-8.5.0-1-linux-x64.tar.gz
 
 501366492cd73b06fca98b8283f65b53833622995c6e44760eda8f4483648525
-xpack-gcc-8.5.0-1-win32-ia32.zip
+xpack-clang-8.5.0-1-win32-ia32.zip
 
 dffc858d64be5539410aa6d3f3515c6de751cd295c99217091f5ccec79cabf39
-xpack-gcc-8.5.0-1-win32-x64.zip
+xpack-clang-8.5.0-1-win32-x64.zip
 ```
 
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like **xPack GCC v8.5.0-1 released**
+  use a message like **xPack clang v8.5.0-1 released**
 - push
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
@@ -313,12 +313,12 @@ xpack-gcc-8.5.0-1-win32-x64.zip
 
 ```sh
 xpm-dev binaries-update \
-  -C "${HOME}/Downloads/gcc-xpack.git" \
+  -C "${HOME}/Downloads/clang-xpack.git" \
   '8.5.0-1' \
-  "${HOME}/Downloads/xpack-binaries/gcc"
+  "${HOME}/Downloads/xpack-binaries/clang"
 ```
 
-- open the GitHub [releases](https://github.com/xpack-dev-tools/gcc-xpack/releases/)
+- open the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/)
   page and select the latest release
 - check the download counter, it should match the number of tests
 - open the `package.json` file
@@ -348,7 +348,7 @@ xpm-dev binaries-update \
 
 After a few moments the version will be visible at:
 
-- <https://www.npmjs.com/package/@xpack-dev-tools/gcc?activeTab=versions>
+- <https://www.npmjs.com/package/@xpack-dev-tools/clang?activeTab=versions>
 
 ## Test if the npm binaries can be installed with xpm
 
@@ -357,12 +357,12 @@ will install the package on Intel Linux 64-bit, macOS and Windows 64-bit.
 
 The test results are available from:
 
-- <https://travis-ci.com/github/xpack-dev-tools/gcc-xpack/>
+- <https://travis-ci.com/github/xpack-dev-tools/clang-xpack/>
 
 For 32-bit Windows, 32-bit Intel GNU/Linux and 32-bit Arm, install manually.
 
 ```sh
-xpm install --global @xpack-dev-tools/gcc@next
+xpm install --global @xpack-dev-tools/clang@next
 ```
 
 ## Test the npm binaries
@@ -370,31 +370,31 @@ xpm install --global @xpack-dev-tools/gcc@next
 Install the binaries on all platforms.
 
 ```sh
-xpm install --global @xpack-dev-tools/gcc@next
+xpm install --global @xpack-dev-tools/clang@next
 ```
 
 On GNU/Linux systems, including Raspberry Pi, use the following commands:
 
 ```sh
-~/.local/xPacks/@xpack-dev-tools/gcc/8.5.0-1.1/.content/bin/gcc --version
+~/.local/xPacks/@xpack-dev-tools/clang/8.5.0-1.1/.content/bin/clang --version
 
-gcc (xPack GCC 64-bit) 8.5.0
+clang (xPack clang 64-bit) 8.5.0
 ```
 
 On macOS, use:
 
 ```sh
-~/Library/xPacks/@xpack-dev-tools/gcc/8.5.0-1.1/.content/bin/gcc --version
+~/Library/xPacks/@xpack-dev-tools/clang/8.5.0-1.1/.content/bin/clang --version
 
-gcc (xPack GCC 64-bit) 8.5.0
+clang (xPack clang 64-bit) 8.5.0
 ```
 
 On Windows use:
 
 ```doscon
-%USERPROFILE%\AppData\Roaming\xPacks\@xpack-dev-tools\gcc\8.5.0-1.1\.content\bin\gcc --version
+%USERPROFILE%\AppData\Roaming\xPacks\@xpack-dev-tools\clang\8.5.0-1.1\.content\bin\clang --version
 
-gcc.exe (xPack MinGW-w64 GCC 64-bit) 8.5.0
+clang.exe (xPack MinGW-w64 GCC 64-bit) 8.5.0
 ```
 
 ## Update the repo
@@ -406,9 +406,9 @@ gcc.exe (xPack MinGW-w64 GCC 64-bit) 8.5.0
 
 When the release is considered stable, promote it as `latest`:
 
-- `npm dist-tag ls @xpack-dev-tools/gcc`
-- `npm dist-tag add @xpack-dev-tools/gcc@8.5.0-1.1 latest`
-- `npm dist-tag ls @xpack-dev-tools/gcc`
+- `npm dist-tag ls @xpack-dev-tools/clang`
+- `npm dist-tag add @xpack-dev-tools/clang@8.5.0-1.1 latest`
+- `npm dist-tag ls @xpack-dev-tools/clang`
 
 ## Update the Web
 
@@ -419,7 +419,7 @@ When the release is considered stable, promote it as `latest`:
 
 ## Create the final GitHub release
 
-- go to the GitHub [releases](https://github.com/xpack-dev-tools/gcc-xpack/releases/) page
+- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - check the download counter, it should match the number of tests
 - add a link to the Web page `[Continue reading »]()`; use an same blog URL
 - **disable** the **pre-release** button
@@ -429,9 +429,9 @@ When the release is considered stable, promote it as `latest`:
 
 - in a separate browser windows, open [TweetDeck](https://tweetdeck.twitter.com/)
 - using the `@xpack_project` account
-- paste the release name like **xPack GCC v8.5.0-1 released**
+- paste the release name like **xPack clang v8.5.0-1 released**
 - paste the link to the Web page
-  [release](https://xpack.github.io/gcc/releases/)
+  [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button
 
 ## Remove pre-release binaries

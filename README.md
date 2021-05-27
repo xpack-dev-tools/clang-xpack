@@ -1,16 +1,16 @@
 
-[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/gcc.svg)](https://www.npmjs.com/package/@xpack-dev-tools/gcc/)
-[![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/gcc.svg)](https://www.npmjs.com/package/@xpack-dev-tools/gcc/)
+[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+[![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
 
-# The xPack GNU Compiler Collection (GCC)
+# The xPack LLVM clang
 
 This open source project is hosted on GitHub as
-[`xpack-dev-tools/gcc-xpack`](https://github.com/xpack-dev-tools/gcc-xpack)
+[`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack)
 and provides the platform specific binaries for the
-[xPack GNU Compiler Collection](https://xpack.github.io/gcc/).
+[xPack LLVM clang](https://xpack.github.io/clang/).
 
 This distribution follows the official
-[GNU Compiler Collection](https://gcc.gnu.org) releases.
+[LLVM clang](https://clang.gnu.org) releases.
 
 The binaries can be installed automatically as **binary xPacks** or manually as
 **portable archives**.
@@ -22,11 +22,11 @@ the build scripts.
 
 This section is intended as a shortcut for those who plan
 to use the GCC binaries. For full details please read the
-[xPack GNU Compiler Collection](https://xpack.github.io/gcc/) pages.
+[xPack LLVM clang](https://xpack.github.io/clang/) pages.
 
 ### Supported languages
 
-The xPack GCC binaries include suport for:
+The xPack clang binaries include suport for:
 
 - C
 - C++
@@ -37,7 +37,7 @@ The xPack GCC binaries include suport for:
 ### Easy install
 
 The easiest way to install GCC is using the **binary xPack**, available as
-[`@xpack-dev-tools/gcc`](https://www.npmjs.com/package/@xpack-dev-tools/gcc)
+[`@xpack-dev-tools/clang`](https://www.npmjs.com/package/@xpack-dev-tools/clang)
 from the [`npmjs.com`](https://www.npmjs.com) registry.
 
 #### Prerequisites
@@ -57,7 +57,7 @@ the latest version of the package is quite easy:
 cd my-project
 xpm init # Only at first use.
 
-xpm install @xpack-dev-tools/gcc@latest
+xpm install @xpack-dev-tools/clang@latest
 
 ls -l xpacks/.bin
 ```
@@ -87,27 +87,27 @@ To remove the links from the current project:
 ```sh
 cd my-project
 
-xpm uninstall @xpack-dev-tools/gcc
+xpm uninstall @xpack-dev-tools/clang
 ```
 
 To completely remove the package from the global store: 
 
 ```sh
-xpm uninstall --global @xpack-dev-tools/gcc
+xpm uninstall --global @xpack-dev-tools/clang
 ```
 
 ### Manual install
 
-For all platforms, the **xPack GNU Compiler Collection**
+For all platforms, the **xPack LLVM clang**
 binaries are released as portable
 archives that can be installed in any location.
 
 The archives can be downloaded from the
-GitHub [releases](https://github.com/xpack-dev-tools/gcc-xpack/releases/)
+GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/)
 page.
 
 For more details please read the
-[Install](https://xpack.github.io/gcc/install/) page.
+[Install](https://xpack.github.io/clang/install/) page.
 
 The version strings used by the GCC project are three number string
 like `8.5.0`; to this string the xPack distribution adds a four number,
@@ -122,9 +122,9 @@ with caution, and prefer exact matches, like `8.5.0-1.1`.
 
 ## Maintainer info
 
-- [How to build](https://github.com/xpack-dev-tools/gcc-xpack/blob/xpack/README-BUILD.md)
-- [How to make new releases](https://github.com/xpack-dev-tools/gcc-xpack/blob/xpack/README-RELEASE.md)
-- [How to deveop](https://github.com/xpack-dev-tools/gcc-xpack/blob/xpack/README-DEVELOP.md)
+- [How to build](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-BUILD.md)
+- [How to make new releases](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-RELEASE.md)
+- [How to deveop](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-DEVELOP.md)
 
 ## Support
 
@@ -133,7 +133,7 @@ The quick answer is to use the
 please select the correct forum.
 
 For more details please read the
-[Support](https://xpack.github.io/gcc/support/) page.
+[Support](https://xpack.github.io/clang/support/) page.
 
 ## License
 
@@ -147,16 +147,16 @@ corresponding licenses are available in the installed
 
 ## Download analytics
 
-- GitHub [`xpack-dev-tools/gcc-xpack`](https://github.com/xpack-dev-tools/gcc-xpack/) repo
+- GitHub [`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack/) repo
   - latest xPack release
-[![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/gcc-xpack/latest/total.svg)](https://github.com/xpack-dev-tools/gcc-xpack/releases/)
-  - all xPack releases [![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/gcc-xpack/total.svg)](https://github.com/xpack-dev-tools/gcc-xpack/releases/)
-  - [individual file counters](https://www.somsubhra.com/github-release-stats/?username=xpack-dev-tools&repository=gcc-xpack) (grouped per release)
-- npmjs.com [`@xpack-dev-tools/gcc`](https://www.npmjs.com/package/@xpack-dev-tools/gcc/) xPack
+[![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/latest/total.svg)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
+  - all xPack releases [![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/total.svg)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
+  - [individual file counters](https://www.somsubhra.com/github-release-stats/?username=xpack-dev-tools&repository=clang-xpack) (grouped per release)
+- npmjs.com [`@xpack-dev-tools/clang`](https://www.npmjs.com/package/@xpack-dev-tools/clang/) xPack
   - latest release, per month
-[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/gcc.svg)](https://www.npmjs.com/package/@xpack-dev-tools/gcc/)
-[![npm](https://img.shields.io/npm/dm/@xpack-dev-tools/gcc.svg)](https://www.npmjs.com/package/@xpack-dev-tools/gcc/)
-  - all releases [![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/gcc.svg)](https://www.npmjs.com/package/@xpack-dev-tools/gcc/)
+[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+[![npm](https://img.shields.io/npm/dm/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+  - all releases [![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
 
 Credit to [Shields IO](https://shields.io) for the badges and to
 [Somsubhra/github-release-stats](https://github.com/Somsubhra/github-release-stats)

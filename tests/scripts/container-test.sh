@@ -116,7 +116,7 @@ find /  -name 'libc.*' -o -name 'libstdc++.*' -o -name 'libgcc_s.*'
 
 detect_architecture
 
-app_lc_name="gcc"
+app_lc_name="clang"
 
 prepare_env
 

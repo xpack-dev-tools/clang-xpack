@@ -48,7 +48,7 @@ source "${helper_folder_path}/test-functions-source.sh"
 
 # -----------------------------------------------------------------------------
 
-message="Test xPack GCC on stable platforms"
+message="Test xPack clang on stable platforms"
 # branch="xpack-develop"
 branch="xpack"
 
@@ -62,7 +62,7 @@ create_stable_data_file "${message}" "${branch}" "${base_url}" "${data_file_path
 # https://docs.travis-ci.com/user/triggering-builds/
 
 github_org="xpack-dev-tools"
-github_repo="gcc-xpack"
+github_repo="clang-xpack"
 
 # TRAVIS_ORG_TOKEN must be present in the environment.
 

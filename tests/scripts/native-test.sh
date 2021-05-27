@@ -91,7 +91,7 @@ echo "${base_url}"
 
 detect_architecture
 
-app_lc_name="gcc"
+app_lc_name="clang"
 
 prepare_env "$(dirname $(dirname "${script_folder_path}"))"
 

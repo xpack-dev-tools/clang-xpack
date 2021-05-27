@@ -19,7 +19,7 @@
 APP_NAME=${APP_NAME:-"GCC"}
 
 # Used as part of file/folder paths.
-APP_LC_NAME=${APP_LC_NAME:-"gcc"}
+APP_LC_NAME=${APP_LC_NAME:-"clang"}
 
 DISTRO_UC_NAME=${DISTRO_UC_NAME:-"xPack"}
 DISTRO_LC_NAME=${DISTRO_LC_NAME:-"xpack"}
