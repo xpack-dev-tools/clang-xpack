@@ -48,6 +48,8 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 # -----------------------------------------------------------------------------
 
+helper_folder_path="${script_folder_path}/helper"
+
 echo
 
 defines_script_path="${script_folder_path}/defs-source.sh"
@@ -59,7 +61,7 @@ host_defines_script_path="${script_folder_path}/host-defs-source.sh"
 echo "Host definitions source script: \"${host_defines_script_path}\"."
 source "${host_defines_script_path}"
 
-common_helper_functions_script_path="${script_folder_path}/helper/common-functions-source.sh"
+common_helper_functions_script_path="${helper_folder_path}/common-functions-source.sh"
 echo "Common helper functions source script: \"${common_helper_functions_script_path}\"."
 source "${common_helper_functions_script_path}"
 
@@ -74,11 +76,11 @@ common_versions_script_path="${script_folder_path}/common-versions-source.sh"
 echo "Common versions source script: \"${common_versions_script_path}\"."
 source "${common_versions_script_path}"
 
-container_functions_script_path="${script_folder_path}/helper/container-functions-source.sh"
+container_functions_script_path="${helper_folder_path}/container-functions-source.sh"
 echo "Container helper functions source script: \"${container_functions_script_path}\"."
 source "${container_functions_script_path}"
 
-common_libs_functions_script_path="${script_folder_path}/helper/common-libs-functions-source.sh"
+common_libs_functions_script_path="${helper_folder_path}/common-libs-functions-source.sh"
 echo "Common helper libs functions source script: \"${common_libs_functions_script_path}\"."
 source "${common_libs_functions_script_path}"
 
