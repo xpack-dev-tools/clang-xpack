@@ -26,9 +26,9 @@ For native builds, see the `build-native.sh` script. (to be added)
 
 ## Repositories
 
-- `https://github.com/xpack-dev-tools/clang-xpack.git` - the URL of the Git
+- <https://github.com/xpack-dev-tools/clang-xpack.git> - the URL of the Git
 repository
-- `https://clang.gnu.org/git/?p=clang.git;a=tree` - the main repo
+- <https://github.com/llvm/llvm-project> - the main repo
 
 ### Branches
 
@@ -102,7 +102,7 @@ not be accepted by bash.
 
 ## Versioning
 
-The version string is an extension to semver, the format looks like `8.5.0-1`.
+The version string is an extension to semver, the format looks like `11.1.0-1`.
 It includes the three digits with the original GCC version and a fourth
 digit with the xPack release number.
 
@@ -205,14 +205,14 @@ archives and their SHA signatures, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 247864
--rw-rw-rw- 1 ilg ilg 56884326 May 17 13:14 xpack-clang-8.5.0-1-linux-ia32.tar.gz
--rw-rw-rw- 1 ilg ilg      102 May 17 13:14 xpack-clang-8.5.0-1-linux-ia32.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 56023096 May 17 12:57 xpack-clang-8.5.0-1-linux-x64.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 12:57 xpack-clang-8.5.0-1-linux-x64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 67975780 May 17 13:23 xpack-clang-8.5.0-1-win32-ia32.zip
--rw-rw-rw- 1 ilg ilg       99 May 17 13:23 xpack-clang-8.5.0-1-win32-ia32.zip.sha
--rw-rw-rw- 1 ilg ilg 72906421 May 17 13:06 xpack-clang-8.5.0-1-win32-x64.zip
--rw-rw-rw- 1 ilg ilg       98 May 17 13:06 xpack-clang-8.5.0-1-win32-x64.zip.sha
+-rw-rw-rw- 1 ilg ilg 56884326 May 17 13:14 xpack-clang-11.1.0-1-linux-ia32.tar.gz
+-rw-rw-rw- 1 ilg ilg      102 May 17 13:14 xpack-clang-11.1.0-1-linux-ia32.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 56023096 May 17 12:57 xpack-clang-11.1.0-1-linux-x64.tar.gz
+-rw-rw-rw- 1 ilg ilg      101 May 17 12:57 xpack-clang-11.1.0-1-linux-x64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 67975780 May 17 13:23 xpack-clang-11.1.0-1-win32-ia32.zip
+-rw-rw-rw- 1 ilg ilg       99 May 17 13:23 xpack-clang-11.1.0-1-win32-ia32.zip.sha
+-rw-rw-rw- 1 ilg ilg 72906421 May 17 13:06 xpack-clang-11.1.0-1-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       98 May 17 13:06 xpack-clang-11.1.0-1-win32-x64.zip.sha
 ```
 
 ### Build the Arm GNU/Linux binaries
@@ -273,10 +273,10 @@ archives and their SHA signatures, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 93168
--rw-rw-rw- 1 ilg ilg 48777570 May 17 10:38 xpack-clang-8.5.0-1-linux-arm64.tar.gz
--rw-rw-rw- 1 ilg ilg      103 May 17 10:38 xpack-clang-8.5.0-1-linux-arm64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 46615122 May 17 11:15 xpack-clang-8.5.0-1-linux-arm.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 11:15 xpack-clang-8.5.0-1-linux-arm.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 48777570 May 17 10:38 xpack-clang-11.1.0-1-linux-arm64.tar.gz
+-rw-rw-rw- 1 ilg ilg      103 May 17 10:38 xpack-clang-11.1.0-1-linux-arm64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 46615122 May 17 11:15 xpack-clang-11.1.0-1-linux-arm.tar.gz
+-rw-rw-rw- 1 ilg ilg      101 May 17 11:15 xpack-clang-11.1.0-1-linux-arm.tar.gz.sha
 ```
 
 ### Build the macOS binaries
@@ -308,8 +308,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 163376
--rw-r--r--  1 ilg  staff  83643088 May 17 13:19 xpack-clang-8.5.0-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       102 May 17 13:19 xpack-clang-8.5.0-1-darwin-x64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  83643088 May 17 13:19 xpack-clang-11.1.0-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       102 May 17 13:19 xpack-clang-11.1.0-1-darwin-x64.tar.gz.sha
 ```
 
 ## Subsequent runs
@@ -388,8 +388,8 @@ program from there. For example on macOS the output should
 look like:
 
 ```console
-$ /Users/ilg/Work/clang-8.5.0-1/darwin-x64/install/clang/bin/clang --version
-clang version 8.5.0
+$ /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/bin/clang --version
+clang version 11.1.0
 ```
 
 ## Installed folders
@@ -398,86 +398,10 @@ After install, the package should create a structure like this (macOS files;
 only the first two depth levels are shown):
 
 ```console
-$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/8.5.0-1.1/.content/
-/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/8.5.0-1.1/.content/
-├── MacOSX10.10.sdk
-│   ├── SDKSettings.plist
-│   ├── System
-│   └── usr
-├── README.md
-├── bin
-│   ├── c++
-│   ├── cpp
-│   ├── g++
-│   ├── clang
-│   ├── gcov
-│   ├── gcov-dump
-│   ├── gcov-tool
-│   ├── gfortran
-│   ├── x86_64-apple-darwin14.5.0-c++
-│   ├── x86_64-apple-darwin14.5.0-g++
-│   ├── x86_64-apple-darwin14.5.0-clang
-│   ├── x86_64-apple-darwin14.5.0-clang-8.5.0
-│   ├── x86_64-apple-darwin14.5.0-clang-ar
-│   ├── x86_64-apple-darwin14.5.0-clang-nm
-│   ├── x86_64-apple-darwin14.5.0-clang-ranlib
-│   └── x86_64-apple-darwin14.5.0-gfortran
-├── distro-info
-│   ├── CHANGELOG.md
-│   ├── licenses
-│   ├── patches
-│   └── scripts
-├── include
-│   ├── c++
-│   └── libiberty
-├── lib
-│   ├── bfd-plugins
-│   ├── clang
-│   ├── libasan.la
-│   ├── libasan_preinit.o
-│   ├── libatomic.a
-│   ├── libatomic.la
-│   ├── libcc1.0.so
-│   ├── libcc1.a
-│   ├── libcc1.la
-│   ├── libcc1.so -> libcc1.0.so
-│   ├── libgcc_ext.10.4.dylib
-│   ├── libgcc_ext.10.5.dylib
-│   ├── libgcc_s.1.dylib
-│   ├── libgcc_s_ppc64.1.dylib -> libgcc_s.1.dylib
-│   ├── libgcc_s_x86_64.1.dylib -> libgcc_s.1.dylib
-│   ├── libgfortran.a
-│   ├── libgfortran.la
-│   ├── libgfortran.spec
-│   ├── libgomp.a
-│   ├── libgomp.la
-│   ├── libgomp.spec
-│   ├── libiberty.a
-│   ├── libitm.a
-│   ├── libitm.la
-│   ├── libitm.spec
-│   ├── libquadmath.a
-│   ├── libquadmath.la
-│   ├── libsanitizer.spec
-│   ├── libssp.a
-│   ├── libssp.la
-│   ├── libssp_nonshared.a
-│   ├── libssp_nonshared.la
-│   ├── libstdc++.a
-│   ├── libstdc++.a-gdb.py
-│   ├── libstdc++.la
-│   ├── libstdc++fs.a
-│   ├── libstdc++fs.la
-│   ├── libsupc++.a
-│   ├── libsupc++.la
-│   └── libubsan.la
-├── libexec
-│   └── clang
-└── share
-    ├── doc
-    └── clang-8.5.0
+$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/11.1.0-1.1/.content/
+/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/11.1.0-1.1/.content/
 
-19 directories, 57 files
+TODO
 ```
 
 No other files are installed in any system folders or other locations.

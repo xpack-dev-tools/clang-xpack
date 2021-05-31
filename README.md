@@ -10,7 +10,7 @@ and provides the platform specific binaries for the
 [xPack LLVM clang](https://xpack.github.io/clang/).
 
 This distribution follows the official
-[LLVM clang](https://clang.gnu.org) releases.
+[LLVM clang](https://clang.llvm.org) releases.
 
 The binaries can be installed automatically as **binary xPacks** or manually as
 **portable archives**.
@@ -26,13 +26,7 @@ to use the GCC binaries. For full details please read the
 
 ### Supported languages
 
-The xPack clang binaries include suport for:
-
-- C
-- C++
-- Obj-C
-- Obj-C++
-- Fortran
+The xPack clang binaries include suport for C/C++ and the LLVM utilities.
 
 ### Easy install
 
@@ -90,7 +84,7 @@ cd my-project
 xpm uninstall @xpack-dev-tools/clang
 ```
 
-To completely remove the package from the global store: 
+To completely remove the package from the global store:
 
 ```sh
 xpm uninstall --global @xpack-dev-tools/clang
@@ -110,15 +104,15 @@ For more details please read the
 [Install](https://xpack.github.io/clang/install/) page.
 
 The version strings used by the GCC project are three number string
-like `8.5.0`; to this string the xPack distribution adds a four number,
+like `11.1.0`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,
-like `8.5.0-1`. When published as a npm package, the version gets
-a fifth number, like `8.5.0-1.1`.
+like `11.1.0-1`. When published as a npm package, the version gets
+a fifth number, like `11.1.0-1.1`.
 
 Since adherance of third party packages to semver is not guaranteed,
-it is recommended to use semver expressions like `^8.5.0` and `~8.5.0`
-with caution, and prefer exact matches, like `8.5.0-1.1`.
+it is recommended to use semver expressions like `^11.1.0` and `~11.1.0`
+with caution, and prefer exact matches, like `11.1.0-1.1`.
 
 ## Maintainer info
 

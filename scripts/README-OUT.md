@@ -5,8 +5,8 @@ the **LLVM clang**, an open source project.
 
 For more details, please read the corresponding release pages:
 
-- <https://xpack.github.io/meson-build/releases/>
-- <https://clang.gnu.org/releases.html>
+- <https://xpack.github.io/gcc/releases/>
+- <https://github.com/llvm/llvm-project/releases>
 
 Thank you for using open source software,
 
