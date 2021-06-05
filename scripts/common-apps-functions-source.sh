@@ -304,15 +304,40 @@ function test_llvm()
     run_app "${APP_PREFIX}/bin/clang" --version
     run_app "${APP_PREFIX}/bin/clang++" --version
 
+    run_app "${APP_PREFIX}/bin/clang-tidy" --version
+    run_app "${APP_PREFIX}/bin/clang-format" --version
+
+    # lld is a generic driver.
+    # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
+    # run_app "${APP_PREFIX}/bin/lld" --version || true
+
+    run_app "${APP_PREFIX}/bin/ar" --version
+    run_app "${APP_PREFIX}/bin/nm" --version
+    run_app "${APP_PREFIX}/bin/objcopy" --version
+    run_app "${APP_PREFIX}/bin/objdump" --version
+    run_app "${APP_PREFIX}/bin/ranlib" --version
+    run_app "${APP_PREFIX}/bin/readelf" --version
+    run_app "${APP_PREFIX}/bin/size" --version
+    run_app "${APP_PREFIX}/bin/strings" --version
+    run_app "${APP_PREFIX}/bin/strip" --version
+
+    echo
+    echo "Testing clang configuration..."
+
+    run_app "${APP_PREFIX}/bin/clang" -print-target-triple
+    run_app "${APP_PREFIX}/bin/clang" -print-targets
+    run_app "${APP_PREFIX}/bin/clang" -print-supported-cpus
+    run_app "${APP_PREFIX}/bin/clang" -print-search-dirs
+    run_app "${APP_PREFIX}/bin/clang" -print-resource-dir
 
     # Cannot run the the compiler without a loader.
-    if [ "${TARGET_PLATFORM}" != "win32" ]
+    if true # [ "${TARGET_PLATFORM}" != "win32" ]
     then
 
       echo
-      echo "Testing if gcc compiles simple Hello programs..."
+      echo "Testing if clang compiles simple Hello programs..."
 
-      local tmp="$(mktemp ~/tmp/test-gcc-XXXXXXXXXX)"
+      local tmp="$(mktemp ~/tmp/test-clang-XXXXXXXXXX)"
       rm -rf "${tmp}"
 
       mkdir -p "${tmp}"
@@ -345,15 +370,17 @@ __EOF__
 
       test_expect "hello-c1" "Hello"
 
+      # Static links are not supported, at least not with the Apple linker:
+      # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
+      # ld: library not found for -lcrt0.o
+      # run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-c1 hello.c -static
+      # test_expect "static-hello-c1" "Hello"
+
       # Test C compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
       run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c2 hello-c.o
 
       test_expect "hello-c2" "Hello"
-
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-c2 hello-c.o
-
-      test_expect "static-hello-c2" "Hello"
 
       # Test LTO C compile and link in a single step.
       run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c1 hello.c
@@ -365,10 +392,6 @@ __EOF__
       run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c2 lto-hello-c.o
 
       test_expect "lto-hello-c2" "Hello"
-
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o static-lto-hello-c2 lto-hello-c.o
-
-      test_expect "static-lto-hello-c2" "Hello"
 
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > hello.cpp
@@ -394,11 +417,6 @@ __EOF__
 
       test_expect "hello-cpp2" "Hello"
 
-      # Note: macOS linker ignores -static-libstdc++
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -static-libstdc++ -o static-hello-cpp2 hello-cpp.o
-
-      test_expect "static-hello-cpp2" "Hello"
-
       # Test LTO C++ compile and link in a single step.
       run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp1 hello.cpp
 
@@ -409,10 +427,6 @@ __EOF__
       run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp2 lto-hello-cpp.o
 
       test_expect "lto-hello-cpp2" "Hello"
-
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -static-libstdc++ -flto -o static-lto-hello-cpp2 lto-hello-cpp.o
-
-      test_expect "static-lto-hello-cpp2" "Hello"
 
       # -----------------------------------------------------------------------
 
@@ -457,10 +471,6 @@ __EOF__
         test_expect "except" "MyException"
       fi
 
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -static-libstdc++ -o static-except -O0 except.cpp
-
-      test_expect "static-except" "MyException"
-
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > str-except.cpp
 #include <iostream>
@@ -492,10 +502,6 @@ __EOF__
       
       test_expect "str-except" "MyStringException"
 
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -static-libstdc++ -o static-str-except -O0 str-except.cpp
-
-      test_expect "static-str-except" "MyStringException"
-
       # -----------------------------------------------------------------------
 
       # Note: __EOF__ is quoted to prevent substitutions here.
@@ -519,8 +525,6 @@ __EOF__
         run_app "${APP_PREFIX}/bin/ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
         run_app "${APP_PREFIX}/bin/ranlib" libadd-static.a
       fi
-
-      # No gcc-ar/gcc-ranlib on Darwin/mingw; problematic with clang.
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
