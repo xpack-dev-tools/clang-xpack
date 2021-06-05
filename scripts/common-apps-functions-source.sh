@@ -284,6 +284,10 @@ fi
 
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+        "${llvm_folder_name}"
     )
 
     touch "${llvm_stamp_file_path}"
