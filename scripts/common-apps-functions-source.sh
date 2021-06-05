@@ -212,15 +212,6 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
-if false
-then
-            config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
-            config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib")
-
-            config_options+=("-DTERMINFO_LIBS=${LIBS_INSTALL_FOLDER_PATH}/lib/libncurses.dylib")
-            config_options+=("-DZLIB_LIBRARIES=${LIBS_INSTALL_FOLDER_PATH}/lib/libz.dylib")
-fi
-
             # Prefer the locally compiled libraries.
             config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
