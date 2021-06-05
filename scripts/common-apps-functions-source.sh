@@ -110,6 +110,9 @@ function build_llvm()
 
           # Please note the trailing space.
           config_options+=("-DCLANG_VENDOR=${LLVM_BRANDING} ")
+          config_options+=("-DFLANG_VENDOR=${LLVM_BRANDING} ")
+          config_options+=("-DLLD_VENDOR=${LLVM_BRANDING} ")
+          config_options+=("-DPACKAGE_VENDOR=${LLVM_BRANDING} ")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
           config_options+=("-DCMAKE_C_COMPILER=${CC}")
