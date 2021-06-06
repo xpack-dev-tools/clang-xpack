@@ -218,7 +218,7 @@ build_versions
 
 prepare_app_folder_libraries
 
-if [ "${TARGET_PLATFORM}" != "win32" ]
+if false # [ "${TARGET_PLATFORM}" != "win32" ]
 then
   strip_libs
 fi
