@@ -201,12 +201,15 @@ function build_llvm()
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
-            set_macos_sdk_path
+            MACOS_SDK_PATH=$(get_macos_sdk_path)
+            echo "copy_macos_sdk=${MACOS_SDK_PATH}"
+
+            local dest_sdk_folder_path="${APP_PREFIX}/macOS.sdk"
 
             # Copy the SDK in the distribution, to have a standalone package.
-            copy_macos_sdk "${MACOS_SDK_PATH}"
+            copy_macos_sdk "${MACOS_SDK_PATH}" "${dest_sdk_folder_path}"
 
-            config_options+=("-DDEFAULT_SYSROOT=${MACOS_SDK_PATH}")
+            config_options+=("-DDEFAULT_SYSROOT=${dest_sdk_folder_path}")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
@@ -371,7 +374,7 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c -v
 
       test_expect "hello-c1" "Hello"
 
