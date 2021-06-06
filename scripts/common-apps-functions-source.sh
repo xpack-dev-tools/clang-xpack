@@ -209,7 +209,7 @@ function build_llvm()
             # Copy the SDK in the distribution, to have a standalone package.
             copy_macos_sdk "${MACOS_SDK_PATH}" "${dest_sdk_folder_path}"
 
-            config_options+=("-DDEFAULT_SYSROOT=${dest_sdk_folder_path}")
+            config_options+=("-DDEFAULT_SYSROOT=../macOS.sdk")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
