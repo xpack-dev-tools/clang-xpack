@@ -23,7 +23,7 @@ function run_tests()
   GCC_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
 
   # Call the functions defined in the build code.
-  test_gcc
+  test_llvm
 
   if [ "${TARGET_PLATFORM}" != "darwin" ]
   then
