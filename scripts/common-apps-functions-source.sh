@@ -218,6 +218,11 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
 
+            # The macOS 10.10 xpc/xpc.h is very old and the build fails with
+            # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
+
+            # config_options+=("-DCLANGD_BUILD_XPC=OFF")
+
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
