@@ -198,6 +198,9 @@ function build_llvm()
           # disabling BUILD_SHARED_LIBS.
           # config_options+=("-DBUILD_SHARED_LIBS=ON")
 
+          # Fails on macOS
+          # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
@@ -374,7 +377,7 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c -v
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c
 
       test_expect "hello-c1" "Hello"
 
