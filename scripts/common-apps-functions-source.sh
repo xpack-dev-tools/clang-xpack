@@ -201,6 +201,9 @@ function build_binutils_ld_gold()
         # make install-strip
         make maybe-install-gold
 
+        # Remove the separate folder, the xPack distribution is single target.
+        rm -rf "${APP_PREFIX}/${BUILD}"
+
         if [ "${TARGET_PLATFORM}" == "darwin" ]
         then
           : # rm -rv "${APP_PREFIX}/bin/strip"
@@ -269,6 +272,7 @@ function build_llvm()
   # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
 
   # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
+  # https://llvm.org/docs/BuildingADistribution.html
 
   # 17 Feb 2021, "11.1.0"
 
@@ -455,6 +459,11 @@ function build_llvm()
 
           config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
           config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+
+          # Remove many of the LLVM development and testing tools as
+          # well as component libraries from the default install target
+          # Unfortunately the LTO test fails with missing LLVMgold.so.
+          # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
