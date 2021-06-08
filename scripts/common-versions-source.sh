@@ -18,8 +18,10 @@ function build_versions()
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
     LLVM_BRANDING="${BRANDING_PREFIX} MinGW-w64 ${APP_NAME} ${TARGET_BITS}-bit"
+    BINUTILS_BRANDING="${BRANDING_PREFIX} MinGW-w64 binutils ${TARGET_BITS}-bit"
   else
     LLVM_BRANDING="${BRANDING_PREFIX} ${APP_NAME} ${TARGET_BITS}-bit"
+    BINUTILS_BRANDING="${BRANDING_PREFIX} binutils ${TARGET_BITS}-bit"
   fi
 
   LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
@@ -43,6 +45,14 @@ function build_versions()
     build_libxml2 "2.9.11"
 
     build_libedit "20210522-3.1"
+
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      # Also used in -DLLVM_BINUTILS_INCDIR
+      BINUTILS_VERSION="2.36.1"
+      
+      build_binutils_ld_gold "2.36.1"
+    fi
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then

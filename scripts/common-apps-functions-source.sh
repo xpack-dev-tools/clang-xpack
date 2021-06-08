@@ -13,6 +13,250 @@
 
 # -----------------------------------------------------------------------------
 
+function build_binutils_ld_gold()
+{
+  # https://www.gnu.org/software/binutils/
+  # https://ftp.gnu.org/gnu/binutils/
+
+  # https://archlinuxarm.org/packages/aarch64/binutils/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gdb-git
+
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-binutils
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-binutils/PKGBUILD
+
+
+  # 2017-07-24, "2.29"
+  # 2018-01-28, "2.30"
+  # 2018-07-18, "2.31.1"
+  # 2019-02-02, "2.32"
+  # 2019-10-12, "2.33.1"
+  # 2020-02-01, "2.34"
+  # 2020-07-24, "2.35"
+  # 2020-09-19, "2.35.1"
+  # 2021-01-24, "2.36"
+  # 2021-01-30, "2.35.2"
+  # 2021-02-06, "2.36.1"
+
+  local binutils_version="$1"
+
+  local binutils_src_folder_name="binutils-${binutils_version}"
+  local binutils_folder_name="binutils-ld.gold-${binutils_version}"
+
+  local binutils_archive="${binutils_src_folder_name}.tar.xz"
+  local binutils_url="https://ftp.gnu.org/gnu/binutils/${binutils_archive}"
+
+  local binutils_patch_file_name="binutils-${binutils_version}.patch"
+
+  local binutils_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${binutils_folder_name}-installed"
+  if [ ! -f "${binutils_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${binutils_url}" "${binutils_archive}" \
+      "${binutils_src_folder_name}" "${binutils_patch_file_name}"
+
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_APP}" 
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+        then
+          # From MSYS2 MINGW
+          LDFLAGS+=" -Wl,--large-address-aware"
+        fi
+
+        # Used to enable wildcard; inspired from arm-none-eabi-gcc.
+        LDFLAGS+=" -Wl,${XBB_FOLDER_PATH}/usr/${CROSS_COMPILE_PREFIX}/lib/CRT_glob.o"
+      elif [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          echo
+          echo "Running binutils ld.gold configure..."
+      
+          bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
+          bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/ld/configure" --help
+
+          # ? --without-python --without-curses, --with-expat
+          config_options=()
+
+          config_options+=("--prefix=${APP_PREFIX}")
+
+          config_options+=("--infodir=${APP_PREFIX_DOC}/info")
+          config_options+=("--mandir=${APP_PREFIX_DOC}/man")
+          config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
+          config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--program-suffix=")
+          config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
+
+          # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
+          config_options+=("--with-sysroot=${APP_PREFIX}")
+
+          config_options+=("--without-system-zlib")
+          config_options+=("--with-pic")
+
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+
+            config_options+=("--enable-ld")
+
+            if [ "${TARGET_ARCH}" == "x64" ]
+            then
+              # From MSYS2 MINGW
+              config_options+=("--enable-64-bit-bfd")
+            fi
+
+            config_options+=("--enable-shared")
+            config_options+=("--enable-shared-libgcc")
+
+          elif [ "${TARGET_PLATFORM}" == "linux" ]
+          then
+
+            config_options+=("--enable-ld")
+
+            config_options+=("--disable-shared")
+            config_options+=("--disable-shared-libgcc")
+
+          else
+            echo "Oops! Unsupported ${TARGET_PLATFORM}."
+            exit 1
+          fi
+
+          config_options+=("--enable-static")
+
+          config_options+=("--enable-gold")
+          config_options+=("--enable-lto")
+          config_options+=("--enable-libssp")
+          config_options+=("--enable-relro")
+          config_options+=("--enable-threads")
+          config_options+=("--enable-interwork")
+          config_options+=("--enable-plugins")
+          config_options+=("--enable-build-warnings=no")
+          config_options+=("--enable-deterministic-archives")
+          
+          # TODO
+          # config_options+=("--enable-nls")
+          config_options+=("--disable-nls")
+
+          config_options+=("--disable-werror")
+          config_options+=("--disable-sim")
+          config_options+=("--disable-gdb")
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
+            ${config_options[@]}
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running binutils ld.gold make..."
+      
+        # Build.
+        make -j ${JOBS} all-gold
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          # gcctestdir/collect-ld: relocation error: gcctestdir/collect-ld: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
+          : # make maybe-check-gold
+        fi
+      
+        # Avoid strip here, it may interfere with patchelf.
+        # make install-strip
+        make maybe-install-gold
+
+        if [ "${TARGET_PLATFORM}" == "darwin" ]
+        then
+          : # rm -rv "${APP_PREFIX}/bin/strip"
+        fi
+
+        (
+          xbb_activate_tex
+
+          if [ "${WITH_PDF}" == "y" ]
+          then
+            make maybe-pdf-gold
+            make maybe-install-pdf-gold
+          fi
+
+          if [ "${WITH_HTML}" == "y" ]
+          then
+            make maybe-htmp-gold
+            make maybe-install-html-gold
+          fi
+        )
+
+        show_libs "${APP_PREFIX}/bin/ld.gold"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}" \
+        "${binutils_folder_name}"
+
+    )
+
+    touch "${binutils_stamp_file_path}"
+  else
+    echo "Component binutils ld.gold already installed."
+  fi
+
+  tests_add "test_binutils_ld_gold"
+}
+
+function test_binutils_ld_gold()
+{
+  (
+    show_libs "${APP_PREFIX}/bin/ld.gold"
+
+    echo
+    echo "Testing if binutils ld.gold starts properly..."
+
+    run_app "${APP_PREFIX}/bin/ld.gold" --version
+  )
+
+  echo
+  echo "Local binutils ld.gold tests completed successfuly."
+}
+
+# -----------------------------------------------------------------------------
+
 function build_llvm() 
 {
   # https://llvm.org
@@ -23,6 +267,8 @@ function build_llvm()
   # https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-project-11.1.0.src.tar.xz
 
   # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
+
+  # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
 
   # 17 Feb 2021, "11.1.0"
 
@@ -65,7 +311,7 @@ function build_llvm()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_APP}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
@@ -151,6 +397,9 @@ function build_llvm()
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
           config_options+=("-DLLVM_ENABLE_EH=ON")
           config_options+=("-DLLVM_ENABLE_FFI=ON")
+          config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # https://cmake.org/cmake/help/v3.4/command/find_library.html
+          config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("-DLLVM_ENABLE_LIBCXX=ON")
 
           if [ "${IS_DEVELOP}" == "y" ]
@@ -192,14 +441,19 @@ function build_llvm()
           # config_options+=("-DPython3_EXECUTABLE=python3")
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
-          config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=ON")
+
+          # Better not, and use the explicit `llvm-*` names.
+          # config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=ON")
 
           # Cannot enable BUILD_SHARED_LIBS with LLVM_LINK_LLVM_DYLIB.  We recommend
           # disabling BUILD_SHARED_LIBS.
           # config_options+=("-DBUILD_SHARED_LIBS=ON")
 
-          # Fails on macOS
-          # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+          # Prefer the locally compiled libraries.
+          config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
+
+          config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
+          config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
@@ -218,8 +472,8 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
-            # Prefer the locally compiled libraries.
-            config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            # Fails on macOS
+            # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
@@ -232,27 +486,44 @@ function build_llvm()
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
-            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
-            # config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
+            if [ "${TARGET_ARCH}" == "x64" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+            elif [ "${TARGET_ARCH}" == "ia32" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+            elif [ "${TARGET_ARCH}" == "arm64" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
+            elif [ "${TARGET_ARCH}" == "arm" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
+            else
+              echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
+              exit 1
+            fi
 
-            config_options+=("-DLLVM_USE_LINKER=gold")
+            # Set the default linker to gold, otherwise `-flto`
+            # requires an expicit `-fuse-ld=gold`.
+            config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+
+            config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
 
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
 
-            config_options+=("-DLLVM_USE_LINKER=gold")
+            # config_options+=("-DLLVM_USE_LINKER=gold")
 
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
 
           else
-            echo "Oops! Unsupported ${TARGET_PLATFORM}."
+            echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
             exit 1
           fi
 
@@ -274,7 +545,7 @@ function build_llvm()
         echo
         echo "Running llvm build..."
 
-       run_verbose_timed cmake --build . \
+        run_verbose_timed cmake --build . \
           --verbose \
 
         run_verbose cmake --build . \
@@ -322,15 +593,15 @@ function test_llvm()
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
     # run_app "${APP_PREFIX}/bin/lld" --version || true
 
-    run_app "${APP_PREFIX}/bin/ar" --version
-    run_app "${APP_PREFIX}/bin/nm" --version
-    run_app "${APP_PREFIX}/bin/objcopy" --version
-    run_app "${APP_PREFIX}/bin/objdump" --version
-    run_app "${APP_PREFIX}/bin/ranlib" --version
-    run_app "${APP_PREFIX}/bin/readelf" --version
-    run_app "${APP_PREFIX}/bin/size" --version
-    run_app "${APP_PREFIX}/bin/strings" --version
-    run_app "${APP_PREFIX}/bin/strip" --version
+    run_app "${APP_PREFIX}/bin/llvm-ar" --version
+    run_app "${APP_PREFIX}/bin/llvm-nm" --version
+    run_app "${APP_PREFIX}/bin/llvm-objcopy" --version
+    run_app "${APP_PREFIX}/bin/llvm-objdump" --version
+    run_app "${APP_PREFIX}/bin/llvm-ranlib" --version
+    run_app "${APP_PREFIX}/bin/llvm-readelf" --version
+    run_app "${APP_PREFIX}/bin/llvm-size" --version
+    run_app "${APP_PREFIX}/bin/llvm-strings" --version
+    run_app "${APP_PREFIX}/bin/llvm-strip" --version
 
     echo
     echo "Testing clang configuration..."
@@ -533,8 +804,8 @@ __EOF__
         run_app "ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
         run_app "ranlib" libadd-static.a
       else
-        run_app "${APP_PREFIX}/bin/ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
-        run_app "${APP_PREFIX}/bin/ranlib" libadd-static.a
+        run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
+        run_app "${APP_PREFIX}/bin/llvm-ranlib" libadd-static.a
       fi
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -824,7 +1095,7 @@ function build_mingw()
             config_options+=("--enable-lib32")
             config_options+=("--disable-lib64")
           else
-            echo "Oops! Unsupported ${TARGET_ARCH}."
+            echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
             exit 1
           fi
 
