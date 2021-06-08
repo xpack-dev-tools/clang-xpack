@@ -445,9 +445,10 @@ function build_llvm()
           # Better not, and use the explicit `llvm-*` names.
           # config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=ON")
 
-          # Cannot enable BUILD_SHARED_LIBS with LLVM_LINK_LLVM_DYLIB.  We recommend
-          # disabling BUILD_SHARED_LIBS.
-          # config_options+=("-DBUILD_SHARED_LIBS=ON")
+          # Distributions should never be built using the 
+          # BUILD_SHARED_LIBS CMake option.
+          # https://llvm.org/docs/BuildingADistribution.html
+          config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
           # Prefer the locally compiled libraries.
           config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
