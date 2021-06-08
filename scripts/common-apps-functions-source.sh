@@ -457,9 +457,6 @@ function build_llvm()
           # Prefer the locally compiled libraries.
           config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
-          config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
-          config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
-
           # Remove many of the LLVM development and testing tools as
           # well as component libraries from the default install target
           # Unfortunately the LTO test fails with missing LLVMgold.so.
@@ -522,6 +519,9 @@ function build_llvm()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
 
+            config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
+            config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
@@ -531,6 +531,9 @@ function build_llvm()
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
