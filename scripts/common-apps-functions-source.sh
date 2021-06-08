@@ -545,15 +545,14 @@ function build_llvm()
         echo
         echo "Running llvm build..."
 
-        run_verbose_timed cmake --build . \
-          --verbose \
-
-        run_verbose cmake --build . \
-          --verbose \
-          --target install \
-
-        # show_libs "${APP_PREFIX}/bin/clang"
-        # show_libs "${APP_PREFIX}/bin/clang++"
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          run_verbose_timed cmake --build . --verbose
+          run_verbose cmake --build .  --verbose  --target install
+        else
+          run_verbose_timed cmake --build . 
+          run_verbose cmake --build . --target install
+        fi
 
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/make-output.txt"
