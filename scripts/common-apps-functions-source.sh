@@ -598,7 +598,10 @@ function test_llvm()
     run_app "${APP_PREFIX}/bin/llvm-objcopy" --version
     run_app "${APP_PREFIX}/bin/llvm-objdump" --version
     run_app "${APP_PREFIX}/bin/llvm-ranlib" --version
-    run_app "${APP_PREFIX}/bin/llvm-readelf" --version
+    if [ -f "${APP_PREFIX}/bin/llvm-readelf" ]
+    then
+      run_app "${APP_PREFIX}/bin/llvm-readelf" --version
+    fi
     run_app "${APP_PREFIX}/bin/llvm-size" --version
     run_app "${APP_PREFIX}/bin/llvm-strings" --version
     run_app "${APP_PREFIX}/bin/llvm-strip" --version
