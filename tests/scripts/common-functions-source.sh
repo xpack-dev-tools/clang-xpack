@@ -27,7 +27,7 @@ function run_tests()
 
   if [ "${TARGET_PLATFORM}" != "darwin" ]
   then
-    test_binutils
+    test_binutils_ld_gold
   fi
 }
 
