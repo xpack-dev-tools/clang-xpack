@@ -567,6 +567,37 @@ function build_llvm()
           run_verbose cmake --build . --target install
         fi
 
+        (
+          echo
+          echo "Removing useless files..."
+
+          # Remove useless LLVM libraries and leave only the toolchain.
+          cd "${APP_PREFIX}/bin"
+          rm -rf bugpoint c-index-test count dsymutil FileCheck \
+            llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
+            llvm-cat llvm-cfi-verify llvm-config llvm-cvtres \
+            llvm-dwarfdump llvm-dwp \
+            llvm-elfabi llvm-exegesis llvm-extract llvm-gsymutil \
+            llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
+            llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
+            llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
+            llvm-profdata \
+            llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
+            llvm-stress llvm-tblgen llvm-undname llvm-xray \
+            not obj2yaml opt sancov sanstats \
+            verify-uselistorder yaml-bench yaml2obj
+
+          cd "${APP_PREFIX}/include"
+          rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
+
+          cd "${APP_PREFIX}/lib"
+          rm -rf libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
+          rm -rf cmake/lld cmake/llvm cmake/polly
+
+          cd "${APP_PREFIX}/share"
+          rm -rf man
+        )
+
         show_libs "${APP_PREFIX}/bin/clang"
         show_libs "${APP_PREFIX}/bin/nm"
 
