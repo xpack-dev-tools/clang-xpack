@@ -599,7 +599,7 @@ function build_llvm()
         )
 
         show_libs "${APP_PREFIX}/bin/clang"
-        show_libs "${APP_PREFIX}/bin/nm"
+        show_libs "${APP_PREFIX}/bin/llvm-nm"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/make-output.txt"
 
