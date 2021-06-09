@@ -364,6 +364,8 @@ function build_llvm()
           config_options+=("-DLLD_VENDOR=${LLVM_BRANDING} ")
           config_options+=("-DPACKAGE_VENDOR=${LLVM_BRANDING} ")
 
+          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
           config_options+=("-DCMAKE_C_COMPILER=${CC}")
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
@@ -382,6 +384,9 @@ function build_llvm()
           # config_options+=("-DGIT_EXECUTABLE=$(which git)")
 
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
+
+          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+          config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
           config_options+=("-DLLDB_ENABLE_LUA=OFF")
           config_options+=("-DLLDB_ENABLE_LZMA=OFF")
@@ -435,6 +440,7 @@ function build_llvm()
 
           config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
           config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
+          config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
 
           config_options+=("-DLLVM_INSTALL_UTILS=ON")
           config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
@@ -461,6 +467,9 @@ function build_llvm()
           # well as component libraries from the default install target
           # Unfortunately the LTO test fails with missing LLVMgold.so.
           # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+
+          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+          config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
@@ -489,6 +498,11 @@ function build_llvm()
             # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
 
             # config_options+=("-DCLANGD_BUILD_XPC=OFF")
+
+            config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+            config_options+=("-DCMAKE_MACOSX_RPATH=ON")
+
+            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
@@ -528,6 +542,9 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
 
             # config_options+=("-DLLVM_USE_LINKER=gold")
+
+            # set(BUILTINS_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
+            # set(RUNTIMES_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
