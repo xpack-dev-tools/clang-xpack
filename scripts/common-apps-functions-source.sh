@@ -303,6 +303,30 @@ function build_llvm()
       -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
       "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
+if false
+then
+    # Disable the use of a separate {target}/c++ folder for the libraries
+    run_verbose sed -i.bak \
+      -e 's|-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON|-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF|g' \
+      "${llvm_src_folder_name}/llvm/runtimes/CMakeLists.txt"
+
+    run_verbose sed -i.bak \
+      -e 's|CmdArgs.push_back("-l:libunwind.so");|CmdArgs.push_back("-lunwind");|' \
+      "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/CommonArgs.cpp"
+
+    run_verbose sed -i.bak \
+      -e '/option(LIBUNWIND_ENABLE_SHARED/s| ON)| OFF)|' \
+      "${llvm_src_folder_name}/libunwind/CMakeLists.txt"
+
+    run_verbose sed -i.bak \
+      -e '/option(LIBCXXABI_ENABLE_SHARED/s| ON)| OFF)|' \
+      "${llvm_src_folder_name}/libcxxabi/CMakeLists.txt"
+
+    run_verbose sed -i.bak \
+      -e '/option(LIBCXX_ENABLE_SHARED/s| ON)| OFF)|' \
+      "${llvm_src_folder_name}/libcxx/CMakeLists.txt"
+fi
+
     mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
     (
@@ -409,7 +433,6 @@ function build_llvm()
           config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
           # https://cmake.org/cmake/help/v3.4/command/find_library.html
           config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("-DLLVM_ENABLE_LIBCXX=ON")
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -425,12 +448,15 @@ function build_llvm()
             # flang fails:
             # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
 
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+          else
+            # Distribution case
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly")
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
-          else
             # Development options, to reduce build time.
-            config_options+=("-DLLVM_ENABLE_PROJECTS=")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=")
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=")
+            # config_options+=("-DLLVM_ENABLE_RUNTIMES=")
           fi
 
           config_options+=("-DLLVM_ENABLE_RTTI=ON")
@@ -527,6 +553,18 @@ function build_llvm()
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
+
+config_options+=("-DLIBCXX_USE_COMPILER_RT=YES")
+# config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_SHARED_LIBRARY=YES")
+config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_STATIC_LIBRARY=YES")
+# config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=YES")
+
+config_options+=("-DLIBCXXABI_USE_COMPILER_RT=YES")
+config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=YES")
+# config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_SHARED_LIBRARY=YES")
+config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_STATIC_LIBRARY=YES")
+
+config_options+=("-DLIBUNWIND_USE_COMPILER_RT=YES")
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
@@ -676,6 +714,7 @@ function test_llvm()
     run_app "${APP_PREFIX}/bin/clang" -print-supported-cpus
     run_app "${APP_PREFIX}/bin/clang" -print-search-dirs
     run_app "${APP_PREFIX}/bin/clang" -print-resource-dir
+    run_app "${APP_PREFIX}/bin/clang" -print-libgcc-file-name
 
     # Cannot run the the compiler without a loader.
     if true # [ "${TARGET_PLATFORM}" != "win32" ]
@@ -717,6 +756,19 @@ __EOF__
 
       test_expect "hello-c1" "Hello"
 
+      CLANG_LIB_PATH="$(${APP_PREFIX}/bin/clang -print-resource-dir)/../.."
+
+if true
+then
+      (
+#        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
+
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt # -static-libgcc
+
+        test_expect "rt-hello-c1" "Hello"
+      )
+fi
+
       # Static links are not supported, at least not with the Apple linker:
       # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
       # ld: library not found for -lcrt0.o
@@ -733,6 +785,18 @@ __EOF__
       run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c1 hello.c
 
       test_expect "lto-hello-c1" "Hello"
+
+if true
+then
+      (
+#        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
+
+        # Test LTO C compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt # -static-libgcc
+
+        test_expect "rt-lto-hello-c1" "Hello"
+      )
+fi
 
       # Test LTO C compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
@@ -754,9 +818,31 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp # -lpthread
 
       test_expect "hello-cpp1" "Hello"
+
+if true
+then
+      (
+        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
+
+        # Test C++ compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ 
+
+        test_expect "rt-hello-cpp1" "Hello"
+      )
+fi
+
+if false
+then
+      (
+        # Test C++ compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o static-rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ -static # -static-libstdc++
+
+        test_expect "static-rt-hello-cpp1" "Hello"
+      )
+fi
 
       # Test C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp
@@ -768,6 +854,18 @@ __EOF__
       run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp1 hello.cpp
 
       test_expect "lto-hello-cpp1" "Hello"
+
+if true
+then
+      (
+        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
+
+        # Test LTO C++ compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ # -lunwind
+
+        test_expect "rt-lto-hello-cpp1" "Hello"
+      )
+fi
 
       # Test LTO C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp
