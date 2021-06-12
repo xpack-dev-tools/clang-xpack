@@ -305,7 +305,7 @@ function build_llvm()
 
     # Add -lpthread -ldl
     run_verbose sed -i.bak \
-      -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
+      -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
       "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
 
 if false
