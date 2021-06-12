@@ -360,6 +360,10 @@ function build_llvm()
 
           # Many options copied from HomeBrew.
 
+          # No openmp,mlir
+          # flang fails:
+          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
+
           # Colon separated list of directories clang will search for headers.
           # config_options+=("-DC_INCLUDE_DIRS=:")
 
@@ -414,6 +418,7 @@ function build_llvm()
           config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
           config_options+=("-DLLVM_ENABLE_EH=ON")
+
           config_options+=("-DLLVM_ENABLE_FFI=ON")
           config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
           # https://cmake.org/cmake/help/v3.4/command/find_library.html
@@ -427,11 +432,9 @@ function build_llvm()
             config_options+=("-DLLVM_ENABLE_LTO=ON")
           fi
 
-          # No openmp,mlir
-          # flang fails:
-          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
-
+          # ?? config_options+=("-DLLVM_ENABLE_LIBCXX=ON")
           config_options+=("-DLLVM_ENABLE_RTTI=ON")
+
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
           config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
@@ -473,6 +476,7 @@ function build_llvm()
           then
 
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly")
+            # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
             MACOS_SDK_PATH=$(get_macos_sdk_path)
@@ -484,6 +488,7 @@ function build_llvm()
             copy_macos_sdk "${MACOS_SDK_PATH}" "${dest_sdk_folder_path}"
 
             config_options+=("-DDEFAULT_SYSROOT=../macOS.sdk")
+            config_options+=("-DCMAKE_OSX_SYSROOT=${APP_PREFIX}/macOS.sdk")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
@@ -501,13 +506,34 @@ function build_llvm()
             # config_options+=("-DCLANGD_BUILD_XPC=OFF")
 
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
-            config_options+=("-DCMAKE_MACOSX_RPATH=ON")
+            # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
+            
+            # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
+            # Fails with: Please use architecture with 4 or 8 byte pointers.
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
             # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
 
+            # config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
+if false
+then
             config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
+            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+
+            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
+
+            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+fi
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
