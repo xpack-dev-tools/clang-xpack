@@ -303,6 +303,11 @@ function build_llvm()
       -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
       "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
+    # Add -lpthread -ldl
+    run_verbose sed -i.bak \
+      -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
+      "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
+
 if false
 then
     # Disable the use of a separate {target}/c++ folder for the libraries
@@ -554,17 +559,30 @@ fi
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
-config_options+=("-DLIBCXX_USE_COMPILER_RT=YES")
-# config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_SHARED_LIBRARY=YES")
-config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_STATIC_LIBRARY=YES")
-# config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=YES")
+            # The point below is to simplify the use of the clang libraries,
+            # and to prevent having references to shared libraries located
+            # in non-system folders.
+            # This is achieved by disabling shared libraries and
+            # grouping everything under a single libc++.a library.
+            # Thee is also a small patch adding references to -lpthread -ldl.
+            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+            # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_SHARED_LIBRARY=ON")
+            # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_STATIC_LIBRARY=ON")
 
-config_options+=("-DLIBCXXABI_USE_COMPILER_RT=YES")
-config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=YES")
-# config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_SHARED_LIBRARY=YES")
-config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_STATIC_LIBRARY=YES")
+            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
 
-config_options+=("-DLIBUNWIND_USE_COMPILER_RT=YES")
+            # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_SHARED_LIBRARY=ON")
+            # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_STATIC_LIBRARY=ON")
+
+            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
@@ -630,7 +648,7 @@ config_options+=("-DLIBUNWIND_USE_COMPILER_RT=YES")
           cd "${APP_PREFIX}/bin"
           rm -rf bugpoint c-index-test count dsymutil FileCheck \
             llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
-            llvm-cat llvm-cfi-verify llvm-config llvm-cvtres \
+            llvm-cat llvm-cfi-verify llvm-cvtres \
             llvm-dwarfdump llvm-dwp \
             llvm-elfabi llvm-exegesis llvm-extract llvm-gsymutil \
             llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
@@ -716,6 +734,8 @@ function test_llvm()
     run_app "${APP_PREFIX}/bin/clang" -print-resource-dir
     run_app "${APP_PREFIX}/bin/clang" -print-libgcc-file-name
 
+    # run_app "${APP_PREFIX}/bin/llvm-config" --help
+
     # Cannot run the the compiler without a loader.
     if true # [ "${TARGET_PLATFORM}" != "win32" ]
     then
@@ -738,6 +758,11 @@ function test_llvm()
         VERBOSE_FLAG="-v"
       fi
 
+      # Ask the compiler for the libraries locations.
+      CLANG_LIB_PATH="$(${APP_PREFIX}/bin/clang -print-resource-dir)/../.."
+
+      # -----------------------------------------------------------------------
+
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > hello.c
 #include <stdio.h>
@@ -756,19 +781,6 @@ __EOF__
 
       test_expect "hello-c1" "Hello"
 
-      CLANG_LIB_PATH="$(${APP_PREFIX}/bin/clang -print-resource-dir)/../.."
-
-if true
-then
-      (
-#        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
-
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt # -static-libgcc
-
-        test_expect "rt-hello-c1" "Hello"
-      )
-fi
-
       # Static links are not supported, at least not with the Apple linker:
       # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
       # ld: library not found for -lcrt0.o
@@ -786,23 +798,41 @@ fi
 
       test_expect "lto-hello-c1" "Hello"
 
-if true
-then
-      (
-#        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
-
-        # Test LTO C compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt # -static-libgcc
-
-        test_expect "rt-lto-hello-c1" "Hello"
-      )
-fi
-
       # Test LTO C compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
       run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c2 lto-hello-c.o
 
       test_expect "lto-hello-c2" "Hello"
+
+if true
+then
+      (
+        # Test C compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt
+
+        test_expect "rt-hello-c1" "Hello"
+
+
+        # Test C compile and link in separate steps.
+        run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c2 hello-c.o -rtlib=compiler-rt
+
+        test_expect "rt-hello-c2" "Hello"
+
+        # Test LTO C compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt
+
+        test_expect "rt-lto-hello-c1" "Hello"
+
+        # Test LTO C compile and link in separate steps.
+        run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c2 lto-hello-c.o -rtlib=compiler-rt
+
+        test_expect "rt-lto-hello-c2" "Hello"
+      )
+fi
+
+      # -----------------------------------------------------------------------
 
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > hello.cpp
@@ -818,31 +848,9 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp # -lpthread
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp
 
       test_expect "hello-cpp1" "Hello"
-
-if true
-then
-      (
-        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
-
-        # Test C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ 
-
-        test_expect "rt-hello-cpp1" "Hello"
-      )
-fi
-
-if false
-then
-      (
-        # Test C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o static-rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ -static # -static-libstdc++
-
-        test_expect "static-rt-hello-cpp1" "Hello"
-      )
-fi
 
       # Test C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp
@@ -855,23 +863,42 @@ fi
 
       test_expect "lto-hello-cpp1" "Hello"
 
-if true
-then
-      (
-        export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
-
-        # Test LTO C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ # -lunwind
-
-        test_expect "rt-lto-hello-cpp1" "Hello"
-      )
-fi
 
       # Test LTO C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp
       run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp2 lto-hello-cpp.o
 
       test_expect "lto-hello-cpp2" "Hello"
+
+if true
+then
+      (
+        # export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
+
+        # Test C++ compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++
+
+        test_expect "rt-hello-cpp1" "Hello"
+
+        # Test C++ compile and link in separate steps.
+        run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp2 hello-cpp.o -rtlib=compiler-rt -stdlib=libc++
+
+        test_expect "rt-hello-cpp2" "Hello"
+
+        # Test LTO C++ compile and link in a single step.
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++
+
+        test_expect "rt-lto-hello-cpp1" "Hello"
+
+
+        # Test LTO C++ compile and link in separate steps.
+        run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp2 lto-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++
+
+        test_expect "rt-lto-hello-cpp2" "Hello"
+      )
+fi
 
       # -----------------------------------------------------------------------
 
@@ -916,6 +943,19 @@ __EOF__
         test_expect "except" "MyException"
       fi
 
+if true
+then
+
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-except -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++
+
+      if [ "${TARGET_PLATFORM}" != "darwin" ]
+      then
+        # on Darwin: 'Symbol not found: __ZdlPvm'
+        test_expect "rt-except" "MyException"
+      fi
+
+fi
+
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > str-except.cpp
 #include <iostream>
@@ -947,6 +987,16 @@ __EOF__
       
       test_expect "str-except" "MyStringException"
 
+if true
+then
+
+      # -O0 is an attempt to prevent any interferences with the optimiser.
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-str-except -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++
+      
+      test_expect "rt-str-except" "MyStringException"
+
+fi
+
       # -----------------------------------------------------------------------
 
       # Note: __EOF__ is quoted to prevent substitutions here.
@@ -962,14 +1012,8 @@ __EOF__
       run_app "${APP_PREFIX}/bin/clang" -o add.o -fpic -c add.c
 
       rm -rf libadd.a
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
-      then
-        run_app "ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
-        run_app "ranlib" libadd-static.a
-      else
-        run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
-        run_app "${APP_PREFIX}/bin/llvm-ranlib" libadd-static.a
-      fi
+      run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
+      run_app "${APP_PREFIX}/bin/llvm-ranlib" libadd-static.a
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
@@ -977,6 +1021,24 @@ __EOF__
       else
         run_app "${APP_PREFIX}/bin/clang" -o libadd-shared.so -shared add.o
       fi
+
+if true
+then
+
+      run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -fpic -c add.c
+
+      rm -rf libadd.a
+      run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
+      run_app "${APP_PREFIX}/bin/llvm-ranlib" librt-add-static.a
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.dll -shared rt-add.o -Wl,--subsystem,windows -rtlib=compiler-rt
+      else
+        run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.so -shared rt-add.o -rtlib=compiler-rt
+      fi
+
+fi
 
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > adder.c
@@ -1007,6 +1069,23 @@ __EOF__
         export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
         test_expect "shared-adder" "42" 40 2
       )
+
+if true
+then
+
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-static-adder adder.c -lrt-add-static -L . -rtlib=compiler-rt
+
+      test_expect "rt-static-adder" "42" 40 2
+
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt
+
+      (
+        LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+        export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+        test_expect "rt-shared-adder" "42" 40 2
+      )
+
+fi
 
     fi
   )
