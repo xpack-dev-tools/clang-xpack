@@ -411,6 +411,7 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_TESTS=ON")
           fi
 
+          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
           config_options+=("-DLLVM_ENABLE_EH=ON")
           config_options+=("-DLLVM_ENABLE_FFI=ON")
