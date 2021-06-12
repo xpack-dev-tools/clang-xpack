@@ -506,6 +506,7 @@ function build_llvm()
             # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
             config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
 
+            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
