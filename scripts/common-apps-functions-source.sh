@@ -466,6 +466,9 @@ function build_llvm()
           # Unfortunately the LTO test fails with missing LLVMgold.so.
           # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
+          config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
+          config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
