@@ -758,6 +758,16 @@ function test_llvm()
         VERBOSE_FLAG="-v"
       fi
 
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        GC_SECTION="-Wl,--gc-sections"
+      elif [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        GC_SECTION="-Wl,-dead_strip"
+      else
+        GC_SECTION=""
+      fi
+
       # Ask the compiler for the libraries locations.
       CLANG_LIB_PATH="$(${APP_PREFIX}/bin/clang -print-resource-dir)/../.."
 
@@ -777,7 +787,7 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c ${GC_SECTION}
 
       test_expect "hello-c1" "Hello"
 
@@ -789,18 +799,18 @@ __EOF__
 
       # Test C compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c2 hello-c.o
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c2 hello-c.o ${GC_SECTION}
 
       test_expect "hello-c2" "Hello"
 
       # Test LTO C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c1 hello.c
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c1 hello.c ${GC_SECTION}
 
       test_expect "lto-hello-c1" "Hello"
 
       # Test LTO C compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c2 lto-hello-c.o
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c2 lto-hello-c.o ${GC_SECTION}
 
       test_expect "lto-hello-c2" "Hello"
 
@@ -808,25 +818,25 @@ if true
 then
       (
         # Test C compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt ${GC_SECTION}
 
         test_expect "rt-hello-c1" "Hello"
 
 
         # Test C compile and link in separate steps.
         run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c2 hello-c.o -rtlib=compiler-rt
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c2 hello-c.o -rtlib=compiler-rt ${GC_SECTION}
 
         test_expect "rt-hello-c2" "Hello"
 
         # Test LTO C compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt ${GC_SECTION}
 
         test_expect "rt-lto-hello-c1" "Hello"
 
         # Test LTO C compile and link in separate steps.
         run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c2 lto-hello-c.o -rtlib=compiler-rt
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c2 lto-hello-c.o -rtlib=compiler-rt ${GC_SECTION}
 
         test_expect "rt-lto-hello-c2" "Hello"
       )
@@ -848,25 +858,25 @@ main(int argc, char* argv[])
 __EOF__
 
       # Test C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp ${GC_SECTION}
 
       test_expect "hello-cpp1" "Hello"
 
       # Test C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp2 hello-cpp.o
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp2 hello-cpp.o ${GC_SECTION}
 
       test_expect "hello-cpp2" "Hello"
 
       # Test LTO C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp1 hello.cpp
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp1 hello.cpp ${GC_SECTION}
 
       test_expect "lto-hello-cpp1" "Hello"
 
 
       # Test LTO C++ compile and link in separate steps.
       run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp2 lto-hello-cpp.o
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp2 lto-hello-cpp.o ${GC_SECTION}
 
       test_expect "lto-hello-cpp2" "Hello"
 
@@ -876,25 +886,25 @@ then
         # export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
 
         # Test C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
         test_expect "rt-hello-cpp1" "Hello"
 
         # Test C++ compile and link in separate steps.
         run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp -stdlib=libc++
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp2 hello-cpp.o -rtlib=compiler-rt -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp2 hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
         test_expect "rt-hello-cpp2" "Hello"
 
         # Test LTO C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
         test_expect "rt-lto-hello-cpp1" "Hello"
 
 
         # Test LTO C++ compile and link in separate steps.
         run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp -stdlib=libc++
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp2 lto-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++
+        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp2 lto-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
         test_expect "rt-lto-hello-cpp2" "Hello"
       )
@@ -935,7 +945,7 @@ main(int argc, char* argv[])
 __EOF__
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o except -O0 except.cpp
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o except -O0 except.cpp ${GC_SECTION}
 
       if [ "${TARGET_PLATFORM}" != "darwin" ]
       then
@@ -946,7 +956,7 @@ __EOF__
 if true
 then
 
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-except -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-except -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
       if [ "${TARGET_PLATFORM}" != "darwin" ]
       then
@@ -983,7 +993,7 @@ main(int argc, char* argv[])
 __EOF__
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o str-except -O0 str-except.cpp
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o str-except -O0 str-except.cpp ${GC_SECTION}
       
       test_expect "str-except" "MyStringException"
 
@@ -991,7 +1001,7 @@ if true
 then
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-str-except -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++
+      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-str-except -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
       
       test_expect "rt-str-except" "MyStringException"
 
@@ -1058,11 +1068,11 @@ main(int argc, char* argv[])
 }
 __EOF__
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-adder adder.c -ladd-static -L .
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-adder adder.c -ladd-static -L . ${GC_SECTION}
 
       test_expect "static-adder" "42" 40 2
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L .
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
 
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
@@ -1073,11 +1083,11 @@ __EOF__
 if true
 then
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-static-adder adder.c -lrt-add-static -L . -rtlib=compiler-rt
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-static-adder adder.c -lrt-add-static -L . -rtlib=compiler-rt ${GC_SECTION}
 
       test_expect "rt-static-adder" "42" 40 2
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt
+      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
 
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
