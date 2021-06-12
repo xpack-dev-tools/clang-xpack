@@ -181,10 +181,17 @@ git clone \
   https://github.com/xpack-dev-tools/clang-xpack.git  \
   ~/Downloads/clang-xpack.git
 
-rm ~/Work/cache/xpack-clang-*
+rm -rf ~/Work/cache/xpack-clang-*
 
 bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
   "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
+```
+
+For early experimental releases, use:
+
+```sh
+bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
+  "https://github.com/xpack-dev-tools/pre-releases/releases/download/experimental/"
 ```
 
 ## Create a new GitHub pre-release
@@ -224,7 +231,7 @@ git clone --recurse-submodules -b xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git  \
   ~/Downloads/clang-xpack.git
 
-rm ~/Work/cache/xpack-clang-*
+rm -rf ~/Work/cache/xpack-clang-*
 
 bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
   "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v11.1.0-1/"
