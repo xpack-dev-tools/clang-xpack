@@ -303,34 +303,13 @@ function build_llvm()
       -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
       "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
-    # Add -lpthread -ldl
-    run_verbose sed -i.bak \
-      -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
-      "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
-
-if false
-then
-    # Disable the use of a separate {target}/c++ folder for the libraries
-    run_verbose sed -i.bak \
-      -e 's|-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON|-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF|g' \
-      "${llvm_src_folder_name}/llvm/runtimes/CMakeLists.txt"
-
-    run_verbose sed -i.bak \
-      -e 's|CmdArgs.push_back("-l:libunwind.so");|CmdArgs.push_back("-lunwind");|' \
-      "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/CommonArgs.cpp"
-
-    run_verbose sed -i.bak \
-      -e '/option(LIBUNWIND_ENABLE_SHARED/s| ON)| OFF)|' \
-      "${llvm_src_folder_name}/libunwind/CMakeLists.txt"
-
-    run_verbose sed -i.bak \
-      -e '/option(LIBCXXABI_ENABLE_SHARED/s| ON)| OFF)|' \
-      "${llvm_src_folder_name}/libcxxabi/CMakeLists.txt"
-
-    run_verbose sed -i.bak \
-      -e '/option(LIBCXX_ENABLE_SHARED/s| ON)| OFF)|' \
-      "${llvm_src_folder_name}/libcxx/CMakeLists.txt"
-fi
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      # Add -lpthread -ldl
+      run_verbose sed -i.bak \
+        -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
+        "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
+    fi
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
