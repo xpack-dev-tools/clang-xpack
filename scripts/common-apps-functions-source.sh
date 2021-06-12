@@ -466,9 +466,6 @@ function build_llvm()
           # Unfortunately the LTO test fails with missing LLVMgold.so.
           # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
-          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
-          config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
-
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
@@ -564,6 +561,8 @@ function build_llvm()
             config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
+            config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
@@ -581,6 +580,8 @@ function build_llvm()
 
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+
+            config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
