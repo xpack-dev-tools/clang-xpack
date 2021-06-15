@@ -275,6 +275,8 @@ function build_llvm()
   # https://llvm.org/docs/BuildingADistribution.html
 
   # 17 Feb 2021, "11.1.0"
+  # For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
+  # Fixed in 12.x.
 
   local llvm_version="$1"
 
