@@ -505,7 +505,7 @@ function build_llvm()
             # The macOS 10.10 xpc/xpc.h is very old and the build fails with
             # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
 
-            # config_options+=("-DCLANGD_BUILD_XPC=OFF")
+            config_options+=("-DCLANGD_BUILD_XPC=OFF")
 
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
             # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
