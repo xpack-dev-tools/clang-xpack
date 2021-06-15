@@ -333,6 +333,13 @@ function build_llvm()
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
         LDFLAGS+=" -Wl,-search_paths_first"
+
+        # The macOS variant needs to compile lots of .mm files
+        # (in lldb, for example HostThreadMacOSX.mm), and
+        # GCC chokes at them, making clang mandatory.
+
+        export CC=clang
+        export CXX=clang++
       fi
 
       if [ "${IS_DEVELOP}" == "y" ]
