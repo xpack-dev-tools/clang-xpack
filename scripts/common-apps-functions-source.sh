@@ -485,26 +485,16 @@ function build_llvm()
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly")
-            # Fails with: Please use architecture with 4 or 8 byte pointers.
-            # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
 
-            MACOS_SDK_PATH=$(get_macos_sdk_path)
-            echo "copy_macos_sdk=${MACOS_SDK_PATH}"
-
-            local dest_sdk_folder_path="${APP_PREFIX}/macOS.sdk"
-
-            # Copy the SDK in the distribution, to have a standalone package.
-            copy_macos_sdk "${MACOS_SDK_PATH}" "${dest_sdk_folder_path}"
-
-            config_options+=("-DDEFAULT_SYSROOT=../macOS.sdk")
-            config_options+=("-DCMAKE_OSX_SYSROOT=${APP_PREFIX}/macOS.sdk")
+            # This distribution expects the SDK to be in this location.
+            config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
-            # Fails on macOS
+            # Fails on macOS; better use the system linker.
             # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
 
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
@@ -512,7 +502,7 @@ function build_llvm()
 
             # The macOS 10.10 xpc/xpc.h is very old and the build fails with
             # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
-
+            # On macOS 10.13 it also fails.
             config_options+=("-DCLANGD_BUILD_XPC=OFF")
 
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
@@ -523,8 +513,6 @@ function build_llvm()
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
-if false
-then
             config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
             config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
@@ -540,7 +528,7 @@ then
             config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
             config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
             config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-fi
+
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
