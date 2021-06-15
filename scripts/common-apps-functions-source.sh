@@ -453,6 +453,8 @@ function build_llvm()
           config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
 
           config_options+=("-DLLVM_INSTALL_UTILS=ON")
+          # Cannot be used since some llvm tools are still useful.
+          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=OFF")
           config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
           config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
           config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
@@ -521,8 +523,6 @@ function build_llvm()
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
-
-            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
             # config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
 if false
