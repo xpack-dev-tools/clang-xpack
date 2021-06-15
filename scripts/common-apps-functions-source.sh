@@ -441,7 +441,6 @@ function build_llvm()
             config_options+=("-DLLVM_ENABLE_LTO=ON")
           fi
 
-          # ?? config_options+=("-DLLVM_ENABLE_LIBCXX=ON")
           config_options+=("-DLLVM_ENABLE_RTTI=ON")
 
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
@@ -524,7 +523,6 @@ function build_llvm()
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
 
-            # config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
 if false
 then
             config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
@@ -628,8 +626,6 @@ fi
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
             exit 1
           fi
-
-          echo ${config_options[@]}
 
           echo
           ${CC} --version
