@@ -178,7 +178,7 @@ function build_binutils_ld_gold()
           config_options+=("--disable-gdb")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output.txt"
@@ -619,7 +619,7 @@ function build_llvm()
           ${CC} --version
 
           run_verbose_timed cmake \
-            ${config_options[@]} \
+            "${config_options[@]}" \
             "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
 
           touch "config.status"
@@ -1355,7 +1355,7 @@ function build_mingw()
           config_options+=("--enable-warnings=0")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-crt/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-crt-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-crt-output.txt"
@@ -1436,7 +1436,7 @@ function build_mingw()
           config_options+=("--disable-shared")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-libraries/winpthreads/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
          cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-winpthreads-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-winpthreads-output.txt"
