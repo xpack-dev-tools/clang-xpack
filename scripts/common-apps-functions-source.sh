@@ -260,6 +260,179 @@ function test_binutils_ld_gold()
 
 # -----------------------------------------------------------------------------
 
+
+function build_llvm_mingw()
+{
+  # https://github.com/mstorsjo/llvm-mingw
+
+  local llvm_mingw_version="$1"
+
+  local llvm_mingw_folder_name="llvm-mingw-${llvm_mingw_version}"
+  local llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_mingw_folder_name}-installed"
+
+  if [ ! -f "${llvm_mingw_stamp_file_path}" ]
+  then
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}"
+
+    mkdir -p "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
+    cd "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
+
+    export TOOLCHAIN_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
+
+    git config --global user.name "LLVM MinGW"
+    git config --global user.email root@localhost
+
+    # TOOLCHAIN_ARCHS="i686 x86_64 armv7 aarch64"
+    export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
+
+    (
+      xbb_activate
+
+      # Use the XBB libraries.
+      xbb_activate_dev
+      xbb_activate_libs
+
+      unset_gcc_env
+
+      CC=${NATIVE_CC}
+      CXX=${NATIVE_CXX}
+
+      CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      export CC
+      export CXX
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      # -----------------------------------------------------------------------
+
+      # Note: __EOF__ is NOT quoted to allow substitutions here.
+      cat <<__EOF__ > build-llvm.sh
+#!/bin/bash
+
+config_options=()
+config_options+=("-DCMAKE_C_COMPILER=${CC}")
+config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
+
+config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
+config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
+config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
+
+config_options+=("-DCMAKE_VERBOSE_MAKEFILE=ON")
+
+__EOF__
+
+      cat "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-llvm.sh" >> build-llvm.sh
+      sed -i.bak \
+        -e 's|^    \$CMAKEFLAGS \\$|    \$CMAKEFLAGS "\${config_options[@]}" --verbose \\|' \
+        -e 's|^    -DLLVM_TARGETS_TO_BUILD="ARM;AArch64;X86" \\$|    -DLLVM_TARGETS_TO_BUILD="X86" \\|' \
+        -e 's|^\$BUILDCMD |\$BUILDCMD -v |' \
+        build-llvm.sh
+
+      mkdir -pv patches/llvm-project
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/patches/llvm-project"/*.patch patches/llvm-project
+
+      # Build LLVM
+      run_verbose bash -x build-llvm.sh $TOOLCHAIN_PREFIX
+
+      # -------------------------------------------------------------------
+
+      # Strip the LLVM install output immediately.
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/strip-llvm.sh" .
+      run_verbose bash strip-llvm.sh $TOOLCHAIN_PREFIX
+
+      # Install the usual $TUPLE-clang binaries
+      mkdir -p wrappers
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/wrappers/"*.sh wrappers
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/wrappers/"*.c wrappers
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/wrappers/"*.h wrappers
+
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/install-wrappers.sh" .
+
+      run_verbose bash install-wrappers.sh $TOOLCHAIN_PREFIX
+
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}/build-llvm.txt"
+
+    (
+      xbb_activate
+      # For the new binaries to find the XBB libraries.
+      xbb_activate_libs
+
+      unset_gcc_env
+
+      CFLAGS="-O2 -pipe -w"
+      CXXFLAGS="-O2 -pipe -w"
+      LDFLAGS=""
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      # unset CC
+      # unset CXX
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      export PATH=$TOOLCHAIN_PREFIX/bin:$PATH
+
+      env | sort
+
+      # -------------------------------------------------------------------
+
+
+      # -------------------------------------------------------------------
+
+      DEFAULT_CRT=ucrt
+      # DEFAULT_CRT=msvcrt
+
+      # Build MinGW-w64
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64.sh" .
+      run_verbose bash -x build-mingw-w64.sh $TOOLCHAIN_PREFIX --with-default-msvcrt=$DEFAULT_CRT
+
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64-tools.sh" .
+      run_verbose bash -x build-mingw-w64-tools.sh $TOOLCHAIN_PREFIX
+
+      # Build compiler-rt
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-compiler-rt.sh" .
+      run_verbose bash -x build-compiler-rt.sh $TOOLCHAIN_PREFIX
+
+      # Build mingw-w64's extra libraries
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64-libraries.sh" .
+      run_verbose bash -x build-mingw-w64-libraries.sh $TOOLCHAIN_PREFIX
+
+      # Build C test applications
+      # TODO
+
+      # Build libunwind/libcxxabi/libcxx
+      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
+      run_verbose bash -x build-libcxx.sh $TOOLCHAIN_PREFIX
+
+      # Build C++ test applications
+      # TODO
+
+      # Sanitizers?
+
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}/build-libs.txt"
+
+    touch "${llvm_mingw_stamp_file_path}"
+
+  else
+    echo "Component llvm-mingw already installed."
+  fi
+}
+
 function build_llvm() 
 {
   # https://llvm.org

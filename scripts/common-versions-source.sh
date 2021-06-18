@@ -59,6 +59,8 @@ function build_versions()
       build_mingw "8.0.2"
     fi
 
+    build_llvm_mingw "12.0.0"
+
     # Must be placed after mingw, it checks the mingw version.
     build_llvm "${LLVM_VERSION}"
 
