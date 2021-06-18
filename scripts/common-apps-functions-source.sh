@@ -177,7 +177,7 @@ function build_binutils_ld_gold()
           config_options+=("--disable-sim")
           config_options+=("--disable-gdb")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
             ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
@@ -189,7 +189,7 @@ function build_binutils_ld_gold()
         echo "Running binutils ld.gold make..."
       
         # Build.
-        make -j ${JOBS} all-gold
+        run_verbose make -j ${JOBS} all-gold
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -199,7 +199,7 @@ function build_binutils_ld_gold()
       
         # Avoid strip here, it may interfere with patchelf.
         # make install-strip
-        make maybe-install-gold
+        run_verbose make maybe-install-gold
 
         # Remove the separate folder, the xPack distribution is single target.
         rm -rf "${APP_PREFIX}/${BUILD}"
@@ -214,14 +214,14 @@ function build_binutils_ld_gold()
 
           if [ "${WITH_PDF}" == "y" ]
           then
-            make maybe-pdf-gold
-            make maybe-install-pdf-gold
+            run_verbose make maybe-pdf-gold
+            run_verbose make maybe-install-pdf-gold
           fi
 
           if [ "${WITH_HTML}" == "y" ]
           then
-            make maybe-htmp-gold
-            make maybe-install-html-gold
+            run_verbose make maybe-htmp-gold
+            run_verbose make maybe-install-html-gold
           fi
         )
 
@@ -634,10 +634,10 @@ function build_llvm()
         if [ "${IS_DEVELOP}" == "y" ]
         then
           run_verbose_timed cmake --build . --verbose
-          run_verbose cmake --build .  --verbose  --target install
+          run_verbose cmake --build .  --verbose  --target install/strip
         else
           run_verbose_timed cmake --build . 
-          run_verbose cmake --build . --target install
+          run_verbose cmake --build . --target install/strip
         fi
 
         (
@@ -1234,8 +1234,8 @@ function build_mingw()
           # From Arch
           config_options+=("--enable-secure-api")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-headers/configure" \
-            ${config_options[@]}
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-headers/configure" \
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-headers-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-headers-output.txt"
@@ -1246,18 +1246,16 @@ function build_mingw()
         echo "Running mingw-w64 headers make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
-        make install-strip
+        run_verbose make install-strip
 
         # mingw-w64 and Arch do this.
         # rm -fv "${APP_PREFIX}/include/pthread_signal.h"
         # rm -fv "${APP_PREFIX}/include/pthread_time.h"
         # rm -fv "${APP_PREFIX}/include/pthread_unistd.h"
 
-        echo
-        echo "${APP_PREFIX}/include"
-        ls -l "${APP_PREFIX}/include" 
+        run_verbose ls -l "${APP_PREFIX}/mingw-w64/include" 
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-headers-output.txt"
 
@@ -1356,7 +1354,7 @@ function build_mingw()
 
           config_options+=("--enable-warnings=0")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-crt/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-crt/configure" \
             ${config_options[@]}
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-crt-log.txt"
@@ -1368,13 +1366,11 @@ function build_mingw()
         echo "Running mingw-w64 crt make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
-        make install-strip
+        run_verbose make install-strip
 
-        echo
-        echo "${APP_PREFIX}/lib"
-        ls -l "${APP_PREFIX}/lib" 
+        run_verbose ls -l "${APP_PREFIX}/mingw-w64/lib" 
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-crt-output.txt"
     )
@@ -1439,7 +1435,7 @@ function build_mingw()
           # Avoid a reference to 'DLL Name: libwinpthread-1.dll'
           config_options+=("--disable-shared")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-libraries/winpthreads/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-libraries/winpthreads/configure" \
             ${config_options[@]}
 
          cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-winpthreads-log.txt"
@@ -1451,13 +1447,11 @@ function build_mingw()
         echo "Running mingw-w64 winpthreads make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
-        make install-strip
+        run_verbose make install-strip
 
-        echo
-        echo "${APP_PREFIX}/lib"
-        ls -l "${APP_PREFIX}/lib"
+        run_verbose ls -l "${APP_PREFIX}/mingw-w64/lib"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-winpthreads-output.txt"
     )
