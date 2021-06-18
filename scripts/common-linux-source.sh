@@ -202,7 +202,7 @@ function do_glibc()
           config_options+=("--disable-timezone-tools")
 
           bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${glibc_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${glibc_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glibc_folder_name}/configure-output.txt"
