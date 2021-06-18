@@ -44,7 +44,10 @@ function build_versions()
     # On macOS refers to libiconv
     build_libxml2 "2.9.11"
 
-    build_libedit "20210522-3.1"
+    if [ "${TARGET_PLATFORM}" != "win32" ]
+    then
+      build_libedit "20210522-3.1"
+    fi
 
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
