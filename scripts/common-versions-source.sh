@@ -61,6 +61,8 @@ function build_versions()
 
     build_llvm_mingw "12.0.0"
 
+    # build_native_llvm "${LLVM_VERSION}"
+
     # Must be placed after mingw, it checks the mingw version.
     build_llvm "${LLVM_VERSION}"
 
