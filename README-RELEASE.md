@@ -72,13 +72,21 @@ Before the real build, run a test build on the development machine (`wks`):
 ```sh
 sudo rm -rf ~/Work/clang-*
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --all
-
 caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --osx
+```
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
+Similarly on the Intel Linux:
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux32 --win32
+```sh
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --linux32
+
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win64 --win32
+```
+
+And on the Arm Linux:
+
+```sh
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
 ```
 
 Work on the scripts until all 4 platforms pass the build.
