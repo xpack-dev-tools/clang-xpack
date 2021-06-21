@@ -423,37 +423,102 @@ __EOF__
       env | sort
 
       # -------------------------------------------------------------------
+      # Inspired from Dockerfile.dev, by Martin Storsjo.
+      # https://github.com/mstorsjo/llvm-mingw
 
-
-      # -------------------------------------------------------------------
+      LLVM_MINGW_PATH="${BUILD_GIT_PATH}/scripts/llvm-mingw"
 
       DEFAULT_CRT=ucrt
       # DEFAULT_CRT=msvcrt
 
       # Build MinGW-w64
-      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64.sh" .
+      cp -v "${LLVM_MINGW_PATH}/build-mingw-w64.sh" .
       run_verbose bash -x build-mingw-w64.sh $TOOLCHAIN_PREFIX --with-default-msvcrt=$DEFAULT_CRT
 
-      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64-tools.sh" .
+      cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-tools.sh" .
       run_verbose bash -x build-mingw-w64-tools.sh $TOOLCHAIN_PREFIX
 
       # Build compiler-rt
-      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-compiler-rt.sh" .
+      cp -v "${LLVM_MINGW_PATH}/build-compiler-rt.sh" .
       run_verbose bash -x build-compiler-rt.sh $TOOLCHAIN_PREFIX
 
       # Build mingw-w64's extra libraries
-      cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-mingw-w64-libraries.sh" .
+      cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-libraries.sh" .
       run_verbose bash -x build-mingw-w64-libraries.sh $TOOLCHAIN_PREFIX
 
+      VERBOSE_FLAG=""
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        VERBOSE_FLAG="-v"
+      fi
+      export VERBOSE_FLAG
+
       # Build C test applications
-      # TODO
+      (
+        mkdir -p test
+        cp -v "${LLVM_MINGW_PATH}/test"/*.c test
+        cp -v "${LLVM_MINGW_PATH}/test"/*.h test
+        cp -v "${LLVM_MINGW_PATH}/test"/*.idl test
+
+        cd test 
+        for arch in $TOOLCHAIN_ARCHS; do 
+          mkdir -p $arch 
+          for test in hello hello-tls crt-test setjmp; do 
+              run_verbose $arch-w64-mingw32-clang $test.c -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
+              run_app $arch/$test || exit 1
+          done
+          for test in autoimport-lib; do 
+              run_verbose $arch-w64-mingw32-clang $test.c -shared -o $arch/$test.dll -Wl,--out-implib,$arch/lib$test.dll.a ${VERBOSE_FLAG} || exit 1
+          done
+          for test in autoimport-main; do 
+              run_verbose $arch-w64-mingw32-clang $test.c -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
+              run_app $arch/$test || exit 1
+          done
+          for test in idltest; do
+              # The IDL output isn't arch specific, but test each arch frontend 
+              run_verbose $arch-w64-mingw32-widl $test.idl -h -o $arch/$test.h || exit 1
+              run_verbose $arch-w64-mingw32-clang $test.c -I$arch -o $arch/$test.exe -lole32 ${VERBOSE_FLAG} || exit 1
+              run_app $arch/$test || exit 1
+          done
+        done
+      )
 
       # Build libunwind/libcxxabi/libcxx
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
       run_verbose bash -x build-libcxx.sh $TOOLCHAIN_PREFIX
 
       # Build C++ test applications
-      # TODO
+      (
+        cp -v "${LLVM_MINGW_PATH}/test"/*.cpp test 
+
+        # Non-static EXE refer the libc++.dll, libunwind.dll, etc, thus
+        # the temporary WINEPATH extension.
+        cd test
+        for arch in $TOOLCHAIN_ARCHS; do
+          mkdir -p $arch
+          for test in hello-cpp hello-exception tlstest-main exception-locale exception-reduced global-terminate longjmp-cleanup; do
+              run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
+              (
+                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                run_app $arch/$test || exit 1
+              )
+          done
+          for test in hello-exception; do
+              run_verbose $arch-w64-mingw32-clang++ $test.cpp -static -o $arch/$test-static.exe ${VERBOSE_FLAG} || exit 1
+              run_app $arch/$test-static || exit 1
+          done
+          for test in tlstest-lib throwcatch-lib; do
+              run_verbose $arch-w64-mingw32-clang++ $test.cpp -shared -o $arch/$test.dll -Wl,--out-implib,$arch/lib$test.dll.a ${VERBOSE_FLAG} || exit 1
+          done
+          for test in throwcatch-main; do
+              run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
+              (
+                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                run_app $arch/$test || exit 1
+              )
+          done
+        done
+      )
 
       # Sanitizers?
 
