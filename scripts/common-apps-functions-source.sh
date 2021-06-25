@@ -102,7 +102,7 @@ function build_binutils_ld_gold()
       then
         (
           echo
-          echo "Running binutils ld.gold configure..."
+          echo "Running binutils-ld.gold configure..."
       
           bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
           bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/ld/configure" --help
@@ -186,7 +186,7 @@ function build_binutils_ld_gold()
 
       (
         echo
-        echo "Running binutils ld.gold make..."
+        echo "Running binutils-ld.gold make..."
       
         # Build.
         run_verbose make -j ${JOBS} all-gold
