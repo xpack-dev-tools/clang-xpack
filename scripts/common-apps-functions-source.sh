@@ -303,6 +303,10 @@ function build_llvm_mingw()
   local llvm_mingw_folder_name="llvm-mingw-${llvm_mingw_version}"
   local llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_mingw_folder_name}-installed"
 
+  export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
+  export TOOLCHAIN_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
+  export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
+
   if [ ! -f "${llvm_mingw_stamp_file_path}" ]
   then
 
@@ -311,13 +315,11 @@ function build_llvm_mingw()
     mkdir -p "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
     cd "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
 
-    export TOOLCHAIN_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
 
     git config --global user.name "LLVM MinGW"
     git config --global user.email root@localhost
 
     # TOOLCHAIN_ARCHS="i686 x86_64 armv7 aarch64"
-    export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
 
     (
       xbb_activate
@@ -681,12 +683,12 @@ function build_llvm()
   # For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
   # Fixed in 12.x.
 
-  local llvm_version="$1"
+  export llvm_version="$1"
 
   local llvm_version_major=$(echo ${llvm_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
   local llvm_version_minor=$(echo ${llvm_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
 
-  local llvm_src_folder_name="llvm-project-${llvm_version}.src"
+  export llvm_src_folder_name="llvm-project-${llvm_version}.src"
   local llvm_folder_name="llvm-${llvm_version}"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
@@ -714,6 +716,19 @@ function build_llvm()
       run_verbose sed -i.bak \
         -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
         "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      (
+        cd "${llvm_src_folder_name}/llvm/tools"
+
+        # This trick will allow to build the toolchain only and still get clang
+        for p in clang lld lldb; do
+            if [ ! -e $p ]
+            then
+                ln -s ../../$p .
+            fi
+        done
+      )
     fi
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
@@ -723,7 +738,14 @@ function build_llvm()
       cd "${BUILD_FOLDER_PATH}/${llvm_folder_name}"
 
       xbb_activate
+      # Use install/libs/lib & include
       xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -743,6 +765,11 @@ function build_llvm()
 
         export CC=clang
         export CXX=clang++
+      elif [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Prefer the llvm-mingw binaries.
+        export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
+        # CC=${INSTALL_FOLDER_PATH}/native-${APP_LC_NAME}/bin/
       fi
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -912,9 +939,9 @@ function build_llvm()
             # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
             
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
-            # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
             # Fails with: Please use architecture with 4 or 8 byte pointers.
-            # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
             config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
@@ -988,30 +1015,91 @@ function build_llvm()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
 
-            config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
-            config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+            config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+            config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+            config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
+            config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
+
+            config_options+=("-DCMAKE_RC_COMPILER=${RC}")
+
+            # Refer to the newly built native tools.
+            config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
+            config_options+=("-DCLANG_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen")
+            config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
+            config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
+
+            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+
+if false
+then
+            # Remove polly and all libraries.
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb")
+else
+            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-size;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+fi
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+
+#?            config_options+=("-DDEFAULT_SYSROOT=${APP_PREFIX}")
+
+            config_options+=("-DLLVM_HOST_TRIPLE=${HOST}")
 
             # config_options+=("-DLLVM_USE_LINKER=gold")
 
             # set(BUILTINS_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
             # set(RUNTIMES_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
 
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
-            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+            # config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
+            # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
 
-            # config_options+=("-DLLVM_BUILTIN_TARGETS=${BUILD}")
-            # config_options+=("-DLLVM_RUNTIME_TARGETS=${BUILD}")
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
-            config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+            # config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+
+            # ---
+
+###            config_options=()
+
+###            config_options+=("-GNinja")
+###            config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
+
+###config_options+=("-DCMAKE_BUILD_TYPE=Release")
+config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
+###config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+###config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+###config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+##### config_options+=("-DLLVM_HOST_TRIPLE=x86_64-w64-mingw32")
+###config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+###config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+###config_options+=("-DCMAKE_CROSSCOMPILING=TRUE")
+###config_options+=("-DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc")
+###config_options+=("-DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++")
+##### config_options+=("-DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres")
+###config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
+###config_options+=("-DLLVM_TABLEGEN=${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/${APP_LC_NAME}/bin/llvm-tblgen")
+#config_options+=("-DLLVM_TABLEGEN=/build/llvm-project/llvm/build/bin/llvm-tblgen")
+#config_options+=("-DCLANG_TABLEGEN=/build/llvm-project/llvm/build/bin/clang-tblgen")
+#config_options+=("-DLLDB_TABLEGEN=/build/llvm-project/llvm/build/bin/lldb-tblgen")
+# config_options+=("-DLLVM_CONFIG_PATH=/build/llvm-project/llvm/build/bin/llvm-config")
+###### config_options+=("-DLLVM_CONFIG_PATH=${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/${APP_LC_NAME}/bin/llvm-config")
+## config_options+=("-DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32")
+####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
+####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
+####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
+###config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+###config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+###config_options+=("-DCLANG_DEFAULT_LINKER=lld")
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
@@ -1021,10 +1109,44 @@ function build_llvm()
           echo
           ${CC} --version
 
+if false
+then
           run_verbose_timed cmake \
             "${config_options[@]}" \
             "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
+else
 
+# Missing: clang-tidy
+
+run_verbose_timed cmake -G Ninja \
+-DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
+-DCMAKE_BUILD_TYPE=Release \
+-DLLVM_ENABLE_ASSERTIONS=OFF \
+-DLLVM_TARGETS_TO_BUILD=X86 \
+-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON \
+-DLLVM_TOOLCHAIN_TOOLS="llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres" \
+-DLLVM_HOST_TRIPLE=x86_64-w64-mingw32 \
+-DLLDB_INCLUDE_TESTS=OFF \
+-DCMAKE_SYSTEM_NAME=Windows \
+-DCMAKE_CROSSCOMPILING=TRUE \
+-DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+-DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+-DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
+-DCROSS_TOOLCHAIN_FLAGS_NATIVE= \
+-DLLVM_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen" \
+-DCLANG_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen" \
+-DLLDB_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen" \
+-DLLVM_CONFIG_PATH="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config" \
+-DCMAKE_FIND_ROOT_PATH="${TOOLCHAIN_PREFIX}/x86_64-w64-mingw32" \
+-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+-DCLANG_DEFAULT_RTLIB=compiler-rt \
+-DCLANG_DEFAULT_CXX_STDLIB=libc++ \
+-DCLANG_DEFAULT_LINKER=lld \
+"${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
+
+fi
           touch "config.status"
 
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/cmake-output.txt"
@@ -1043,6 +1165,8 @@ function build_llvm()
           run_verbose cmake --build . --target install/strip
         fi
 
+if false
+then
         (
           echo
           echo "Removing useless files..."
@@ -1059,7 +1183,7 @@ function build_llvm()
             llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
             llvm-profdata \
             llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
-            llvm-stress llvm-tblgen llvm-undname llvm-xray \
+            llvm-stress llvm-undname llvm-xray \
             not obj2yaml opt sancov sanstats \
             verify-uselistorder yaml-bench yaml2obj
 
@@ -1073,11 +1197,12 @@ function build_llvm()
           cd "${APP_PREFIX}/share"
           rm -rf man
         )
+fi
 
         show_libs "${APP_PREFIX}/bin/clang"
         show_libs "${APP_PREFIX}/bin/llvm-nm"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output.txt"
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
@@ -1107,7 +1232,7 @@ function test_llvm()
     run_app "${APP_PREFIX}/bin/clang" --version
     run_app "${APP_PREFIX}/bin/clang++" --version
 
-    run_app "${APP_PREFIX}/bin/clang-tidy" --version
+#    run_app "${APP_PREFIX}/bin/clang-tidy" --version
     run_app "${APP_PREFIX}/bin/clang-format" --version
 
     # lld is a generic driver.
@@ -1123,7 +1248,7 @@ function test_llvm()
     then
       run_app "${APP_PREFIX}/bin/llvm-readelf" --version
     fi
-    run_app "${APP_PREFIX}/bin/llvm-size" --version
+#    run_app "${APP_PREFIX}/bin/llvm-size" --version
     run_app "${APP_PREFIX}/bin/llvm-strings" --version
     run_app "${APP_PREFIX}/bin/llvm-strip" --version
 
@@ -1146,7 +1271,9 @@ function test_llvm()
       echo
       echo "Testing if clang compiles simple Hello programs..."
 
-      local tmp="$(mktemp ~/tmp/test-clang-XXXXXXXXXX)"
+      local tests_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
+      mkdir -pv "${tests_folder_path}/tests"
+      local tmp="$(mktemp "${tests_folder_path}/tests/test-clang-XXXXXXXXXX")"
       rm -rf "${tmp}"
 
       mkdir -p "${tmp}"
@@ -1170,9 +1297,6 @@ function test_llvm()
       else
         GC_SECTION=""
       fi
-
-      # Ask the compiler for the libraries locations.
-      CLANG_LIB_PATH="$(${APP_PREFIX}/bin/clang -print-resource-dir)/../.."
 
       # -----------------------------------------------------------------------
 
@@ -1414,7 +1538,9 @@ fi
 
       # Note: __EOF__ is quoted to prevent substitutions here.
       cat <<'__EOF__' > add.c
-// __declspec(dllexport)
+#if defined(_WIN32)
+__declspec(dllexport)
+#endif
 int
 add(int a, int b)
 {
@@ -1422,7 +1548,12 @@ add(int a, int b)
 }
 __EOF__
 
-      run_app "${APP_PREFIX}/bin/clang" -o add.o -fpic -c add.c
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        run_app "${APP_PREFIX}/bin/clang" -o add.o -c add.c
+      else
+        run_app "${APP_PREFIX}/bin/clang" -o add.o -fpic -c add.c
+      fi
 
       rm -rf libadd.a
       run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
@@ -1430,7 +1561,9 @@ __EOF__
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        run_app "${APP_PREFIX}/bin/clang" -o libadd-shared.dll -shared add.o -Wl,--subsystem,windows
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o libadd-shared.dll -shared add.o -Wl,--subsystem,windows 
+        run_app "${APP_PREFIX}/bin/gendef" libadd-shared.dll
+        run_app "${APP_PREFIX}/bin/llvm-dlltool" -m i386:x86-64 -d libadd-shared.def -l libadd-shared.lib
       else
         run_app "${APP_PREFIX}/bin/clang" -o libadd-shared.so -shared add.o
       fi
@@ -1438,7 +1571,12 @@ __EOF__
 if true
 then
 
-      run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -fpic -c add.c
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -c add.c
+      else
+        run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -fpic -c add.c
+      fi
 
       rm -rf libadd.a
       run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
@@ -1447,6 +1585,8 @@ then
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
         run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.dll -shared rt-add.o -Wl,--subsystem,windows -rtlib=compiler-rt
+        run_app "${APP_PREFIX}/bin/gendef" librt-add-shared.dll
+        run_app "${APP_PREFIX}/bin/llvm-dlltool" -m i386:x86-64 -d librt-add-shared.def -l librt-add-shared.lib
       else
         run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.so -shared rt-add.o -rtlib=compiler-rt
       fi
@@ -1459,6 +1599,9 @@ fi
 #include <stdlib.h>
 
 extern int
+#if defined(_WIN32)
+__declspec(dllimport)
+#endif
 add(int a, int b);
 
 int
@@ -1475,8 +1618,13 @@ __EOF__
 
       test_expect "static-adder" "42" 40 2
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
-
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # This is functional, but the library does not show as DLL.
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c libadd-shared.lib -L . ${GC_SECTION}
+      else
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
+      fi
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
         export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
@@ -1490,7 +1638,13 @@ then
 
       test_expect "rt-static-adder" "42" 40 2
 
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # This is functional, but the library does not show as DLL.
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c librt-add-shared.lib -L . -rtlib=compiler-rt ${GC_SECTION}
+      else
+        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
+      fi
 
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
@@ -1507,6 +1661,396 @@ fi
   echo "Local llvm tests completed successfuly."
 }
 
+function build_llvm_compiler_rt()
+{
+  local llvm_compiler_rt_folder_name="llvm-${llvm_version}-compiler-rt"
+
+  local llvm_compiler_rt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
+  if [ ! -f "${llvm_compiler_rt_stamp_file_path}" ]
+  then
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
+
+      xbb_activate
+      # Use install/libs/lib & include
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+     
+      (
+        echo
+        echo "Running llvm-compiler-rt cmake..."
+
+        run_verbose cmake -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}/lib/clang/12.0.0" \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DCMAKE_C_COMPILER_WORKS=1 \
+          -DCMAKE_CXX_COMPILER_WORKS=1 \
+          -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu \
+          -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
+          -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
+          -DSANITIZER_CXX_ABI=libc++ \
+          "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output.txt"
+
+      (
+        run_verbose cmake --build . --verbose
+        run_verbose cmake --build . --verbose --target install/strip
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output.txt"
+
+    )
+
+    touch "${llvm_compiler_rt_stamp_file_path}"
+
+  else
+    echo "Component llvm-compiler-rt already installed."
+  fi
+
+}
+
+function build_llvm_libcxx()
+{
+  local llvm_libunwind_folder_name="llvm-${llvm_version}-libunwind"
+
+  local llvm_libunwind_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
+  if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
+  then
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+
+      xbb_activate
+      # Use install/libs/lib & include
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+     
+      (
+        echo
+        echo "Running llvm-libunwind cmake..."
+
+        run_verbose cmake -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
+          -DCMAKE_CROSSCOMPILING=ON \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_C_COMPILER_WORKS=ON \
+          -DCMAKE_CXX_COMPILER_WORKS=ON \
+          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DLIBUNWIND_USE_COMPILER_RT=ON \
+          -DLIBUNWIND_ENABLE_THREADS=ON \
+          -DLIBUNWIND_ENABLE_SHARED=OFF \
+          -DLIBUNWIND_ENABLE_STATIC=ON \
+          -DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF \
+          "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libunwind"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/cmake-output.txt"
+
+      (
+        run_verbose cmake --build . --verbose
+        run_verbose cmake --build . --verbose --target install/strip
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/build-output.txt"
+
+    )
+
+    touch "${llvm_libunwind_stamp_file_path}"
+
+  else
+    echo "Component llvm-libunwind already installed."
+  fi
+
+  # ---------------------------------------------------------------------------
+
+  # Define & prepare the folder, will be used later.
+  local llvm_libcxxabi_folder_name="llvm-${llvm_version}-libcxxabi"
+  mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
+
+  local llvm_libcxx_folder_name="llvm-${llvm_version}-libcxx"
+
+  local llvm_libcxx_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
+  if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
+  then
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+
+      xbb_activate
+      # Use install/libs/lib & include
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+     
+      (
+        echo
+        echo "Running llvm-libcxx-headers cmake..."
+
+        run_verbose cmake -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
+          -DCMAKE_CROSSCOMPILING=ON \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_C_COMPILER_WORKS=ON \
+          -DCMAKE_CXX_COMPILER_WORKS=ON \
+          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DLIBCXX_USE_COMPILER_RT=ON \
+          -DLIBCXX_INSTALL_HEADERS=ON \
+          -DLIBCXX_ENABLE_EXCEPTIONS=ON \
+          -DLIBCXX_ENABLE_THREADS=ON \
+          -DLIBCXX_HAS_WIN32_THREAD_API=ON \
+          -DLIBCXX_ENABLE_SHARED=OFF \
+          -DLIBCXX_ENABLE_STATIC=ON \
+          -DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF \
+          -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
+          -DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF \
+          -DLIBCXX_CXX_ABI=libcxxabi \
+          -DLIBCXX_CXX_ABI_INCLUDE_PATHS="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include" \
+          -DLIBCXX_CXX_ABI_LIBRARY_PATH="${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib" \
+          -DLIBCXX_LIBDIR_SUFFIX="" \
+          -DLIBCXX_INCLUDE_TESTS=FALSE \
+          -DCMAKE_SHARED_LINKER_FLAGS="-lunwind" \
+          -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
+          "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxx"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output.txt"
+
+      (
+        # Configure, but don't build libcxx yet, so that libcxxabi has
+        # proper headers to refer to.
+        run_verbose cmake --build . --verbose --target generate-cxx-headers
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/generate-cxx-headeres-output.txt"
+
+    )
+
+    touch "${llvm_libcxx_headers_stamp_file_path}"
+
+  else
+    echo "Component llvm-libcxx-headers already installed."
+  fi
+
+  local llvm_libcxxabi_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxxabi_folder_name}-installed"
+  if [ ! -f "${llvm_libcxxabi_stamp_file_path}" ]
+  then
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
+
+      xbb_activate
+      # Use install/libs/lib & include
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+     
+      (
+        echo
+        echo "Running llvm-libcxxabi cmake..."
+
+        run_verbose cmake -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
+          -DCMAKE_CROSSCOMPILING=ON \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_C_COMPILER_WORKS=ON \
+          -DCMAKE_CXX_COMPILER_WORKS=ON \
+          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DLIBCXXABI_USE_COMPILER_RT=ON \
+          -DLIBCXXABI_ENABLE_EXCEPTIONS=ON \
+          -DLIBCXXABI_ENABLE_THREADS=ON \
+          -DLIBCXXABI_TARGET_TRIPLE=x86_64-w64-mingw32 \
+          -DLIBCXXABI_ENABLE_SHARED=OFF \
+          -DLIBCXXABI_LIBCXX_INCLUDES=${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1 \
+          -DLIBCXXABI_LIBDIR_SUFFIX="" \
+          -DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON \
+          -DLIBCXX_ENABLE_SHARED=OFF \
+          -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
+          "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/cmake-output.txt"
+
+      (
+        # Configure, but don't build libcxxabi yet, so that libcxxabi has
+        # proper headers to refer to.
+        run_verbose cmake --build . --verbose
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/build-output.txt"
+
+    )
+
+    touch "${llvm_libcxxabi_stamp_file_path}"
+
+  else
+    echo "Component llvm-libcxxabi already installed."
+  fi
+
+  local llvm_libcxx_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-installed"
+  if [ ! -f "${llvm_libcxx_stamp_file_path}" ]
+  then
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+
+      xbb_activate
+      # Use install/libs/lib & include
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Use XBB libs in native-llvm
+        xbb_activate_libs
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      (
+        run_verbose cmake --build . --verbose 
+        run_verbose cmake --build . --verbose --target install
+
+        # Append libunwind
+        run_verbose llvm-ar qcsL \
+                "${APP_PREFIX}/lib/libc++.a" \
+                "${APP_PREFIX}/lib/libunwind.a"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output.txt"
+
+    )
+
+    touch "${llvm_libcxx_stamp_file_path}"
+
+  else
+    echo "Component llvm-libcxx already installed."
+  fi
+
+}
 
 function strip_libs()
 {
@@ -1532,337 +2076,6 @@ function strip_libs()
         fi
       done
     )
-  fi
-}
-
-# -----------------------------------------------------------------------------
-
-function build_mingw() 
-{
-  # http://mingw-w64.org/doku.php/start
-  # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
-
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-headers
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-crt
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-winpthreads
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-binutils
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-gcc
-
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-headers-git/PKGBUILD
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-crt-git/PKGBUILD
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-winpthreads-git/PKGBUILD
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-binutils/PKGBUILD
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
-  
-  # https://github.com/msys2/MSYS2-packages/blob/master/gcc/PKGBUILD
-
-  # https://github.com/StephanTLavavej/mingw-distro
-
-  # 2018-06-03, "5.0.4"
-  # 2018-09-16, "6.0.0"
-  # 2019-11-11, "7.0.0"
-  # 2020-09-18, "8.0.0"
-  # 2021-05-09, "8.0.2"
-
-  MINGW_VERSION="$1"
-
-  # Number
-  MINGW_VERSION_MAJOR=$(echo ${MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
-
-  # The original SourceForge location.
-  local mingw_src_folder_name="mingw-w64-v${MINGW_VERSION}"
-  local mingw_folder_name="${mingw_src_folder_name}"
-
-  local mingw_archive="${mingw_folder_name}.tar.bz2"
-  local mingw_url="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/${mingw_archive}"
-  
-  # If SourceForge is down, there is also a GitHub mirror.
-  # https://github.com/mirror/mingw-w64
-  # mingw_folder_name="mingw-w64-${MINGW_VERSION}"
-  # mingw_archive="v${MINGW_VERSION}.tar.gz"
-  # mingw_url="https://github.com/mirror/mingw-w64/archive/${mingw_archive}"
- 
-  # https://sourceforge.net/p/mingw-w64/wiki2/Cross%20Win32%20and%20Win64%20compiler/
-  # https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/configure
-
-  # ---------------------------------------------------------------------------
-
-  # The 'headers' step creates the 'include' folder.
-
-  local mingw_headers_folder_name="mingw-${MINGW_VERSION}-headers"
-
-  cd "${SOURCES_FOLDER_PATH}"
-
-  download_and_extract "${mingw_url}" "${mingw_archive}" "${mingw_src_folder_name}"
-
-  local mingw_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_headers_folder_name}-installed"
-  if [ ! -f "${mingw_headers_stamp_file_path}" ]
-  then
-    (
-      mkdir -p "${BUILD_FOLDER_PATH}/${mingw_headers_folder_name}"
-      cd "${BUILD_FOLDER_PATH}/${mingw_headers_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${mingw_folder_name}"
-
-      xbb_activate
-
-      if [ ! -f "config.status" ]
-      then
-        (
-          echo
-          echo "Running mingw-w64 headers configure..."
-
-          bash "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-headers/configure" --help
-
-          config_options=()
-
-          config_options+=("--prefix=${APP_PREFIX}")
-                        
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
-
-          config_options+=("--with-tune=generic")
-
-          # From mingw-w64-headers
-          config_options+=("--enable-sdk=all")
-
-          # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-160
-          # Windows 7
-          config_options+=("--with-default-win32-winnt=0x601")
-
-          config_options+=("--enable-idl")
-          config_options+=("--without-widl")
-
-          # From Arch
-          config_options+=("--enable-secure-api")
-
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-headers/configure" \
-            "${config_options[@]}"
-
-          cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-headers-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-headers-output.txt"
-      fi
-
-      (
-        echo
-        echo "Running mingw-w64 headers make..."
-
-        # Build.
-        run_verbose make -j ${JOBS}
-
-        run_verbose make install-strip
-
-        # mingw-w64 and Arch do this.
-        # rm -fv "${APP_PREFIX}/include/pthread_signal.h"
-        # rm -fv "${APP_PREFIX}/include/pthread_time.h"
-        # rm -fv "${APP_PREFIX}/include/pthread_unistd.h"
-
-        run_verbose ls -l "${APP_PREFIX}/mingw-w64/include" 
-
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-headers-output.txt"
-
-      # No need to do it again.
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}" \
-        "${mingw_folder_name}"
-
-    )
-
-    touch "${mingw_headers_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64 headers already installed."
-  fi
-
-  # ---------------------------------------------------------------------------
-
-  # The 'crt' step creates the C run-time in the 'lib' folder.
-
-  local mingw_crt_folder_name="mingw-${MINGW_VERSION}-crt"
-
-  local mingw_crt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_crt_folder_name}-installed"
-  if [ ! -f "${mingw_crt_stamp_file_path}" ]
-  then
-    (
-      mkdir -p "${BUILD_FOLDER_PATH}/${mingw_crt_folder_name}"
-      cd "${BUILD_FOLDER_PATH}/${mingw_crt_folder_name}"
-
-      xbb_activate
-      # xbb_activate_installed_bin
-
-      # Overwrite the flags, -ffunction-sections -fdata-sections result in
-      # {standard input}: Assembler messages:
-      # {standard input}:693: Error: CFI instruction used without previous .cfi_startproc
-      # {standard input}:695: Error: .cfi_endproc without corresponding .cfi_startproc
-      # {standard input}:697: Error: .seh_endproc used in segment '.text' instead of expected '.text$WinMainCRTStartup'
-      # {standard input}: Error: open CFI at the end of file; missing .cfi_endproc directive
-      # {standard input}:7150: Error: can't resolve `.text' {.text section} - `.LFB5156' {.text$WinMainCRTStartup section}
-      # {standard input}:8937: Error: can't resolve `.text' {.text section} - `.LFB5156' {.text$WinMainCRTStartup section}
-
-      CPPFLAGS=""
-      CFLAGS="-O2 -pipe -w"
-      CXXFLAGS="-O2 -pipe -w"
-      LDFLAGS=""
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-
-      # Without it, apparently a bug in autoconf/c.m4, function AC_PROG_CC, results in:
-      # checking for _mingw_mac.h... no
-      # configure: error: Please check if the mingw-w64 header set and the build/host option are set properly.
-      # (https://github.com/henry0312/build_gcc/issues/1)
-      # export CC=""
-
-      env | sort
-
-      if [ ! -f "config.status" ]
-      then
-        (
-          echo
-          echo "Running mingw-w64 crt configure..."
-
-          bash "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-crt/configure" --help
-
-          config_options=()
-
-          config_options+=("--prefix=${APP_PREFIX}")
-                        
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
-
-          if [ "${TARGET_ARCH}" == "x64" ]
-          then
-            config_options+=("--disable-lib32")
-            config_options+=("--enable-lib64")
-          elif [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
-          then
-            config_options+=("--enable-lib32")
-            config_options+=("--disable-lib64")
-          else
-            echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
-            exit 1
-          fi
-
-          config_options+=("--with-sysroot=${APP_PREFIX}")
-          config_options+=("--enable-wildcard")
-
-          config_options+=("--enable-warnings=0")
-
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-crt/configure" \
-            "${config_options[@]}"
-
-          cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-crt-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-crt-output.txt"
-      fi
-
-      (
-        echo
-        echo "Running mingw-w64 crt make..."
-
-        # Build.
-        run_verbose make -j ${JOBS}
-
-        run_verbose make install-strip
-
-        run_verbose ls -l "${APP_PREFIX}/mingw-w64/lib" 
-
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-crt-output.txt"
-    )
-
-    touch "${mingw_crt_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64 crt already installed."
-  fi
-
-  # ---------------------------------------------------------------------------  
-
-  local mingw_winpthreads_folder_name="mingw-${MINGW_VERSION}-winpthreads"
-
-  local mingw_winpthreads_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winpthreads_folder_name}-installed"
-  if [ ! -f "${mingw_winpthreads_stamp_file_path}" ]
-  then
-
-    (
-      mkdir -p "${BUILD_FOLDER_PATH}/${mingw_winpthreads_folder_name}"
-      cd "${BUILD_FOLDER_PATH}/${mingw_winpthreads_folder_name}"
-
-      xbb_activate
-      xbb_activate_installed_bin
-
-      CPPFLAGS=""
-      CFLAGS="-O2 -pipe -w"
-      CXXFLAGS="-O2 -pipe -w"
-      LDFLAGS=""
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-      
-      env | sort
-
-      if [ ! -f "config.status" ]
-      then
-        (
-          echo
-          echo "Running mingw-w64 winpthreads configure..."
-
-          bash "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-libraries/winpthreads/configure" --help
-
-          config_options=()
-
-          config_options+=("--prefix=${APP_PREFIX}")
-                        
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
-
-          config_options+=("--with-sysroot=${APP_PREFIX}")
-
-          config_options+=("--enable-static")
-          # Avoid a reference to 'DLL Name: libwinpthread-1.dll'
-          config_options+=("--disable-shared")
-
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mingw_src_folder_name}/mingw-w64-libraries/winpthreads/configure" \
-            "${config_options[@]}"
-
-         cp "config.log" "${LOGS_FOLDER_PATH}/${mingw_folder_name}/config-winpthreads-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/configure-winpthreads-output.txt"
-      fi
-      
-      (
-        echo
-        echo "Running mingw-w64 winpthreads make..."
-
-        # Build.
-        run_verbose make -j ${JOBS}
-
-        run_verbose make install-strip
-
-        run_verbose ls -l "${APP_PREFIX}/mingw-w64/lib"
-
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mingw_folder_name}/make-winpthreads-output.txt"
-    )
-
-    touch "${mingw_winpthreads_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64 winpthreads already installed."
   fi
 }
 

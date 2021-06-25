@@ -27,6 +27,7 @@ function build_versions()
   LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
 
 # -----------------------------------------------------------------------------
+  
   if [[ "${RELEASE_VERSION}" =~ 11\.1\.0-[1] ]]
   then
 
@@ -41,11 +42,12 @@ function build_versions()
     # Requires openssl
     # build_xar "1.6.1"
 
-    # On macOS refers to libiconv
-    build_libxml2 "2.9.11"
 
     if [ "${TARGET_PLATFORM}" != "win32" ]
     then
+      # On macOS refers to libiconv
+      build_libxml2 "2.9.11"
+
       build_libedit "20210522-3.1"
     fi
 
@@ -57,17 +59,32 @@ function build_versions()
       build_binutils_ld_gold "2.36.1"
     fi
 
-    if [ "${TARGET_PLATFORM}" == "win32" ]
-    then
-      build_mingw "8.0.2"
-    fi
-
+    # Build a native toolchain, mainly for the *-tblgen tools, but
+    # since it's already in, also use it to build the final llvm & mingw.
     build_llvm_mingw "12.0.0"
 
     # build_native_llvm "${LLVM_VERSION}"
 
-    # Must be placed after mingw, it checks the mingw version.
-    build_llvm "${LLVM_VERSION}"
+    build_llvm "12.0.0" # "${LLVM_VERSION}"
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      (
+        # Prefer the llvm-mingw binaries.
+        export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
+
+        build_mingw "8.0.2"
+
+        build_llvm_compiler_rt
+
+        build_mingw_libraries
+
+        build_mingw_tools
+
+        build_llvm_libcxx
+
+      )
+    fi
 
     # -------------------------------------------------------------------------
   else
