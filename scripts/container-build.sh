@@ -84,6 +84,10 @@ common_libs_functions_script_path="${helper_folder_path}/common-libs-functions-s
 echo "Common helper libs functions source script: \"${common_libs_functions_script_path}\"."
 source "${common_libs_functions_script_path}"
 
+common_apps_functions_script_path="${helper_folder_path}/common-apps-functions-source.sh"
+echo "Common helper apps functions source script: \"${common_apps_functions_script_path}\"."
+source "${common_apps_functions_script_path}"
+
 container_libs_functions_script_path="${script_folder_path}/${COMMON_LIBS_FUNCTIONS_SCRIPT_NAME}"
 echo "Container libs functions source script: \"${container_libs_functions_script_path}\"."
 source "${container_libs_functions_script_path}"
