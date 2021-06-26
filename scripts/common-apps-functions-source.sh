@@ -294,32 +294,34 @@ function download_llvm()
   fi
 }
 
-function build_llvm_mingw()
+function build_native_llvm_mingw()
 {
   # https://github.com/mstorsjo/llvm-mingw
 
-  local llvm_mingw_version="$1"
+  local native_llvm_mingw_version="$1"
 
-  local llvm_mingw_folder_name="llvm-mingw-${llvm_mingw_version}"
-  local llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_mingw_folder_name}-installed"
+  local native_llvm_mingw_folder_name="llvm-mingw-${native_llvm_mingw_version}"
+  local native_llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${native_llvm_mingw_folder_name}-installed"
 
-  export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
-  export TOOLCHAIN_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
+  export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
+  export NATIVE_LLVM_MINGW_FOLDER_NAME="native-llvm-mingw"
+  export NATIVE_LLVM_MINGW_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${NATIVE_LLVM_MINGW_FOLDER_NAME}"
+
+  # Redundant, but may be use in submodule scripts.
+  export TOOLCHAIN_PREFIX="${NATIVE_LLVM_MINGW_FOLDER_PATH}"
   export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
 
-  if [ ! -f "${llvm_mingw_stamp_file_path}" ]
+  if [ ! -f "${native_llvm_mingw_stamp_file_path}" ]
   then
 
-    mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}"
+    mkdir -pv "${LOGS_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
 
-    mkdir -p "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
-    cd "${BUILD_FOLDER_PATH}/${llvm_mingw_folder_name}"
+    mkdir -p "${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
+    cd "${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
 
 
     git config --global user.name "LLVM MinGW"
     git config --global user.email root@localhost
-
-    # TOOLCHAIN_ARCHS="i686 x86_64 armv7 aarch64"
 
     (
       xbb_activate
@@ -350,7 +352,7 @@ function build_llvm_mingw()
       # -----------------------------------------------------------------------
 
       # Note: __EOF__ is NOT quoted to allow substitutions here.
-      cat <<__EOF__ > build-llvm.sh
+      cat <<__EOF__ > build-native-llvm.sh
 #!/bin/bash
 
 config_options=()
@@ -365,24 +367,24 @@ config_options+=("-DCMAKE_VERBOSE_MAKEFILE=ON")
 
 __EOF__
 
-      cat "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-llvm.sh" >> build-llvm.sh
+      cat "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-llvm.sh" >> build-native-llvm.sh
       sed -i.bak \
         -e 's|^    \$CMAKEFLAGS \\$|    \$CMAKEFLAGS "\${config_options[@]}" --verbose \\|' \
         -e 's|^    -DLLVM_TARGETS_TO_BUILD="ARM;AArch64;X86" \\$|    -DLLVM_TARGETS_TO_BUILD="X86" \\|' \
         -e 's|^\$BUILDCMD |\$BUILDCMD -v |' \
-        build-llvm.sh
+        build-native-llvm.sh
 
       mkdir -pv patches/llvm-project
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/patches/llvm-project"/*.patch patches/llvm-project
 
       # Build LLVM
-      run_verbose bash -x build-llvm.sh $TOOLCHAIN_PREFIX
+      run_verbose bash -x build-native-llvm.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       # -------------------------------------------------------------------
 
       # Strip the LLVM install output immediately.
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/strip-llvm.sh" .
-      run_verbose bash strip-llvm.sh $TOOLCHAIN_PREFIX
+      run_verbose bash strip-llvm.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       # Install the usual $TUPLE-clang binaries
       mkdir -p wrappers
@@ -392,9 +394,9 @@ __EOF__
 
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/install-wrappers.sh" .
 
-      run_verbose bash install-wrappers.sh $TOOLCHAIN_PREFIX
+      run_verbose bash install-wrappers.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}/build-llvm.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${native_llvm_mingw_folder_name}/build-llvm.txt"
 
     (
       xbb_activate
@@ -420,7 +422,7 @@ __EOF__
       export CXXFLAGS
       export LDFLAGS
 
-      export PATH=$TOOLCHAIN_PREFIX/bin:$PATH
+      export PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:$PATH
 
       env | sort
 
@@ -435,18 +437,18 @@ __EOF__
 
       # Build MinGW-w64
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64.sh" .
-      run_verbose bash -x build-mingw-w64.sh $TOOLCHAIN_PREFIX --with-default-msvcrt=$DEFAULT_CRT
+      run_verbose bash -x build-mingw-w64.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH} --with-default-msvcrt=$DEFAULT_CRT
 
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-tools.sh" .
-      run_verbose bash -x build-mingw-w64-tools.sh $TOOLCHAIN_PREFIX
+      run_verbose bash -x build-mingw-w64-tools.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       # Build compiler-rt
       cp -v "${LLVM_MINGW_PATH}/build-compiler-rt.sh" .
-      run_verbose bash -x build-compiler-rt.sh $TOOLCHAIN_PREFIX
+      run_verbose bash -x build-compiler-rt.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       # Build mingw-w64's extra libraries
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-libraries.sh" .
-      run_verbose bash -x build-mingw-w64-libraries.sh $TOOLCHAIN_PREFIX
+      run_verbose bash -x build-mingw-w64-libraries.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       VERBOSE_FLAG=""
       if [ "${IS_DEVELOP}" == "y" ]
@@ -487,7 +489,7 @@ __EOF__
 
       # Build libunwind/libcxxabi/libcxx
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
-      run_verbose bash -x build-libcxx.sh $TOOLCHAIN_PREFIX
+      run_verbose bash -x build-libcxx.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
 
       # Build C++ test applications
       (
@@ -498,7 +500,7 @@ __EOF__
         cd test
         for arch in $TOOLCHAIN_ARCHS; do
           mkdir -p $arch
-          for test in hello-cpp hello-exception tlstest-main exception-locale exception-reduced global-terminate longjmp-cleanup; do
+          for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
                 export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
@@ -512,6 +514,13 @@ __EOF__
           for test in tlstest-lib throwcatch-lib; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -shared -o $arch/$test.dll -Wl,--out-implib,$arch/lib$test.dll.a ${VERBOSE_FLAG} || exit 1
           done
+          for test in tlstest-main; do
+              run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
+              (
+                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                run_app $arch/$test || exit 1
+              )
+          done
           for test in throwcatch-main; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               (
@@ -524,12 +533,12 @@ __EOF__
 
       # Sanitizers?
 
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_mingw_folder_name}/build-libs.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${native_llvm_mingw_folder_name}/build-libs.txt"
 
-    touch "${llvm_mingw_stamp_file_path}"
+    touch "${native_llvm_mingw_stamp_file_path}"
 
   else
-    echo "Component llvm-mingw already installed."
+    echo "Component native-llvm-mingw already installed."
   fi
 }
 
@@ -768,7 +777,7 @@ function build_llvm()
       elif [ "${TARGET_PLATFORM}" == "win32" ]
       then
         # Prefer the llvm-mingw binaries.
-        export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
+        export PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:${PATH}"
         # CC=${INSTALL_FOLDER_PATH}/native-${APP_LC_NAME}/bin/
       fi
 
@@ -1711,8 +1720,8 @@ function build_llvm_compiler_rt()
           -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
           -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
           -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
           -DCMAKE_C_COMPILER_WORKS=1 \
           -DCMAKE_CXX_COMPILER_WORKS=1 \
           -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu \
@@ -1793,8 +1802,8 @@ function build_llvm_libcxx()
           -DCMAKE_C_COMPILER_WORKS=ON \
           -DCMAKE_CXX_COMPILER_WORKS=ON \
           -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
           -DLIBUNWIND_USE_COMPILER_RT=ON \
           -DLIBUNWIND_ENABLE_THREADS=ON \
           -DLIBUNWIND_ENABLE_SHARED=OFF \
@@ -1876,8 +1885,8 @@ function build_llvm_libcxx()
           -DCMAKE_C_COMPILER_WORKS=ON \
           -DCMAKE_CXX_COMPILER_WORKS=ON \
           -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
           -DLIBCXX_USE_COMPILER_RT=ON \
           -DLIBCXX_INSTALL_HEADERS=ON \
           -DLIBCXX_ENABLE_EXCEPTIONS=ON \
@@ -1964,8 +1973,8 @@ function build_llvm_libcxx()
           -DCMAKE_C_COMPILER_WORKS=ON \
           -DCMAKE_CXX_COMPILER_WORKS=ON \
           -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin/llvm-ranlib" \
+          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
+          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
           -DLIBCXXABI_USE_COMPILER_RT=ON \
           -DLIBCXXABI_ENABLE_EXCEPTIONS=ON \
           -DLIBCXXABI_ENABLE_THREADS=ON \

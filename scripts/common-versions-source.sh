@@ -37,15 +37,9 @@ function build_versions()
     build_ncurses "6.2"
     build_libiconv "1.16"
 
-    # build_openssl "1.1.1k"
-
-    # Requires openssl
-    # build_xar "1.6.1"
-
-
     if [ "${TARGET_PLATFORM}" != "win32" ]
     then
-      # On macOS refers to libiconv
+      # On macOS it refers to libiconv
       build_libxml2 "2.9.11"
 
       build_libedit "20210522-3.1"
@@ -59,18 +53,18 @@ function build_versions()
       build_binutils_ld_gold "2.36.1"
     fi
 
-    # Build a native toolchain, mainly for the *-tblgen tools, but
-    # since it's already in, also use it to build the final llvm & mingw.
-    build_llvm_mingw "12.0.0"
-
-    # build_native_llvm "${LLVM_VERSION}"
-
-    build_llvm "12.0.0" # "${LLVM_VERSION}"
-
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       (
-        # Prefer the llvm-mingw binaries.
+        # Build a native toolchain, mainly for the *-tblgen tools, but
+        # since it's already in, also use it to build the final llvm & mingw.
+        build_native_llvm_mingw "12.0.0"
+
+        # build_native_llvm "${LLVM_VERSION}"
+
+        build_llvm "12.0.0" # "${LLVM_VERSION}"
+
+        # Prefer the native-llvm-mingw binaries.
         export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
 
         build_mingw "8.0.2"
@@ -82,8 +76,9 @@ function build_versions()
         build_mingw_tools
 
         build_llvm_libcxx
-
       )
+    else
+      build_llvm "${LLVM_VERSION}"
     fi
 
     # -------------------------------------------------------------------------
