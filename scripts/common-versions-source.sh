@@ -60,21 +60,25 @@ function build_versions()
         # since it's already in, also use it to build the final llvm & mingw.
         build_native_llvm_mingw "12.0.0"
 
-        # build_native_llvm "${LLVM_VERSION}"
-
         build_llvm "12.0.0" # "${LLVM_VERSION}"
 
         # Prefer the native-llvm-mingw binaries.
         export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
 
-        build_mingw "8.0.2"
+        # headers & crt
+        build_mingw_core "8.0.2"
 
         build_llvm_compiler_rt
 
-        build_mingw_libraries
+        build_mingw_winpthreads
+        build_mingw_winstorecompat
+        build_mingw_libmangle
+        run_verbose ls -l "${APP_PREFIX}/lib"
 
-        build_mingw_tools
+        build_mingw_gendef
+        build_mingw_widl
 
+        # libunwind, libcxx, libcxxabi
         build_llvm_libcxx
       )
     else
