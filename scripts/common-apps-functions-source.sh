@@ -300,7 +300,7 @@ function build_native_llvm_mingw()
 
   local native_llvm_mingw_version="$1"
 
-  local native_llvm_mingw_folder_name="llvm-mingw-${native_llvm_mingw_version}"
+  local native_llvm_mingw_folder_name="native-llvm-mingw-${native_llvm_mingw_version}"
   local native_llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${native_llvm_mingw_folder_name}-installed"
 
   export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
@@ -465,20 +465,25 @@ __EOF__
         cp -v "${LLVM_MINGW_PATH}/test"/*.idl test
 
         cd test 
-        for arch in $TOOLCHAIN_ARCHS; do 
+        for arch in ${TOOLCHAIN_ARCHS}
+        do 
           mkdir -p $arch 
-          for test in hello hello-tls crt-test setjmp; do 
+          for test in hello hello-tls crt-test setjmp
+          do 
               run_verbose $arch-w64-mingw32-clang $test.c -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               run_app $arch/$test || exit 1
           done
-          for test in autoimport-lib; do 
+          for test in autoimport-lib
+          do 
               run_verbose $arch-w64-mingw32-clang $test.c -shared -o $arch/$test.dll -Wl,--out-implib,$arch/lib$test.dll.a ${VERBOSE_FLAG} || exit 1
           done
-          for test in autoimport-main; do 
+          for test in autoimport-main
+          do 
               run_verbose $arch-w64-mingw32-clang $test.c -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               run_app $arch/$test || exit 1
           done
-          for test in idltest; do
+          for test in idltest
+          do
               # The IDL output isn't arch specific, but test each arch frontend 
               run_verbose $arch-w64-mingw32-widl $test.idl -h -o $arch/$test.h || exit 1
               run_verbose $arch-w64-mingw32-clang $test.c -I$arch -o $arch/$test.exe -lole32 ${VERBOSE_FLAG} || exit 1
@@ -498,7 +503,8 @@ __EOF__
         # Non-static EXE refer the libc++.dll, libunwind.dll, etc, thus
         # the temporary WINEPATH extension.
         cd test
-        for arch in $TOOLCHAIN_ARCHS; do
+        for arch in $TOOLCHAIN_ARCHS
+        do
           mkdir -p $arch
           for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
@@ -507,21 +513,25 @@ __EOF__
                 run_app $arch/$test || exit 1
               )
           done
-          for test in hello-exception; do
+          for test in hello-exception
+          do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -static -o $arch/$test-static.exe ${VERBOSE_FLAG} || exit 1
               run_app $arch/$test-static || exit 1
           done
-          for test in tlstest-lib throwcatch-lib; do
+          for test in tlstest-lib throwcatch-lib
+          do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -shared -o $arch/$test.dll -Wl,--out-implib,$arch/lib$test.dll.a ${VERBOSE_FLAG} || exit 1
           done
-          for test in tlstest-main; do
+          for test in tlstest-main
+          do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
                 export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
                 run_app $arch/$test || exit 1
               )
           done
-          for test in throwcatch-main; do
+          for test in throwcatch-main
+          do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               (
                 export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
