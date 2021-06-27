@@ -58,6 +58,9 @@ function build_versions()
       (
         # Build a native toolchain, mainly for the *-tblgen tools, but
         # since it's already in, also use it to build the final llvm & mingw.
+        build_native_llvm_mingw "12.0.0" # "${LLVM_VERSION}"
+
+        (
           # Prefer the llvm-mingw binaries.
           export PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:${PATH}"
 
@@ -65,23 +68,25 @@ function build_versions()
           export NM="${CROSS_COMPILE_PREFIX}-nm"
           export RANLIB="${CROSS_COMPILE_PREFIX}-ranlib"
 
-        build_llvm "12.0.0" # "${LLVM_VERSION}"
+          build_llvm "12.0.0" # "${LLVM_VERSION}"
 
           # headers & crt
           build_mingw_core "8.0.2"
+          # run_verbose ls -l "${APP_PREFIX}/include"
 
-        build_llvm_compiler_rt
+          build_llvm_compiler_rt
 
-        build_mingw_winpthreads
-        build_mingw_winstorecompat
-        build_mingw_libmangle
-        run_verbose ls -l "${APP_PREFIX}/lib"
+          build_mingw_winpthreads
+          build_mingw_winstorecompat
+          build_mingw_libmangle
+          # run_verbose ls -l "${APP_PREFIX}/lib"
 
-        build_mingw_gendef
-        build_mingw_widl
+          build_mingw_gendef
+          build_mingw_widl
 
-        # libunwind, libcxx, libcxxabi
-        build_llvm_libcxx
+          # libunwind, libcxx, libcxxabi
+          build_llvm_libcxx
+        )
       )
     else
       build_llvm "${LLVM_VERSION}"

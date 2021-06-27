@@ -864,24 +864,22 @@ function build_llvm()
           config_options+=("-DLLVM_BUILD_DOCS=OFF")
           config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
 
-          if true
-          then
-            config_options+=("-DLLVM_BUILD_TESTS=OFF")
-          else
-            config_options+=("-DLLVM_BUILD_TESTS=ON")
-          fi
+          config_options+=("-DLLVM_BUILD_TESTS=OFF")
 
           config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
           config_options+=("-DLLVM_ENABLE_EH=ON")
 
-          config_options+=("-DLLVM_ENABLE_FFI=ON")
+          # FFI disabled on Windows.
+          # https://cmake.org/cmake/help/v3.4/command/find_path.html
           config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
+
           # https://cmake.org/cmake/help/v3.4/command/find_library.html
           config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
+            run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}/include" "${LIBS_INSTALL_FOLDER_PATH}/"lib*
             config_options+=("-DLLVM_ENABLE_LTO=OFF")
           else
             # Build LLVM with -flto.
@@ -919,8 +917,14 @@ function build_llvm()
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
           # Prefer the locally compiled libraries.
-          config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
-
+          config_options+=("-DCMAKE_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include")
+          if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+          then
+            config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
+          else
+            config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          fi
+          
           # Remove many of the LLVM development and testing tools as
           # well as component libraries from the default install target
           # Unfortunately the LTO test fails with missing LLVMgold.so.
@@ -936,6 +940,8 @@ function build_llvm()
 
             # This distribution expects the SDK to be in this location.
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+
+            config_options+=("-DLLVM_ENABLE_FFI=ON")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
@@ -998,6 +1004,8 @@ function build_llvm()
               exit 1
             fi
 
+            config_options+=("-DLLVM_ENABLE_FFI=ON")
+
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
@@ -1043,19 +1051,24 @@ function build_llvm()
             config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
             config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-            config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
+            config_options+=("-DCMAKE_FIND_ROOT_PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}")
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
 
             config_options+=("-DCMAKE_RC_COMPILER=${RC}")
 
             # Refer to the newly built native tools.
-            config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
             config_options+=("-DCLANG_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen")
             config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
+            config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
             config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
 
             config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
             config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+
+            config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
 
 if false
 then
@@ -1063,60 +1076,13 @@ then
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb")
 else
             config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-size;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 fi
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
 
-#?            config_options+=("-DDEFAULT_SYSROOT=${APP_PREFIX}")
+            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
 
-            config_options+=("-DLLVM_HOST_TRIPLE=${HOST}")
-
-            # config_options+=("-DLLVM_USE_LINKER=gold")
-
-            # set(BUILTINS_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
-            # set(RUNTIMES_CMAKE_ARGS -DCMAKE_SYSTEM_NAME=Windows CACHE STRING "")
-
-            # config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
-            # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-
-            # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
-            # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
-
-            # config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
-
-            # ---
-
-###            config_options=()
-
-###            config_options+=("-GNinja")
-###            config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
-
-###config_options+=("-DCMAKE_BUILD_TYPE=Release")
-config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
-###config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-###config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-###config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
-##### config_options+=("-DLLVM_HOST_TRIPLE=x86_64-w64-mingw32")
-###config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-###config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-###config_options+=("-DCMAKE_CROSSCOMPILING=TRUE")
-###config_options+=("-DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc")
-###config_options+=("-DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++")
-##### config_options+=("-DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres")
-###config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
-###config_options+=("-DLLVM_TABLEGEN=${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/${APP_LC_NAME}/bin/llvm-tblgen")
-#config_options+=("-DLLVM_TABLEGEN=/build/llvm-project/llvm/build/bin/llvm-tblgen")
-#config_options+=("-DCLANG_TABLEGEN=/build/llvm-project/llvm/build/bin/clang-tblgen")
-#config_options+=("-DLLDB_TABLEGEN=/build/llvm-project/llvm/build/bin/lldb-tblgen")
-# config_options+=("-DLLVM_CONFIG_PATH=/build/llvm-project/llvm/build/bin/llvm-config")
-###### config_options+=("-DLLVM_CONFIG_PATH=${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/${APP_LC_NAME}/bin/llvm-config")
-## config_options+=("-DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32")
-####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
-####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
-####config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
-###config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-###config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-###config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
@@ -1124,6 +1090,7 @@ config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
           fi
 
           echo
+          which ${CC}
           ${CC} --version
 
 if false
@@ -1135,6 +1102,37 @@ else
 
 # Missing: clang-tidy
 
+if true
+then
+run_verbose_timed cmake -G Ninja \
+  -DCLANG_DEFAULT_CXX_STDLIB=libc++ \
+  -DCLANG_DEFAULT_LINKER=lld \
+  -DCLANG_DEFAULT_RTLIB=compiler-rt \
+  -DCLANG_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CROSSCOMPILING=ON \
+  -DCMAKE_CXX_COMPILER=${CROSS_COMPILE_PREFIX}-g++ \
+  -DCMAKE_C_COMPILER=${CROSS_COMPILE_PREFIX}-gcc \
+-DCMAKE_FIND_ROOT_PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}" \
+-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+  -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
+  -DCMAKE_RC_COMPILER=${CROSS_COMPILE_PREFIX}-windres \
+  -DCMAKE_SYSTEM_NAME=Windows \
+  -DCROSS_TOOLCHAIN_FLAGS_NATIVE= \
+  -DLLDB_INCLUDE_TESTS=OFF \
+  -DLLDB_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen" \
+  -DLLVM_CONFIG_PATH="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config" \
+  -DLLVM_ENABLE_ASSERTIONS=OFF \
+  -DLLVM_HOST_TRIPLE=${TARGET} \
+    -DLLVM_INSTALL_TOOLCHAIN_ONLY=ON \
+  -DLLVM_TABLEGEN="${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen" \
+  -DLLVM_TARGETS_TO_BUILD=X86 \
+    -DLLVM_TOOLCHAIN_TOOLS="llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres" \
+"${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
+
+else
 run_verbose_timed cmake -G Ninja \
 -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
 -DCMAKE_BUILD_TYPE=Release \
@@ -1162,6 +1160,9 @@ run_verbose_timed cmake -G Ninja \
 -DCLANG_DEFAULT_CXX_STDLIB=libc++ \
 -DCLANG_DEFAULT_LINKER=lld \
 "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
+
+exit 1
+fi
 
 fi
           touch "config.status"
@@ -1722,20 +1723,41 @@ function build_llvm_compiler_rt()
         echo
         echo "Running llvm-compiler-rt cmake..."
 
-        run_verbose cmake -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}/lib/clang/12.0.0" \
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
-          -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
-          -DCMAKE_C_COMPILER_WORKS=1 \
-          -DCMAKE_CXX_COMPILER_WORKS=1 \
-          -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu \
-          -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE \
-          -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE \
-          -DSANITIZER_CXX_ABI=libc++ \
+        config_options=()
+        config_options+=("-G" "Ninja")
+
+        # Traditionally the runtime is in a versioned folder.
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}/lib/clang/${LLVM_VERSION}")
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release")
+        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+
+        config_options+=("-DCMAKE_C_COMPILER=${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+        config_options+=("-DCMAKE_CXX_COMPILER=${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+
+        if [ "${HOST_MACHINE}" == "x86_64" ]
+        then
+          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu")
+        elif [ "${HOST_MACHINE}" == "i686" ]
+        then
+          config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
+        else
+          echo "Oops! Unsupported HOST_MACHINE=${HOST_MACHINE}."
+          exit 1
+        fi
+
+        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+
+        config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON")
+        config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON")
+        config_options+=("-DSANITIZER_CXX_ABI=libc++")
+
+        run_verbose cmake \
+          "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output.txt"
@@ -1800,23 +1822,33 @@ function build_llvm_libcxx()
         echo
         echo "Running llvm-libunwind cmake..."
 
-        run_verbose cmake -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
-          -DCMAKE_CROSSCOMPILING=ON \
-          -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_C_COMPILER_WORKS=ON \
-          -DCMAKE_CXX_COMPILER_WORKS=ON \
-          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
-          -DLIBUNWIND_USE_COMPILER_RT=ON \
-          -DLIBUNWIND_ENABLE_THREADS=ON \
-          -DLIBUNWIND_ENABLE_SHARED=OFF \
-          -DLIBUNWIND_ENABLE_STATIC=ON \
-          -DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF \
+        config_options=()
+        config_options+=("-G" "Ninja")
+
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release")
+        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+
+        config_options+=("-DCMAKE_C_COMPILER=${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+        config_options+=("-DCMAKE_CXX_COMPILER=${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+
+        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+
+        config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
+        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+        config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON")
+        config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
+        config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+
+        config_options+=("-DLLVM_PATH=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
+
+        run_verbose cmake \
+          "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libunwind"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/cmake-output.txt"
@@ -1883,35 +1915,46 @@ function build_llvm_libcxx()
         echo
         echo "Running llvm-libcxx-headers cmake..."
 
-        run_verbose cmake -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
-          -DCMAKE_CROSSCOMPILING=ON \
-          -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_C_COMPILER_WORKS=ON \
-          -DCMAKE_CXX_COMPILER_WORKS=ON \
-          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
-          -DLIBCXX_USE_COMPILER_RT=ON \
-          -DLIBCXX_INSTALL_HEADERS=ON \
-          -DLIBCXX_ENABLE_EXCEPTIONS=ON \
-          -DLIBCXX_ENABLE_THREADS=ON \
-          -DLIBCXX_HAS_WIN32_THREAD_API=ON \
-          -DLIBCXX_ENABLE_SHARED=OFF \
-          -DLIBCXX_ENABLE_STATIC=ON \
-          -DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF \
-          -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
-          -DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF \
-          -DLIBCXX_CXX_ABI=libcxxabi \
-          -DLIBCXX_CXX_ABI_INCLUDE_PATHS="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include" \
-          -DLIBCXX_CXX_ABI_LIBRARY_PATH="${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib" \
-          -DLIBCXX_LIBDIR_SUFFIX="" \
-          -DLIBCXX_INCLUDE_TESTS=FALSE \
-          -DCMAKE_SHARED_LINKER_FLAGS="-lunwind" \
-          -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE \
+        config_options=()
+        config_options+=("-G" "Ninja")
+
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release")
+        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+
+        config_options+=("-DCMAKE_C_COMPILER=${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+        config_options+=("-DCMAKE_CXX_COMPILER=${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+
+        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+
+        config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
+
+        config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
+        config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
+        config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
+        config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
+        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+        config_options+=("-DLIBCXX_ENABLE_STATIC=ON")
+        config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
+        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+        config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
+        config_options+=("-DLIBCXX_CXX_ABI=libcxxabi")
+        config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
+        config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
+        config_options+=("-DLIBCXX_LIBDIR_SUFFIX=")
+        config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF")
+        config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF")
+        config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+
+        config_options+=("-DLLVM_PATH=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
+
+        run_verbose cmake \
+          "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxx"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output.txt"
@@ -1964,6 +2007,7 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+      # Most probably not used
 
       env | sort
      
@@ -1971,28 +2015,39 @@ function build_llvm_libcxx()
         echo
         echo "Running llvm-libcxxabi cmake..."
 
-        run_verbose cmake -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="${APP_PREFIX}" \
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang \
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ \
-          -DCMAKE_CROSSCOMPILING=ON \
-          -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_C_COMPILER_WORKS=ON \
-          -DCMAKE_CXX_COMPILER_WORKS=ON \
-          -DLLVM_PATH="${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          -DCMAKE_AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar" \
-          -DCMAKE_RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib" \
-          -DLIBCXXABI_USE_COMPILER_RT=ON \
-          -DLIBCXXABI_ENABLE_EXCEPTIONS=ON \
-          -DLIBCXXABI_ENABLE_THREADS=ON \
-          -DLIBCXXABI_TARGET_TRIPLE=x86_64-w64-mingw32 \
-          -DLIBCXXABI_ENABLE_SHARED=OFF \
-          -DLIBCXXABI_LIBCXX_INCLUDES=${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1 \
-          -DLIBCXXABI_LIBDIR_SUFFIX="" \
-          -DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON \
-          -DLIBCXX_ENABLE_SHARED=OFF \
-          -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
+        config_options=()
+        config_options+=("-G" "Ninja")
+
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release")
+        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+
+        config_options+=("-DCMAKE_C_COMPILER=${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+        config_options+=("-DCMAKE_CXX_COMPILER=${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+
+        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+
+        config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+        config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
+        config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
+        config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${TARGET}")
+        config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+        config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
+        config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=")
+        config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+
+        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+
+        config_options+=("-DLLVM_PATH=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
+        
+        run_verbose cmake \
+          "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/cmake-output.txt"
@@ -2045,12 +2100,13 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+      # Most probably not used
 
       env | sort
 
       (
         run_verbose cmake --build . --verbose 
-        run_verbose cmake --build . --verbose --target install
+        run_verbose cmake --build . --verbose --target install/strip
 
         # Append libunwind
         run_verbose llvm-ar qcsL \
