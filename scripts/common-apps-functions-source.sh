@@ -633,7 +633,7 @@ function _build_native_llvm()
         echo "Running native-llvm cmake..."
 
         config_options=()
-        config_options+=("-GNinja")
+        config_options+=("-G" "Ninja")
 
         config_options+=("-DCMAKE_C_COMPILER=${CC}")
         config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
@@ -652,7 +652,7 @@ function _build_native_llvm()
         config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
         config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
 
-        run_verbose cmake -G Ninja \
+        run_verbose cmake \
           "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
 
@@ -809,7 +809,7 @@ function build_llvm()
 
           config_options=()
 
-          config_options+=("-GNinja")
+          config_options+=("-G" "Ninja")
 
           # https://llvm.org/docs/GettingStarted.html
           # https://llvm.org/docs/CMake.html
