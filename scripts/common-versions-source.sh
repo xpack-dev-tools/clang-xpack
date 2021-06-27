@@ -58,15 +58,17 @@ function build_versions()
       (
         # Build a native toolchain, mainly for the *-tblgen tools, but
         # since it's already in, also use it to build the final llvm & mingw.
-        build_native_llvm_mingw "12.0.0"
+          # Prefer the llvm-mingw binaries.
+          export PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:${PATH}"
+
+          # Redefine to get rid of the `gcc-` prefix.
+          export NM="${CROSS_COMPILE_PREFIX}-nm"
+          export RANLIB="${CROSS_COMPILE_PREFIX}-ranlib"
 
         build_llvm "12.0.0" # "${LLVM_VERSION}"
 
-        # Prefer the native-llvm-mingw binaries.
-        export PATH="${INSTALL_FOLDER_PATH}/native-llvm-mingw/bin:${PATH}"
-
-        # headers & crt
-        build_mingw_core "8.0.2"
+          # headers & crt
+          build_mingw_core "8.0.2"
 
         build_llvm_compiler_rt
 

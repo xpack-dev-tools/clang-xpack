@@ -509,7 +509,7 @@ __EOF__
           for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
                 run_app $arch/$test || exit 1
               )
           done
@@ -526,7 +526,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
                 run_app $arch/$test || exit 1
               )
           done
@@ -534,7 +534,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${TOOLCHAIN_PREFIX}/$arch-w64-mingw32/bin 
+                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
                 run_app $arch/$test || exit 1
               )
           done
@@ -786,9 +786,7 @@ function build_llvm()
         export CXX=clang++
       elif [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        # Prefer the llvm-mingw binaries.
-        export PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:${PATH}"
-        # CC=${INSTALL_FOLDER_PATH}/native-${APP_LC_NAME}/bin/
+        :
       fi
 
       if [ "${IS_DEVELOP}" == "y" ]
