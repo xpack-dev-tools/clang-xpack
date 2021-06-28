@@ -55,39 +55,55 @@ function build_versions()
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      (
-        # Build a native toolchain, mainly for the *-tblgen tools, but
-        # since it's already in, also use it to build the final llvm & mingw.
-        build_native_llvm_mingw "12.0.0" # "${LLVM_VERSION}"
+      # Build a native toolchain, mainly for the *-tblgen tools, but
+      # since it's already in, also use it to build the final llvm & mingw.
+      build_native_llvm_mingw "12.0.0" # "${LLVM_VERSION}"
 
-        (
-          # Prefer the llvm-mingw binaries.
-          export PATH="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:${PATH}"
+      # Use the native llvm-mingw binaries.
+      unset_gcc_env
 
-          # Redefine to get rid of the `gcc-` prefix.
-          export NM="${CROSS_COMPILE_PREFIX}-nm"
-          export RANLIB="${CROSS_COMPILE_PREFIX}-ranlib"
+      export CC="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-gcc"
+      export CXX="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-g++"
 
-          build_llvm "12.0.0" # "${LLVM_VERSION}"
+      export AR="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-ar"
+      export AS="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-as"
+      export DLLTOOL="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
+      export LD="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-ld"
+      export NM="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-nm"
+      export OBJCOPY="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-objcopy"
+      export OBJDUMP="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-objdump"
+      export RANLIB="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
+      # export READELF="${prefix}readelf"
+      # export SIZE="${prefix}size"
+      export STRIP="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-strip"
+      export WINDRES="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-windres"
+      # export WINDMC="${prefix}windmc"
+      # export RC="${prefix}windres"
 
-          # headers & crt
-          build_mingw_core "8.0.2"
-          # run_verbose ls -l "${APP_PREFIX}/include"
+      # To access libncurses.so.6 by the native llvm binaries.
+      # TODO: build native static.
+      xbb_activate_libs
 
-          build_llvm_compiler_rt
+      # Due to llvm-gentab specifics, it must be the same version as the
+      # native llvm.
+      build_llvm "12.0.0" # "${LLVM_VERSION}"
 
-          build_mingw_winpthreads
-          build_mingw_winstorecompat
-          build_mingw_libmangle
-          # run_verbose ls -l "${APP_PREFIX}/lib"
+      # headers & crt
+      build_mingw_core "8.0.2"
+      # run_verbose ls -l "${APP_PREFIX}/include"
 
-          build_mingw_gendef
-          build_mingw_widl
+      build_llvm_compiler_rt "12.0.0"
 
-          # libunwind, libcxx, libcxxabi
-          build_llvm_libcxx
-        )
-      )
+      build_mingw_winpthreads
+      # build_mingw_winstorecompat
+      build_mingw_libmangle
+      # run_verbose ls -l "${APP_PREFIX}/lib"
+
+      build_mingw_gendef
+      build_mingw_widl
+
+      # libunwind, libcxx, libcxxabi
+      build_llvm_libcxx
     else
       build_llvm "${LLVM_VERSION}"
     fi
