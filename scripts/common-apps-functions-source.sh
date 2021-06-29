@@ -833,78 +833,14 @@ function build_llvm()
           config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
           config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
 
-          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
-
-if false
-then
           config_options+=("-DCMAKE_C_COMPILER=${CC}")
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
 
-          # In case it does not pick the XBB ones on Linux
-          # config_options+=("-DCMAKE_LIBTOOL=$(which libtool)")
-          # config_options+=("-DCMAKE_NM=$(which nm)")
-          # config_options+=("-DCMAKE_AR=$(which ar)")
-          # config_options+=("-DCMAKE_OBJCOPY=$(which objcopy)")
-          # config_options+=("-DCMAKE_OBJDUMP=$(which objdump)")
-          # config_options+=("-DCMAKE_RANLIB=$(which ranlib)")
-          # config_options+=("-DCMAKE_STRIP=$(which strip)")
-          # config_options+=("-DGIT_EXECUTABLE=$(which git)")
+          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
 
-
-          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
-          config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
-
-          config_options+=("-DLLDB_ENABLE_LUA=OFF")
-          config_options+=("-DLLDB_ENABLE_LZMA=OFF")
-          config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
-          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
-
-          config_options+=("-DLLVM_BUILD_DOCS=OFF")
-          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
-
-          config_options+=("-DLLVM_BUILD_TESTS=OFF")
-
-          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
-          config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
-          config_options+=("-DLLVM_ENABLE_EH=ON")
-
-          # FFI disabled on Windows.
-          # https://cmake.org/cmake/help/v3.4/command/find_path.html
-          config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
-
-          # https://cmake.org/cmake/help/v3.4/command/find_library.html
-          config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}/include" "${LIBS_INSTALL_FOLDER_PATH}/"lib*
-            config_options+=("-DLLVM_ENABLE_LTO=OFF")
-          else
-            # Build LLVM with -flto.
-            config_options+=("-DLLVM_ENABLE_LTO=ON")
-          fi
-
-          config_options+=("-DLLVM_ENABLE_RTTI=ON")
-
-          config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
-          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
-          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
-
-          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
-          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
-          config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
-
-          config_options+=("-DLLVM_INSTALL_UTILS=ON")
-          # Cannot be used since some llvm tools are still useful.
-          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=OFF")
-          config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
-          config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
-          config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
-
-          # config_options+=("-DPYTHON_EXECUTABLE=${INSTALL_FOLDER_PATH}/bin/python3")
-          # config_options+=("-DPython3_EXECUTABLE=python3")
+          config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
@@ -916,6 +852,10 @@ then
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
+          # Mind the links in llvm to clang, lld, lldb.
+          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+          config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+
           # Prefer the locally compiled libraries.
           config_options+=("-DCMAKE_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include")
           if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
@@ -924,68 +864,157 @@ then
           else
             config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
           fi
-          
-          # Remove many of the LLVM development and testing tools as
-          # well as component libraries from the default install target
-          # Unfortunately the LTO test fails with missing LLVMgold.so.
-          # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
 
-          config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
-          config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+          config_options+=("-DCURSES_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include/ncurses")
+
+          config_options+=("-DLLDB_ENABLE_LUA=OFF")
+          config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
+
+          config_options+=("-DLLVM_BUILD_DOCS=OFF")
+          config_options+=("-DLLVM_BUILD_TESTS=OFF")
+          config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
+
+          config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
+          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
+          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
+
+          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
+          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
+          config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
+
+if false
+then
+  # In case it does not pick the XBB ones on Linux
+  # config_options+=("-DCMAKE_LIBTOOL=$(which libtool)")
+  # config_options+=("-DCMAKE_NM=$(which nm)")
+  # config_options+=("-DCMAKE_AR=$(which ar)")
+  # config_options+=("-DCMAKE_OBJCOPY=$(which objcopy)")
+  # config_options+=("-DCMAKE_OBJDUMP=$(which objdump)")
+  # config_options+=("-DCMAKE_RANLIB=$(which ranlib)")
+  # config_options+=("-DCMAKE_STRIP=$(which strip)")
+  # config_options+=("-DGIT_EXECUTABLE=$(which git)")
+
+  config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+  config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
+
+  config_options+=("-DLLDB_ENABLE_LZMA=OFF")
+  config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
+
+  config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
+
+  config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+  config_options+=("-DLLVM_ENABLE_EH=ON")
+
+  # FFI disabled on Windows.
+  # https://cmake.org/cmake/help/v3.4/command/find_path.html
+  config_options+=("-DFFI_INCLUDE_DIR=${LIBS_INSTALL_FOLDER_PATH}/include")
+
+  # https://cmake.org/cmake/help/v3.4/command/find_library.html
+  config_options+=("-DFFI_LIBRARY_DIR=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
+
+  if [ "${IS_DEVELOP}" == "y" ]
+  then
+    run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}/include" "${LIBS_INSTALL_FOLDER_PATH}/"lib*
+    config_options+=("-DLLVM_ENABLE_LTO=OFF")
+  else
+    # Build LLVM with -flto.
+    config_options+=("-DLLVM_ENABLE_LTO=ON")
+  fi
+
+  config_options+=("-DLLVM_ENABLE_RTTI=ON")
+
+  config_options+=("-DLLVM_INSTALL_UTILS=ON")
+  # Cannot be used since some llvm tools are still useful.
+  config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=OFF")
+  config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+  config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
+  config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
+
+  # config_options+=("-DPYTHON_EXECUTABLE=${INSTALL_FOLDER_PATH}/bin/python3")
+  # config_options+=("-DPython3_EXECUTABLE=python3")
+
+  # Prefer the locally compiled libraries.
+  config_options+=("-DCMAKE_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include")
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+  then
+    config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
+  else
+    config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
+  fi
+  
+  # Remove many of the LLVM development and testing tools as
+  # well as component libraries from the default install target
+  # Unfortunately the LTO test fails with missing LLVMgold.so.
+  # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+
+  config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
+  config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+
+  # The macOS 10.10 xpc/xpc.h is very old and the build fails with
+  # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
+  # On macOS 10.13 it also fails.
+  config_options+=("-DCLANGD_BUILD_XPC=OFF")
+
 fi
+
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+if false
+then
+  config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
 
-            # This distribution expects the SDK to be in this location.
-            config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+  # This distribution expects the SDK to be in this location.
+  config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
 
-            config_options+=("-DLLVM_ENABLE_FFI=ON")
+  config_options+=("-DLLVM_ENABLE_FFI=ON")
+
+
+  # Fails on macOS; better use the system linker.
+  # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+
+  config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
+  config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+
+  config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+  # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
+  
+  # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
+  # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+  # Fails with: Please use architecture with 4 or 8 byte pointers.
+  # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
+
+  config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+
+  config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+  config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+
+  config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+  config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+  config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+  config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
+
+  config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+  config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+
+  # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
+  # This option is not available on Windows
+  # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+  # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+else
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
-            # Fails on macOS; better use the system linker.
-            # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
-
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
-            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-
-            # The macOS 10.10 xpc/xpc.h is very old and the build fails with
-            # clang-tools-extra/clangd/xpc/XPCTransport.cpp:97:5: error: ‘xpc_connection_send_message’ was not declared in this scope; did you mean ‘xpc_connection_handler_t’?
-            # On macOS 10.13 it also fails.
-            config_options+=("-DCLANGD_BUILD_XPC=OFF")
-
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
-            # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
-            
-            # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
-            # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
-            # Fails with: Please use architecture with 4 or 8 byte pointers.
-            # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
-            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
-
-            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-
+fi
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
-
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
 
             if [ "${TARGET_ARCH}" == "x64" ]
             then
@@ -1004,89 +1033,71 @@ fi
               exit 1
             fi
 
-            config_options+=("-DLLVM_ENABLE_FFI=ON")
+if false
+then
+  config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
 
+  config_options+=("-DLLVM_ENABLE_FFI=ON")
+
+  # The point below is to simplify the use of the clang libraries,
+  # and to prevent having references to shared libraries located
+  # in non-system folders.
+  # This is achieved by disabling shared libraries and
+  # grouping everything under a single libc++.a library.
+  # Thee is also a small patch adding references to -lpthread -ldl.
+  config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+  config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+  # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_SHARED_LIBRARY=ON")
+  # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_STATIC_LIBRARY=ON")
+
+  config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+  config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+  config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+  config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
+
+  # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_SHARED_LIBRARY=ON")
+  # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_STATIC_LIBRARY=ON")
+
+  config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+  config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+  config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+
+  config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
+  config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+
+  config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
+
+  config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+  config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
+
+  config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+
+  # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+else
+
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
-
-            # The point below is to simplify the use of the clang libraries,
-            # and to prevent having references to shared libraries located
-            # in non-system folders.
-            # This is achieved by disabling shared libraries and
-            # grouping everything under a single libc++.a library.
-            # Thee is also a small patch adding references to -lpthread -ldl.
-            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-            # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_SHARED_LIBRARY=ON")
-            # config_options+=("-DLIBCXX_STATICALLY_LINK_ABI_IN_STATIC_LIBRARY=ON")
-
-            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
-
-            # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_SHARED_LIBRARY=ON")
-            # config_options+=("-DLIBCXXABI_STATICALLY_LINK_UNWINDER_IN_STATIC_LIBRARY=ON")
-
-            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
-            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-
+            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
 
+            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
+            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+
+fi
 
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
-if false
-then
-            config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-            config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-
-            config_options+=("-DCMAKE_FIND_ROOT_PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
-
-            config_options+=("-DCMAKE_RC_COMPILER=${RC}")
-
-            # Refer to the newly built native tools.
-            config_options+=("-DCLANG_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen")
-            config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
-            config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
-            config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
-
-            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-            config_options+=("-DCLANG_DEFAULT_LINKER=lld")
-
-            config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
-
-if false
-then
-            # Remove polly and all libraries.
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb")
-else
-            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
-fi
-            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-
-            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
-
-            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
-
-else
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
             config_options+=("-DCLANG_DEFAULT_LINKER=lld")
             config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
@@ -1111,9 +1122,11 @@ else
             config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
 
-            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
-fi
+            # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
+            # This option is not available on Windows
+            # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+            # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
             exit 1
@@ -1213,37 +1226,44 @@ fi
           run_verbose cmake --build . --target install/strip
         fi
 
-if false
+if true
 then
         (
           echo
-          echo "Removing useless files..."
+          echo "Removing less used files..."
 
-          # Remove useless LLVM libraries and leave only the toolchain.
+          # Remove less used LLVM libraries and leave only the toolchain.
           cd "${APP_PREFIX}/bin"
-          rm -rf bugpoint c-index-test count dsymutil FileCheck \
+          for f in bugpoint c-index-test \
+            clang-apply-replacements clang-change-namespace \
+            clang-extdef-mapping clang-include-fixer clang-move clang-query \
+            clang-reorder-fields find-all-symbols \
+            count dsymutil FileCheck \
             llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
             llvm-cat llvm-cfi-verify llvm-cvtres \
             llvm-dwarfdump llvm-dwp \
-            llvm-elfabi llvm-exegesis llvm-extract llvm-gsymutil \
+            llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
             llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
             llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
             llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
-            llvm-profdata \
+            llvm-profgen \
             llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
             llvm-stress llvm-undname llvm-xray \
-            not obj2yaml opt sancov sanstats \
+            modularize not obj2yaml opt pp-trace sancov sanstats \
             verify-uselistorder yaml-bench yaml2obj
+          do
+            rm -rfv $f $f${DOTEXE}
+          done
 
           cd "${APP_PREFIX}/include"
-          rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
+          run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
           cd "${APP_PREFIX}/lib"
-          rm -rf libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
-          rm -rf cmake/lld cmake/llvm cmake/polly
+          run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
+          # rm -rf cmake/lld cmake/llvm cmake/polly
 
           cd "${APP_PREFIX}/share"
-          rm -rf man
+          run_verbose rm -rf man
         )
 fi
 
