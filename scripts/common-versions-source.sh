@@ -37,6 +37,8 @@ function build_versions()
     build_ncurses "6.2"
     build_libiconv "1.16"
 
+    build_xz "5.2.5"
+
     if [ "${TARGET_PLATFORM}" != "win32" ]
     then
       # On macOS it refers to libiconv
