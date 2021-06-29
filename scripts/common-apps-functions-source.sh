@@ -702,18 +702,18 @@ function build_llvm()
   # For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
   # Fixed in 12.x.
 
-  export llvm_version="$1"
+  export ACTUAL_LLVM_VERSION="$1"
 
-  local llvm_version_major=$(echo ${llvm_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
-  local llvm_version_minor=$(echo ${llvm_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
+  local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
+  local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
 
-  export llvm_src_folder_name="llvm-project-${llvm_version}.src"
-  local llvm_folder_name="llvm-${llvm_version}"
+  export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
+  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
-  local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_version}/${llvm_archive}"
+  local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
 
-  local llvm_patch_file_name="llvm-${llvm_version}.patch"
+  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch"
 
   local llvm_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
@@ -1712,7 +1712,7 @@ fi
 
 function build_llvm_compiler_rt()
 {
-  local llvm_compiler_rt_folder_name="llvm-${llvm_version}-compiler-rt"
+  local llvm_compiler_rt_folder_name="llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
 
   local llvm_compiler_rt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
   if [ ! -f "${llvm_compiler_rt_stamp_file_path}" ]
@@ -1758,7 +1758,7 @@ function build_llvm_compiler_rt()
         config_options+=("-G" "Ninja")
 
         # Traditionally the runtime is in a versioned folder.
-        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}/lib/clang/${llvm_version}")
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}/lib/clang/${ACTUAL_LLVM_VERSION}")
 
         config_options+=("-DCMAKE_BUILD_TYPE=Release")
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
@@ -1811,7 +1811,7 @@ function build_llvm_compiler_rt()
 
 function build_llvm_libcxx()
 {
-  local llvm_libunwind_folder_name="llvm-${llvm_version}-libunwind"
+  local llvm_libunwind_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libunwind"
 
   local llvm_libunwind_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
   if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
@@ -1901,10 +1901,10 @@ function build_llvm_libcxx()
   # ---------------------------------------------------------------------------
 
   # Define & prepare the folder, will be used later.
-  local llvm_libcxxabi_folder_name="llvm-${llvm_version}-libcxxabi"
+  local llvm_libcxxabi_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxxabi"
   mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
 
-  local llvm_libcxx_folder_name="llvm-${llvm_version}-libcxx"
+  local llvm_libcxx_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxx"
 
   local llvm_libcxx_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
   if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
