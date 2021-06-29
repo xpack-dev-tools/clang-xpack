@@ -735,20 +735,19 @@ function build_llvm()
       run_verbose sed -i.bak \
         -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
         "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
-    elif [ "${TARGET_PLATFORM}" == "win32" ]
-    then
-      (
-        cd "${llvm_src_folder_name}/llvm/tools"
-
-        # This trick will allow to build the toolchain only and still get clang
-        for p in clang lld lldb; do
-            if [ ! -e $p ]
-            then
-                ln -s ../../$p .
-            fi
-        done
-      )
     fi
+
+    (
+      cd "${llvm_src_folder_name}/llvm/tools"
+
+      # This trick will allow to build the toolchain only and still get clang
+      for p in clang lld lldb; do
+          if [ ! -e $p ]
+          then
+              ln -s ../../$p .
+          fi
+      done
+    )
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
