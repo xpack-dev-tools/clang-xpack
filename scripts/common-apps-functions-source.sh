@@ -956,24 +956,22 @@ fi
             fi
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
-            # Fails!
+
+            # Fails late in the build!
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-            
+
+            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
+          
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
-
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
-
-            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
-
-            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
-
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
-
+            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
