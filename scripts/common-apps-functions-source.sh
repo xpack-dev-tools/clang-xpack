@@ -968,7 +968,7 @@ fi
 
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
 
-#            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
 
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
