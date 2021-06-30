@@ -938,6 +938,12 @@ fi
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
+            # LLVMgold.so
+            # https://llvm.org/docs/GoldPlugin.html#how-to-build-it
+            # /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/ld.gold: error: /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/../lib/LLVMgold.so: could not load plugin library: /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
+            # Then either gold was not configured with plugins enabled, or clang
+            # was not built with `-DLLVM_BINUTILS_INCDIR` set properly.
+
             if [ "${TARGET_ARCH}" == "x64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
