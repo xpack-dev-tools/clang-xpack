@@ -1091,6 +1091,9 @@ then
             rm -rfv $f $f${DOTEXE}
           done
 
+          # So far not used.
+          rm -rfv libclang.dll
+
           cd "${APP_PREFIX}/include"
           run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
