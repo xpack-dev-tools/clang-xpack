@@ -955,11 +955,12 @@ fi
               exit 1
             fi
 
-#            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
             config_options+=("-DCLANG_DEFAULT_LINKER=gold")
-#            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            # Fails!
+            # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
             
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
