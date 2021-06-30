@@ -69,7 +69,7 @@ function build_binutils_ld_gold()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP}" 
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}" 
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
