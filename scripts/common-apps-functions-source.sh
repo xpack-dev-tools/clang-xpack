@@ -964,6 +964,11 @@ fi
             # Fails late in the build!
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
 
+            # To help find the just locally compiled `ld.gold`.
+            # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
+            # https://cmake.org/cmake/help/v3.4/command/find_program.html
+            config_options+=("-DCMAKE_PROGRAM_PATH=${APP_PREFIX}/bin")
+
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
           
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
