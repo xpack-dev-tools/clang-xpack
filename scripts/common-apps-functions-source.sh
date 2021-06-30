@@ -978,11 +978,14 @@ fi
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
             config_options+=("-DLLVM_ENABLE_FFI=ON")
             config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+            # Unfortunately the LTO test fails with missing LLVMgold.so.
+            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
+            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
             config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
