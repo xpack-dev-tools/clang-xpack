@@ -688,6 +688,7 @@ function build_llvm()
 {
   # https://llvm.org
   # https://llvm.org/docs/GettingStarted.html
+  # https://llvm.org/docs/CommandGuide/
   # https://github.com/llvm/llvm-project/
   # https://github.com/llvm/llvm-project/releases/
   # https://github.com/llvm/llvm-project/releases/tag/llvmorg-11.1.0/
