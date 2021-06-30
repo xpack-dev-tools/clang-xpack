@@ -934,7 +934,9 @@ else
 
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
 
+            # TODO: add the rest.
 fi
+
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
 
