@@ -434,3 +434,12 @@ Both scripts include several other helper scripts. The entire process
 is quite complex, and an attempt to explain its functionality in a few
 words would not be realistic. Thus, the authoritative source of details
 remains the source code.
+
+## Notes
+
+- no Lua support in lldb
+- no python support in lldb
+- no sanitizers in compiler_rt
+- Linux default linker is GNU ld.gold, to allow LTO
+- Windows default linker is lld
+- macOS default linker is the system ld
