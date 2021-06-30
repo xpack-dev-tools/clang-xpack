@@ -1017,19 +1017,21 @@ fi
 
             config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
             
-            # Mind the links in llvm to clang, lld, lldb.
-            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
-
             config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
             config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+            # Mind the links in llvm to clang, lld, lldb.
+            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
             config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
             # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+
+            # compiler-rt, libunwind, libc++ and libc++-abi are built
+            # in separate steps.
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
