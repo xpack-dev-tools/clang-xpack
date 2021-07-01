@@ -883,60 +883,52 @@ function build_llvm()
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
 
-if false
-then
-  config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
 
-  # This distribution expects the SDK to be in this location.
-  config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+            # To help find the just locally compiled `ld.gold`.
+            # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
+            # https://cmake.org/cmake/help/v3.4/command/find_program.html
+            config_options+=("-DCMAKE_PROGRAM_PATH=${APP_PREFIX}/bin")
 
-  config_options+=("-DLLVM_ENABLE_FFI=ON")
+            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
+            # This distribution expects the SDK to be in this location.
+            config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
 
-  # Fails on macOS; better use the system linker.
-  # config_options+=("-DCLANG_DEFAULT_LINKER=lld")
-
-  config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON")
-  config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-
-  config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
-  # ? config_options+=("-DCMAKE_MACOSX_RPATH=ON")
-  
-  # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
-  # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
-  # Fails with: Please use architecture with 4 or 8 byte pointers.
-  # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
-
-  config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-  config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-  config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-  config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-  config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-  config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-  config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-  config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-  config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
-
-  config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-  config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-  config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-
-  # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
-  # This option is not available on Windows
-  # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-  # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
-else
+            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
+            # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DLLVM_ENABLE_FFI=ON")
+            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+            config_options+=("-DLLVM_INSTALL_UTILS=ON")
+            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
+            config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
+            # Fails with: Please use architecture with 4 or 8 byte pointers.
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
             # TODO
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
-            config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
-            # TODO: add the rest.
-fi
+            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
+
+            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+
+            config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
 
           elif [ "${TARGET_PLATFORM}" == "linux" ]
           then
