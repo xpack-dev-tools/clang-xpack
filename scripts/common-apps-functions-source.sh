@@ -1264,7 +1264,7 @@ function test_llvm()
       GC_SECTION=""
     fi
 
-    # -----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     cp -v "${BUILD_GIT_PATH}/scripts/helper/tests/c-cpp"/* .
 
@@ -1318,7 +1318,7 @@ function test_llvm()
 
     test_expect "rt-lto-hello-simple-c2" "Hello"
 
-    # -----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     # Test C++ compile and link in a single step.
     run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp1${DOTEXE} hello-simple.cpp ${GC_SECTION}
@@ -1364,13 +1364,14 @@ function test_llvm()
 
     test_expect "rt-lto-hello-simple-cpp2" "Hello"
 
-    # -----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
     run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOTEXE} -O0 except.cpp ${GC_SECTION}
 
     if [ "${TARGET_PLATFORM}" != "darwin" ]
     then
+      # TODO: investigate!
       # on Darwin: 'Symbol not found: __ZdlPvm'
       test_expect "except" "MyException"
     fi
@@ -1379,6 +1380,7 @@ function test_llvm()
 
     if [ "${TARGET_PLATFORM}" != "darwin" ]
     then
+      # TODO: investigate!
       # on Darwin: 'Symbol not found: __ZdlPvm'
       test_expect "rt-except" "MyException"
     fi
@@ -1393,7 +1395,7 @@ function test_llvm()
     
     test_expect "rt-str-except" "MyStringException"
 
-    # -----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1416,7 +1418,7 @@ function test_llvm()
       run_app "${GENDEF}" libadd-shared.dll
       run_app "${DLLTOOL}" -m i386:x86-64 -d libadd-shared.def -l libadd-shared.lib
     else
-      run_app "${CC}" -o libadd-shared.so -shared add.o
+      run_app "${CC}" -o libadd-shared.${SHLIB_EXT} -shared add.o
     fi
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1434,7 +1436,7 @@ function test_llvm()
     then
       run_app "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
     else
-      run_app "${CC}" -o librt-add-shared.so -shared rt-add.o -rtlib=compiler-rt
+      run_app "${CC}" -o librt-add-shared.${SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
     fi
 
     run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOTEXE} adder.c -ladd-static -L . ${GC_SECTION}
@@ -1478,56 +1480,92 @@ function test_llvm()
       test_expect "rt-shared-adder" "42" 40 2
     )
 
-    # -----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Tests from the llvm-mingw project.
 
-    for test in hello hello-tls crt-test setjmp
+    for test in hello setjmp
     do 
+      run_verbose "${CC}" $test.c -o $test${DOTEXE} ${VERBOSE_FLAG} -lm
+      run_app ./$test
+    done
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      for test in hello-tls crt-test 
+      do 
         run_verbose "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
-        run_app $test
-    done
-    for test in autoimport-lib
-    do 
+        run_app ./$test
+      done
+
+      for test in autoimport-lib
+      do 
         run_verbose "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
-    done
-    for test in autoimport-main
-    do 
+      done
+
+      for test in autoimport-main
+      do 
         run_verbose "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
         run_app $test
-    done
-    for test in idltest
-    do
+      done
+
+      for test in idltest
+      do
         # The IDL output isn't arch specific, but test each arch frontend 
         run_verbose "${WIDL}" $test.idl -h -o $test.h 
         run_verbose "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
         run_app $test 
-    done
+      done
+    fi
 
     for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     do
-        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
-        run_app $test
-    done
-    for test in hello-exception
-    do
-        run_verbose ${CXX} $test.cpp -static -o $test-static.exe ${VERBOSE_FLAG}
-        run_app $test-static
-    done
-    for test in tlstest-lib throwcatch-lib
-    do
-        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
-    done
-    for test in tlstest-main
-    do
-        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
-        run_app $test 
-    done
-    for test in throwcatch-main
-    do
-        run_verbose ${CXX} $test.cpp -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
-        run_app $test
+      run_verbose ${CXX} $test.cpp -o $test${DOTEXE} ${VERBOSE_FLAG}
+      run_app ./$test
     done
 
+    # TODO: investigate!
+    if [ "${TARGET_PLATFORM}" != "linux" ]
+    then
+      for test in hello-exception
+      do
+        run_verbose ${CXX} $test.cpp -static -o $test-static${DOTEXE} ${VERBOSE_FLAG}
+        run_app ./$test-static
+      done
+    fi
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      for test in tlstest-lib
+      do
+        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+      done
+
+      for test in tlstest-main
+      do
+        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
+        run_app ./$test 
+      done
+    fi
+
+    for test in throwcatch-lib
+    do
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+      else
+        run_verbose ${CXX} $test.cpp -shared -fpic -o lib$test.${SHLIB_EXT} ${VERBOSE_FLAG}
+      fi
+    done
+
+    for test in throwcatch-main
+    do
+      run_verbose ${CXX} $test.cpp -o $test${DOTEXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+      (
+        LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+        export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+        run_app ./$test
+      )
+    done
   )
 
   echo
