@@ -1158,7 +1158,7 @@ function test_llvm()
     if [ -n "${native_suffix}" ]
     then
       TEST_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
-      # Help the loader find the .dll files.
+      # Help the loader find the .dll files if the native is not static.
       export WINEPATH=${TEST_PREFIX}/${CROSS_COMPILE_PREFIX}/bin 
 
       CC="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
