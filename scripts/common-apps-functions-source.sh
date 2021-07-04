@@ -1100,7 +1100,7 @@ then
             modularize not obj2yaml opt pp-trace sancov sanstats \
             verify-uselistorder yaml-bench yaml2obj
           do
-            rm -rfv $f $f${DOTEXE}
+            rm -rfv $f $f${DOT_EXE}
           done
 
           # So far not used.
@@ -1187,7 +1187,7 @@ function test_llvm()
     run_app "${TEST_PREFIX}/bin/clang" --version
     run_app "${TEST_PREFIX}/bin/clang++" --version
 
-    if [ -f "${TEST_PREFIX}/bin/clang-format${DOTEXE}" ]
+    if [ -f "${TEST_PREFIX}/bin/clang-format${DOT_EXE}" ]
     then
       run_app "${TEST_PREFIX}/bin/clang-format" --version
     fi
@@ -1269,7 +1269,7 @@ function test_llvm()
     cp -v "${BUILD_GIT_PATH}/scripts/helper/tests/c-cpp"/* .
 
     # Test C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c1${DOTEXE} hello-simple.c ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c1${DOT_EXE} hello-simple.c ${GC_SECTION}
 
     test_expect "hello-simple-c1" "Hello"
 
@@ -1281,93 +1281,93 @@ function test_llvm()
 
     # Test C compile and link in separate steps.
     run_app "${CC}" -o hello-simple-c.o -c hello-simple.c
-    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c2${DOTEXE} hello-simple-c.o ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c2${DOT_EXE} hello-simple-c.o ${GC_SECTION}
 
     test_expect "hello-simple-c2" "Hello"
 
     # Test LTO C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c1${DOTEXE} hello-simple.c ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c1${DOT_EXE} hello-simple.c ${GC_SECTION}
 
     test_expect "lto-hello-simple-c1" "Hello"
 
     # Test LTO C compile and link in separate steps.
     run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c
-    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c2${DOTEXE} lto-hello-simple-c.o ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c2${DOT_EXE} lto-hello-simple-c.o ${GC_SECTION}
 
     test_expect "lto-hello-simple-c2" "Hello"
 
     # Test C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c1${DOTEXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c1${DOT_EXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
 
     test_expect "rt-hello-simple-c1" "Hello"
 
     # Test C compile and link in separate steps.
     run_app "${CC}" -o hello-simple-c.o -c hello-simple.c
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c2${DOTEXE} hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c2${DOT_EXE} hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
 
     test_expect "rt-hello-simple-c2" "Hello"
 
     # Test LTO C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c1${DOTEXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c1${DOT_EXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
 
     test_expect "rt-lto-hello-simple-c1" "Hello"
 
     # Test LTO C compile and link in separate steps.
     run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c
-    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c2${DOTEXE} lto-hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c2${DOT_EXE} lto-hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
 
     test_expect "rt-lto-hello-simple-c2" "Hello"
 
     # -------------------------------------------------------------------------
 
     # Test C++ compile and link in a single step.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp1${DOTEXE} hello-simple.cpp ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp1${DOT_EXE} hello-simple.cpp ${GC_SECTION}
 
     test_expect "hello-simple-cpp1" "Hello"
 
     # Test C++ compile and link in separate steps.
     run_app "${CXX}" -o hello-simple-cpp.o -c hello-simple.cpp
-    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp2${DOTEXE} hello-simple-cpp.o ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp2${DOT_EXE} hello-simple-cpp.o ${GC_SECTION}
 
     test_expect "hello-simple-cpp2" "Hello"
 
     # Test LTO C++ compile and link in a single step.
-    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp1${DOTEXE} hello-simple.cpp ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp1${DOT_EXE} hello-simple.cpp ${GC_SECTION}
 
     test_expect "lto-hello-simple-cpp1" "Hello"
 
     # Test LTO C++ compile and link in separate steps.
     run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp
-    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp2${DOTEXE} lto-hello-simple-cpp.o ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp2${DOT_EXE} lto-hello-simple-cpp.o ${GC_SECTION}
 
     test_expect "lto-hello-simple-cpp2" "Hello"
 
     # Test C++ compile and link in a single step.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp1${DOTEXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp1${DOT_EXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
     test_expect "rt-hello-simple-cpp1" "Hello"
 
     # Test C++ compile and link in separate steps.
     run_app "${CXX}" -o hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp2${DOTEXE} hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp2${DOT_EXE} hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
     test_expect "rt-hello-simple-cpp2" "Hello"
 
     # Test LTO C++ compile and link in a single step.
-    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp1${DOTEXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp1${DOT_EXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
     test_expect "rt-lto-hello-simple-cpp1" "Hello"
 
     # Test LTO C++ compile and link in separate steps.
     run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++
-    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp2${DOTEXE} lto-hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp2${DOT_EXE} lto-hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
     test_expect "rt-lto-hello-simple-cpp2" "Hello"
 
     # -------------------------------------------------------------------------
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOTEXE} -O0 except.cpp ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOT_EXE} -O0 except.cpp ${GC_SECTION}
 
     if [ "${TARGET_PLATFORM}" != "darwin" ]
     then
@@ -1376,7 +1376,7 @@ function test_llvm()
       test_expect "except" "MyException"
     fi
 
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOTEXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOT_EXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
 
     if [ "${TARGET_PLATFORM}" != "darwin" ]
     then
@@ -1386,12 +1386,12 @@ function test_llvm()
     fi
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOTEXE} -O0 str-except.cpp ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOT_EXE} -O0 str-except.cpp ${GC_SECTION}
     
     test_expect "str-except" "MyStringException"
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except${DOTEXE} -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except${DOT_EXE} -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
     
     test_expect "rt-str-except" "MyStringException"
 
@@ -1439,7 +1439,7 @@ function test_llvm()
       run_app "${CC}" -o librt-add-shared.${SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
     fi
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOTEXE} adder.c -ladd-static -L . ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOT_EXE} adder.c -ladd-static -L . ${GC_SECTION}
 
     test_expect "static-adder" "42" 40 2
 
@@ -1447,10 +1447,10 @@ function test_llvm()
     then
       # -ladd-shared is in fact libadd-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOTEXE} adder.c -ladd-shared -L . ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOT_EXE} adder.c -ladd-shared -L . ${GC_SECTION}
 
       # Example with .lib, which must be passed with full name.
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder-lib${DOTEXE} adder.c libadd-shared.lib -L . ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder-lib${DOT_EXE} adder.c libadd-shared.lib -L . ${GC_SECTION}
     else
       run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
     fi
@@ -1461,7 +1461,7 @@ function test_llvm()
       test_expect "shared-adder" "42" 40 2
     )
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOTEXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt ${GC_SECTION}
 
     test_expect "rt-static-adder" "42" 40 2
 
@@ -1469,7 +1469,7 @@ function test_llvm()
     then
       # -lrt-add-shared is in fact librt-add-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${DOTEXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
     else
       run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
     fi
@@ -1485,7 +1485,7 @@ function test_llvm()
 
     for test in hello setjmp
     do 
-      run_verbose "${CC}" $test.c -o $test${DOTEXE} ${VERBOSE_FLAG} -lm
+      run_verbose "${CC}" $test.c -o $test${DOT_EXE} ${VERBOSE_FLAG} -lm
       run_app ./$test
     done
 
@@ -1519,7 +1519,7 @@ function test_llvm()
 
     for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     do
-      run_verbose ${CXX} $test.cpp -o $test${DOTEXE} ${VERBOSE_FLAG}
+      run_verbose ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
       run_app ./$test
     done
 
@@ -1528,7 +1528,7 @@ function test_llvm()
     then
       for test in hello-exception
       do
-        run_verbose ${CXX} $test.cpp -static -o $test-static${DOTEXE} ${VERBOSE_FLAG}
+        run_verbose ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
         run_app ./$test-static
       done
     fi
@@ -1559,7 +1559,7 @@ function test_llvm()
 
     for test in throwcatch-main
     do
-      run_verbose ${CXX} $test.cpp -o $test${DOTEXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+      run_verbose ${CXX} $test.cpp -o $test${DOT_EXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
         export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
