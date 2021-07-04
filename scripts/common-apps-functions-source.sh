@@ -550,6 +550,8 @@ __EOF__
   else
     echo "Component native-llvm-mingw already installed."
   fi
+
+  tests_add "test_llvm_bootstrap"
 }
 
 # Not functional.
@@ -1135,448 +1137,403 @@ fi
   tests_add "test_llvm"
 }
 
+function test_llvm_bootstrap()
+{
+  (
+    # Use XBB libs in native-llvm
+    xbb_activate_libs
+
+    test_llvm "-native"
+  )
+}
+
 function test_llvm()
 {
+  local native_suffix=${1-''}
+
   echo
-  echo "Testing the llvm binaries..."
+  echo "Testing the llvm${native_suffix} binaries..."
 
   (
-    show_libs "${APP_PREFIX}/bin/clang"
+    if [ -n "${native_suffix}" ]
+    then
+      TEST_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
+      # Help the loader find the .dll files.
+      export WINEPATH=${TEST_PREFIX}/${CROSS_COMPILE_PREFIX}/bin 
+
+      CC="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
+      CXX="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
+      DLLTOOL="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
+      WIDL="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-widl"
+      GENDEF="${TEST_PREFIX}/bin/gendef"
+      AR="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-ar"
+      RANLIB="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
+    else
+      TEST_PREFIX="${APP_PREFIX}"
+
+      CC="${TEST_PREFIX}/bin/clang"
+      CXX="${TEST_PREFIX}/bin/clang++"
+      AR="${TEST_PREFIX}/bin/llvm-ar"
+      RANLIB="${TEST_PREFIX}/bin/llvm-ranlib"
+    fi
+
+    show_libs "${TEST_PREFIX}/bin/clang"
+    show_libs "${TEST_PREFIX}/bin/lld"
+    show_libs "${TEST_PREFIX}/bin/lldb"
 
     echo
     echo "Testing if llvm binaries start properly..."
 
-    run_app "${APP_PREFIX}/bin/clang" --version
-    run_app "${APP_PREFIX}/bin/clang++" --version
+    run_app "${TEST_PREFIX}/bin/clang" --version
+    run_app "${TEST_PREFIX}/bin/clang++" --version
 
-#    run_app "${APP_PREFIX}/bin/clang-tidy" --version
-    run_app "${APP_PREFIX}/bin/clang-format" --version
+    if [ -f "${TEST_PREFIX}/bin/clang-format${DOTEXE}" ]
+    then
+      run_app "${TEST_PREFIX}/bin/clang-format" --version
+    fi
 
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    # run_app "${APP_PREFIX}/bin/lld" --version || true
-
-    run_app "${APP_PREFIX}/bin/llvm-ar" --version
-    run_app "${APP_PREFIX}/bin/llvm-nm" --version
-    run_app "${APP_PREFIX}/bin/llvm-objcopy" --version
-    run_app "${APP_PREFIX}/bin/llvm-objdump" --version
-    run_app "${APP_PREFIX}/bin/llvm-ranlib" --version
-    if [ -f "${APP_PREFIX}/bin/llvm-readelf" ]
+    run_app "${TEST_PREFIX}/bin/lld" --version || true
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      run_app "${APP_PREFIX}/bin/llvm-readelf" --version
+      run_app "${TEST_PREFIX}/bin/ld.lld" --version || true
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      run_app "${TEST_PREFIX}/bin/ld64.lld" --version || true
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      run_app "${TEST_PREFIX}/bin/ld-link" --version || true
     fi
-#    run_app "${APP_PREFIX}/bin/llvm-size" --version
-    run_app "${APP_PREFIX}/bin/llvm-strings" --version
-    run_app "${APP_PREFIX}/bin/llvm-strip" --version
+
+    run_app "${TEST_PREFIX}/bin/llvm-ar" --version
+    run_app "${TEST_PREFIX}/bin/llvm-nm" --version
+    run_app "${TEST_PREFIX}/bin/llvm-objcopy" --version
+    run_app "${TEST_PREFIX}/bin/llvm-objdump" --version
+    run_app "${TEST_PREFIX}/bin/llvm-ranlib" --version
+    if [ -f "${TEST_PREFIX}/bin/llvm-readelf" ]
+    then
+      run_app "${TEST_PREFIX}/bin/llvm-readelf" --version
+    fi
+    if [ -f "${TEST_PREFIX}/bin/llvm-size" ]
+    then
+      run_app "${TEST_PREFIX}/bin/llvm-size" --version
+    fi
+    run_app "${TEST_PREFIX}/bin/llvm-strings" --version
+    run_app "${TEST_PREFIX}/bin/llvm-strip" --version
 
     echo
     echo "Testing clang configuration..."
 
-    run_app "${APP_PREFIX}/bin/clang" -print-target-triple
-    run_app "${APP_PREFIX}/bin/clang" -print-targets
-    run_app "${APP_PREFIX}/bin/clang" -print-supported-cpus
-    run_app "${APP_PREFIX}/bin/clang" -print-search-dirs
-    run_app "${APP_PREFIX}/bin/clang" -print-resource-dir
-    run_app "${APP_PREFIX}/bin/clang" -print-libgcc-file-name
+    run_app "${TEST_PREFIX}/bin/clang" -print-target-triple
+    run_app "${TEST_PREFIX}/bin/clang" -print-targets
+    run_app "${TEST_PREFIX}/bin/clang" -print-supported-cpus
+    run_app "${TEST_PREFIX}/bin/clang" -print-search-dirs
+    run_app "${TEST_PREFIX}/bin/clang" -print-resource-dir
+    run_app "${TEST_PREFIX}/bin/clang" -print-libgcc-file-name
 
-    # run_app "${APP_PREFIX}/bin/llvm-config" --help
+    # run_app "${TEST_PREFIX}/bin/llvm-config" --help
 
-    # Cannot run the the compiler without a loader.
-    if true # [ "${TARGET_PLATFORM}" != "win32" ]
+    echo
+    echo "Testing if clang compiles simple Hello programs..."
+
+    local tests_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
+    mkdir -pv "${tests_folder_path}/tests"
+    local tmp="$(mktemp "${tests_folder_path}/tests/test-clang${native_suffix}-XXXXXXXXXX")"
+    rm -rf "${tmp}"
+
+    mkdir -p "${tmp}"
+    cd "${tmp}"
+
+    echo
+    echo "pwd: $(pwd)"
+
+    local VERBOSE_FLAG=""
+    if [ "${IS_DEVELOP}" == "y" ]
     then
-
-      echo
-      echo "Testing if clang compiles simple Hello programs..."
-
-      local tests_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
-      mkdir -pv "${tests_folder_path}/tests"
-      local tmp="$(mktemp "${tests_folder_path}/tests/test-clang-XXXXXXXXXX")"
-      rm -rf "${tmp}"
-
-      mkdir -p "${tmp}"
-      cd "${tmp}"
-
-      echo
-      echo "pwd: $(pwd)"
-
-      local VERBOSE_FLAG=""
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        VERBOSE_FLAG="-v"
-      fi
-
-      if [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        GC_SECTION="-Wl,--gc-sections"
-      elif [ "${TARGET_PLATFORM}" == "darwin" ]
-      then
-        GC_SECTION="-Wl,-dead_strip"
-      else
-        GC_SECTION=""
-      fi
-
-      # -----------------------------------------------------------------------
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > hello.c
-#include <stdio.h>
-
-int
-main(int argc, char* argv[])
-{
-  printf("Hello\n");
-
-  return 0;
-}
-__EOF__
-
-      # Test C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c1 hello.c ${GC_SECTION}
-
-      test_expect "hello-c1" "Hello"
-
-      # Static links are not supported, at least not with the Apple linker:
-      # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
-      # ld: library not found for -lcrt0.o
-      # run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-c1 hello.c -static
-      # test_expect "static-hello-c1" "Hello"
-
-      # Test C compile and link in separate steps.
-      run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o hello-c2 hello-c.o ${GC_SECTION}
-
-      test_expect "hello-c2" "Hello"
-
-      # Test LTO C compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c1 hello.c ${GC_SECTION}
-
-      test_expect "lto-hello-c1" "Hello"
-
-      # Test LTO C compile and link in separate steps.
-      run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o lto-hello-c2 lto-hello-c.o ${GC_SECTION}
-
-      test_expect "lto-hello-c2" "Hello"
-
-if true
-then
-      (
-        # Test C compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c1 hello.c -rtlib=compiler-rt ${GC_SECTION}
-
-        test_expect "rt-hello-c1" "Hello"
-
-
-        # Test C compile and link in separate steps.
-        run_app "${APP_PREFIX}/bin/clang" -o hello-c.o -c hello.c
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-hello-c2 hello-c.o -rtlib=compiler-rt ${GC_SECTION}
-
-        test_expect "rt-hello-c2" "Hello"
-
-        # Test LTO C compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c1 hello.c -rtlib=compiler-rt ${GC_SECTION}
-
-        test_expect "rt-lto-hello-c1" "Hello"
-
-        # Test LTO C compile and link in separate steps.
-        run_app "${APP_PREFIX}/bin/clang" -flto -o lto-hello-c.o -c hello.c
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -flto -o rt-lto-hello-c2 lto-hello-c.o -rtlib=compiler-rt ${GC_SECTION}
-
-        test_expect "rt-lto-hello-c2" "Hello"
-      )
-fi
-
-      # -----------------------------------------------------------------------
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > hello.cpp
-#include <iostream>
-
-int
-main(int argc, char* argv[])
-{
-  std::cout << "Hello" << std::endl;
-
-  return 0;
-}
-__EOF__
-
-      # Test C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp1 hello.cpp ${GC_SECTION}
-
-      test_expect "hello-cpp1" "Hello"
-
-      # Test C++ compile and link in separate steps.
-      run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o hello-cpp2 hello-cpp.o ${GC_SECTION}
-
-      test_expect "hello-cpp2" "Hello"
-
-      # Test LTO C++ compile and link in a single step.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp1 hello.cpp ${GC_SECTION}
-
-      test_expect "lto-hello-cpp1" "Hello"
-
-
-      # Test LTO C++ compile and link in separate steps.
-      run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o lto-hello-cpp2 lto-hello-cpp.o ${GC_SECTION}
-
-      test_expect "lto-hello-cpp2" "Hello"
-
-if true
-then
-      (
-        # export LD_LIBRARY_PATH="${CLANG_LIB_PATH}"
-
-        # Test C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-
-        test_expect "rt-hello-cpp1" "Hello"
-
-        # Test C++ compile and link in separate steps.
-        run_app "${APP_PREFIX}/bin/clang++" -o hello-cpp.o -c hello.cpp -stdlib=libc++
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-hello-cpp2 hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-
-        test_expect "rt-hello-cpp2" "Hello"
-
-        # Test LTO C++ compile and link in a single step.
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp1 hello.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-
-        test_expect "rt-lto-hello-cpp1" "Hello"
-
-
-        # Test LTO C++ compile and link in separate steps.
-        run_app "${APP_PREFIX}/bin/clang++" -flto -o lto-hello-cpp.o -c hello.cpp -stdlib=libc++
-        run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -flto -o rt-lto-hello-cpp2 lto-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-
-        test_expect "rt-lto-hello-cpp2" "Hello"
-      )
-fi
-
-      # -----------------------------------------------------------------------
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > except.cpp
-#include <iostream>
-#include <exception>
-
-struct MyException : public std::exception {
-   const char* what() const throw () {
-      return "MyException";
-   }
-};
- 
-void
-func(void)
-{
-  throw MyException();
-}
-
-int
-main(int argc, char* argv[])
-{
-  try {
-    func();
-  } catch(MyException& e) {
-    std::cout << e.what() << std::endl;
-  } catch(std::exception& e) {
-    std::cout << "Other" << std::endl;
-  }  
-
-  return 0;
-}
-__EOF__
-
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o except -O0 except.cpp ${GC_SECTION}
-
-      if [ "${TARGET_PLATFORM}" != "darwin" ]
-      then
-        # on Darwin: 'Symbol not found: __ZdlPvm'
-        test_expect "except" "MyException"
-      fi
-
-if true
-then
-
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-except -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-
-      if [ "${TARGET_PLATFORM}" != "darwin" ]
-      then
-        # on Darwin: 'Symbol not found: __ZdlPvm'
-        test_expect "rt-except" "MyException"
-      fi
-
-fi
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > str-except.cpp
-#include <iostream>
-#include <exception>
- 
-void
-func(void)
-{
-  throw "MyStringException";
-}
-
-int
-main(int argc, char* argv[])
-{
-  try {
-    func();
-  } catch(const char* msg) {
-    std::cout << msg << std::endl;
-  } catch(std::exception& e) {
-    std::cout << "Other" << std::endl;
-  } 
-
-  return 0; 
-}
-__EOF__
-
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o str-except -O0 str-except.cpp ${GC_SECTION}
-      
-      test_expect "str-except" "MyStringException"
-
-if true
-then
-
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${APP_PREFIX}/bin/clang++" ${VERBOSE_FLAG} -o rt-str-except -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
-      
-      test_expect "rt-str-except" "MyStringException"
-
-fi
-
-      # -----------------------------------------------------------------------
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > add.c
-#if defined(_WIN32)
-__declspec(dllexport)
-#endif
-int
-add(int a, int b)
-{
-  return a + b;
-}
-__EOF__
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        run_app "${APP_PREFIX}/bin/clang" -o add.o -c add.c
-      else
-        run_app "${APP_PREFIX}/bin/clang" -o add.o -fpic -c add.c
-      fi
-
-      rm -rf libadd.a
-      run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} libadd-static.a add.o
-      run_app "${APP_PREFIX}/bin/llvm-ranlib" libadd-static.a
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o libadd-shared.dll -shared add.o -Wl,--subsystem,windows 
-        run_app "${APP_PREFIX}/bin/gendef" libadd-shared.dll
-        run_app "${APP_PREFIX}/bin/llvm-dlltool" -m i386:x86-64 -d libadd-shared.def -l libadd-shared.lib
-      else
-        run_app "${APP_PREFIX}/bin/clang" -o libadd-shared.so -shared add.o
-      fi
-
-if true
-then
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -c add.c
-      else
-        run_app "${APP_PREFIX}/bin/clang" -o rt-add.o -fpic -c add.c
-      fi
-
-      rm -rf libadd.a
-      run_app "${APP_PREFIX}/bin/llvm-ar" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
-      run_app "${APP_PREFIX}/bin/llvm-ranlib" librt-add-static.a
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.dll -shared rt-add.o -Wl,--subsystem,windows -rtlib=compiler-rt
-        run_app "${APP_PREFIX}/bin/gendef" librt-add-shared.dll
-        run_app "${APP_PREFIX}/bin/llvm-dlltool" -m i386:x86-64 -d librt-add-shared.def -l librt-add-shared.lib
-      else
-        run_app "${APP_PREFIX}/bin/clang" -o librt-add-shared.so -shared rt-add.o -rtlib=compiler-rt
-      fi
-
-fi
-
-      # Note: __EOF__ is quoted to prevent substitutions here.
-      cat <<'__EOF__' > adder.c
-#include <stdio.h>
-#include <stdlib.h>
-
-extern int
-#if defined(_WIN32)
-__declspec(dllimport)
-#endif
-add(int a, int b);
-
-int
-main(int argc, char* argv[])
-{
-  int sum = atoi(argv[1]) + atoi(argv[2]);
-  printf("%d\n", sum);
-
-  return 0;
-}
-__EOF__
-
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-adder adder.c -ladd-static -L . ${GC_SECTION}
-
-      test_expect "static-adder" "42" 40 2
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # This is functional, but the library does not show as DLL.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c libadd-shared.lib -L . ${GC_SECTION}
-      else
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
-      fi
-      (
-        LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-        test_expect "shared-adder" "42" 40 2
-      )
-
-if true
-then
-
-      run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-static-adder adder.c -lrt-add-static -L . -rtlib=compiler-rt ${GC_SECTION}
-
-      test_expect "rt-static-adder" "42" 40 2
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # This is functional, but the library does not show as DLL.
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c librt-add-shared.lib -L . -rtlib=compiler-rt ${GC_SECTION}
-      else
-        run_app "${APP_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
-      fi
-
-      (
-        LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-        test_expect "rt-shared-adder" "42" 40 2
-      )
-
-fi
-
+      VERBOSE_FLAG="-v"
     fi
+
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      GC_SECTION="-Wl,--gc-sections"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      GC_SECTION="-Wl,-dead_strip"
+    else
+      GC_SECTION=""
+    fi
+
+    # -----------------------------------------------------------------------
+
+    cp -v "${BUILD_GIT_PATH}/scripts/helper/tests/c-cpp"/* .
+
+    # Test C compile and link in a single step.
+    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c1${DOTEXE} hello-simple.c ${GC_SECTION}
+
+    test_expect "hello-simple-c1" "Hello"
+
+    # Static links are not supported, at least not with the Apple linker:
+    # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-simple-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
+    # ld: library not found for -lcrt0.o
+    # run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-simple-c1 hello-simple.c -static
+    # test_expect "static-hello-simple-c1" "Hello"
+
+    # Test C compile and link in separate steps.
+    run_app "${CC}" -o hello-simple-c.o -c hello-simple.c
+    run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c2${DOTEXE} hello-simple-c.o ${GC_SECTION}
+
+    test_expect "hello-simple-c2" "Hello"
+
+    # Test LTO C compile and link in a single step.
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c1${DOTEXE} hello-simple.c ${GC_SECTION}
+
+    test_expect "lto-hello-simple-c1" "Hello"
+
+    # Test LTO C compile and link in separate steps.
+    run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c2${DOTEXE} lto-hello-simple-c.o ${GC_SECTION}
+
+    test_expect "lto-hello-simple-c2" "Hello"
+
+    # Test C compile and link in a single step.
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c1${DOTEXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
+
+    test_expect "rt-hello-simple-c1" "Hello"
+
+    # Test C compile and link in separate steps.
+    run_app "${CC}" -o hello-simple-c.o -c hello-simple.c
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-hello-simple-c2${DOTEXE} hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
+
+    test_expect "rt-hello-simple-c2" "Hello"
+
+    # Test LTO C compile and link in a single step.
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c1${DOTEXE} hello-simple.c -rtlib=compiler-rt ${GC_SECTION}
+
+    test_expect "rt-lto-hello-simple-c1" "Hello"
+
+    # Test LTO C compile and link in separate steps.
+    run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c
+    run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c2${DOTEXE} lto-hello-simple-c.o -rtlib=compiler-rt ${GC_SECTION}
+
+    test_expect "rt-lto-hello-simple-c2" "Hello"
+
+    # -----------------------------------------------------------------------
+
+    # Test C++ compile and link in a single step.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp1${DOTEXE} hello-simple.cpp ${GC_SECTION}
+
+    test_expect "hello-simple-cpp1" "Hello"
+
+    # Test C++ compile and link in separate steps.
+    run_app "${CXX}" -o hello-simple-cpp.o -c hello-simple.cpp
+    run_app "${CXX}" ${VERBOSE_FLAG} -o hello-simple-cpp2${DOTEXE} hello-simple-cpp.o ${GC_SECTION}
+
+    test_expect "hello-simple-cpp2" "Hello"
+
+    # Test LTO C++ compile and link in a single step.
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp1${DOTEXE} hello-simple.cpp ${GC_SECTION}
+
+    test_expect "lto-hello-simple-cpp1" "Hello"
+
+    # Test LTO C++ compile and link in separate steps.
+    run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp2${DOTEXE} lto-hello-simple-cpp.o ${GC_SECTION}
+
+    test_expect "lto-hello-simple-cpp2" "Hello"
+
+    # Test C++ compile and link in a single step.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp1${DOTEXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+
+    test_expect "rt-hello-simple-cpp1" "Hello"
+
+    # Test C++ compile and link in separate steps.
+    run_app "${CXX}" -o hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp2${DOTEXE} hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+
+    test_expect "rt-hello-simple-cpp2" "Hello"
+
+    # Test LTO C++ compile and link in a single step.
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp1${DOTEXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+
+    test_expect "rt-lto-hello-simple-cpp1" "Hello"
+
+    # Test LTO C++ compile and link in separate steps.
+    run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++
+    run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp2${DOTEXE} lto-hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+
+    test_expect "rt-lto-hello-simple-cpp2" "Hello"
+
+    # -----------------------------------------------------------------------
+
+    # -O0 is an attempt to prevent any interferences with the optimiser.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOTEXE} -O0 except.cpp ${GC_SECTION}
+
+    if [ "${TARGET_PLATFORM}" != "darwin" ]
+    then
+      # on Darwin: 'Symbol not found: __ZdlPvm'
+      test_expect "except" "MyException"
+    fi
+
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOTEXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+
+    if [ "${TARGET_PLATFORM}" != "darwin" ]
+    then
+      # on Darwin: 'Symbol not found: __ZdlPvm'
+      test_expect "rt-except" "MyException"
+    fi
+
+    # -O0 is an attempt to prevent any interferences with the optimiser.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOTEXE} -O0 str-except.cpp ${GC_SECTION}
+    
+    test_expect "str-except" "MyStringException"
+
+    # -O0 is an attempt to prevent any interferences with the optimiser.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except${DOTEXE} -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ ${GC_SECTION}
+    
+    test_expect "rt-str-except" "MyStringException"
+
+    # -----------------------------------------------------------------------
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      run_app "${CC}" -o add.o -c add.c
+    else
+      run_app "${CC}" -o add.o -fpic -c add.c
+    fi
+
+    rm -rf libadd.a
+    run_app "${AR}" -r ${VERBOSE_FLAG} libadd-static.a add.o
+    run_app "${RANLIB}" libadd-static.a
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      # The `--out-implib` crreates an import library, which can be
+      # directly used with -l.
+      run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows 
+
+      # Alternately it is possible to create the similar .lib with dlltool.
+      run_app "${GENDEF}" libadd-shared.dll
+      run_app "${DLLTOOL}" -m i386:x86-64 -d libadd-shared.def -l libadd-shared.lib
+    else
+      run_app "${CC}" -o libadd-shared.so -shared add.o
+    fi
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      run_app "${CC}" -o rt-add.o -c add.c
+    else
+      run_app "${CC}" -o rt-add.o -fpic -c add.c
+    fi
+
+    rm -rf libadd.a
+    run_app "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
+    run_app "${RANLIB}" librt-add-static.a
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      run_app "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
+    else
+      run_app "${CC}" -o librt-add-shared.so -shared rt-add.o -rtlib=compiler-rt
+    fi
+
+    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOTEXE} adder.c -ladd-static -L . ${GC_SECTION}
+
+    test_expect "static-adder" "42" 40 2
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      # -ladd-shared is in fact libadd-shared.dll.a
+      # The library does not show as DLL, it is loaded dynamically.
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOTEXE} adder.c -ladd-shared -L . ${GC_SECTION}
+
+      # Example with .lib, which must be passed with full name.
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder-lib${DOTEXE} adder.c libadd-shared.lib -L . ${GC_SECTION}
+    else
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . ${GC_SECTION}
+    fi
+
+    (
+      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+      test_expect "shared-adder" "42" 40 2
+    )
+
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOTEXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt ${GC_SECTION}
+
+    test_expect "rt-static-adder" "42" 40 2
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      # -lrt-add-shared is in fact librt-add-shared.dll.a
+      # The library does not show as DLL, it is loaded dynamically.
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${DOTEXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
+    else
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt ${GC_SECTION}
+    fi
+
+    (
+      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+      test_expect "rt-shared-adder" "42" 40 2
+    )
+
+    # -----------------------------------------------------------------------
+    # Tests from the llvm-mingw project.
+
+    for test in hello hello-tls crt-test setjmp
+    do 
+        run_verbose "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
+        run_app $test
+    done
+    for test in autoimport-lib
+    do 
+        run_verbose "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
+    done
+    for test in autoimport-main
+    do 
+        run_verbose "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+        run_app $test
+    done
+    for test in idltest
+    do
+        # The IDL output isn't arch specific, but test each arch frontend 
+        run_verbose "${WIDL}" $test.idl -h -o $test.h 
+        run_verbose "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
+        run_app $test 
+    done
+
+    for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
+    do
+        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
+        run_app $test
+    done
+    for test in hello-exception
+    do
+        run_verbose ${CXX} $test.cpp -static -o $test-static.exe ${VERBOSE_FLAG}
+        run_app $test-static
+    done
+    for test in tlstest-lib throwcatch-lib
+    do
+        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+    done
+    for test in tlstest-main
+    do
+        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
+        run_app $test 
+    done
+    for test in throwcatch-main
+    do
+        run_verbose ${CXX} $test.cpp -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+        run_app $test
+    done
+
   )
 
   echo
-  echo "Local llvm tests completed successfuly."
+  echo "Testing the llvm${native_suffix} binaries completed successfuly."
 }
+
 
 function build_llvm_compiler_rt()
 {
