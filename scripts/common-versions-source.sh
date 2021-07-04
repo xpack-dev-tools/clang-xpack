@@ -70,7 +70,9 @@ function build_versions()
     elif [ "${TARGET_PLATFORM}" = "win32" ]
     then
 
-      if true
+      USE_LLVM_MINGW="y"
+
+      if [ "${USE_LLVM_MINGW}" == "y" ]
       then
 
       # Build a native toolchain, mainly for the *-tblgen tools, but
