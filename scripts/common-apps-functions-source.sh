@@ -706,12 +706,20 @@ function build_llvm()
   # Fixed in 12.x.
 
   export ACTUAL_LLVM_VERSION="$1"
+  local native_suffix=${2-''}
+
+  if [ -n "${native_suffix}" -a "${TARGET_PLATFORM}" != "win32" ]
+  then
+    echo "Native supported only for Windows binaries."
+    exit 1
+  fi
 
   local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
   local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
 
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
-  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}"
+
+  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}${native_suffix}"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
   local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
@@ -759,36 +767,58 @@ function build_llvm()
       cd "${BUILD_FOLDER_PATH}/${llvm_folder_name}"
 
       xbb_activate
-      # Use install/libs/lib & include
-      xbb_activate_installed_dev
 
-      if [ "${TARGET_PLATFORM}" == "win32" ]
+      if [ -n "${native_suffix}" ]
       then
+
         # Use XBB libs in native-llvm
         xbb_activate_libs
-      fi
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
-      
-      if [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      elif [ "${TARGET_PLATFORM}" == "darwin" ]
-      then
-        LDFLAGS+=" -Wl,-search_paths_first"
+        unset_gcc_env
 
-        # The macOS variant needs to compile lots of .mm files
-        # (in lldb, for example HostThreadMacOSX.mm), and
-        # GCC chokes at them, making clang mandatory.
+        CC=${NATIVE_CC}
+        CXX=${NATIVE_CXX}
 
-        export CC=clang
-        export CXX=clang++
-      elif [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        :
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      else
+
+        # Use install/libs/lib & include
+        xbb_activate_installed_dev
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        elif [ "${TARGET_PLATFORM}" == "darwin" ]
+        then
+          LDFLAGS+=" -Wl,-search_paths_first"
+
+          # The macOS variant needs to compile lots of .mm files
+          # (in lldb, for example HostThreadMacOSX.mm), and
+          # GCC chokes at them, making clang mandatory.
+
+          export CC=clang
+          export CXX=clang++
+        elif [ "${TARGET_PLATFORM}" == "win32" ]
+        then
+          if [ "${USE_LLVM_MINGW}" == "y" ]
+          then
+          export CC="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-gcc"
+          export CXX="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-g++"
+          else
+          export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
+          export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
+          fi
+        fi
+
       fi
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -807,7 +837,7 @@ function build_llvm()
       then
         (
           echo
-          echo "Running llvm cmake..."
+          echo "Running llvm${native_suffix} cmake..."
 
           config_options=()
 
@@ -827,60 +857,78 @@ function build_llvm()
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-          # Please note the trailing space.
-          config_options+=("-DCLANG_VENDOR=${LLVM_BRANDING} ")
-          config_options+=("-DFLANG_VENDOR=${LLVM_BRANDING} ")
-          config_options+=("-DLLD_VENDOR=${LLVM_BRANDING} ")
-          config_options+=("-DPACKAGE_VENDOR=${LLVM_BRANDING} ")
-
-          config_options+=("-DCLANG_EXECUTABLE_VERSION=${llvm_version_major}")
           config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
-          config_options+=("-DCMAKE_C_COMPILER=${CC}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}")
+
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
+          config_options+=("-DCMAKE_C_COMPILER=${CC}")
+
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
-          # Prefer the locally compiled libraries.
-          config_options+=("-DCMAKE_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include")
-          if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
-          then
-            config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
-          else
-            config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          fi
 
-          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
-
-          config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
-
-          config_options+=("-DCURSES_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include/ncurses")
-
-          config_options+=("-DLLDB_ENABLE_LUA=OFF")
-          config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
-          config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
-
-          config_options+=("-DLLVM_BUILD_DOCS=OFF")
-          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
-          config_options+=("-DLLVM_BUILD_TESTS=OFF")
-          config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
-          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
-          config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
-          config_options+=("-DLLVM_ENABLE_EH=ON")
-          config_options+=("-DLLVM_ENABLE_LTO=OFF")
-          config_options+=("-DLLVM_ENABLE_RTTI=ON")
-          config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
-          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
-          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
-          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
-          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
-          config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
-          # Better not, and use the explicit `llvm-*` names.
-          # config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=ON")
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
+
+          if [ -n "${native_suffix}" ]
+          then
+
+            # Please note the trailing space.
+            config_options+=("-DCLANG_VENDOR=${LLVM_NATIVE_BRANDING} ")
+            config_options+=("-DFLANG_VENDOR=${LLVM_NATIVE_BRANDING} ")
+            config_options+=("-DLLD_VENDOR=${LLVM_NATIVE_BRANDING} ")
+            config_options+=("-DPACKAGE_VENDOR=${LLVM_NATIVE_BRANDING} ")
+
+          else
+
+            # Please note the trailing space.
+            config_options+=("-DCLANG_VENDOR=${LLVM_BRANDING} ")
+            config_options+=("-DFLANG_VENDOR=${LLVM_BRANDING} ")
+            config_options+=("-DLLD_VENDOR=${LLVM_BRANDING} ")
+            config_options+=("-DPACKAGE_VENDOR=${LLVM_BRANDING} ")
+
+            config_options+=("-DCLANG_EXECUTABLE_VERSION=${llvm_version_major}")
+
+            # Prefer the locally compiled libraries.
+            config_options+=("-DCMAKE_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include")
+            if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+            then
+              config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib64;${LIBS_INSTALL_FOLDER_PATH}/lib")
+            else
+              config_options+=("-DCMAKE_LIBRARY_PATH=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            fi
+
+            config_options+=("-DCURSES_INCLUDE_PATH=${LIBS_INSTALL_FOLDER_PATH}/include/ncurses")
+
+            config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+
+            config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
+
+            config_options+=("-DLLDB_ENABLE_LUA=OFF")
+            config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
+            config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+            config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
+
+            config_options+=("-DLLVM_BUILD_DOCS=OFF")
+            config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
+            config_options+=("-DLLVM_BUILD_TESTS=OFF")
+            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
+            config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+            config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
+            config_options+=("-DLLVM_ENABLE_EH=ON")
+            config_options+=("-DLLVM_ENABLE_LTO=OFF")
+            config_options+=("-DLLVM_ENABLE_RTTI=ON")
+            config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
+            config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
+            config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
+            config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
+            config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
+            config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
+            # Better not, use the explicit `llvm-*` names.
+            config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
+
+          fi
 
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
@@ -1008,32 +1056,74 @@ function build_llvm()
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
 
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-            config_options+=("-DCLANG_DEFAULT_LINKER=lld")
-            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-            config_options+=("-DCLANG_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen")
-            
-            config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-            config_options+=("-DCMAKE_CXX_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-g++")
-            config_options+=("-DCMAKE_C_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-gcc")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
-            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
-            config_options+=("-DCMAKE_RC_COMPILER=${CROSS_COMPILE_PREFIX}-windres")
-            config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-
-            config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
-
-            config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
-            
-            config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
-            config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
             # Mind the links in llvm to clang, lld, lldb.
             config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+
+            if [ -n "${native_suffix}" ]
+            then
+              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+              # Set the default linker to gold, otherwise `-flto`
+              # requires an explicit `-fuse-ld=gold`.
+              config_options+=("-DCLANG_DEFAULT_LINKER=gold")
+              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+
+              # Reduce dependencies for the native toolchain.
+              config_options+=("-DLLDB_ENABLE_CURSES=OFF")
+              config_options+=("-DLLDB_ENABLE_LIBEDIT=OFF")
+              config_options+=("-DLLDB_ENABLE_LIBXML2=OFF")
+              config_options+=("-DLLDB_ENABLE_LUA=OFF")
+              config_options+=("-DLLDB_ENABLE_LZMA=OFF")
+              config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
+
+              # To generate the LLVMgold.so
+              config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
+              config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
+            else
+              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+              config_options+=("-DCLANG_DEFAULT_LINKER=lld")
+              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+
+              config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+
+              if [ "${USE_LLVM_MINGW}" == "y" ]
+              then
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}")
+              config_options+=("-DCMAKE_RC_COMPILER=${CROSS_COMPILE_PREFIX}-windres")
+              else
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
+              config_options+=("-DCMAKE_RC_COMPILER=${RC}")
+              fi
+
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
+
+              config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+
+              if [ "${USE_LLVM_MINGW}" == "y" ]
+              then
+
+              config_options+=("-DCLANG_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/clang-tblgen")
+              config_options+=("-DLLDB_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/lldb-tblgen")
+              config_options+=("-DLLVM_TABLEGEN=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-tblgen")
+              config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
+              config_options+=("-DLLVM_CONFIG_PATH=${BUILD_LLVM_MINGW_PATH}/llvm-project/llvm/build/bin/llvm-config")
+
+              else
+
+              config_options+=("-DCLANG_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/clang-tblgen")
+              config_options+=("-DLLDB_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/lldb-tblgen")
+              config_options+=("-DLLVM_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/llvm-tblgen")
+
+              config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
+
+              config_options+=("-DLLVM_CONFIG_PATH=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/llvm-config")
+
+              fi
+              config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
+            fi
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
@@ -1063,7 +1153,7 @@ function build_llvm()
 
       (
         echo
-        echo "Running llvm build..."
+        echo "Running llvm${native_suffix} build..."
 
         if [ "${IS_DEVELOP}" == "y" ]
         then
@@ -1074,67 +1164,122 @@ function build_llvm()
           run_verbose cmake --build . --target install/strip
         fi
 
-if true
-then
-        (
-          echo
-          echo "Removing less used files..."
+        # Copy the LLVMgold plug-in. Not functional for native.
+        if false # [ -f "lib/LLVMgold.so" ]
+        then
+          mkdir -pv "${APP_PREFIX}${native_suffix}/lib/bfd-plugins/"
+          cp -v "lib/LLVMgold.so" "${APP_PREFIX}${native_suffix}/lib/bfd-plugins/"
+        fi
 
-          # Remove less used LLVM libraries and leave only the toolchain.
-          cd "${APP_PREFIX}/bin"
-          for f in bugpoint c-index-test \
-            clang-apply-replacements clang-change-namespace \
-            clang-extdef-mapping clang-include-fixer clang-move clang-query \
-            clang-reorder-fields find-all-symbols \
-            count dsymutil FileCheck \
-            llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
-            llvm-cat llvm-cfi-verify llvm-cvtres \
-            llvm-dwarfdump llvm-dwp \
-            llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
-            llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
-            llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
-            llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
-            llvm-profgen \
-            llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
-            llvm-stress llvm-undname llvm-xray \
-            modularize not obj2yaml opt pp-trace sancov sanstats \
-            verify-uselistorder yaml-bench yaml2obj
-          do
-            rm -rfv $f $f${DOT_EXE}
-          done
+        if [ ! -n "${native_suffix}" ]
+        then
+          (
+            echo
+            echo "Removing less used files..."
 
-          # So far not used.
-          rm -rfv libclang.dll
+            # Remove less used LLVM libraries and leave only the toolchain.
+            cd "${APP_PREFIX}/bin"
+            for f in bugpoint c-index-test \
+              clang-apply-replacements clang-change-namespace \
+              clang-extdef-mapping clang-include-fixer clang-move clang-query \
+              clang-reorder-fields find-all-symbols \
+              count dsymutil FileCheck \
+              llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
+              llvm-cat llvm-cfi-verify llvm-cvtres \
+              llvm-dwarfdump llvm-dwp \
+              llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
+              llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
+              llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
+              llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
+              llvm-profgen \
+              llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
+              llvm-stress llvm-undname llvm-xray \
+              modularize not obj2yaml opt pp-trace sancov sanstats \
+              verify-uselistorder yaml-bench yaml2obj
+            do
+              rm -rfv $f $f${DOT_EXE}
+            done
 
-          cd "${APP_PREFIX}/include"
-          run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
+            # So far not used.
+            rm -rfv libclang.dll
 
-          cd "${APP_PREFIX}/lib"
-          run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
-          # rm -rf cmake/lld cmake/llvm cmake/polly
+            cd "${APP_PREFIX}/include"
+            run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
-          cd "${APP_PREFIX}/share"
-          run_verbose rm -rf man
-        )
-fi
+            cd "${APP_PREFIX}/lib"
+            run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
+            # rm -rf cmake/lld cmake/llvm cmake/polly
 
-        show_libs "${APP_PREFIX}/bin/clang"
-        show_libs "${APP_PREFIX}/bin/llvm-nm"
+            cd "${APP_PREFIX}/share"
+            run_verbose rm -rf man
+          )
+        else
+          (
+            # Add wrappers for the mingw-w64 binaries.
+            cd "${APP_PREFIX}${native_suffix}/bin"
+
+            cp "${BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
+
+            for exec in clang-target-wrapper dlltool-wrapper windres-wrapper llvm-wrapper
+            do
+              ${CC} "${BUILD_GIT_PATH}/wrappers/${exec}.c" -O2 -v -o ${exec}
+            done
+
+            for exec in clang clang++ gcc g++ cc c99 c11 c++ as
+            do
+                ln -sf clang-target-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+            for exec in addr2line ar ranlib nm objcopy strings strip
+            do
+                ln -sf llvm-${exec} ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+            if [ -f "llvm-windres" ]
+            then
+                # windres can't use llvm-wrapper, as that loses the original
+                # target arch prefix.
+                ln -sf llvm-windres ${CROSS_COMPILE_PREFIX}-windres
+            else
+                ln -sf windres-wrapper ${CROSS_COMPILE_PREFIX}-windres
+            fi
+            ln -sf dlltool-wrapper ${CROSS_COMPILE_PREFIX}-dlltool
+            for exec in ld objdump
+            do
+                ln -sf ${exec}-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+          )
+        fi
+
+        if [ -n "${native_suffix}" ]
+        then
+          show_native_libs "${APP_PREFIX}${native_suffix}/bin/clang"
+          show_native_libs "${APP_PREFIX}${native_suffix}/bin/llvm-nm"
+        else
+          show_libs "${APP_PREFIX}/bin/clang"
+          show_libs "${APP_PREFIX}/bin/llvm-nm"
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-        "${llvm_folder_name}"
+      if [ ! -n "${native_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+          "${llvm_folder_name}"
+      fi
     )
 
     touch "${llvm_stamp_file_path}"
 
   else
-    echo "Component llvm already installed."
+    echo "Component llvm${native_suffix} already installed."
   fi
 
-  tests_add "test_llvm"
+  if [ -n "${native_suffix}" ]
+  then
+    tests_add "test_llvm_bootstrap"
+  else
+    tests_add "test_llvm_final"
+  fi
 }
 
 function test_llvm_bootstrap()
@@ -1144,6 +1289,13 @@ function test_llvm_bootstrap()
     xbb_activate_libs
 
     test_llvm "-native"
+  )
+}
+
+function test_llvm_final()
+{
+  (
+    test_llvm
   )
 }
 
