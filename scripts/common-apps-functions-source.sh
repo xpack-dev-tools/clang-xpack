@@ -1173,6 +1173,9 @@ function test_llvm()
 
       CC="${TEST_PREFIX}/bin/clang"
       CXX="${TEST_PREFIX}/bin/clang++"
+      DLLTOOL="${TEST_PREFIX}/bin/llvm-dlltool"
+      WIDL="${TEST_PREFIX}/bin/widl"
+      GENDEF="${TEST_PREFIX}/bin/gendef"
       AR="${TEST_PREFIX}/bin/llvm-ar"
       RANLIB="${TEST_PREFIX}/bin/llvm-ranlib"
     fi
@@ -1485,7 +1488,7 @@ function test_llvm()
 
     for test in hello setjmp
     do 
-      run_verbose "${CC}" $test.c -o $test${DOT_EXE} ${VERBOSE_FLAG} -lm
+      run_app "${CC}" $test.c -o $test${DOT_EXE} ${VERBOSE_FLAG} -lm
       run_app ./$test
     done
 
@@ -1493,33 +1496,33 @@ function test_llvm()
     then
       for test in hello-tls crt-test 
       do 
-        run_verbose "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
+        run_app "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
         run_app ./$test
       done
 
       for test in autoimport-lib
       do 
-        run_verbose "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
+        run_app "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
       done
 
       for test in autoimport-main
       do 
-        run_verbose "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+        run_app "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
         run_app $test
       done
 
       for test in idltest
       do
         # The IDL output isn't arch specific, but test each arch frontend 
-        run_verbose "${WIDL}" $test.idl -h -o $test.h 
-        run_verbose "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
+        run_app "${WIDL}" $test.idl -h -o $test.h 
+        run_app "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
         run_app $test 
       done
     fi
 
     for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     do
-      run_verbose ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
+      run_app ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
       run_app ./$test
     done
 
@@ -1528,7 +1531,7 @@ function test_llvm()
     then
       for test in hello-exception
       do
-        run_verbose ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+        run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
         run_app ./$test-static
       done
     fi
@@ -1537,12 +1540,12 @@ function test_llvm()
     then
       for test in tlstest-lib
       do
-        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+        run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
       done
 
       for test in tlstest-main
       do
-        run_verbose ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
+        run_app ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
         run_app ./$test 
       done
     fi
@@ -1551,15 +1554,15 @@ function test_llvm()
     do
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        run_verbose ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+        run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
       else
-        run_verbose ${CXX} $test.cpp -shared -fpic -o lib$test.${SHLIB_EXT} ${VERBOSE_FLAG}
+        run_app ${CXX} $test.cpp -shared -fpic -o lib$test.${SHLIB_EXT} ${VERBOSE_FLAG}
       fi
     done
 
     for test in throwcatch-main
     do
-      run_verbose ${CXX} $test.cpp -o $test${DOT_EXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+      run_app ${CXX} $test.cpp -o $test${DOT_EXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
         export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
