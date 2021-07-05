@@ -954,7 +954,15 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+
+            # The libc++ & Co are not included because the system dynamic
+            # libraries are prefered by the linker anyway, and attempts to 
+            # force the inclusion of the static library failed:
+            # ld: warning: linker symbol '$ld$hide$os10.4$__Unwind_Backtrace' hides a non-existent symbol '__Unwind_Backtrace'
+
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
+
             config_options+=("-DLLVM_ENABLE_FFI=ON")
             config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
@@ -968,6 +976,9 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
 
+            # No longer needed if disabled in LLVM_ENABLE_PROJECTS.
+            if false
+            then
             config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
             config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
             config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
@@ -981,6 +992,7 @@ function build_llvm()
             config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
             config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
             config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+            fi
 
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
 
