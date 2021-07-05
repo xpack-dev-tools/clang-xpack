@@ -223,7 +223,7 @@ The supported Arm architectures are:
 - `arm64` for 64-bit devices
 
 The current platform for Arm GNU/Linux production builds is a
-Debian 9, running on an ROCK Pi 4 SBC with 4 GB of RAM
+Debian 9, running on an Raspberry Pi 4 SBC with 8 GB of RAM
 and 256 GB of fast M.2 SSD. The machine name is `xbba`.
 
 ```sh
@@ -443,3 +443,7 @@ remains the source code.
 - Linux default linker is GNU ld.gold, to allow LTO
 - Windows default linker is lld
 - macOS default linker is the system ld
+- on macOS, because the system linker prefers the system libc++.dylib,
+there are no C++ headers and libraries)
+- no rpc/xdr.h in compiler_rt
+

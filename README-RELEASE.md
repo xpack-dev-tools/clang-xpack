@@ -78,15 +78,18 @@ caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without
 Similarly on the Intel Linux:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --linux32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux32
 
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win64 --win32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win32
 ```
 
 And on the Arm Linux:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm64
+bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm32
 ```
 
 Work on the scripts until all 4 platforms pass the build.
@@ -102,7 +105,7 @@ From here it'll be later cloned on the production machines.
 
 ### Run the build scripts
 
-On the macOS machine (`xbbm`) open ssh sessions to both Linux machines
+On the macOS machine (`xbbm13`) open ssh sessions to both Linux machines
 (`xbbi` and `xbba`):
 
 ```sh
@@ -110,6 +113,9 @@ caffeinate ssh xbbi
 
 caffeinate ssh xbba
 ```
+
+Note: If this is a virtual machine, be sure the host will not go to sleep
+(run `caffeinate sh` in a terminal).
 
 On all machines, clone the `xpack-develop` branch and remove previous builds
 
@@ -126,13 +132,13 @@ sudo rm -rf ~/Work/clang-*
 
 Empty trash.
 
-On the macOS machine (`xbbm`):
+On the macOS 10.13 machine (`xbbm13`):
 
 ```sh
 caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --osx
 ```
 
-A typical run takes about 30 minutes.
+A typical run takes about 75 minutes.
 
 On `xbbi`:
 
