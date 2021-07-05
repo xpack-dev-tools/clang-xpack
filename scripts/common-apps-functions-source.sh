@@ -1540,21 +1540,11 @@ function test_llvm()
     # -O0 is an attempt to prevent any interferences with the optimiser.
     run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOT_EXE} -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
 
-    if [ "${TARGET_PLATFORM}" != "darwin" ]
-    then
-      # TODO: investigate!
-      # on Darwin: 'Symbol not found: __ZdlPvm'
       test_expect "except" "MyException"
-    fi
 
     run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOT_EXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
-    if [ "${TARGET_PLATFORM}" != "darwin" ]
-    then
-      # TODO: investigate!
-      # on Darwin: 'Symbol not found: __ZdlPvm'
       test_expect "rt-except" "MyException"
-    fi
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
     run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOT_EXE} -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
