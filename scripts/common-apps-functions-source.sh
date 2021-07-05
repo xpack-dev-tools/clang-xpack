@@ -1700,8 +1700,8 @@ function test_llvm()
       run_app ./$test
     done
 
-    # TODO: investigate!
-    if [ "${TARGET_PLATFORM}" != "linux" ]
+    # TODO: investigate Linux, macOS is known to not support -static!
+    if [ "${TARGET_PLATFORM}" != "linux" -a "${TARGET_PLATFORM}" != "darwin" ]
     then
       for test in hello-exception
       do
