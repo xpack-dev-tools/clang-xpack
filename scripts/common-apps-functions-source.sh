@@ -1550,11 +1550,11 @@ function test_llvm()
     # -O0 is an attempt to prevent any interferences with the optimiser.
     run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOT_EXE} -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
 
-      test_expect "except" "MyException"
+    test_expect "except" "MyException"
 
     run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOT_EXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
-      test_expect "rt-except" "MyException"
+    test_expect "rt-except" "MyException"
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
     run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOT_EXE} -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
@@ -1633,7 +1633,7 @@ function test_llvm()
     )
 
     run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
-
+    
     test_expect "rt-static-adder" "42" 40 2
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1753,7 +1753,6 @@ function test_llvm()
   echo
   echo "Testing the llvm${native_suffix} binaries completed successfuly."
 }
-
 
 # $1="${NATIVE_SUFFIX}"
 function build_llvm_compiler_rt()
