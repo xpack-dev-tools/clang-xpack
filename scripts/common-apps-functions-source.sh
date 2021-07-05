@@ -1647,6 +1647,7 @@ function test_llvm()
     for test in hello setjmp
     do 
       run_app "${CC}" $test.c -o $test${DOT_EXE} ${VERBOSE_FLAG} -lm
+      show_libs $test
       run_app ./$test
     done
 
@@ -1655,17 +1656,20 @@ function test_llvm()
       for test in hello-tls crt-test 
       do 
         run_app "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
+        show_libs $test
         run_app ./$test
       done
 
       for test in autoimport-lib
       do 
         run_app "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
+        show_libs $test.dll
       done
 
       for test in autoimport-main
       do 
         run_app "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
+        show_libs $test
         run_app $test
       done
 
@@ -1674,6 +1678,7 @@ function test_llvm()
         # The IDL output isn't arch specific, but test each arch frontend 
         run_app "${WIDL}" $test.idl -h -o $test.h 
         run_app "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
+        show_libs $test
         run_app $test 
       done
     fi
@@ -1681,6 +1686,7 @@ function test_llvm()
     for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     do
       run_app ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
+      show_libs $test
       run_app ./$test
     done
 
@@ -1690,6 +1696,7 @@ function test_llvm()
       for test in hello-exception
       do
         run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+        show_libs $test-static
         run_app ./$test-static
       done
     fi
@@ -1699,11 +1706,13 @@ function test_llvm()
       for test in tlstest-lib
       do
         run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
+        show_libs $test.dll
       done
 
       for test in tlstest-main
       do
         run_app ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
+        show_libs $test
         run_app ./$test 
       done
     fi
@@ -1724,6 +1733,8 @@ function test_llvm()
       (
         LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
         export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+
+        show_libs $test
         run_app ./$test
       )
     done
