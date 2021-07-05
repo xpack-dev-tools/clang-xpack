@@ -1437,7 +1437,17 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    cp -v "${BUILD_GIT_PATH}/scripts/helper/tests/c-cpp"/* .
+    # `-fuse-ld=lld` fails on macOS:
+    # ld64.lld: warning: ignoring unknown argument: -no_deduplicate
+    # ld64.lld: warning: -sdk_version is required when emitting min version load command.  Setting sdk version to match provided min version
+    # For now use the system linker /usr/bin/ld.
+
+    # -static-libstdc++ not available on macOS:
+    # clang-11: warning: argument unused during compilation: '-static-libstdc++'
+
+    # -------------------------------------------------------------------------
+
+    cp -v "${helper_folder_path}/tests/c-cpp"/* .
 
     # Test C compile and link in a single step.
     run_app "${CC}" ${VERBOSE_FLAG} -o hello-simple-c1${DOT_EXE} hello-simple.c ${GC_SECTION}
