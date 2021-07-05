@@ -782,6 +782,7 @@ function build_llvm()
         CPPFLAGS="${XBB_CPPFLAGS}"
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
         LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       else
@@ -792,7 +793,10 @@ function build_llvm()
         CPPFLAGS="${XBB_CPPFLAGS}"
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        # Non-static will have trouble to find the llvm bootstrap libc++.
         LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+        # LDFLAGS="${XBB_LDFLAGS_APP}"
 
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
