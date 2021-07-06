@@ -304,7 +304,7 @@ function build_native_llvm_mingw()
   local native_llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${native_llvm_mingw_folder_name}-installed"
 
   export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
-  export NATIVE_LLVM_MINGW_FOLDER_NAME="native-llvm-mingw"
+  export NATIVE_LLVM_MINGW_FOLDER_NAME="clang-native"
   export NATIVE_LLVM_MINGW_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${NATIVE_LLVM_MINGW_FOLDER_NAME}"
 
   # Redundant, but may be use in submodule scripts.
@@ -1325,7 +1325,7 @@ function test_llvm()
   (
     if [ -n "${native_suffix}" ]
     then
-      TEST_PREFIX="${INSTALL_FOLDER_PATH}/native-llvm-mingw"
+      TEST_PREFIX="${INSTALL_FOLDER_PATH}/clang-native"
       # Help the loader find the .dll files if the native is not static.
       export WINEPATH=${TEST_PREFIX}/${CROSS_COMPILE_PREFIX}/bin 
 
