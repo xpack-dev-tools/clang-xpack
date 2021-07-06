@@ -1850,7 +1850,6 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-
         if [ "${USE_LLVM_MINGW}" == "y" ]
         then
         config_options+=("-DCMAKE_C_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang")
@@ -1870,7 +1869,6 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
         fi
-
 
         if [ "${HOST_MACHINE}" == "x86_64" ]
         then
@@ -2069,7 +2067,6 @@ function build_llvm_libcxx()
       # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
       # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
 
-      
       LDFLAGS="${XBB_LDFLAGS}"
 
       if [ "${IS_DEVELOP}" == "y" ]
