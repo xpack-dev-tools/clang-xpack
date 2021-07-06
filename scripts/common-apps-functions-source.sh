@@ -1566,6 +1566,42 @@ function test_llvm()
     
     test_expect "rt-str-except" "MyStringException"
 
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+
+      # -static & -stdlib=libc++/-rtlib=compiler-rt currently fail on linux.
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except${DOT_EXE} -static -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+
+      test_expect "static-except" "MyException"
+
+      # -O0 is an attempt to prevent any interferences with the optimiser.
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except${DOT_EXE} -static -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      
+      test_expect "str-except" "MyStringException"
+
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except${DOT_EXE} -static -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+
+      test_expect "static-except" "MyException"
+
+      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except${DOT_EXE} -static -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+
+      test_expect "rt-static-except" "MyException"
+
+      # -O0 is an attempt to prevent any interferences with the optimiser.
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except${DOT_EXE} -static -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      
+      test_expect "str-except" "MyStringException"
+
+      # -O0 is an attempt to prevent any interferences with the optimiser.
+      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except${DOT_EXE} -static -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+      
+      test_expect "rt-str-except" "MyStringException"
+
+    fi
+
     # -------------------------------------------------------------------------
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1700,8 +1736,7 @@ function test_llvm()
       run_app ./$test
     done
 
-    # TODO: investigate Linux, macOS is known to not support -static!
-    if [ "${TARGET_PLATFORM}" != "linux" -a "${TARGET_PLATFORM}" != "darwin" ]
+    if [ "${TARGET_PLATFORM}" != "darwin" ]
     then
       for test in hello-exception
       do
