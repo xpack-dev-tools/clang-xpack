@@ -446,4 +446,5 @@ remains the source code.
 - on macOS, because the system linker prefers the system libc++.dylib,
 there are no C++ headers and libraries)
 - no rpc/xdr.h in compiler_rt
-
+- on Linux the default is with libstdc++ and the GNU libraries
+- on Linux, the clang libc++ fails to link with -static is exceptions are used
