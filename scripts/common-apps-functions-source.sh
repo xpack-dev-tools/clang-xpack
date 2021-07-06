@@ -1022,7 +1022,7 @@ function build_llvm()
               exit 1
             fi
 
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
 
             # Set the default linker to gold, otherwise `-flto`
             # requires an expicit `-fuse-ld=gold`.
