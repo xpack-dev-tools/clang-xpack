@@ -1548,57 +1548,57 @@ function test_llvm()
     # -------------------------------------------------------------------------
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o except${DOT_EXE} -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o except-simple${DOT_EXE} -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
 
-    test_expect "except" "MyException"
+    test_expect "except-simple" "MyException"
 
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except${DOT_EXE} -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except-simple${DOT_EXE} -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
-    test_expect "rt-except" "MyException"
-
-    # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o str-except${DOT_EXE} -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-    
-    test_expect "str-except" "MyStringException"
+    test_expect "rt-except-simple" "MyException"
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except${DOT_EXE} -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+    run_app "${CXX}" ${VERBOSE_FLAG} -o str-except-simple${DOT_EXE} -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
     
-    test_expect "rt-str-except" "MyStringException"
+    test_expect "str-except-simple" "MyStringException"
+
+    # -O0 is an attempt to prevent any interferences with the optimiser.
+    run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except-simple${DOT_EXE} -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+    
+    test_expect "rt-str-except-simple" "MyStringException"
 
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
       # -static & -stdlib=libc++/-rtlib=compiler-rt currently fail on linux.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except${DOT_EXE} -static -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
 
-      test_expect "static-except" "MyException"
+      test_expect "static-except-simple" "MyException"
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except${DOT_EXE} -static -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
       
-      test_expect "str-except" "MyStringException"
+      test_expect "str-except-simple" "MyStringException"
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except${DOT_EXE} -static -O0 except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
 
-      test_expect "static-except" "MyException"
+      test_expect "static-except-simple" "MyException"
 
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except${DOT_EXE} -static -O0 except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
-      test_expect "rt-static-except" "MyException"
-
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except${DOT_EXE} -static -O0 str-except.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-      
-      test_expect "str-except" "MyStringException"
+      test_expect "rt-static-except-simple" "MyException"
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except${DOT_EXE} -static -O0 str-except.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
       
-      test_expect "rt-str-except" "MyStringException"
+      test_expect "str-except-simple" "MyStringException"
+
+      # -O0 is an attempt to prevent any interferences with the optimiser.
+      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+      
+      test_expect "rt-str-except-simple" "MyStringException"
 
     fi
 
