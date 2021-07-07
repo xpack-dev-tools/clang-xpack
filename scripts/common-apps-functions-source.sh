@@ -300,15 +300,13 @@ function build_native_llvm_mingw()
 
   local native_llvm_mingw_version="$1"
 
-  local native_llvm_mingw_folder_name="native-llvm-mingw-${native_llvm_mingw_version}"
+  local native_llvm_mingw_folder_name="llvm-${native_llvm_mingw_version}${NATIVE_SUFFIX}"
   local native_llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${native_llvm_mingw_folder_name}-installed"
 
   export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
-  export NATIVE_LLVM_MINGW_FOLDER_NAME="clang-native"
-  export NATIVE_LLVM_MINGW_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${NATIVE_LLVM_MINGW_FOLDER_NAME}"
 
   # Redundant, but may be use in submodule scripts.
-  export TOOLCHAIN_PREFIX="${NATIVE_LLVM_MINGW_FOLDER_PATH}"
+  export TOOLCHAIN_PREFIX="${APP_PREFIX}${NATIVE_SUFFIX}"
   export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
 
   if [ ! -f "${native_llvm_mingw_stamp_file_path}" ]
@@ -318,7 +316,6 @@ function build_native_llvm_mingw()
 
     mkdir -p "${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
     cd "${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
-
 
     git config --global user.name "LLVM MinGW"
     git config --global user.email root@localhost
@@ -369,7 +366,7 @@ __EOF__
 
       cat "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-llvm.sh" >> build-native-llvm.sh
       sed -i.bak \
-        -e 's|^    \$CMAKEFLAGS \\$|    \$CMAKEFLAGS "\${config_options[@]}" --verbose \\|' \
+        -e 's|^    \$CMAKEFLAGS \\$|    \$CMAKEFLAGS "\${config_options[@]}" \\|' \
         -e 's|^    -DLLVM_TARGETS_TO_BUILD="ARM;AArch64;X86" \\$|    -DLLVM_TARGETS_TO_BUILD="X86" \\|' \
         -e 's|^\$BUILDCMD |\$BUILDCMD -v |' \
         build-native-llvm.sh
@@ -378,13 +375,13 @@ __EOF__
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/patches/llvm-project"/*.patch patches/llvm-project
 
       # Build LLVM
-      run_verbose bash -x build-native-llvm.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash -x build-native-llvm.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       # -------------------------------------------------------------------
 
       # Strip the LLVM install output immediately.
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/strip-llvm.sh" .
-      run_verbose bash strip-llvm.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash strip-llvm.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       # Install the usual $TUPLE-clang binaries
       mkdir -p wrappers
@@ -394,7 +391,7 @@ __EOF__
 
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/install-wrappers.sh" .
 
-      run_verbose bash install-wrappers.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash install-wrappers.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${native_llvm_mingw_folder_name}/build-llvm.txt"
 
@@ -422,7 +419,7 @@ __EOF__
       export CXXFLAGS
       export LDFLAGS
 
-      export PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin:$PATH
+      export PATH="${APP_PREFIX}${NATIVE_SUFFIX}/bin:$PATH"
 
       env | sort
 
@@ -437,18 +434,18 @@ __EOF__
 
       # Build MinGW-w64
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64.sh" .
-      run_verbose bash -x build-mingw-w64.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH} --with-default-msvcrt=$DEFAULT_CRT
+      run_verbose bash -x build-mingw-w64.sh "${APP_PREFIX}${NATIVE_SUFFIX}" --with-default-msvcrt=$DEFAULT_CRT
 
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-tools.sh" .
-      run_verbose bash -x build-mingw-w64-tools.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash -x build-mingw-w64-tools.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       # Build compiler-rt
       cp -v "${LLVM_MINGW_PATH}/build-compiler-rt.sh" .
-      run_verbose bash -x build-compiler-rt.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash -x build-compiler-rt.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       # Build mingw-w64's extra libraries
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-libraries.sh" .
-      run_verbose bash -x build-mingw-w64-libraries.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash -x build-mingw-w64-libraries.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       VERBOSE_FLAG=""
       if [ "${IS_DEVELOP}" == "y" ]
@@ -494,7 +491,7 @@ __EOF__
 
       # Build libunwind/libcxxabi/libcxx
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
-      run_verbose bash -x build-libcxx.sh ${NATIVE_LLVM_MINGW_FOLDER_PATH}
+      run_verbose bash -x build-libcxx.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
 
       # Build C++ test applications
       (
@@ -509,7 +506,7 @@ __EOF__
           for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
+                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -526,7 +523,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
+                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -534,7 +531,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/$arch-w64-mingw32/bin 
+                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -815,8 +812,8 @@ function build_llvm()
         then
           if [ "${USE_LLVM_MINGW}" == "y" ]
           then
-          export CC="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-gcc"
-          export CXX="${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-g++"
+          export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-gcc"
+          export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-g++"
           else
           export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
           export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
@@ -1105,7 +1102,7 @@ function build_llvm()
 
               if [ "${USE_LLVM_MINGW}" == "y" ]
               then
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${NATIVE_LLVM_MINGW_FOLDER_PATH}/${TARGET}")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
               config_options+=("-DCMAKE_RC_COMPILER=${CROSS_COMPILE_PREFIX}-windres")
               else
               config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
@@ -1852,13 +1849,13 @@ function build_llvm_compiler_rt()
 
         if [ "${USE_LLVM_MINGW}" == "y" ]
         then
-        config_options+=("-DCMAKE_C_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
 
         else
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
@@ -1990,13 +1987,13 @@ function build_llvm_libcxx()
 
         if [ "${USE_LLVM_MINGW}" == "y" ]
         then
-        config_options+=("-DCMAKE_C_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
         else
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
@@ -2101,13 +2098,13 @@ function build_llvm_libcxx()
 
         if [ "${USE_LLVM_MINGW}" == "y" ]
         then
-        config_options+=("-DCMAKE_C_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
         else
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
@@ -2218,12 +2215,13 @@ function build_llvm_libcxx()
 
         if [ "${USE_LLVM_MINGW}" == "y" ]
         then
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
         else
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
@@ -2320,7 +2318,7 @@ function build_llvm_libcxx()
         else
           if [ "${USE_LLVM_MINGW}" == "y" ]
           then
-          run_verbose ${NATIVE_LLVM_MINGW_FOLDER_PATH}/bin/llvm-ar qcsL \
+          run_verbose ${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar qcsL \
                   "${APP_PREFIX}/lib/libc++.a" \
                   "${APP_PREFIX}/lib/libunwind.a"
           else
