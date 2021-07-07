@@ -1716,7 +1716,7 @@ function test_llvm()
       do 
         run_app "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
         show_libs $test
-        run_app $test
+        run_app ./$test
       done
 
       for test in idltest
@@ -1725,7 +1725,7 @@ function test_llvm()
         run_app "${WIDL}" $test.idl -h -o $test.h 
         run_app "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
         show_libs $test
-        run_app $test 
+        run_app ./$test 
       done
     fi
 
