@@ -25,7 +25,7 @@ function run_tests()
   # Call the functions defined in the build code.
   test_llvm
 
-  if [ "${TARGET_PLATFORM}" != "darwin" ]
+  if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     test_binutils_ld_gold
   fi
