@@ -79,27 +79,6 @@ function build_versions()
       # since it's already in, also use it to build the final llvm & mingw.
       build_native_llvm_mingw "12.0.0" # "${LLVM_VERSION}"
 
-      # Use the native llvm-mingw binaries.
-      unset_gcc_env
-
-      export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-gcc"
-      export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-g++"
-
-      export AR="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ar"
-      export AS="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-as"
-      export DLLTOOL="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
-      export LD="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ld"
-      export NM="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-nm"
-      export OBJCOPY="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objcopy"
-      export OBJDUMP="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objdump"
-      export RANLIB="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
-      # export READELF="${prefix}readelf"
-      # export SIZE="${prefix}size"
-      export STRIP="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-strip"
-      export WINDRES="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
-      # export WINDMC="${prefix}windmc"
-      export RC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
-
       else
 
       # Build a native toolchain, mainly for the *-tblgen tools, but
@@ -127,6 +106,8 @@ function build_versions()
       # libunwind, libcxx, libcxxabi
       build_llvm_libcxx "${NATIVE_SUFFIX}"
 
+      fi
+    
       # Use the native llvm-mingw binaries.
       unset_gcc_env
 
@@ -149,8 +130,6 @@ function build_versions()
       # Use the XBB one, not the native llvm?
       export RC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
 
-      fi
-    
       # To access libncurses.so.6 by the native llvm binaries.
       # TODO: build native static.
       xbb_activate_libs

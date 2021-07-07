@@ -810,14 +810,8 @@ function build_llvm()
           export CXX=clang++
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
-          if [ "${USE_LLVM_MINGW}" == "y" ]
-          then
-          export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-gcc"
-          export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-g++"
-          else
           export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
           export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
-          fi
         fi
 
       fi
@@ -1100,14 +1094,8 @@ function build_llvm()
 
               config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-              if [ "${USE_LLVM_MINGW}" == "y" ]
-              then
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
-              config_options+=("-DCMAKE_RC_COMPILER=${CROSS_COMPILE_PREFIX}-windres")
-              else
               config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
               config_options+=("-DCMAKE_RC_COMPILER=${RC}")
-              fi
 
               config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
               config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
@@ -1847,17 +1835,6 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        if [ "${USE_LLVM_MINGW}" == "y" ]
-        then
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-
-        else
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
         config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
@@ -1865,7 +1842,6 @@ function build_llvm_compiler_rt()
         
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        fi
 
         if [ "${HOST_MACHINE}" == "x86_64" ]
         then
@@ -1985,8 +1961,6 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        if [ "${USE_LLVM_MINGW}" == "y" ]
-        then
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
         config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
@@ -1994,15 +1968,6 @@ function build_llvm_libcxx()
 
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        else
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        fi
 
         config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
         config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
@@ -2096,8 +2061,6 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        if [ "${USE_LLVM_MINGW}" == "y" ]
-        then
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
         config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
@@ -2105,15 +2068,6 @@ function build_llvm_libcxx()
 
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        else
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        fi
 
         config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
 
@@ -2213,8 +2167,6 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        if [ "${USE_LLVM_MINGW}" == "y" ]
-        then
         config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
         config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
@@ -2222,15 +2174,6 @@ function build_llvm_libcxx()
 
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        else
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
-        fi
 
         config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
         config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
@@ -2316,16 +2259,9 @@ function build_llvm_libcxx()
                   "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib/libc++.a" \
                   "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib/libunwind.a"
         else
-          if [ "${USE_LLVM_MINGW}" == "y" ]
-          then
-          run_verbose ${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar qcsL \
-                  "${APP_PREFIX}/lib/libc++.a" \
-                  "${APP_PREFIX}/lib/libunwind.a"
-          else
           run_verbose "${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar" qcsL \
                   "${APP_PREFIX}/lib/libc++.a" \
                   "${APP_PREFIX}/lib/libunwind.a"
-          fi
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output.txt"
