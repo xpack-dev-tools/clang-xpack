@@ -2293,7 +2293,7 @@ function strip_libs()
       local libs=$(find "${APP_PREFIX}" -type f -name '*.[ao]')
       for lib in ${libs}
       do
-        if is_elf "${lib}" || is_ar "${lib}"
+        if is_elf "${lib}" || is_pe "${lib}" || is_ar "${lib}"
         then
           echo "strip -S ${lib}"
           strip -S "${lib}"
