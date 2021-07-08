@@ -637,14 +637,13 @@ function build_llvm()
       then
 
         # Use XBB libs in native-llvm
+        xbb_activate_dev
         xbb_activate_libs
 
-        unset_gcc_env
+        # Revert to the XBB GCC (not mingw as usual for windows targets).
+        prepare_gcc_env "" "-xbb"
 
-        CC=${NATIVE_CC}
-        CXX=${NATIVE_CXX}
-
-        CPPFLAGS="${XBB_CPPFLAGS}"
+        CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
@@ -720,7 +719,7 @@ function build_llvm()
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+#          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}")
@@ -742,6 +741,9 @@ function build_llvm()
             config_options+=("-DFLANG_VENDOR=${LLVM_NATIVE_BRANDING} ")
             config_options+=("-DLLD_VENDOR=${LLVM_NATIVE_BRANDING} ")
             config_options+=("-DPACKAGE_VENDOR=${LLVM_NATIVE_BRANDING} ")
+
+            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
+            config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
 
           else
 
@@ -936,26 +938,8 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
-            if [ -n "${native_suffix}" ]
+            if [ ! -n "${native_suffix}" ]
             then
-              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-              # Set the default linker to gold, otherwise `-flto`
-              # requires an explicit `-fuse-ld=gold`.
-              config_options+=("-DCLANG_DEFAULT_LINKER=gold")
-              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-
-              # Reduce dependencies for the native toolchain.
-              config_options+=("-DLLDB_ENABLE_CURSES=OFF")
-              config_options+=("-DLLDB_ENABLE_LIBEDIT=OFF")
-              config_options+=("-DLLDB_ENABLE_LIBXML2=OFF")
-              config_options+=("-DLLDB_ENABLE_LUA=OFF")
-              config_options+=("-DLLDB_ENABLE_LZMA=OFF")
-              config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
-
-              # To generate the LLVMgold.so
-              config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
-              config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
-            else
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
               config_options+=("-DCLANG_DEFAULT_LINKER=lld")
               config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
@@ -1658,14 +1642,6 @@ function build_llvm_compiler_rt()
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
-      xbb_activate
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # Use XBB libs in native-llvm
-        xbb_activate_libs
-      fi
-
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -1783,14 +1759,6 @@ function build_llvm_libcxx()
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
 
-      xbb_activate
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # Use XBB libs in native-llvm
-        xbb_activate_libs
-      fi
-
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -1882,14 +1850,6 @@ function build_llvm_libcxx()
       cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-      xbb_activate
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # Use XBB libs in native-llvm
-        xbb_activate_libs
-      fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -1988,14 +1948,6 @@ function build_llvm_libcxx()
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
 
-      xbb_activate
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # Use XBB libs in native-llvm
-        xbb_activate_libs
-      fi
-
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -2069,7 +2021,6 @@ function build_llvm_libcxx()
         run_verbose cmake --build . --verbose
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/build-output.txt"
-
     )
 
     touch "${llvm_libcxxabi_stamp_file_path}"
@@ -2086,14 +2037,6 @@ function build_llvm_libcxx()
       cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-      xbb_activate
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        # Use XBB libs in native-llvm
-        xbb_activate_libs
-      fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -2141,8 +2084,8 @@ function build_llvm_libcxx()
   else
     echo "Component llvm-libcxx${native_suffix} already installed."
   fi
-
 }
+
 
 function strip_libs()
 {
