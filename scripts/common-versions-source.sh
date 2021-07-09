@@ -36,6 +36,8 @@ function xbb_activate_llvm_bootstrap_bins()
   # Use the XBB one, not the native llvm?
   export RC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
 
+  # Warning, this might bring llvm-config into the PATH, and crash the
+  # compiler-rt build.
   export PATH="${APP_PREFIX}${NATIVE_SUFFIX}/bin:${PATH}"
   xbb_activate_libs
 }
@@ -187,9 +189,9 @@ function build_versions()
         # libunwind, libcxx, libcxxabi
         build_llvm_libcxx
       )
-    fi
+      fi
 
-    else
+    else # macOS & GNU/Linux
 
       build_zlib "1.2.11"
       build_libffi "3.3"
