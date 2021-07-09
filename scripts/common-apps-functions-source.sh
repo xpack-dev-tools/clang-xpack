@@ -1821,7 +1821,8 @@ function build_llvm_libcxx()
         config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
         config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
 
-#        config_options+=("-DLLVM_COMPILER_CHECKED=ON")
+        # When compiling the bootstrap, the compiler is not yet fully functional.
+        config_options+=("-DLLVM_COMPILER_CHECKED=ON")
         config_options+=("-DLLVM_PATH=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
 
         run_verbose cmake \
