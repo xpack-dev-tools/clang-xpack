@@ -56,7 +56,7 @@ function build_versions()
 
   LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
 
-  export BOOTSTRAP_SUFFIX="-native"
+  export BOOTSTRAP_SUFFIX="-bootstrap"
 
 # -----------------------------------------------------------------------------
   
@@ -140,6 +140,16 @@ function build_versions()
     
       if true
       then
+
+      build_zlib "1.2.11"
+      # Fails when built with bootstrap.
+      build_libffi "3.3"
+ 
+      build_ncurses "6.2"
+      build_libiconv "1.16"
+ 
+      build_xz "5.2.5"
+
       # Use the native llvm-mingw binaries.
       xbb_activate_llvm_bootstrap_bins
 
