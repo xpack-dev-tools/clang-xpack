@@ -60,7 +60,7 @@ function build_versions()
 
 # -----------------------------------------------------------------------------
   
-  if [[ "${RELEASE_VERSION}" =~ 11\.1\.0-[1] ]]
+  if [[ "${RELEASE_VERSION}" =~ 12\.0\.1-[1] ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
@@ -68,19 +68,16 @@ function build_versions()
 
     MINGW_VERSION="8.0.2"
 
-    if [ "${TARGET_PLATFORM}" = "win32" ]
+    if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-
-      # Build a native toolchain, mainly for the *-tblgen tools, but
-      # since it's already in, also use it to build the final llvm & mingw.
-      # CC=${NATIVE_CC} is set inside the function.
+      # Build a bootstrap toolchain, mainly for the *-tblgen tools, but
+      # also because mixing with mingw-gcc fails the build in
+      # various weird ways.
       build_llvm "${LLVM_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
       (
         xbb_activate
-
-        # Favour LLVM bootstrap binaries.
-        xbb_activate_llvm_bootstrap_bins
+        xbb_activate_llvm_bootstrap_bins  # Use the bootstrap llvm binaries.
 
         prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
@@ -97,18 +94,12 @@ function build_versions()
         prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
         build_mingw_libmangle
-        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${BOOTSTRAP_SUFFIX}/lib"
-
         build_mingw_gendef
-
-        # Refers to mingw headers.
-        build_mingw_widl
+        build_mingw_widl # Refers to mingw headers.
       )
    
       (
         xbb_activate
-
-        # Favour bootstrap binaries.
         xbb_activate_llvm_bootstrap_bins
 
         build_llvm_compiler_rt "${BOOTSTRAP_SUFFIX}"
@@ -116,99 +107,86 @@ function build_versions()
         prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
         build_mingw_winpthreads
-
         build_mingw_winstorecompat
 
-        # libunwind, libcxx, libcxxabi
-        build_llvm_libcxx "${BOOTSTRAP_SUFFIX}"
+        build_llvm_libcxx "${BOOTSTRAP_SUFFIX}" # libunwind, libcxx, libcxxabi
       )
-    
-      if true
-      then
+    fi
 
-      build_zlib "1.2.11"
-      # Fails when built with bootstrap.
-      build_libffi "3.3"
- 
-      build_ncurses "6.2"
-      build_libiconv "1.16"
- 
-      build_xz "5.2.5"
-
-      # Use the native llvm-mingw binaries.
-      xbb_activate_llvm_bootstrap_bins
-
-      # Due to llvm-gentab specifics, it must be the same version as the
-      # native llvm.
-      build_llvm "${LLVM_VERSION}"
-
-      (
-        xbb_activate
-        prepare_mingw_env "${MINGW_VERSION}" 
-
-        # headers & crt
-        build_mingw_core
-      )
-
-      (
-        xbb_activate
-
-        # Temporarily use the XBB GCC (not mingw as usual for windows targets).
-        prepare_gcc_env "" "-xbb"
-
-        prepare_mingw_env "${MINGW_VERSION}"
-
-        build_mingw_libmangle
-        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${BOOTSTRAP_SUFFIX}/lib"
-
-        build_mingw_gendef
-
-        # Refers to mingw headers.
-        build_mingw_widl
-      )
-
-      (
-        xbb_activate
-
-        # Favour bootstrap binaries.
-        # export PATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin:${PATH}"
-        xbb_activate_llvm_bootstrap_bins
-
-        build_llvm_compiler_rt
-
-        prepare_mingw_env "${MINGW_VERSION}" 
-
-        build_mingw_winpthreads
-        build_mingw_winstorecompat
-
-        # libunwind, libcxx, libcxxabi
-        build_llvm_libcxx
-      )
+    if true # Switch used while testing the bootstrap.
+    then
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then 
+        build_binutils_ld_gold "${BINUTILS_VERSION}"
       fi
 
-    else # macOS & GNU/Linux
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        xbb_activate_llvm_bootstrap_bins # Use the bootstrap llvm binaries.
+      fi
 
       build_zlib "1.2.11"
-      build_libffi "3.3"
+
+      if [ "${TARGET_PLATFORM}" != "win32" ]
+      then 
+        # Fails when built with bootstrap on Windows.
+        build_libffi "3.3"
+      fi
 
       build_ncurses "6.2"
       build_libiconv "1.16"
 
       build_xz "5.2.5"
-
-      build_libxml2 "2.9.11"
-      build_libedit "20210522-3.1"
 
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then 
-
-        build_binutils_ld_gold "${BINUTILS_VERSION}"
-
+        # On Windows it fails with the LLVM bootstrap.
+        build_libxml2 "2.9.11"
+        build_libedit "20210522-3.1"
       fi
 
+      # Due to llvm-gentab specifics, it must be the same version as the
+      # bootstrap llvm.
       build_llvm "${LLVM_VERSION}"
 
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        (
+          xbb_activate
+          prepare_mingw_env "${MINGW_VERSION}" 
+
+          build_mingw_core # headers & crt
+        )
+
+        (
+          xbb_activate
+          # Temporarily use the XBB GCC (not mingw as usual for windows targets).
+          prepare_gcc_env "" "-xbb"
+
+          prepare_mingw_env "${MINGW_VERSION}"
+
+          build_mingw_libmangle
+          build_mingw_gendef
+          # Refers to mingw headers.
+          build_mingw_widl
+        )
+
+        (
+          xbb_activate
+          xbb_activate_llvm_bootstrap_bins # Use the bootstrap llvm binaries.
+
+          build_llvm_compiler_rt
+
+          prepare_mingw_env "${MINGW_VERSION}" 
+
+          build_mingw_winpthreads
+          build_mingw_winstorecompat
+  
+          build_llvm_libcxx # libunwind, libcxx, libcxxabi
+        )
+      fi
     fi
+
     # -------------------------------------------------------------------------
   else
     echo "Unsupported ${APP_LC_NAME} version ${RELEASE_VERSION}."
