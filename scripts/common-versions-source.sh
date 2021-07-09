@@ -71,18 +71,6 @@ function build_versions()
     if [ "${TARGET_PLATFORM}" = "win32" ]
     then
 
-      USE_LLVM_MINGW="n"
-
-      if [ "${USE_LLVM_MINGW}" == "y" ]
-      then
-
-      # Build a native toolchain, mainly for the *-tblgen tools, but
-      # since it's already in, also use it to build the final llvm & mingw.
-      build_native_llvm_mingw "${LLVM_VERSION}"
-
-      else
-
-
       # Build a native toolchain, mainly for the *-tblgen tools, but
       # since it's already in, also use it to build the final llvm & mingw.
       # CC=${NATIVE_CC} is set inside the function.
@@ -134,8 +122,6 @@ function build_versions()
         # libunwind, libcxx, libcxxabi
         build_llvm_libcxx "${BOOTSTRAP_SUFFIX}"
       )
-
-      fi
     
       if true
       then
