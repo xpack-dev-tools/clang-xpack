@@ -719,7 +719,7 @@ function build_llvm()
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-#          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}")
