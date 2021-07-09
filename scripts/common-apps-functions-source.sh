@@ -487,7 +487,7 @@ __EOF__
               run_app $arch/$test || exit 1
           done
         done
-      )
+      ) 
 
       # Build libunwind/libcxxabi/libcxx
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
@@ -1712,7 +1712,7 @@ function build_llvm_compiler_rt()
         config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON")
         config_options+=("-DSANITIZER_CXX_ABI=libc++")
 
-        # Do not activate it, it fails.
+        # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
         # config_options+=("-DLLVM_CONFIG_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-config")
 
         run_verbose cmake \
