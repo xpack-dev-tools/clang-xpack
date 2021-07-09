@@ -47,7 +47,7 @@ function build_versions()
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
     LLVM_BRANDING="${BRANDING_PREFIX} MinGW-w64 ${TARGET_BITS}-bit"
-    LLVM_NATIVE_BRANDING="${BRANDING_PREFIX} bootstrap ${TARGET_BITS}-bit"
+    LLVM_BOOTSTRAP_BRANDING="${BRANDING_PREFIX} bootstrap ${TARGET_BITS}-bit"
     BINUTILS_BRANDING="${BRANDING_PREFIX} MinGW-w64 binutils ${TARGET_BITS}-bit"
   else
     LLVM_BRANDING="${BRANDING_PREFIX} ${TARGET_BITS}-bit"

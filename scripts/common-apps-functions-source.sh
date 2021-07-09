@@ -446,10 +446,10 @@ function build_llvm()
           then
 
             # Please note the trailing space.
-            config_options+=("-DCLANG_VENDOR=${LLVM_NATIVE_BRANDING} ")
-            config_options+=("-DFLANG_VENDOR=${LLVM_NATIVE_BRANDING} ")
-            config_options+=("-DLLD_VENDOR=${LLVM_NATIVE_BRANDING} ")
-            config_options+=("-DPACKAGE_VENDOR=${LLVM_NATIVE_BRANDING} ")
+            config_options+=("-DCLANG_VENDOR=${LLVM_BOOTSTRAP_BRANDING} ")
+            config_options+=("-DFLANG_VENDOR=${LLVM_BOOTSTRAP_BRANDING} ")
+            config_options+=("-DLLD_VENDOR=${LLVM_BOOTSTRAP_BRANDING} ")
+            config_options+=("-DPACKAGE_VENDOR=${LLVM_BOOTSTRAP_BRANDING} ")
 
             config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
             config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
