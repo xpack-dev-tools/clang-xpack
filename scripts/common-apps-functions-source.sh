@@ -1644,6 +1644,16 @@ function build_llvm_compiler_rt()
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
+      if [ "${HOST_MACHINE}" == "i686" ]
+      then
+        # The 32-bit build fails to fins assert.h
+        if [ -n "${native_suffix}" ]
+        then
+          CFLAGS+=" -I${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/include"
+        else
+          CFLAGS+=" -I${APP_PREFIX}${native_suffix}/include"
+        fi
+      fi
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS}"
