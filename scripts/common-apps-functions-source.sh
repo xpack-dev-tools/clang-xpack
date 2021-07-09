@@ -300,13 +300,13 @@ function build_native_llvm_mingw()
 
   local native_llvm_mingw_version="$1"
 
-  local native_llvm_mingw_folder_name="llvm-${native_llvm_mingw_version}${NATIVE_SUFFIX}"
+  local native_llvm_mingw_folder_name="llvm-${native_llvm_mingw_version}${BOOTSTRAP_SUFFIX}"
   local native_llvm_mingw_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${native_llvm_mingw_folder_name}-installed"
 
   export BUILD_LLVM_MINGW_PATH="${BUILD_FOLDER_PATH}/${native_llvm_mingw_folder_name}"
 
   # Redundant, but may be use in submodule scripts.
-  export TOOLCHAIN_PREFIX="${APP_PREFIX}${NATIVE_SUFFIX}"
+  export TOOLCHAIN_PREFIX="${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
   export TOOLCHAIN_ARCHS="${HOST_MACHINE}"
 
   if [ ! -f "${native_llvm_mingw_stamp_file_path}" ]
@@ -375,13 +375,13 @@ __EOF__
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/patches/llvm-project"/*.patch patches/llvm-project
 
       # Build LLVM
-      run_verbose bash -x build-native-llvm.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash -x build-native-llvm.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       # -------------------------------------------------------------------
 
       # Strip the LLVM install output immediately.
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/strip-llvm.sh" .
-      run_verbose bash strip-llvm.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash strip-llvm.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       # Install the usual $TUPLE-clang binaries
       mkdir -p wrappers
@@ -391,7 +391,7 @@ __EOF__
 
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/install-wrappers.sh" .
 
-      run_verbose bash install-wrappers.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash install-wrappers.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${native_llvm_mingw_folder_name}/build-llvm.txt"
 
@@ -419,7 +419,7 @@ __EOF__
       export CXXFLAGS
       export LDFLAGS
 
-      export PATH="${APP_PREFIX}${NATIVE_SUFFIX}/bin:$PATH"
+      export PATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin:$PATH"
 
       env | sort
 
@@ -434,18 +434,18 @@ __EOF__
 
       # Build MinGW-w64
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64.sh" .
-      run_verbose bash -x build-mingw-w64.sh "${APP_PREFIX}${NATIVE_SUFFIX}" --with-default-msvcrt=$DEFAULT_CRT
+      run_verbose bash -x build-mingw-w64.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}" --with-default-msvcrt=$DEFAULT_CRT
 
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-tools.sh" .
-      run_verbose bash -x build-mingw-w64-tools.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash -x build-mingw-w64-tools.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       # Build compiler-rt
       cp -v "${LLVM_MINGW_PATH}/build-compiler-rt.sh" .
-      run_verbose bash -x build-compiler-rt.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash -x build-compiler-rt.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       # Build mingw-w64's extra libraries
       cp -v "${LLVM_MINGW_PATH}/build-mingw-w64-libraries.sh" .
-      run_verbose bash -x build-mingw-w64-libraries.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash -x build-mingw-w64-libraries.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       VERBOSE_FLAG=""
       if [ "${IS_DEVELOP}" == "y" ]
@@ -491,7 +491,7 @@ __EOF__
 
       # Build libunwind/libcxxabi/libcxx
       cp -v "${BUILD_GIT_PATH}/scripts/llvm-mingw/build-libcxx.sh" .
-      run_verbose bash -x build-libcxx.sh "${APP_PREFIX}${NATIVE_SUFFIX}"
+      run_verbose bash -x build-libcxx.sh "${APP_PREFIX}${BOOTSTRAP_SUFFIX}"
 
       # Build C++ test applications
       (
@@ -506,7 +506,7 @@ __EOF__
           for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup; do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
+                export WINEPATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -523,7 +523,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
+                export WINEPATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -531,7 +531,7 @@ __EOF__
           do
               run_verbose $arch-w64-mingw32-clang++ $test.cpp -o $arch/$test.exe -L$arch -l${test%-main}-lib ${VERBOSE_FLAG} || exit 1
               (
-                export WINEPATH="${APP_PREFIX}${NATIVE_SUFFIX}/$arch-w64-mingw32/bin" 
+                export WINEPATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/$arch-w64-mingw32/bin" 
                 run_app $arch/$test || exit 1
               )
           done
@@ -571,9 +571,9 @@ function build_llvm()
   # Fixed in 12.x.
 
   export ACTUAL_LLVM_VERSION="$1"
-  local native_suffix=${2-''}
+  local name_suffix=${2-''}
 
-  if [ -n "${native_suffix}" -a "${TARGET_PLATFORM}" != "win32" ]
+  if [ -n "${name_suffix}" -a "${TARGET_PLATFORM}" != "win32" ]
   then
     echo "Native supported only for Windows binaries."
     exit 1
@@ -584,7 +584,7 @@ function build_llvm()
 
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
 
-  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}${native_suffix}"
+  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}${name_suffix}"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
   local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
@@ -633,7 +633,7 @@ function build_llvm()
 
       xbb_activate
 
-      if [ -n "${native_suffix}" ]
+      if [ -n "${name_suffix}" ]
       then
 
         # Use XBB libs in native-llvm
@@ -677,8 +677,8 @@ function build_llvm()
           export CXX=clang++
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
-          export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
-          export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
+          export CC="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
+          export CXX="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
         fi
 
       fi
@@ -699,7 +699,7 @@ function build_llvm()
       then
         (
           echo
-          echo "Running llvm${native_suffix} cmake..."
+          echo "Running llvm${name_suffix} cmake..."
 
           config_options=()
 
@@ -722,7 +722,7 @@ function build_llvm()
           config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${name_suffix}")
 
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
           config_options+=("-DCMAKE_C_COMPILER=${CC}")
@@ -733,7 +733,7 @@ function build_llvm()
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
-          if [ -n "${native_suffix}" ]
+          if [ -n "${name_suffix}" ]
           then
 
             # Please note the trailing space.
@@ -938,7 +938,7 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
-            if [ ! -n "${native_suffix}" ]
+            if [ ! -n "${name_suffix}" ]
             then
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
               config_options+=("-DCLANG_DEFAULT_LINKER=lld")
@@ -946,7 +946,7 @@ function build_llvm()
 
               config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/${TARGET}")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/${TARGET}")
               config_options+=("-DCMAKE_RC_COMPILER=${RC}")
 
               config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
@@ -966,13 +966,13 @@ function build_llvm()
 
               else
 
-              config_options+=("-DCLANG_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/clang-tblgen")
-              config_options+=("-DLLDB_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/lldb-tblgen")
-              config_options+=("-DLLVM_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/llvm-tblgen")
+              config_options+=("-DCLANG_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${BOOTSTRAP_SUFFIX}/bin/clang-tblgen")
+              config_options+=("-DLLDB_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${BOOTSTRAP_SUFFIX}/bin/lldb-tblgen")
+              config_options+=("-DLLVM_TABLEGEN=${BUILD_FOLDER_PATH}/${llvm_folder_name}${BOOTSTRAP_SUFFIX}/bin/llvm-tblgen")
 
               config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
 
-              config_options+=("-DLLVM_CONFIG_PATH=${BUILD_FOLDER_PATH}/${llvm_folder_name}${NATIVE_SUFFIX}/bin/llvm-config")
+              config_options+=("-DLLVM_CONFIG_PATH=${BUILD_FOLDER_PATH}/${llvm_folder_name}${BOOTSTRAP_SUFFIX}/bin/llvm-config")
 
               fi
               config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
@@ -1006,7 +1006,7 @@ function build_llvm()
 
       (
         echo
-        echo "Running llvm${native_suffix} build..."
+        echo "Running llvm${name_suffix} build..."
 
         if [ "${IS_DEVELOP}" == "y" ]
         then
@@ -1020,11 +1020,11 @@ function build_llvm()
         # Copy the LLVMgold plug-in. Not functional for native.
         if false # [ -f "lib/LLVMgold.so" ]
         then
-          mkdir -pv "${APP_PREFIX}${native_suffix}/lib/bfd-plugins/"
-          cp -v "lib/LLVMgold.so" "${APP_PREFIX}${native_suffix}/lib/bfd-plugins/"
+          mkdir -pv "${APP_PREFIX}${name_suffix}/lib/bfd-plugins/"
+          cp -v "lib/LLVMgold.so" "${APP_PREFIX}${name_suffix}/lib/bfd-plugins/"
         fi
 
-        if [ ! -n "${native_suffix}" ]
+        if [ ! -n "${name_suffix}" ]
         then
           (
             echo
@@ -1069,7 +1069,7 @@ function build_llvm()
         else
           (
             # Add wrappers for the mingw-w64 binaries.
-            cd "${APP_PREFIX}${native_suffix}/bin"
+            cd "${APP_PREFIX}${name_suffix}/bin"
 
             cp "${BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
 
@@ -1102,10 +1102,10 @@ function build_llvm()
           )
         fi
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          show_native_libs "${APP_PREFIX}${native_suffix}/bin/clang"
-          show_native_libs "${APP_PREFIX}${native_suffix}/bin/llvm-nm"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/clang"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/llvm-nm"
         else
           show_libs "${APP_PREFIX}/bin/clang"
           show_libs "${APP_PREFIX}/bin/llvm-nm"
@@ -1113,7 +1113,7 @@ function build_llvm()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output.txt"
 
-      if [ ! -n "${native_suffix}" ]
+      if [ ! -n "${name_suffix}" ]
       then
         copy_license \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
@@ -1124,10 +1124,10 @@ function build_llvm()
     touch "${llvm_stamp_file_path}"
 
   else
-    echo "Component llvm${native_suffix} already installed."
+    echo "Component llvm${name_suffix} already installed."
   fi
 
-  if [ -n "${native_suffix}" ]
+  if [ -n "${name_suffix}" ]
   then
     tests_add "test_llvm_bootstrap"
   else
@@ -1141,7 +1141,7 @@ function test_llvm_bootstrap()
     # Use XBB libs in native-llvm
     xbb_activate_libs
 
-    test_llvm "-native"
+    test_llvm "${BOOTSTRAP_SUFFIX}"
   )
 }
 
@@ -1154,15 +1154,15 @@ function test_llvm_final()
 
 function test_llvm()
 {
-  local native_suffix=${1-''}
+  local name_suffix=${1-''}
 
   echo
-  echo "Testing the llvm${native_suffix} binaries..."
+  echo "Testing the llvm${name_suffix} binaries..."
 
   (
-    if [ -n "${native_suffix}" ]
+    if [ -n "${name_suffix}" ]
     then
-      TEST_PREFIX="${INSTALL_FOLDER_PATH}/clang-native"
+      TEST_PREFIX="${INSTALL_FOLDER_PATH}/clang${BOOTSTRAP_SUFFIX}"
       # Help the loader find the .dll files if the native is not static.
       export WINEPATH=${TEST_PREFIX}/${CROSS_COMPILE_PREFIX}/bin 
 
@@ -1247,7 +1247,7 @@ function test_llvm()
 
     local tests_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
     mkdir -pv "${tests_folder_path}/tests"
-    local tmp="$(mktemp "${tests_folder_path}/tests/test-clang${native_suffix}-XXXXXXXXXX")"
+    local tmp="$(mktemp "${tests_folder_path}/tests/test-clang${name_suffix}-XXXXXXXXXX")"
     rm -rf "${tmp}"
 
     mkdir -p "${tmp}"
@@ -1623,15 +1623,15 @@ function test_llvm()
   )
 
   echo
-  echo "Testing the llvm${native_suffix} binaries completed successfuly."
+  echo "Testing the llvm${name_suffix} binaries completed successfuly."
 }
 
-# $1="${NATIVE_SUFFIX}"
+# $1="${BOOTSTRAP_SUFFIX}"
 function build_llvm_compiler_rt()
 {
-  local native_suffix=${1-''}
+  local name_suffix=${1-''}
 
-  local llvm_compiler_rt_folder_name="llvm-${ACTUAL_LLVM_VERSION}-compiler-rt${native_suffix}"
+  local llvm_compiler_rt_folder_name="llvm-${ACTUAL_LLVM_VERSION}-compiler-rt${name_suffix}"
 
   local llvm_compiler_rt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
   if [ ! -f "${llvm_compiler_rt_stamp_file_path}" ]
@@ -1647,11 +1647,11 @@ function build_llvm_compiler_rt()
       if [ "${HOST_MACHINE}" == "i686" ]
       then
         # The 32-bit build fails to fins assert.h
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          CFLAGS+=" -I${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/include"
+          CFLAGS+=" -I${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/include"
         else
-          CFLAGS+=" -I${APP_PREFIX}${native_suffix}/include"
+          CFLAGS+=" -I${APP_PREFIX}${name_suffix}/include"
         fi
       fi
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -1672,14 +1672,14 @@ function build_llvm_compiler_rt()
      
       (
         echo
-        echo "Running llvm-compiler-rt${native_suffix} cmake..."
+        echo "Running llvm-compiler-rt${name_suffix} cmake..."
 
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}")
         else
           # Traditionally the runtime is in a versioned folder.
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}/lib/clang/${ACTUAL_LLVM_VERSION}")
@@ -1689,13 +1689,13 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
         
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         if [ "${HOST_MACHINE}" == "x86_64" ]
         then
@@ -1713,7 +1713,7 @@ function build_llvm_compiler_rt()
         config_options+=("-DSANITIZER_CXX_ABI=libc++")
 
         # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
-        # config_options+=("-DLLVM_CONFIG_PATH=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-config")
+        # config_options+=("-DLLVM_CONFIG_PATH=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-config")
 
         run_verbose cmake \
           "${config_options[@]}" \
@@ -1725,20 +1725,20 @@ function build_llvm_compiler_rt()
         run_verbose cmake --build . --verbose
         run_verbose cmake --build . --verbose --target install/strip
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          mkdir -pv "${APP_PREFIX}${native_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
+          mkdir -pv "${APP_PREFIX}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
           for i in lib/windows/libclang_rt.*.a
           do
-              cp -v $i "${APP_PREFIX}${native_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
+              cp -v $i "${APP_PREFIX}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
           done
 
-          mkdir -pv "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/bin"
+          mkdir -pv "${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/bin"
           for i in lib/windows/libclang_rt.*.dll
           do
               if [ -f $i ]
               then
-                  cp -v $i "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/bin"
+                  cp -v $i "${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/bin"
               fi
           done
         fi
@@ -1749,16 +1749,16 @@ function build_llvm_compiler_rt()
     touch "${llvm_compiler_rt_stamp_file_path}"
 
   else
-    echo "Component llvm-compiler-rt${native_suffix} already installed."
+    echo "Component llvm-compiler-rt${name_suffix} already installed."
   fi
 
 }
 
 function build_llvm_libcxx()
 {
-  local native_suffix=${1-''}
+  local name_suffix=${1-''}
 
-  local llvm_libunwind_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libunwind${native_suffix}"
+  local llvm_libunwind_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libunwind${name_suffix}"
 
   local llvm_libunwind_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
   if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
@@ -1791,14 +1791,14 @@ function build_llvm_libcxx()
      
       (
         echo
-        echo "Running llvm-libunwind${native_suffix} cmake..."
+        echo "Running llvm-libunwind${name_suffix} cmake..."
 
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}")
         else
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
         fi
@@ -1807,13 +1807,13 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
         config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
@@ -1841,16 +1841,16 @@ function build_llvm_libcxx()
     touch "${llvm_libunwind_stamp_file_path}"
 
   else
-    echo "Component llvm-libunwind${native_suffix} already installed."
+    echo "Component llvm-libunwind${name_suffix} already installed."
   fi
 
   # ---------------------------------------------------------------------------
 
   # Define & prepare the folder, will be used later.
-  local llvm_libcxxabi_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxxabi${native_suffix}"
+  local llvm_libcxxabi_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxxabi${name_suffix}"
   mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
 
-  local llvm_libcxx_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxx${native_suffix}"
+  local llvm_libcxx_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxx${name_suffix}"
 
   local llvm_libcxx_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
   if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
@@ -1883,14 +1883,14 @@ function build_llvm_libcxx()
      
       (
         echo
-        echo "Running llvm-libcxx-headers${native_suffix} cmake..."
+        echo "Running llvm-libcxx-headers${name_suffix} cmake..."
 
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}")
         else
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
         fi
@@ -1899,13 +1899,13 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
 
@@ -1946,7 +1946,7 @@ function build_llvm_libcxx()
     touch "${llvm_libcxx_headers_stamp_file_path}"
 
   else
-    echo "Component llvm-libcxx-headers${native_suffix} already installed."
+    echo "Component llvm-libcxx-headers${name_suffix} already installed."
   fi
 
   local llvm_libcxxabi_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxxabi_folder_name}-installed"
@@ -1981,14 +1981,14 @@ function build_llvm_libcxx()
      
       (
         echo
-        echo "Running llvm-libcxxabi${native_suffix} cmake..."
+        echo "Running llvm-libcxxabi${name_suffix} cmake..."
 
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}")
         else
           config_options+=("-DCMAKE_INSTALL_PREFIX=${APP_PREFIX}")
         fi
@@ -1997,13 +1997,13 @@ function build_llvm_libcxx()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
         config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
@@ -2036,7 +2036,7 @@ function build_llvm_libcxx()
     touch "${llvm_libcxxabi_stamp_file_path}"
 
   else
-    echo "Component llvm-libcxxabi${native_suffix} already installed."
+    echo "Component llvm-libcxxabi${name_suffix} already installed."
   fi
 
   local llvm_libcxx_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-installed"
@@ -2074,13 +2074,13 @@ function build_llvm_libcxx()
         run_verbose cmake --build . --verbose --target install/strip
 
         # Append libunwind to libc++.
-        if [ -n "${native_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
-          run_verbose "${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar" qcsL \
-                  "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib/libc++.a" \
-                  "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib/libunwind.a"
+          run_verbose "${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
+                  "${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/lib/libc++.a" \
+                  "${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/lib/libunwind.a"
         else
-          run_verbose "${APP_PREFIX}${NATIVE_SUFFIX}/bin/llvm-ar" qcsL \
+          run_verbose "${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
                   "${APP_PREFIX}/lib/libc++.a" \
                   "${APP_PREFIX}/lib/libunwind.a"
         fi
@@ -2092,7 +2092,7 @@ function build_llvm_libcxx()
     touch "${llvm_libcxx_stamp_file_path}"
 
   else
-    echo "Component llvm-libcxx${native_suffix} already installed."
+    echo "Component llvm-libcxx${name_suffix} already installed."
   fi
 }
 

@@ -17,28 +17,28 @@ function xbb_activate_llvm_bootstrap_bins()
 {
   unset_gcc_env
 
-  export CC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-gcc"
-  export CXX="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-g++"
+  export CC="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-gcc"
+  export CXX="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-g++"
 
-  export AR="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ar"
-  export AS="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-as"
-  export DLLTOOL="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
-  export LD="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ld"
-  export NM="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-nm"
-  export OBJCOPY="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objcopy"
-  export OBJDUMP="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objdump"
-  export RANLIB="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
+  export AR="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ar"
+  export AS="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-as"
+  export DLLTOOL="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
+  export LD="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ld"
+  export NM="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-nm"
+  export OBJCOPY="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objcopy"
+  export OBJDUMP="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-objdump"
+  export RANLIB="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
   # export READELF="${prefix}readelf"
   # export SIZE="${prefix}size"
-  export STRIP="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-strip"
-  export WINDRES="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
+  export STRIP="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-strip"
+  export WINDRES="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
   # export WINDMC="${prefix}windmc"
   # Use the XBB one, not the native llvm?
-  export RC="${APP_PREFIX}${NATIVE_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
+  export RC="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-windres"
 
   # Warning, this might bring llvm-config into the PATH, and crash the
   # compiler-rt build.
-  export PATH="${APP_PREFIX}${NATIVE_SUFFIX}/bin:${PATH}"
+  export PATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin:${PATH}"
   xbb_activate_libs
 }
 
@@ -56,7 +56,7 @@ function build_versions()
 
   LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
 
-  export NATIVE_SUFFIX="-native"
+  export BOOTSTRAP_SUFFIX="-native"
 
 # -----------------------------------------------------------------------------
   
@@ -87,7 +87,7 @@ function build_versions()
       # Build a native toolchain, mainly for the *-tblgen tools, but
       # since it's already in, also use it to build the final llvm & mingw.
       # CC=${NATIVE_CC} is set inside the function.
-      build_llvm "${LLVM_VERSION}" "${NATIVE_SUFFIX}"
+      build_llvm "${LLVM_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
       (
         xbb_activate
@@ -95,7 +95,7 @@ function build_versions()
         # Favour LLVM bootstrap binaries.
         xbb_activate_llvm_bootstrap_bins
 
-        prepare_mingw_env "${MINGW_VERSION}" "${NATIVE_SUFFIX}"
+        prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
         build_mingw_core
       )
@@ -107,10 +107,10 @@ function build_versions()
         # as usual for windows targets).
         prepare_gcc_env "" "-xbb"
 
-        prepare_mingw_env "${MINGW_VERSION}" "${NATIVE_SUFFIX}"
+        prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
         build_mingw_libmangle
-        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${NATIVE_SUFFIX}/lib"
+        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${BOOTSTRAP_SUFFIX}/lib"
 
         build_mingw_gendef
 
@@ -124,16 +124,16 @@ function build_versions()
         # Favour bootstrap binaries.
         xbb_activate_llvm_bootstrap_bins
 
-        build_llvm_compiler_rt "${NATIVE_SUFFIX}"
+        build_llvm_compiler_rt "${BOOTSTRAP_SUFFIX}"
 
-        prepare_mingw_env "${MINGW_VERSION}" "${NATIVE_SUFFIX}"
+        prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
         build_mingw_winpthreads
 
         build_mingw_winstorecompat
 
         # libunwind, libcxx, libcxxabi
-        build_llvm_libcxx "${NATIVE_SUFFIX}"
+        build_llvm_libcxx "${BOOTSTRAP_SUFFIX}"
       )
 
       fi
@@ -164,7 +164,7 @@ function build_versions()
         prepare_mingw_env "${MINGW_VERSION}"
 
         build_mingw_libmangle
-        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${NATIVE_SUFFIX}/lib"
+        # run_verbose ls -l "${LIBS_INSTALL_FOLDER_PATH}${BOOTSTRAP_SUFFIX}/lib"
 
         build_mingw_gendef
 
@@ -176,7 +176,7 @@ function build_versions()
         xbb_activate
 
         # Favour bootstrap binaries.
-        # export PATH="${APP_PREFIX}${NATIVE_SUFFIX}/bin:${PATH}"
+        # export PATH="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin:${PATH}"
         xbb_activate_llvm_bootstrap_bins
 
         build_llvm_compiler_rt
