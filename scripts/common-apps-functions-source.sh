@@ -260,40 +260,6 @@ function test_binutils_ld_gold()
 
 # -----------------------------------------------------------------------------
 
-function download_llvm()
-{
-  cd "${SOURCES_FOLDER_PATH}"
-
-  download_and_extract "${llvm_url}" "${llvm_archive}" \
-    "${llvm_src_folder_name}" "${llvm_patch_file_name}"
-
-  # Disable the use of libxar.
-  run_verbose sed -i.bak \
-    -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
-    "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
-
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    # Add -lpthread -ldl
-    run_verbose sed -i.bak \
-      -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
-      "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
-  elif [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    (
-      cd "${llvm_src_folder_name}/llvm/tools"
-
-      # This trick will allow to build the toolchain only and still get clang
-      for p in clang lld lldb; do
-          if [ ! -e $p ]
-          then
-              ln -s ../../$p .
-          fi
-      done
-    )
-  fi
-}
-
 function build_native_llvm_mingw()
 {
   # https://github.com/mstorsjo/llvm-mingw
