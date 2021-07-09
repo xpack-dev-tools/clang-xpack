@@ -66,7 +66,6 @@ function build_versions()
     # Also used in -DLLVM_BINUTILS_INCDIR
     BINUTILS_VERSION="2.36.1"
 
-    LLVM_VERSION="12.0.0"
     MINGW_VERSION="8.0.2"
 
     if [ "${TARGET_PLATFORM}" = "win32" ]
