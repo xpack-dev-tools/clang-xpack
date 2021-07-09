@@ -913,7 +913,7 @@ function build_llvm()
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
-            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
             config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
@@ -936,7 +936,7 @@ function build_llvm()
             # Mind the links in llvm to clang, lld, lldb.
             config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-config;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
             if [ ! -n "${native_suffix}" ]
             then
