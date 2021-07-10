@@ -52,7 +52,7 @@ helper_folder_path="${script_folder_path}/helper"
 # -----------------------------------------------------------------------------
 
 echo
-echo "xPack LLVM/clang distribution build script."
+echo "xPack LLVM clang distribution build script."
 
 host_functions_script_path="${helper_folder_path}/host-functions-source.sh"
 source "${host_functions_script_path}"

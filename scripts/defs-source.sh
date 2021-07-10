@@ -16,7 +16,7 @@
 # -----------------------------------------------------------------------------
 
 # Used to display the application name in branding strings.
-APP_NAME=${APP_NAME:-"LLVM/clang"}
+APP_NAME=${APP_NAME:-"LLVM clang"}
 
 # Used as part of file/folder paths.
 APP_LC_NAME=${APP_LC_NAME:-"clang"}
