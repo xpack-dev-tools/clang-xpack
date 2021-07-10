@@ -404,7 +404,7 @@ function build_llvm()
 
       env | sort
 
-      if [ ! -f "config.status" ]
+      if [ ! -f "cmake.done" ]
       then
         (
           echo
@@ -696,7 +696,7 @@ function build_llvm()
             "${config_options[@]}" \
             "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
 
-          touch "config.status"
+          touch "cmake.done"
 
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/cmake-output.txt"
       fi
