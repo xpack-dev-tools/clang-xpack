@@ -1150,10 +1150,6 @@ function test_llvm()
       # The `--out-implib` crreates an import library, which can be
       # directly used with -l.
       run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows 
-
-      # Alternately it is possible to create the similar .lib with dlltool.
-      run_app "${GENDEF}" libadd-shared.dll
-      run_app "${DLLTOOL}" -m i386:x86-64 -d libadd-shared.def -l libadd-shared.lib
     else
       run_app "${CC}" -o libadd-shared.${SHLIB_EXT} -shared add.o
     fi
@@ -1185,9 +1181,6 @@ function test_llvm()
       # -ladd-shared is in fact libadd-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
       run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${GC_SECTION}
-
-      # Example with .lib, which must be passed with full name.
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder-lib${DOT_EXE} adder.c libadd-shared.lib -L . ${GC_SECTION}
     else
       run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${GC_SECTION}
     fi
