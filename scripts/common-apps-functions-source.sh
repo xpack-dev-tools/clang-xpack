@@ -1343,7 +1343,7 @@ function build_llvm_compiler_rt()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       if [ "${HOST_MACHINE}" == "i686" ]
       then
-        # The 32-bit build fails to fins assert.h
+        # The 32-bit build fails to find assert.h
         if [ -n "${name_suffix}" ]
         then
           CFLAGS+=" -I${APP_PREFIX}${name_suffix}/${CROSS_COMPILE_PREFIX}/include"
