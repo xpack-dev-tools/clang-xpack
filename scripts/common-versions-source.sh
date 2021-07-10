@@ -160,19 +160,6 @@ function build_versions()
 
         (
           xbb_activate
-          # Temporarily use the XBB GCC (not mingw as usual for windows targets).
-          prepare_gcc_env "" "-xbb"
-
-          prepare_mingw_env "${MINGW_VERSION}"
-
-          build_mingw_libmangle
-          build_mingw_gendef
-          # Refers to mingw headers.
-          build_mingw_widl
-        )
-
-        (
-          xbb_activate
           xbb_activate_llvm_bootstrap_bins # Use the bootstrap llvm binaries.
 
           build_llvm_compiler_rt
@@ -183,6 +170,8 @@ function build_versions()
           build_mingw_winstorecompat
   
           build_llvm_libcxx # libunwind, libcxx, libcxxabi
+
+          build_mingw_widl
         )
       fi
     fi
