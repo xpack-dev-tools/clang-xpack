@@ -1802,22 +1802,20 @@ function strip_libs()
     (
       xbb_activate
 
-      PATH="${APP_PREFIX}/bin:${PATH}"
-
       echo
       echo "Stripping libraries..."
 
       cd "${APP_PREFIX}"
 
-      local libs=$(find "${APP_PREFIX}" -type f -name '*.[ao]')
-      for lib in ${libs}
-      do
-        if is_elf "${lib}" || is_pe "${lib}" || is_ar "${lib}"
-        then
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        local libs=$(find "${APP_PREFIX}" -type f \( -name \*.a -o -name \*.o -o -name \*.so \))
+        for lib in ${libs}
+        do
           echo "strip -S ${lib}"
           strip -S "${lib}"
-        fi
-      done
+        done
+      fi
     )
   fi
 }

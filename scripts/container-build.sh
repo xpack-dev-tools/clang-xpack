@@ -232,10 +232,7 @@ then
 
   prepare_app_folder_libraries
 
-  if false # [ "${TARGET_PLATFORM}" != "win32" ]
-  then
-    strip_libs
-  fi
+  strip_libs
 
   copy_distro_files
 
