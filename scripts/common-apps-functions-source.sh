@@ -721,8 +721,42 @@ function build_llvm()
           cp -v "lib/LLVMgold.so" "${APP_PREFIX}${name_suffix}/lib/bfd-plugins/"
         fi
 
-        if [ ! -n "${name_suffix}" ]
+        if [ -n "${name_suffix}" ]
         then
+          (
+            # Add wrappers for the mingw-w64 binaries.
+            cd "${APP_PREFIX}${name_suffix}/bin"
+
+            cp "${BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
+
+            for exec in clang-target-wrapper dlltool-wrapper windres-wrapper llvm-wrapper
+            do
+              ${CC} "${BUILD_GIT_PATH}/wrappers/${exec}.c" -O2 -v -o ${exec}
+            done
+
+            for exec in clang clang++ gcc g++ cc c99 c11 c++ as
+            do
+                ln -sf clang-target-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+            for exec in addr2line ar ranlib nm objcopy strings strip
+            do
+                ln -sf llvm-${exec} ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+            if [ -f "llvm-windres" ]
+            then
+                # windres can't use llvm-wrapper, as that loses the original
+                # target arch prefix.
+                ln -sf llvm-windres ${CROSS_COMPILE_PREFIX}-windres
+            else
+                ln -sf windres-wrapper ${CROSS_COMPILE_PREFIX}-windres
+            fi
+            ln -sf dlltool-wrapper ${CROSS_COMPILE_PREFIX}-dlltool
+            for exec in ld objdump
+            do
+                ln -sf ${exec}-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+            done
+          )
+        else
           (
             echo
             echo "Removing less used files..."
@@ -762,40 +796,6 @@ function build_llvm()
 
             cd "${APP_PREFIX}/share"
             run_verbose rm -rf man
-          )
-        else
-          (
-            # Add wrappers for the mingw-w64 binaries.
-            cd "${APP_PREFIX}${name_suffix}/bin"
-
-            cp "${BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
-
-            for exec in clang-target-wrapper dlltool-wrapper windres-wrapper llvm-wrapper
-            do
-              ${CC} "${BUILD_GIT_PATH}/wrappers/${exec}.c" -O2 -v -o ${exec}
-            done
-
-            for exec in clang clang++ gcc g++ cc c99 c11 c++ as
-            do
-                ln -sf clang-target-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
-            done
-            for exec in addr2line ar ranlib nm objcopy strings strip
-            do
-                ln -sf llvm-${exec} ${CROSS_COMPILE_PREFIX}-${exec}
-            done
-            if [ -f "llvm-windres" ]
-            then
-                # windres can't use llvm-wrapper, as that loses the original
-                # target arch prefix.
-                ln -sf llvm-windres ${CROSS_COMPILE_PREFIX}-windres
-            else
-                ln -sf windres-wrapper ${CROSS_COMPILE_PREFIX}-windres
-            fi
-            ln -sf dlltool-wrapper ${CROSS_COMPILE_PREFIX}-dlltool
-            for exec in ld objdump
-            do
-                ln -sf ${exec}-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
-            done
           )
         fi
 
