@@ -775,6 +775,7 @@ function build_llvm()
               llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
               llvm-stress llvm-undname llvm-xray \
               modularize not obj2yaml opt pp-trace sancov sanstats \
+              scan-build scan-build.bat scan-view \
               verify-uselistorder yaml-bench yaml2obj
             do
               rm -rfv $f $f${DOT_EXE}
@@ -782,6 +783,7 @@ function build_llvm()
 
             # So far not used.
             rm -rfv libclang.dll
+            rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
 
             cd "${APP_PREFIX}/include"
             run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
@@ -793,6 +795,32 @@ function build_llvm()
             cd "${APP_PREFIX}/share"
             run_verbose rm -rf man
           )
+
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+            echo
+            echo "Add wrappers instead of links..."
+
+            cd "${APP_PREFIX}/bin"
+
+            # dlltool-wrapper windres-wrapper llvm-wrapper
+            for exec in clang-target-wrapper 
+            do
+              run_verbose ${CC} "${BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${CROSS_COMPILE_PREFIX}\"
+            done
+
+            if [ ! -L clang.exe ] && [ -f clang.exe ] && [ ! -f clang-${llvm_version_major}.exe ]
+            then
+              mv -v clang.exe clang-${llvm_version_major}.exe
+            fi
+
+            # clang clang++ gcc g++ cc c99 c11 c++ addr2line ar 
+            # dlltool ranlib nm objcopy strings strip windres
+            for exec in clang clang++ clang-cl clang-cpp
+            do
+                ln -sfv clang-target-wrapper.exe ${exec}.exe
+            done
+          fi
         fi
 
         if [ -n "${name_suffix}" ]
