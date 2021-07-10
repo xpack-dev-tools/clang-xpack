@@ -612,17 +612,20 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
+
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            # TOOLCHAIN_ONLY requires manual install for LLVMgold.so and
+            # lots of other files; not worth the effort and risky.
+            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+
             config_options+=("-DLLVM_ENABLE_FFI=ON")
             config_options+=("-DLLVM_HOST_TRIPLE=${TARGET}")
-            # Unfortunately the LTO test fails with missing LLVMgold.so.
-            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
-            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
             config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
@@ -681,7 +684,7 @@ function build_llvm()
             # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
 
             # compiler-rt, libunwind, libc++ and libc++-abi are built
-            # in separate steps.
+            # in separate steps intertwined with mingw.
 
           else
             echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
