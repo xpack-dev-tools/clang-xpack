@@ -732,24 +732,24 @@ function build_llvm()
 
             for exec in clang clang++ gcc g++ cc c99 c11 c++ as
             do
-                ln -sf clang-target-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf clang-target-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
             done
             for exec in addr2line ar ranlib nm objcopy strings strip
             do
-                ln -sf llvm-${exec} ${CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf llvm-${exec} ${CROSS_COMPILE_PREFIX}-${exec}
             done
             if [ -f "llvm-windres" ]
             then
-                # windres can't use llvm-wrapper, as that loses the original
-                # target arch prefix.
-                ln -sf llvm-windres ${CROSS_COMPILE_PREFIX}-windres
+              # windres can't use llvm-wrapper, as that loses the original
+              # target arch prefix.
+              ln -sf llvm-windres ${CROSS_COMPILE_PREFIX}-windres
             else
-                ln -sf windres-wrapper ${CROSS_COMPILE_PREFIX}-windres
+              ln -sf windres-wrapper ${CROSS_COMPILE_PREFIX}-windres
             fi
             ln -sf dlltool-wrapper ${CROSS_COMPILE_PREFIX}-dlltool
             for exec in ld objdump
             do
-                ln -sf ${exec}-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf ${exec}-wrapper.sh ${CROSS_COMPILE_PREFIX}-${exec}
             done
           )
         else
