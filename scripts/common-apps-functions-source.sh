@@ -717,13 +717,6 @@ function build_llvm()
           run_verbose cmake --build . --target install/strip
         fi
 
-        # Copy the LLVMgold plug-in. Not functional for native.
-        if false # [ -f "lib/LLVMgold.so" ]
-        then
-          mkdir -pv "${APP_PREFIX}${name_suffix}/lib/bfd-plugins/"
-          cp -v "lib/LLVMgold.so" "${APP_PREFIX}${name_suffix}/lib/bfd-plugins/"
-        fi
-
         if [ -n "${name_suffix}" ]
         then
           (
