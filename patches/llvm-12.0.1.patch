@@ -1,0 +1,44 @@
+From e9b9b6e68c2189e8967fb85e9b3a7a2bd543b0c5 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Sun, 11 Jul 2021 11:43:48 +0300
+Subject: [PATCH] clang: add /Library/... to headers search path
+
+Recent macOS releases also use:
+/Library/Developer/CommandLineTools/usr/include/c++/v1
+---
+ clang/lib/Driver/ToolChains/Darwin.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/clang/lib/Driver/ToolChains/Darwin.cpp b/clang/lib/Driver/ToolChains/Darwin.cpp
+index eb7bd4aec898..13397a5ad719 100644
+--- clang/lib/Driver/ToolChains/Darwin.cpp
++++ clang/lib/Driver/ToolChains/Darwin.cpp
+@@ -2045,6 +2045,7 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+     // On Darwin, libc++ can be installed in one of the following two places:
+     // 1. Alongside the compiler in         <install>/include/c++/v1
+     // 2. In a SDK (or a custom sysroot) in <sysroot>/usr/include/c++/v1
++    // 3. In /Library/Developer/CommandLineTools/usr/include/c++/v1
+     //
+     // The precendence of paths is as listed above, i.e. we take the first path
+     // that exists. Also note that we never include libc++ twice -- we take the
+@@ -2077,6 +2078,17 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+                    << "\"\n";
+     }
+ 
++    // Otherwise, check for (3)
++    llvm::SmallString<128> CLT = 
++      StringRef("/Library/Developer/CommandLineTools/usr/include/c++/v1");
++    if (getVFS().exists(CLT)) {
++      addSystemInclude(DriverArgs, CC1Args, CLT);
++      return;
++    } else if (DriverArgs.hasArg(options::OPT_v)) {
++      llvm::errs() << "ignoring nonexistent directory \"" << CLT
++                   << "\"\n";
++    }
++
+     // Otherwise, don't add any path.
+     break;
+   }
+-- 
+2.24.3 (Apple Git-128)
+
