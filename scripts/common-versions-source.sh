@@ -138,9 +138,9 @@ function build_versions()
 
       build_xz "5.2.5"
 
-      if [ "${TARGET_PLATFORM}" == "linux" ]
+      if [ "${TARGET_PLATFORM}" != "win32" ]
       then 
-        # On Windows it fails with the LLVM bootstrap.
+        # On Windows it fails in the LLVM bootstrap.
         build_libxml2 "2.9.11"
         build_libedit "20210522-3.1"
       fi
