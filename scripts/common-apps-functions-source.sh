@@ -594,9 +594,10 @@ function build_llvm()
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
 
-            # Set the default linker to gold, otherwise `-flto`
-            # requires an expicit `-fuse-ld=gold`.
-            config_options+=("-DCLANG_DEFAULT_LINKER=gold")
+            # ld.gold has a problem with --gc-sections and fails
+            # several tests on Ubuntu 18
+            # https://sourceware.org/bugzilla/show_bug.cgi?id=23880
+            # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
             # Fails late in the build!
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
