@@ -138,7 +138,7 @@ On the macOS 10.13 machine (`xbbm13`):
 caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --osx
 ```
 
-A typical run takes about 75 minutes.
+A typical run takes about 70 minutes.
 
 On `xbbi`:
 
@@ -151,7 +151,8 @@ bash ~/Downloads/clang-xpack.git/scripts/build.sh --linux32
 bash ~/Downloads/clang-xpack.git/scripts/build.sh --win32
 ```
 
-A typical run on the Intel machine takes about 50 minutes.
+A typical run on the Intel machine takes about 350 minutes
+(almost 4 hours).
 
 On `xbba`:
 
@@ -162,7 +163,8 @@ bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm64
 bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm32
 ```
 
-A typical run on the Arm machine takes about 110 minutes.
+A typical run on the Arm machine takes about 755 minutes
+(almost 13 hours).
 
 ### Clean the destination folder
 
