@@ -448,3 +448,5 @@ there are no C++ headers and libraries)
 - no rpc/xdr.h in compiler_rt
 - on Linux the default is with libstdc++ and the GNU libraries
 - on Linux, the clang libc++ fails to link with -static is exceptions are used
+- on Arm64, lldb failed with missing SVE_PT_FPSIMD_OFFSET; lldb disabled on Arm,
+to be re-enabled with Ubuntu 18.
