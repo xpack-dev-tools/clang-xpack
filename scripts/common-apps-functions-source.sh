@@ -1138,15 +1138,38 @@ function test_llvm()
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      # -static & -stdlib=libc++/-rtlib=compiler-rt currently fail on linux.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+      then
+        run_app "${CXX}" ${VERBOSE_FLAG} -o static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=ld
+      else
+        run_app "${CXX}" ${VERBOSE_FLAG} -o static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      fi
 
       test_expect "static-except-simple" "MyException"
 
       # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-      
+      if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+      then
+        run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=ld
+      else
+        run_app "${CXX}" ${VERBOSE_FLAG} -o static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      fi
+
       test_expect "str-except-simple" "MyStringException"
+
+      if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+      then
+        : Fail with relocation errors on old Intel 32-bit.
+      else
+        run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+
+        test_expect "rt-static-except-simple" "MyException"
+
+        # -O0 is an attempt to prevent any interferences with the optimiser.
+        run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+        
+        test_expect "rt-str-except-simple" "MyStringException"
+      fi
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1302,7 +1325,12 @@ function test_llvm()
     then
       for test in hello-exception
       do
-        run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+        if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+        then
+          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG} -fuse-ld=ld
+        else
+          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+        fi
         show_libs $test-static
         run_app ./$test-static
       done
