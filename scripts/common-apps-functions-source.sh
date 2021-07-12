@@ -1157,7 +1157,7 @@ function test_llvm()
 
       test_expect "str-except-simple" "MyStringException"
 
-      if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+      if [ "$(uname -m)" == "i686" ]
       then
         : Fail with relocation errors on old Intel 32-bit.
       else
