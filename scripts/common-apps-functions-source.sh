@@ -613,7 +613,17 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            if [ "${TARGET_ARCH}" == "arm64" -o "${TARGET_ARCH}" == "arm" ]
+            then
+              # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
+              # not available in Ubuntu 16; 
+              # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
+              # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
+              config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            else
+              config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            fi
+
             # TOOLCHAIN_ONLY requires manual install for LLVMgold.so and
             # lots of other files; not worth the effort and risky.
             # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
