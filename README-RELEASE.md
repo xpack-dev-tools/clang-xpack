@@ -271,7 +271,7 @@ In the `xpack/web-jekyll` GitHub repo:
 
 - select the `develop` branch
 - add a new file to `_posts/clang/releases`
-- name the file like `2021-05-17-clang-v8-5-0-1-released.md`
+- name the file like `2021-07-12-clang-v12-0-1-1-released.md`
 - name the post like: **xPack clang v12.0.1-1 released**
 - as `download_url` use the tagged URL like `https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v12.0.1-1/`
 - update the `date:` field with the current date
