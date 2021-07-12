@@ -597,7 +597,7 @@ function build_llvm()
             # ld.gold has a problem with --gc-sections and fails
             # several tests on Ubuntu 18
             # https://sourceware.org/bugzilla/show_bug.cgi?id=23880
-            # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
+            config_options+=("-DCLANG_DEFAULT_LINKER=lld")
 
             # Fails late in the build!
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
