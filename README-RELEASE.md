@@ -172,7 +172,7 @@ On the development machine (`wks`) clear the folder where binaries from all
 build machines will be collected.
 
 ```sh
-rm -f ~/Downloads/xpack-binaries/clang/*
+rm -rf ~/Downloads/xpack-binaries/clang/*
 ```
 
 ### Copy the binaries to the development machine
