@@ -1042,24 +1042,16 @@ function test_llvm()
 
     test_expect "hello-simple-c2" "Hello"
 
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" != "linux" ]
     then
-      : # All linkers fail with "File format not recognized".
-      echo
-      echo "Skip lto-hello-simple-c1"
-    else
+      # All linkers fail with "File format not recognized", or
+      # the linker crashes. Sometimes -fuse-ld=lld works.
+
       # Test LTO C compile and link in a single step.
       run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c1${DOT_EXE} hello-simple.c -ffunction-sections -fdata-sections ${GC_SECTION}
     
       test_expect "lto-hello-simple-c1" "Hello"
-    fi
 
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
-    then
-      : # All linkers fail with "File format not recognized".
-      echo
-      echo "Skip lto-hello-simple-c2"
-    else
       # Test LTO C compile and link in separate steps.
       run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c -ffunction-sections -fdata-sections
       run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-c2${DOT_EXE} lto-hello-simple-c.o -ffunction-sections -fdata-sections ${GC_SECTION}
@@ -1078,7 +1070,7 @@ function test_llvm()
 
     test_expect "rt-hello-simple-c2" "Hello"
 
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c1${DOT_EXE} hello-simple.c -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1090,7 +1082,7 @@ function test_llvm()
 
     # Test LTO C compile and link in separate steps.
     run_app "${CC}" -flto -o lto-hello-simple-c.o -c hello-simple.c -ffunction-sections -fdata-sections
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-c2${DOT_EXE} lto-hello-simple-c.o -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1113,7 +1105,7 @@ function test_llvm()
     test_expect "hello-simple-cpp2" "Hello"
 
     # Test LTO C++ compile and link in a single step.
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp1${DOT_EXE} hello-simple.cpp -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1124,7 +1116,7 @@ function test_llvm()
 
     # Test LTO C++ compile and link in separate steps.
     run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp -ffunction-sections -fdata-sections
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-hello-simple-cpp2${DOT_EXE} lto-hello-simple-cpp.o -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1134,7 +1126,7 @@ function test_llvm()
     test_expect "lto-hello-simple-cpp2" "Hello"
 
     # Test C++ compile and link in a single step.
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp1${DOT_EXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1145,7 +1137,7 @@ function test_llvm()
 
     # Test C++ compile and link in separate steps.
     run_app "${CXX}" -o hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++ -ffunction-sections -fdata-sections
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -o rt-hello-simple-cpp2${DOT_EXE} hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1155,7 +1147,7 @@ function test_llvm()
     test_expect "rt-hello-simple-cpp2" "Hello"
 
     # Test LTO C++ compile and link in a single step.
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp1${DOT_EXE} hello-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1166,7 +1158,7 @@ function test_llvm()
 
     # Test LTO C++ compile and link in separate steps.
     run_app "${CXX}" -flto -o lto-hello-simple-cpp.o -c hello-simple.cpp -stdlib=libc++ -ffunction-sections -fdata-sections
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-hello-simple-cpp2${DOT_EXE} lto-hello-simple-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1182,7 +1174,7 @@ function test_llvm()
 
     test_expect "except-simple" "MyException"
 
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -o rt-except-simple${DOT_EXE} -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1197,7 +1189,7 @@ function test_llvm()
     test_expect "str-except-simple" "MyStringException"
 
     # -O0 is an attempt to prevent any interferences with the optimiser.
-    if [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_app "${CXX}" ${VERBOSE_FLAG} -o rt-str-except-simple${DOT_EXE} -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
     else
@@ -1379,9 +1371,9 @@ function test_llvm()
     then
       for test in hello-exception
       do
-        if [ "$(lsb_release -rs)" == "12.04" -a "$(uname -m)" == "i686" ]
+        if [ "${TARGET_PLATFORM}" == "linux" ]
         then
-          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG} -fuse-ld=ld
+          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG} -fuse-ld=lld
         else
           run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
         fi
