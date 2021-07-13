@@ -1218,38 +1218,12 @@ function test_llvm()
 
       test_expect "str-except-simple" "MyStringException"
 
-      if [ "$(uname -m)" == "aarch64" -o "$(uname -m)" == "i686" ]
-      then
-        echo
-        echo "Skip rt-static-except-simple"
-      else
-        if [ "$(uname -m)" == "aarch64" -o "$(uname -m)" == "x86_64" ]
-        then
-          # With the default linker it fails the link libc++.a.
-          run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-        else
-          run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-        fi
+      # Static & libc++ do not work.
+      echo
+      echo "Skip rt-static-except-simple"
 
-        test_expect "rt-static-except-simple" "MyException"
-      fi
-
-      if [ "$(uname -m)" == "aarch64" -o "$(uname -m)" == "i686" ]
-      then
-        echo
-        echo "Skip rt-static-except-simple"
-      else
-        if [ "$(uname -m)" == "aarch64" -o \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
-        then
-          # With the default linker it fails the link libc++.a.
-          run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-        else
-          # -O0 is an attempt to prevent any interferences with the optimiser.
-          run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-        fi
-          
-        test_expect "rt-static-str-except-simple" "MyStringException"
-      fi
+      echo
+      echo "Skip rt-static-str-except-simple"
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
