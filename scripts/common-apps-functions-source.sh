@@ -1163,8 +1163,8 @@ function test_llvm()
 
       if [ "$(uname -m)" == "aarch64" ]
       then
-        echo
-        echo "skip rt-static-except-simple" # Fails with missing symbols.
+        # With the default linker it fails the link libc++.a.
+        run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
       else
         run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
@@ -1173,8 +1173,8 @@ function test_llvm()
 
       if [ "$(uname -m)" == "aarch64" ]
       then
-        echo
-        echo "skip rt-static-str-except-simple" # Fails with missing symbols.
+        # With the default linker it fails the link libc++.a.
+        run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
       else
         # -O0 is an attempt to prevent any interferences with the optimiser.
         run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
