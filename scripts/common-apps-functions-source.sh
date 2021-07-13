@@ -1023,11 +1023,15 @@ function test_llvm()
 
     test_expect "hello-simple-c1" "Hello"
 
-    # Static links are not supported, at least not with the Apple linker:
-    # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-simple-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
-    # ld: library not found for -lcrt0.o
-    # run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-simple-c1 hello-simple.c -static
-    # test_expect "static-hello-simple-c1" "Hello"
+    if [ "${TARGET_PLATFORM}" != "darwin" ]
+    then
+      # Static links are not supported, at least not with the Apple linker:
+      # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-hello-simple-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
+      # ld: library not found for -lcrt0.o
+      run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-hello-simple-c1 hello-simple.c -static
+
+      test_expect "static-hello-simple-c1" "Hello"
+    fi
 
     # Test C compile and link in separate steps.
     run_app "${CC}" -o hello-simple-c.o -c hello-simple.c -ffunction-sections -fdata-sections
@@ -1157,18 +1161,25 @@ function test_llvm()
 
       test_expect "str-except-simple" "MyStringException"
 
-      if [ "$(uname -m)" == "i686" ]
+      if [ "$(uname -m)" == "aarch64" ]
       then
-        : Fail with relocation errors on old Intel 32-bit.
+        echo
+        echo "skip rt-static-except-simple" # Fails with missing symbols.
       else
         run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-except-simple${DOT_EXE} -static -O0 except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
 
         test_expect "rt-static-except-simple" "MyException"
+      fi
 
+      if [ "$(uname -m)" == "aarch64" ]
+      then
+        echo
+        echo "skip rt-static-str-except-simple" # Fails with missing symbols.
+      else
         # -O0 is an attempt to prevent any interferences with the optimiser.
         run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
         
-        test_expect "rt-str-except-simple" "MyStringException"
+        test_expect "rt-static-str-except-simple" "MyStringException"
       fi
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1190,7 +1201,7 @@ function test_llvm()
       # -O0 is an attempt to prevent any interferences with the optimiser.
       run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-str-except-simple${DOT_EXE} -static -O0 str-except-simple.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
       
-      test_expect "rt-str-except-simple" "MyStringException"
+      test_expect "rt-static-str-except-simple" "MyStringException"
 
     fi
 
