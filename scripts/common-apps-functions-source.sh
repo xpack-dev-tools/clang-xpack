@@ -592,11 +592,14 @@ function build_llvm()
               exit 1
             fi
 
+            # It is safer to use the system GNU C++ library.
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
 
             # ld.gold has a problem with --gc-sections and fails
             # several tests on Ubuntu 18
             # https://sourceware.org/bugzilla/show_bug.cgi?id=23880
+            # Better keep the system GNU linker (ld), and use lld only
+            # when requested with -fuse-ld=lld.
             # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
             # Fails late in the build!
