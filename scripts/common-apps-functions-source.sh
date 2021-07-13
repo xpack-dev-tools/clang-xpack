@@ -1321,43 +1321,36 @@ function test_llvm()
     # -------------------------------------------------------------------------
     # Tests from the llvm-mingw project.
 
-    for test in hello setjmp
-    do 
-      run_app "${CC}" $test.c -o $test${DOT_EXE} ${VERBOSE_FLAG} -lm
-      show_libs $test
-      run_app ./$test
-    done
+    run_app "${CC}" hello.c -o hello${DOT_EXE} ${VERBOSE_FLAG} -lm
+    show_libs hello
+    run_app ./hello
+
+    run_app "${CC}" setjmp.c -o setjmp${DOT_EXE} ${VERBOSE_FLAG} -lm
+    show_libs setjmp
+    run_app ./setjmp
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      for test in hello-tls crt-test 
-      do 
-        run_app "${CC}" $test.c -o $test.exe ${VERBOSE_FLAG} 
-        show_libs $test
-        run_app ./$test
-      done
+      run_app "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG} 
+      show_libs hello-tls
+      run_app ./hello-tls
 
-      for test in autoimport-lib
-      do 
-        run_app "${CC}" $test.c -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG} 
-        show_libs $test.dll
-      done
+      run_app "${CC}" crt-test .c -o crt-test .exe ${VERBOSE_FLAG} 
+      show_libs crt-test 
+      run_app ./crt-test 
 
-      for test in autoimport-main
-      do 
-        run_app "${CC}" $test.c -o $test.exe -L. -l${test%-main}-lib ${VERBOSE_FLAG}
-        show_libs $test
-        run_app ./$test
-      done
+      run_app "${CC}" autoimport-lib.c -shared -o autoimport-lib.dll -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG} 
+      show_libs autoimport-lib.dll
 
-      for test in idltest
-      do
-        # The IDL output isn't arch specific, but test each arch frontend 
-        run_app "${WIDL}" $test.idl -h -o $test.h 
-        run_app "${CC}" $test.c -I. -o $test.exe -lole32 ${VERBOSE_FLAG} 
-        show_libs $test
-        run_app ./$test 
-      done
+      run_app "${CC}" autoimport-main.c -o autoimport-main.exe -L. -lautoimport-lib ${VERBOSE_FLAG}
+      show_libs autoimport-main
+      run_app ./autoimport-main
+
+      # The IDL output isn't arch specific, but test each arch frontend 
+      run_app "${WIDL}" idltest.idl -h -o idltest.h 
+      run_app "${CC}" idltest.c -I. -o idltest.exe -lole32 ${VERBOSE_FLAG} 
+      show_libs idltest
+      run_app ./idltest 
     fi
 
     for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
@@ -1369,52 +1362,38 @@ function test_llvm()
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      for test in hello-exception
-      do
-        run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+      run_app ${CXX} hello-exception.cpp -static -o hello-exception-static${DOT_EXE} ${VERBOSE_FLAG}
 
-        show_libs $test-static
-        run_app ./$test-static
-      done
+      show_libs hello-exception-static
+      run_app ./hello-exception-static
 
-      for test in tlstest-lib
-      do
-        run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
-        show_libs $test.dll
-      done
+      run_app ${CXX} tlstest-lib.cpp -shared -o tlstest-lib.dll -Wl,--out-implib,libtlstest-lib.dll.a ${VERBOSE_FLAG}
+      show_libs tlstest-lib.dll
 
-      for test in tlstest-main
-      do
-        run_app ${CXX} $test.cpp -o $test.exe ${VERBOSE_FLAG}
-        show_libs $test
-        run_app ./$test 
-      done
+      run_app ${CXX} tlstest-main.cpp -o tlstest-main.exe ${VERBOSE_FLAG}
+      show_libs tlstest-main
+      run_app ./tlstest-main 
     fi
 
-    for test in throwcatch-lib
-    do
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
-      elif [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
-      then
-        run_app ${CXX} $test.cpp -shared -fpic -o lib$test.${SHLIB_EXT} ${VERBOSE_FLAG} -fuse-ld=lld
-      else
-        run_app ${CXX} $test.cpp -shared -fpic -o lib$test.${SHLIB_EXT} ${VERBOSE_FLAG}
-      fi
-    done
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      run_app ${CXX} throwcatch-lib.cpp -shared -o throwcatch-lib.dll -Wl,--out-implib,libthrowcatch-lib.dll.a ${VERBOSE_FLAG}
+    elif [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
+    then
+      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${SHLIB_EXT} ${VERBOSE_FLAG} -fuse-ld=lld
+    else
+      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${SHLIB_EXT} ${VERBOSE_FLAG}
+    fi
 
-    for test in throwcatch-main
-    do
-      run_app ${CXX} $test.cpp -o $test${DOT_EXE} -L. -l${test%-main}-lib ${VERBOSE_FLAG}
-      (
-        LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+    run_app ${CXX} throwcatch-main.cpp -o throwcatch-main${DOT_EXE} -L. -lthrowcatch-lib ${VERBOSE_FLAG}
 
-        show_libs $test
-        run_app ./$test
-      )
-    done
+    (
+      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
+
+      show_libs throwcatch-main
+      run_app ./throwcatch-main
+    )
   )
 
   echo
