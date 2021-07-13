@@ -1335,7 +1335,7 @@ function test_llvm()
       show_libs hello-tls
       run_app ./hello-tls
 
-      run_app "${CC}" crt-test .c -o crt-test .exe ${VERBOSE_FLAG} 
+      run_app "${CC}" crt-test.c -o crt-test.exe ${VERBOSE_FLAG} 
       show_libs crt-test 
       run_app ./crt-test 
 
