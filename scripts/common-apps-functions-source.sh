@@ -1367,23 +1367,16 @@ function test_llvm()
       run_app ./$test
     done
 
-    if [ "${TARGET_PLATFORM}" != "darwin" ]
+    if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       for test in hello-exception
       do
-        if [ "${TARGET_PLATFORM}" == "linux" ]
-        then
-          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG} -fuse-ld=lld
-        else
-          run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
-        fi
+        run_app ${CXX} $test.cpp -static -o $test-static${DOT_EXE} ${VERBOSE_FLAG}
+
         show_libs $test-static
         run_app ./$test-static
       done
-    fi
 
-    if [ "${TARGET_PLATFORM}" == "win32" ]
-    then
       for test in tlstest-lib
       do
         run_app ${CXX} $test.cpp -shared -o $test.dll -Wl,--out-implib,lib$test.dll.a ${VERBOSE_FLAG}
