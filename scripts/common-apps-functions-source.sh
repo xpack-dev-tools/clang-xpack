@@ -86,11 +86,6 @@ function build_binutils_ld_gold()
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -390,11 +385,6 @@ function build_llvm()
           export CXX="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
         fi
 
-      fi
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
       fi
 
       export CPPFLAGS
@@ -1432,11 +1422,6 @@ function build_llvm_compiler_rt()
 
       LDFLAGS="${XBB_LDFLAGS}"
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -1551,11 +1536,6 @@ function build_llvm_libcxx()
 
       LDFLAGS="${XBB_LDFLAGS}"
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -1643,11 +1623,6 @@ function build_llvm_libcxx()
       # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
 
       LDFLAGS="${XBB_LDFLAGS}"
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1741,11 +1716,6 @@ function build_llvm_libcxx()
 
       LDFLAGS="${XBB_LDFLAGS}"
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -1830,11 +1800,6 @@ function build_llvm_libcxx()
       # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
 
       LDFLAGS="${XBB_LDFLAGS}"
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
 
       export CPPFLAGS
       export CFLAGS
