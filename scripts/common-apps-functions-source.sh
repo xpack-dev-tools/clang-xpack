@@ -40,13 +40,15 @@ function build_binutils_ld_gold()
   local binutils_version="$1"
 
   local binutils_src_folder_name="binutils-${binutils_version}"
-  local binutils_folder_name="binutils-ld.gold-${binutils_version}"
 
   local binutils_archive="${binutils_src_folder_name}.tar.xz"
   local binutils_url="https://ftp.gnu.org/gnu/binutils/${binutils_archive}"
 
-  local binutils_patch_file_name="binutils-${binutils_version}.patch"
+  local binutils_folder_name="binutils-ld.gold-${binutils_version}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
+
+  local binutils_patch_file_name="binutils-${binutils_version}.patch"
   local binutils_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${binutils_folder_name}-installed"
   if [ ! -f "${binutils_stamp_file_path}" ]
   then
@@ -59,8 +61,6 @@ function build_binutils_ld_gold()
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -291,13 +291,14 @@ function build_llvm()
 
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
 
-  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}${name_suffix}"
-
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
   local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
 
-  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch"
+  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}${name_suffix}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
+
+  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch"
   local llvm_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
@@ -332,8 +333,6 @@ function build_llvm()
         fi
       done
     )
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_folder_name}"
@@ -1404,14 +1403,14 @@ function build_llvm_compiler_rt()
 
   local llvm_compiler_rt_folder_name="llvm-${ACTUAL_LLVM_VERSION}-compiler-rt${name_suffix}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
+
   local llvm_compiler_rt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
   if [ ! -f "${llvm_compiler_rt_stamp_file_path}" ]
   then
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -1529,14 +1528,14 @@ function build_llvm_libcxx()
 
   local llvm_libunwind_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libunwind${name_suffix}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+
   local llvm_libunwind_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
   if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
   then
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -1618,7 +1617,11 @@ function build_llvm_libcxx()
   local llvm_libcxxabi_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxxabi${name_suffix}"
   mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
+
   local llvm_libcxx_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libcxx${name_suffix}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
   local llvm_libcxx_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
   if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
@@ -1626,8 +1629,6 @@ function build_llvm_libcxx()
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -1722,8 +1723,6 @@ function build_llvm_libcxx()
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
 
-      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
-
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -1809,8 +1808,6 @@ function build_llvm_libcxx()
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
