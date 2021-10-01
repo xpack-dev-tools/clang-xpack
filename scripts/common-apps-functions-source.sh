@@ -91,11 +91,14 @@ function build_binutils_ld_gold()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
           echo
           echo "Running binutils-ld.gold configure..."
       
@@ -392,11 +395,14 @@ function build_llvm()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "cmake.done" ]
       then
         (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
           echo
           echo "Running llvm${name_suffix} cmake..."
 
@@ -1427,9 +1433,12 @@ function build_llvm_compiler_rt()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-     
       (
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
+
         echo
         echo "Running llvm-compiler-rt${name_suffix} cmake..."
 
@@ -1540,10 +1549,13 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-
-      env | sort
      
       (
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
+
         echo
         echo "Running llvm-libunwind${name_suffix} cmake..."
 
@@ -1628,10 +1640,13 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-
-      env | sort
      
       (
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
+
         echo
         echo "Running llvm-libcxx-headers${name_suffix} cmake..."
 
@@ -1721,10 +1736,13 @@ function build_llvm_libcxx()
       export CXXFLAGS
       export LDFLAGS
       # Most probably not used
-
-      env | sort
      
       (
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
+
         echo
         echo "Running llvm-libcxxabi${name_suffix} cmake..."
 
@@ -1807,9 +1825,12 @@ function build_llvm_libcxx()
       export LDFLAGS
       # Most probably not used
 
-      env | sort
-
       (
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
+
         run_verbose cmake --build . --verbose 
         run_verbose cmake --build . --verbose --target install/strip
 
