@@ -1,32 +1,45 @@
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/releases)
 [![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
-[![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
 
 # The xPack LLVM clang
+
+A standalone cross-platform (Windows/macOS/Linux) LLVM clang
+binary distribution, intended for reproducible builds.
+
+In addition to the the binary archives and the package meta data,
+this project also includes the build scripts.
+
+## Overview
 
 This open source project is hosted on GitHub as
 [`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack)
 and provides the platform specific binaries for the
-[xPack LLVM clang](https://xpack.github.io/clang/).
+[xPack LLVM clang](https://xpack.github.io/clang/);
+it includes, in addition to project metadata, the full build scripts.
 
-This distribution follows the official
-[LLVM clang](https://clang.llvm.org) releases.
+This distribution follows the official [LLVM clang](https://clang.llvm.org).
 
 The binaries can be installed automatically as **binary xPacks** or manually as
 **portable archives**.
 
-In addition to the package meta data, this project also includes
-the build scripts.
+## Release schedule
+
+This distribution follows the official
+[LLVM clang](https://github.com/llvm/llvm-project/releases/) releases.
+
+The binaries can be installed automatically as **binary xPacks** or manually as
+**portable archives**.
 
 ## User info
 
 This section is intended as a shortcut for those who plan
-to use the GCC binaries. For full details please read the
+to use the LLVM clang binaries. For full details please read the
 [xPack LLVM clang](https://xpack.github.io/clang/) pages.
 
 ### Supported languages
 
-The xPack clang binaries include suport for C/C++ and the LLVM utilities.
+The xPack LLVM clang binaries include suport for C/C++ and the LLVM utilities.
 
 ### Easy install
 
@@ -103,6 +116,8 @@ page.
 For more details please read the
 [Install](https://xpack.github.io/clang/install/) page.
 
+### Versioning
+
 The version strings used by the GCC project are three number string
 like `12.0.1`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
@@ -145,7 +160,7 @@ corresponding licenses are available in the installed
   - latest xPack release
 [![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/latest/total.svg)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
   - all xPack releases [![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/total.svg)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-  - [individual file counters](https://www.somsubhra.com/github-release-stats/?username=xpack-dev-tools&repository=clang-xpack) (grouped per release)
+  - [individual file counters](https://somsubhra.github.io/github-release-stats/?username=xpack-dev-tools&repository=clang-xpack) (grouped per release)
 - npmjs.com [`@xpack-dev-tools/clang`](https://www.npmjs.com/package/@xpack-dev-tools/clang/) xPack
   - latest release, per month
 [![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)

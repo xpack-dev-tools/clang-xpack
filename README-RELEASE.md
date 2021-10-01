@@ -2,10 +2,10 @@
 
 ## Release schedule
 
-The xPack clang release schedule generally follows the original GNU
-[releases](https://github.com/llvm/llvm-project/releases), but with a
+The xPack LLVM clang release schedule generally follows the original LLVM
+[releases](https://github.com/llvm/llvm-project/releases/), but with a
 several weeks filter, which means that releases that are shortly
-overwritten are skipped. Also initial x.y.0 releases are skipped.
+overwritten are skipped. Also initial x.y.0 releases may be skipped.
 
 ## Prepare the build
 
@@ -13,8 +13,12 @@ Before starting the build, perform some checks and tweaks.
 
 ### Check Git
 
+In the `xpack-dev-tools/clang-xpack` Git repo:
+
 - switch to the `xpack-develop` branch
 - if needed, merge the `xpack` branch
+
+No need to add a tag here, it'll be added when the release is created.
 
 ### Increase the version
 
@@ -67,34 +71,35 @@ With Sourcetree, go to the helper repo and update to the latest master commit.
 
 ### Development run the build scripts
 
-Before the real build, run a test build on the development machine (`wks`):
+Before the real build, run a test build on the development machine (`wks`)
+or the production machine (`xbbm`):
 
 ```sh
 sudo rm -rf ~/Work/clang-*
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --osx
 ```
 
-Similarly on the Intel Linux:
+Similarly on the Intel Linux (`xbbi`):
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --linux32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux32
 
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --win32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --win64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --win32
 ```
 
-And on the Arm Linux:
+And on the Arm Linux (`xbba`):
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-pdf --without-html --disable-tests --arm32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm32
 ```
 
-Work on the scripts until all 4 platforms pass the build.
+Work on the scripts until all platforms pass the build.
 
-## Push the build script
+## Push the build scripts
 
 In this Git repo:
 
@@ -105,7 +110,7 @@ From here it'll be later cloned on the production machines.
 
 ### Run the build scripts
 
-On the macOS machine (`xbbm13`) open ssh sessions to both Linux machines
+On the macOS machine (`xbbm`) open ssh sessions to both Linux machines
 (`xbbi` and `xbba`):
 
 ```sh
@@ -114,236 +119,151 @@ caffeinate ssh xbbi
 caffeinate ssh xbba
 ```
 
-Note: If this is a virtual machine, be sure the host will not go to sleep
-(run `caffeinate sh` in a terminal).
-
-On all machines, clone the `xpack-develop` branch and remove previous builds
+Start the runner on all three machines:
 
 ```sh
-rm -rf ~/Downloads/clang-xpack.git; \
-git clone \
-  --recurse-submodules \
-  --branch xpack-develop \
-  https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Downloads/clang-xpack.git
-
-sudo rm -rf ~/Work/clang-*
+~/actions-runner/run.sh
 ```
 
-Empty trash.
+Check that both the project Git and the submodule are pushed to GitHub.
 
-On the macOS 10.13 machine (`xbbm13`):
+To trigger the GitHub Actions build, use the xPack action:
+
+- `trigger-workflow-build`
+
+This is equivalent to:
 
 ```sh
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --osx
+bash ~/Downloads/clang-xpack.git/scripts/helper/trigger-workflow-build.sh
 ```
 
-A typical run takes about 70 minutes.
+This script requires the `GITHUB_API_DISPATCH_TOKEN` to be present
+in the environment.
 
-On `xbbi`:
+This command uses the `xpack-develop` branch of this repo.
+
+The builds take about 14 minutes to complete.
+
+The workflow result and logs are available from the
+[Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
+
+The resulting binaries are available for testing from
+[pre-releases/test](https://github.com/xpack-dev-tools/pre-releases/releases/tag/test/).
+
+## Testing
+
+### CI tests
+
+The automation is provided by GitHub Actions.
+
+To trigger the GitHub Actions tests, use the xPack actions:
+
+- `trigger-workflow-test-prime`
+- `trigger-workflow-test-docker-linux-intel`
+- `trigger-workflow-test-docker-linux-arm`
+
+These are equivalent to:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all
-
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --linux64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --win64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --linux32
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --win32
+bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-workflow-test-prime.sh
+bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-workflow-test-docker-linux-intel.sh
+bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-workflow-test-docker-linux-arm.sh
 ```
 
-A typical run on the Intel machine takes about 350 minutes
-(almost 4 hours).
+These scripts require the `GITHUB_API_DISPATCH_TOKEN` to be present
+in the environment.
 
-On `xbba`:
+These actions use the `xpack-develop` branch of this repo and the
+[pre-releases/test](https://github.com/xpack-dev-tools/pre-releases/releases/tag/test/)
+binaries.
+
+The tests results are available from the
+[Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
+
+Since GitHub Actions provides a single version of macOS, the
+multi-version macOS tests run on Travis.
+
+To trigger the Travis test, use the xPack action:
+
+- `trigger-travis-macos`
+
+This is equivalent to:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all
-
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm64
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --arm32
+bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-travis-macos.sh
 ```
 
-A typical run on the Arm machine takes about 755 minutes
-(almost 13 hours).
+This script requires the `TRAVIS_COM_TOKEN` to be present in the environment.
 
-### Clean the destination folder
+The test results are available from
+[travis-ci.com](https://app.travis-ci.com/github/xpack-dev-tools/clang-xpack/builds/).
 
-On the development machine (`wks`) clear the folder where binaries from all
-build machines will be collected.
+### Manual tests
+
+Install the binaries on all platforms.
+
+On GNU/Linux and macOS systems, use:
 
 ```sh
-rm -rf ~/Downloads/xpack-binaries/clang/*
+.../xpack-clang-12.0.1-1/bin/clang --version
+
+clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
-### Copy the binaries to the development machine
+On Windows use:
 
-On all three machines:
+```doscon
+...\xpack-clang-12.0.1-1\bin\clang --version
 
-```sh
-(cd ~/Work/clang-*/deploy; scp * ilg@wks:Downloads/xpack-binaries/clang)
+clang (xPack GCC x86_64) 12.0.1
 ```
 
-## Run the pre-release native tests
-
-Publish the archives on the
-[pre-release](https://github.com/xpack-dev-tools/pre-releases/releases/tag/test)
-project, and run the native tests on all platforms:
-
-```sh
-rm -rf ~/Downloads/clang-xpack.git; \
-git clone \
-  --recurse-submodules \
-  --branch xpack-develop \
-  https://github.com/xpack-dev-tools/clang-xpack.git  \
-  ~/Downloads/clang-xpack.git
-
-rm -rf ~/Work/cache/xpack-clang-*
-
-bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
-  "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
-```
-
-For early experimental releases, use:
-
-```sh
-bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
-  "https://github.com/xpack-dev-tools/pre-releases/releases/download/experimental/"
-```
-
-## Create a new GitHub pre-release
+## Create a new GitHub pre-release draft
 
 - in `CHANGELOG.md`, add release date
 - commit and push the `xpack-develop` branch
-- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
-- click **Draft a new release**, in the `xpack-develop` branch
-- name the tag like **v12.0.1-1** (mind the dash in the middle!)
-- name the release like **xPack clang v12.0.1-1**
-(mind the dash)
-- as description, use:
+- run the xPack action `trigger-workflow-publish-release`
 
-```markdown
-![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v12.0.1-1/total.svg)
-
-Version v12.0.1-1 is a new release of the **xPack clang** package, following the GCC release.
-
-_At this moment these binaries are provided for tests only!_
-```
-
-- **attach binaries** and SHA (drag and drop from the
-  `~/Downloads/xpack-binaries/*` folder will do it)
-- **enable** the **pre-release** button
-- click the **Publish Release** button
-
-Note: at this moment the system should send a notification to all clients
-watching this project.
-
-## Run the native tests
-
-Run the native tests on all platforms:
-
-```sh
-rm -rf ~/Downloads/clang-xpack.git; \
-git clone --recurse-submodules -b xpack-develop \
-  https://github.com/xpack-dev-tools/clang-xpack.git  \
-  ~/Downloads/clang-xpack.git
-
-rm -rf ~/Work/cache/xpack-clang-*
-
-bash ~/Downloads/clang-xpack.git/tests/scripts/native-test.sh \
-  "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v12.0.1-1/"
-```
-
-## Run the release CI tests
-
-Using the scripts in `tests/scripts/`, start:
-
-TODO:
-
-The test results are available from:
-
-- TODO
-
-For more details, see `tests/scripts/README.md`.
+The result is a
+[draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
+tagged like **v12.0.1-1** (mind the dash in the middle!) and
+named like **xPack LLVM clang v12.0.1-1** (mind the dash),
+with all binaries attached.
 
 ## Prepare a new blog post
+
+Run the xPack action `generate-jekyll-post`; this will leave a file
+on the Desktop.
 
 In the `xpack/web-jekyll` GitHub repo:
 
 - select the `develop` branch
-- add a new file to `_posts/clang/releases`
-- name the file like `2021-07-12-clang-v12-0-1-1-released.md`
-- name the post like: **xPack clang v12.0.1-1 released**
-- as `download_url` use the tagged URL like `https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v12.0.1-1/`
-- update the `date:` field with the current date
-- update the Travis URLs using the actual test pages
-- update the SHA sums via copy/paste from the original build machines
-(it is very important to use the originals!)
+- copy the new file to `_posts/releases/clang`
 
 If any, refer to closed
-[issues](https://github.com/xpack-dev-tools/clang-xpack/issues/)
-as:
-
-- **[Issue:\[#1\]\(...\)]**.
-
-### Update the SHA sums
-
-On the development machine (`wks`):
-
-```sh
-cat ~/Downloads/xpack-binaries/clang/*.sha
-```
-
-Copy/paste the build report at the end of the post as:
-
-```console
-## Checksums
-The SHA-256 hashes for the files are:
-
-0a2a2550ec99b908c92811f8dbfde200956a22ab3d9af1c92ce9926bf8feddf9
-xpack-clang-12.0.1-1-darwin-x64.tar.gz
-
-254588cbcd685748598dd7bbfaf89280ab719bfcd4dabeb0269fdb97a52b9d7a
-xpack-clang-12.0.1-1-linux-arm.tar.gz
-
-10e30128d626f9640c0d585e6b65ac943de59fbdce5550386add015bcce408fa
-xpack-clang-12.0.1-1-linux-arm64.tar.gz
-
-50f2e399382c29f8cdc9c77948e1382dfd5db20c2cb25c5980cb29774962483f
-xpack-clang-12.0.1-1-linux-ia32.tar.gz
-
-9b147443780b7f825eec333857ac7ff9e9e9151fd17c8b7ce2a1ecb6e3767fd6
-xpack-clang-12.0.1-1-linux-x64.tar.gz
-
-501366492cd73b06fca98b8283f65b53833622995c6e44760eda8f4483648525
-xpack-clang-12.0.1-1-win32-ia32.zip
-
-dffc858d64be5539410aa6d3f3515c6de751cd295c99217091f5ccec79cabf39
-xpack-clang-12.0.1-1-win32-x64.zip
-```
+[issues](https://github.com/xpack-dev-tools/clang-xpack/issues/).
 
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like **xPack clang v12.0.1-1 released**
-- push
+  use a message like **xPack LLVM clang v12.0.1-1 released**
+- push to GitHub
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
+
+## Create the pre-release
+
+- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
+- perform the final edits and check if everything is fine
+- save the release
+
+Note: at this moment the system should send a notification to all clients
+watching this project.
 
 ## Update package.json binaries
 
 - select the `xpack-develop` branch
-- run `xpm-dev binaries-update`
-
-```sh
-xpm-dev binaries-update \
-  -C "${HOME}/Downloads/clang-xpack.git" \
-  '12.0.1-1' \
-  "${HOME}/Downloads/xpack-binaries/clang"
-```
-
-- open the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-  page and select the latest release
-- check the download counter, it should match the number of tests
+- run the xPack action `update-package-binaries`
 - open the `package.json` file
 - check the `baseUrl:` it should match the file URLs (including the tag/version);
   no terminating `/` is required
@@ -367,7 +287,7 @@ xpm-dev binaries-update \
 - push the `xpack-develop` branch to GitHub
 - push tags with `git push origin --tags`
 - `npm publish --tag next` (use `--access public` when publishing for
-  the first time); for updates use `npm publish --tag update`
+  the first time)
 
 After a few moments the version will be visible at:
 
@@ -375,55 +295,17 @@ After a few moments the version will be visible at:
 
 ## Test if the npm binaries can be installed with xpm
 
-Run the `tests/scripts/trigger-travis-xpm-install.sh` script, this
-will install the package on Intel Linux 64-bit, macOS and Windows 64-bit.
+Run the `scripts/tests/trigger-travis-xpm-install.sh` script, this
+will install the package via `xpm install` on all supported platforms.
 
 The test results are available from:
 
 - <https://travis-ci.com/github/xpack-dev-tools/clang-xpack/>
 
-For 32-bit Windows, 32-bit Intel GNU/Linux and 32-bit Arm, install manually.
-
-```sh
-xpm install --global @xpack-dev-tools/clang@next
-```
-
-## Test the npm binaries
-
-Install the binaries on all platforms.
-
-```sh
-xpm install --global @xpack-dev-tools/clang@next
-```
-
-On GNU/Linux systems, including Raspberry Pi, use the following commands:
-
-```sh
-~/.local/xPacks/@xpack-dev-tools/clang/12.0.1-1.1/.content/bin/clang --version
-
-clang (xPack clang 64-bit) 12.0.1
-```
-
-On macOS, use:
-
-```sh
-~/Library/xPacks/@xpack-dev-tools/clang/12.0.1-1.1/.content/bin/clang --version
-
-clang (xPack clang 64-bit) 12.0.1
-```
-
-On Windows use:
-
-```doscon
-%USERPROFILE%\AppData\Roaming\xPacks\@xpack-dev-tools\clang\12.0.1-1.1\.content\bin\clang --version
-
-clang.exe (xPack MinGW-w64 GCC 64-bit) 12.0.1
-```
-
 ## Update the repo
 
 - merge `xpack-develop` into `xpack`
-- push
+- push to GitHub
 
 ## Tag the npm package as `latest`
 
@@ -452,12 +334,12 @@ When the release is considered stable, promote it as `latest`:
 
 - in a separate browser windows, open [TweetDeck](https://tweetdeck.twitter.com/)
 - using the `@xpack_project` account
-- paste the release name like **xPack clang v12.0.1-1 released**
+- paste the release name like **xPack LLVM clang v12.0.1-1 released**
 - paste the link to the Web page
   [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button
 
 ## Remove pre-release binaries
 
-- got to <https://github.com/xpack-dev-tools/pre-releases/releases/tag/test>
+- go to <https://github.com/xpack-dev-tools/pre-releases/releases/tag/test/>
 - remove the test binaries

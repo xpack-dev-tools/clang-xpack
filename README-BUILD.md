@@ -1,4 +1,4 @@
-# How to build the xPack clang binaries
+# How to build the xPack LLVM clang binaries
 
 ## Introduction
 
@@ -26,8 +26,10 @@ For native builds, see the `build-native.sh` script. (to be added)
 
 ## Repositories
 
-- <https://github.com/xpack-dev-tools/clang-xpack.git> - the URL of the Git
-repository
+- <https://github.com/xpack-dev-tools/clang-xpack.git> -
+  the URL of the xPack build scripts repository
+- <https://github.com/xpack-dev-tools/build-helper> - the URL of the
+  xPack build helper, used as the `scripts/helper` submodule.
 - <https://github.com/llvm/llvm-project> - the main repo
 
 ### Branches
@@ -51,14 +53,14 @@ The build scripts are available in the `scripts` folder of the
 [`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack)
 Git repo.
 
-To download them, use the following two commands:
+To download them, use the following commands:
 
 ```sh
 rm -rf ~/Downloads/clang-xpack.git; \
 git clone \
-  --recurse-submodules \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Downloads/clang-xpack.git
+  ~/Downloads/clang-xpack.git; \
+git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
 ```
 
 > Note: the repository uses submodules; for a successful build it is
@@ -69,10 +71,10 @@ To use the `xpack-develop` branch of the build scripts, issue:
 ```sh
 rm -rf ~/Downloads/clang-xpack.git; \
 git clone \
-  --recurse-submodules \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Downloads/clang-xpack.git
+  ~/Downloads/clang-xpack.git; \
+git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
 ```
 
 ## The `Work` folder
@@ -128,10 +130,8 @@ LLVM clang are in the
 
 ## Build
 
-Although it is perfectly possible to build all binaries in a single step
-on a macOS system, due to Docker specifics, it is faster to build the
-GNU/Linux and Windows binaries on a GNU/Linux system and the macOS binary
-separately.
+The builds currently run on 3 dedicated machines (Intel GNU/Linux,
+Arm GNU/Linux and Intel macOS). A fourth machine for Arm macOS is planned.
 
 ### Build the Intel GNU/Linux and Windows binaries
 
@@ -153,7 +153,7 @@ Before running a build for the first time, it is recommended to preload the
 docker images.
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh preload-images
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh preload-images
 ```
 
 The result should look similar to:
@@ -161,8 +161,8 @@ The result should look similar to:
 ```console
 $ docker images
 REPOSITORY          TAG                              IMAGE ID            CREATED             SIZE
-ilegeul/ubuntu      i386-12.04-xbb-v3.2              fadc6405b606        2 days ago          4.55GB
-ilegeul/ubuntu      amd64-12.04-xbb-v3.2             3aba264620ea        2 days ago          4.98GB
+ilegeul/ubuntu      i386-12.04-xbb-v3.3              fadc6405b606        2 days ago          4.55GB
+ilegeul/ubuntu      amd64-12.04-xbb-v3.3             3aba264620ea        2 days ago          4.98GB
 ```
 
 It is also recommended to Remove unused Docker space. This is mostly useful
@@ -172,7 +172,7 @@ by Docker.
 To check the content of a Docker image:
 
 ```sh
-docker run --interactive --tty ilegeul/ubuntu:amd64-12.04-xbb-v3.2
+docker run --interactive --tty ilegeul/ubuntu:amd64-12.04-xbb-v3.3
 ```
 
 To remove unused files:
@@ -187,13 +187,16 @@ network connection or a computer entering sleep.
 
 ```sh
 screen -S clang
+
+sudo rm -rf ~/Work/clang-*
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
-Run the development builds on the development machine (`wks`):
+or, for development builds:
 
 ```sh
-sudo rm -rf ~/Work/clang-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --develop --without-html --linux64 --linux32 --win64 --win32
+sudo rm -rf ~/Work/gcc-*
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-html --linux64 --linux32 --win64 --win32
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -220,7 +223,7 @@ total 247864
 The supported Arm architectures are:
 
 - `armhf` for 32-bit devices
-- `arm64` for 64-bit devices
+- `aarch64` for 64-bit devices
 
 The current platform for Arm GNU/Linux production builds is a
 Debian 9, running on an Raspberry Pi 4 SBC with 8 GB of RAM
@@ -240,7 +243,7 @@ Before running a build for the first time, it is recommended to preload the
 docker images.
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh preload-images
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh preload-images
 ```
 
 The result should look similar to:
@@ -248,8 +251,8 @@ The result should look similar to:
 ```console
 $ docker images
 REPOSITORY          TAG                                IMAGE ID            CREATED             SIZE
-ilegeul/ubuntu      arm32v7-16.04-xbb-v3.2             b501ae18580a        27 hours ago        3.23GB
-ilegeul/ubuntu      arm64v8-16.04-xbb-v3.2             db95609ffb69        37 hours ago        3.45GB
+ilegeul/ubuntu      arm32v7-16.04-xbb-v3.3             b501ae18580a        27 hours ago        3.23GB
+ilegeul/ubuntu      arm64v8-16.04-xbb-v3.3             db95609ffb69        37 hours ago        3.45GB
 hello-world         latest                             a29f45ccde2a        5 months ago        9.14kB
 ```
 
@@ -261,7 +264,14 @@ network connection or a computer entering sleep.
 screen -S clang
 
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all
+```
+
+or, for development builds:
+
+```sh
+sudo rm -rf ~/Work/clang-*
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --disable-tests --all
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -281,8 +291,9 @@ total 93168
 
 ### Build the macOS binaries
 
-The current platform for macOS production builds is a macOS 10.10.5
-running on a MacBook Pro with 32 GB of RAM and a fast SSD.
+The current platform for macOS production builds is a macOS 10.13.6
+running on a MacBook Pro 2011 with 32 GB of RAM and a fast SSD.
+The machine name is `xbbm`.
 
 ```sh
 caffeinate ssh xbbm
@@ -294,8 +305,14 @@ To build the latest macOS version:
 screen -S clang
 
 rm -rf ~/Work/clang-*
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --osx
+```
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/build.sh --osx
+or, for development builds:
+
+```sh
+rm -rf ~/Work/clang-arm-*
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --disable-tests --osx 
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -319,8 +336,14 @@ total 163376
 Instead of `--all`, you can use any combination of:
 
 ```console
---win32 --win64 --linux32 --linux64
---arm --arm64
+--win32 --win64
+--linux32 --linux64
+```
+
+On Arm, instead of `--all`, you can use:
+
+```console
+--arm32 --arm64
 ```
 
 ### `clean`
@@ -328,19 +351,19 @@ Instead of `--all`, you can use any combination of:
 To remove most build temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all clean
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all clean
 ```
 
 To also remove the library build temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all cleanlibs
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all cleanlibs
 ```
 
 To remove all temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/build.sh --all cleanall
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all cleanall
 ```
 
 Instead of `--all`, any combination of `--win32 --win64 --linux32 --linux64`
