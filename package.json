@@ -1,30 +1,29 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "8.5.0-1.1",
-  "description": "A binary xPack with the LLVM clang",
+  "version": "12.0.1-1",
+  "description": "A binary xPack with the LLVM clang executables",
   "main": "",
   "scripts": {
+    "npm-install": "npm install",
     "pack": "npm pack",
     "git-log": "git log --pretty='%cd * %h %s' --date=short",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "liquidjs": "liquidjs"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xpack-dev-tools/clang-xpack.git"
+    "url": "https://github.com/xpack-dev-tools/clang-xpack.git/"
   },
   "bugs": {
     "url": "https://github.com/xpack-dev-tools/clang-xpack/issues/"
   },
-  "homepage": "https://github.com/xpack-dev-tools/clang-xpack/",
+  "homepage": "https://github.com/xpack-dev-tools/clang-xpack/#readme",
   "keywords": [
     "xpack",
     "gnu",
     "clang",
     "c",
-    "c++",
-    "obj-c",
-    "obj-c++",
-    "fortran"
+    "c++"
   ],
   "author": {
     "name": "Liviu Ionescu",
@@ -32,41 +31,39 @@
     "url": "https://github.com/ilg-ul/"
   },
   "license": "MIT",
-  "config": {},
-  "dependencies": {},
-  "devDependencies": {},
   "xpack": {
+    "minimumXpmRequired": "0.10.2",
     "binaries": {
       "destination": "./.content",
-      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v8.5.0-1",
+      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v12.0.1-1",
       "skip": 1,
       "platforms": {
         "darwin-x64": {
-          "fileName": "xpack-clang-8.5.0-1-darwin-x64.tar.gz",
+          "fileName": "xpack-clang-12.0.1-1-darwin-x64.tar.gz",
           "sha256": "5ca5abb0e6d7a3048d47bd46f0278c7534b7f817ac2cbc4b54cea646373e8b89"
         },
         "linux-arm64": {
-          "fileName": "xpack-clang-8.5.0-1-linux-arm64.tar.gz",
+          "fileName": "xpack-clang-12.0.1-1-linux-arm64.tar.gz",
           "sha256": "efda34b8865198853edac865737824dfa76d24480f4a057c22fa4d6bef81dee6"
         },
         "linux-arm": {
-          "fileName": "xpack-clang-8.5.0-1-linux-arm.tar.gz",
+          "fileName": "xpack-clang-12.0.1-1-linux-arm.tar.gz",
           "sha256": "bf96d4f185c17043bf84f2803252a1b0af63266c023dd62396a667f025bcfe96"
         },
         "linux-ia32": {
-          "fileName": "xpack-clang-8.5.0-1-linux-ia32.tar.gz",
+          "fileName": "xpack-clang-12.0.1-1-linux-ia32.tar.gz",
           "sha256": "de97e4242e1c691f488a32f0bab76e8019b3959e9d0078b25a4f34bcf3a14ab6"
         },
         "linux-x64": {
-          "fileName": "xpack-clang-8.5.0-1-linux-x64.tar.gz",
+          "fileName": "xpack-clang-12.0.1-1-linux-x64.tar.gz",
           "sha256": "ef74a7b554e586f84ce5d17bb6d2074f4ab59e07da3038029f04f8a2fa657cc5"
         },
         "win32-ia32": {
-          "fileName": "xpack-clang-8.5.0-1-win32-ia32.zip",
+          "fileName": "xpack-clang-12.0.1-1-win32-ia32.zip",
           "sha256": "84db4ad846a25156def667e18d3ca376497388494abe08636f825f9f84f9d847"
         },
         "win32-x64": {
-          "fileName": "xpack-clang-8.5.0-1-win32-x64.zip",
+          "fileName": "xpack-clang-12.0.1-1-win32-x64.zip",
           "sha256": "71c9a4744b207e080b7ab94e777b8a8f90018cccf1896fa650cbee2d91ac779c"
         }
       }
@@ -101,6 +98,35 @@
       "size": "./.content/bin/size",
       "strings": "./.content/bin/strings",
       "strip": "./.content/bin/strip"
+    },
+    "properties": {
+      "appName": "LLVM clang",
+      "appLCName": "clang"
+    },
+    "actions": {
+      "generate-workflows": [
+        "mkdir -p .github/workflows/",
+        "cp scripts/helper/templates/body-github-pre-releases-test.md .github/workflows/",
+        "cat scripts/helper/templates/build-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\", \"APP_LC_NAME\": \"{{ properties.appLCName }}\" }' > .github/workflows/build.yml",
+        "cat scripts/helper/templates/publish-release-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\", \"APP_LC_NAME\": \"{{ properties.appLCName }}\" }' > .github/workflows/publish-release.yml",
+        "cat scripts/helper/templates/test-prime-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\", \"APP_LC_NAME\": \"{{ properties.appLCName }}\" }' > .github/workflows/test-prime.yml",
+        "cat scripts/helper/templates/test-docker-linux-intel-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\" }' > .github/workflows/test-docker-linux-intel.yml",
+        "cat scripts/helper/templates/test-docker-linux-arm-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\" }' > .github/workflows/test-docker-linux-arm.yml",
+        "cat scripts/helper/templates/test-xpm-liquid.yml | liquidjs '{ \"APP_NAME\": \"{{ properties.appName }}\", \"APP_LC_NAME\": \"{{ properties.appLCName }}\" }' > .github/workflows/test-xpm.yml"
+        ],
+      "trigger-workflow-build": "bash scripts/helper/trigger-workflow-build.sh",
+      "trigger-workflow-test-prime": "bash scripts/helper/tests/trigger-workflow-test-prime.sh",
+      "trigger-workflow-test-docker-linux-intel": "bash scripts/helper/tests/trigger-workflow-test-docker-linux-intel.sh",
+      "trigger-workflow-test-docker-linux-arm": "bash scripts/helper/tests/trigger-workflow-test-docker-linux-arm.sh",
+      "trigger-travis-macos": "bash scripts/helper/tests/trigger-travis-macos.sh",
+      "trigger-workflow-publish-release": "bash scripts/helper/trigger-workflow-publish-release.sh",
+      "generate-jekyll-post": "bash scripts/helper/generate-jekyll-post.sh",
+      "update-package-binaries": "bash scripts/helper/update-package-binaries.sh",
+      "trigger-workflow-test-xpm": "bash scripts/helper/tests/trigger-workflow-test-xpm.sh"
     }
+  },
+  "bundleDependencies": [],
+  "devDependencies": {
+    "liquidjs": "^9.25.1"
   }
 }
