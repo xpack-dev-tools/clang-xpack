@@ -324,11 +324,12 @@ function build_llvm()
       cd "${llvm_src_folder_name}/llvm/tools"
 
       # This trick will allow to build the toolchain only and still get clang
-      for p in clang lld lldb; do
-          if [ ! -e $p ]
-          then
-              ln -s ../../$p .
-          fi
+      for p in clang lld lldb
+      do
+        if [ ! -e $p ]
+        then
+            ln -s ../../$p .
+        fi
       done
     )
 
