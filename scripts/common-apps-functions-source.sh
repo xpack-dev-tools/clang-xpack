@@ -276,6 +276,9 @@ function build_llvm()
   # 17 Feb 2021, "11.1.0"
   # For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
   # Fixed in 12.x.
+  # 14 Apr 2021, "12.0.0"
+  # 9 Jul 2021, "12.0.1"
+  # 1 Oct 2021, "13.0.0"
 
   export ACTUAL_LLVM_VERSION="$1"
   local name_suffix=${2-''}
