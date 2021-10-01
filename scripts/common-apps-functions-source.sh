@@ -62,7 +62,6 @@ function build_binutils_ld_gold()
       mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -340,8 +339,6 @@ function build_llvm()
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${llvm_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${llvm_folder_name}"
-
-      xbb_activate
 
       if [ -n "${name_suffix}" ]
       then
