@@ -506,7 +506,7 @@ function build_llvm()
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
 
-            # To help find the just locally compiled `ld.gold`.
+            # To help find the locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
             config_options+=("-DCMAKE_PROGRAM_PATH=${APP_PREFIX}/bin")
@@ -1018,7 +1018,7 @@ function test_llvm()
     cp -v "${helper_folder_path}/tests/c-cpp"/* .
 
     # Test C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -o simple-hello-c1${DOT_EXE} simple-hello.c ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o simple-hello-c1${DOT_EXE} simple-hello.c -ffunction-sections -fdata-sections ${GC_SECTION}
 
     test_expect "simple-hello-c1" "Hello"
 
@@ -1027,7 +1027,7 @@ function test_llvm()
       # Static links are not supported, at least not with the Apple linker:
       # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-simple-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
       # ld: library not found for -lcrt0.o
-      run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-simple-hello-c1 simple-hello.c -static
+      run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-simple-hello-c1${DOT_EXE} simple-hello.c -ffunction-sections -fdata-sections ${GC_SECTION} -static
 
       test_expect "static-simple-hello-c1" "Hello"
     fi
@@ -1245,13 +1245,13 @@ function test_llvm()
       run_app "${CC}" -o add.o -fpic -c add.c -ffunction-sections -fdata-sections
     fi
 
-    rm -rf libadd.a
+    rm -rf libadd-static.a
     run_app "${AR}" -r ${VERBOSE_FLAG} libadd-static.a add.o
     run_app "${RANLIB}" libadd-static.a
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      # The `--out-implib` crreates an import library, which can be
+      # The `--out-implib` creates an import library, which can be
       # directly used with -l.
       run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows 
     else
@@ -1265,7 +1265,7 @@ function test_llvm()
       run_app "${CC}" -o rt-add.o -fpic -c add.c -ffunction-sections -fdata-sections
     fi
 
-    rm -rf libadd.a
+    rm -rf libadd-add-static.a
     run_app "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
     run_app "${RANLIB}" librt-add-static.a
 
@@ -1315,7 +1315,7 @@ function test_llvm()
     )
 
     # -------------------------------------------------------------------------
-    # Tests from the llvm-mingw project.
+    # Tests borrowed from the llvm-mingw project.
 
     run_app "${CC}" hello.c -o hello${DOT_EXE} ${VERBOSE_FLAG} -lm
     show_libs hello
