@@ -345,12 +345,12 @@ function build_llvm()
 
         # Use XBB libs in native-llvm
         xbb_activate_dev
+
+        # Required to satisfy the reference to /opt/xbb/lib/libncurses.so.
         xbb_activate_libs
 
-        # Revert to the XBB GCC (not mingw as usual for windows targets).
-        prepare_gcc_env "" "-xbb"
-
-        CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
+        # CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
+        CPPFLAGS="${XBB_CPPFLAGS}"
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 

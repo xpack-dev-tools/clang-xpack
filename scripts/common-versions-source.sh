@@ -54,12 +54,16 @@ function build_mingw_bootstrap()
   # Build a bootstrap toolchain, that runs on Linux and creates Windows
   # binaries.
   (
+    # Make the use of XBB GCC explicit.
+    prepare_gcc_env "" "-xbb"
+
     prepare_mingw_env "${MINGW_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
     # Deploy the headers, they are needed by the compiler.
     build_mingw_headers
 
     # Build LLVM with the host XBB compiler.
+    # Has a reference to /opt/xbb/lib/libncurses.so.
     build_llvm "${LLVM_VERSION}" "${BOOTSTRAP_SUFFIX}"
 
     # Build gendef & widl with the host XBB compiler.
@@ -104,6 +108,7 @@ function build_common()
 
         # Build libraries refered by LLVM.
         build_zlib "${ZLIB_VERSION}"
+        build_ncurses "${NCURSES_VERSION}"
         build_libiconv "${LIBICONV_VERSION}"
         build_xz "${XZ_VERSION}"
 
