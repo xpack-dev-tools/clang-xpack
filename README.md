@@ -43,7 +43,7 @@ The xPack LLVM clang binaries include suport for C/C++ and the LLVM utilities.
 
 ### Easy install
 
-The easiest way to install GCC is using the **binary xPack**, available as
+The easiest way to install LLVM clang is using the **binary xPack**, available as
 [`@xpack-dev-tools/clang`](https://www.npmjs.com/package/@xpack-dev-tools/clang)
 from the [`npmjs.com`](https://www.npmjs.com) registry.
 
@@ -118,7 +118,7 @@ For more details please read the
 
 ### Versioning
 
-The version strings used by the GCC project are three number string
+The version strings used by the LLVM project are three number string
 like `12.0.1`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,

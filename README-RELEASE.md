@@ -215,7 +215,7 @@ On Windows use:
 ```doscon
 ...\xpack-clang-12.0.1-1\bin\clang --version
 
-clang (xPack GCC x86_64) 12.0.1
+clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
 ## Create a new GitHub pre-release draft

@@ -105,7 +105,7 @@ not be accepted by bash.
 ## Versioning
 
 The version string is an extension to semver, the format looks like `12.0.1-1`.
-It includes the three digits with the original GCC version and a fourth
+It includes the three digits with the original LLVM version and a fourth
 digit with the xPack release number.
 
 When publishing on the **npmjs.com** server, a fifth digit is appended.
@@ -195,8 +195,8 @@ bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --all
 or, for development builds:
 
 ```sh
-sudo rm -rf ~/Work/gcc-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-html --linux64 --linux32 --win64 --win32
+sudo rm -rf ~/Work/clang-*
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-html --linux64 --linux32 --win64 --win32
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
