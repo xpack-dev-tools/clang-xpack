@@ -1061,23 +1061,30 @@ function test_llvm()
       test_clang_one "${name_suffix}" --gc --lto --crt
     )
 
-    # The recommended use case is with `-static-libgcc`, and the following
-    # combinations are expected to work properly on all platforms.
-    test_clang_one "${name_suffix}" --static-lib
-    test_clang_one "${name_suffix}" --static-lib --gc
-    test_clang_one "${name_suffix}" --static-lib --lto
-    test_clang_one "${name_suffix}" --static-lib --gc --lto
-
-    if [ "${TARGET_PLATFORM}" == "linux" ]
+    if [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      # Static lib and compiler-rt fail on Linux x86_64 and ia32
       echo
-      echo "Skip all --static-lib --crt on Linux."
+      echo "Skip all --static-lib on macOS."
     else
-      test_clang_one "${name_suffix}" --static-lib --crt
-      test_clang_one "${name_suffix}" --static-lib --gc --crt
-      test_clang_one "${name_suffix}" --static-lib --lto --crt
-      test_clang_one "${name_suffix}" --static-lib --gc --lto --crt
+      # Except on macOS, the recommended use case is with `-static-libgcc`, 
+      # and the following combinations are expected to work properly on
+      # Linux and Windows.
+      test_clang_one "${name_suffix}" --static-lib
+      test_clang_one "${name_suffix}" --static-lib --gc
+      test_clang_one "${name_suffix}" --static-lib --lto
+      test_clang_one "${name_suffix}" --static-lib --gc --lto
+
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        # Static lib and compiler-rt fail on Linux x86_64 and ia32
+        echo
+        echo "Skip all --static-lib --crt on Linux."
+      else
+        test_clang_one "${name_suffix}" --static-lib --crt
+        test_clang_one "${name_suffix}" --static-lib --gc --crt
+        test_clang_one "${name_suffix}" --static-lib --lto --crt
+        test_clang_one "${name_suffix}" --static-lib --gc --lto --crt
+      fi
     fi
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1127,7 +1134,7 @@ function test_llvm()
 
       # On macOS static linking is not available at all.
       echo
-      echo "Skip all --static on macOS"
+      echo "Skip all --static on macOS."
 
     fi
 
