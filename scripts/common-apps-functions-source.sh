@@ -1361,8 +1361,6 @@ function test_clang_one()
 
     if [ "${is_crt}" == "y" ]
     then
-      CFLAGS+=" -rtlib=compiler-rt"
-      CXXFLAGS+=" -rtlib=compiler-rt"
       LDFLAGS+=" -rtlib=compiler-rt"
       LDXXFLAGS+=" -rtlib=compiler-rt"
       prefix="crt-${prefix}"
