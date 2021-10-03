@@ -995,12 +995,21 @@ function test_llvm()
 
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      GC_SECTION="-Wl,--gc-sections"
+      LD_GC_SECTIONS="-Wl,--gc-sections"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      GC_SECTION="-Wl,-dead_strip"
+      LD_GC_SECTIONS="-Wl,-dead_strip"
     else
-      GC_SECTION=""
+      LD_GC_SECTIONS=""
+    fi
+
+    echo 
+    env | sort
+
+    run_verbose uname
+    if [ "${TARGET_PLATFORM}" != "darwin" ]
+    then
+      run_verbose uname -o
     fi
 
     # -------------------------------------------------------------------------
@@ -1015,224 +1024,110 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    cp -v "${helper_folder_path}/tests/c-cpp"/* .
-
-    # Test C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -o simple-hello-c1${DOT_EXE} simple-hello.c -ffunction-sections -fdata-sections ${GC_SECTION}
-
-    test_expect "simple-hello-c1" "Hello"
-
-    if [ "${TARGET_PLATFORM}" != "darwin" ]
-    then
-      # Static links are not supported, at least not with the Apple linker:
-      # "/usr/bin/ld" -demangle -lto_library /Users/ilg/Work/clang-11.1.0-1/darwin-x64/install/clang/lib/libLTO.dylib -no_deduplicate -static -arch x86_64 -platform_version macos 10.10.0 0.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o static-simple-hello-c1 -lcrt0.o /var/folders/3h/98gc9hrn3qnfm40q7_0rxczw0000gn/T/hello-4bed56.o
-      # ld: library not found for -lcrt0.o
-      run_app "${TEST_PREFIX}/bin/clang" ${VERBOSE_FLAG} -o static-simple-hello-c1${DOT_EXE} simple-hello.c -ffunction-sections -fdata-sections ${GC_SECTION} -static
-
-      test_expect "static-simple-hello-c1" "Hello"
-    fi
-
-    # Test C compile and link in separate steps.
-    run_app "${CC}" -o simple-hello-c.o -c simple-hello.c -ffunction-sections -fdata-sections
-    run_app "${CC}" ${VERBOSE_FLAG} -o simple-hello-c2${DOT_EXE} simple-hello-c.o ${GC_SECTION}
-
-    test_expect "simple-hello-c2" "Hello"
-
-    if [ "${TARGET_PLATFORM}" != "linux" ]
-    then
-      # All linkers fail with "File format not recognized", or
-      # the linker crashes. Sometimes -fuse-ld=lld works.
-
-      # Test LTO C compile and link in a single step.
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-c1${DOT_EXE} simple-hello.c -ffunction-sections -fdata-sections ${GC_SECTION}
-    
-      test_expect "lto-simple-hello-c1" "Hello"
-
-      # Test LTO C compile and link in separate steps.
-      run_app "${CC}" -flto -o lto-simple-hello-c.o -c simple-hello.c -ffunction-sections -fdata-sections
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-c2${DOT_EXE} lto-simple-hello-c.o -ffunction-sections -fdata-sections ${GC_SECTION}
-
-      test_expect "lto-simple-hello-c2" "Hello"
-    fi
-
-    # Test C compile and link in a single step.
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-simple-hello-c1${DOT_EXE} simple-hello.c -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
-
-    test_expect "rt-simple-hello-c1" "Hello"
-
-    # Test C compile and link in separate steps.
-    run_app "${CC}" -o simple-hello-c.o -c simple-hello.c -ffunction-sections -fdata-sections
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-simple-hello-c2${DOT_EXE} simple-hello-c.o -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
-
-    test_expect "rt-simple-hello-c2" "Hello"
-
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-c1${DOT_EXE} simple-hello.c -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      # Test LTO C compile and link in a single step.
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-c1${DOT_EXE} simple-hello.c -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-lto-simple-hello-c1" "Hello"
-
-    # Test LTO C compile and link in separate steps.
-    run_app "${CC}" -flto -o lto-simple-hello-c.o -c simple-hello.c -ffunction-sections -fdata-sections
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-c2${DOT_EXE} lto-simple-hello-c.o -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CC}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-c2${DOT_EXE} lto-simple-hello-c.o -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-lto-simple-hello-c2" "Hello"
+    run_verbose cp -v "${helper_folder_path}/tests/c-cpp"/* .
 
     # -------------------------------------------------------------------------
 
-    # Test C++ compile and link in a single step.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o simple-hello-cpp1${DOT_EXE} simple-hello.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+    (
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        # Instruct the linker to add a RPATH pointing to the folder with the
+        # compiler shared libraries. Alternatelly -Wl,-rpath=xxx can be used
+        # explicitly on each link command.
+        export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
+        echo
+        echo "LD_RUN_PATH=${LD_RUN_PATH}"
+      elif [ "${TARGET_PLATFORM}" == "win32" -a ! -n "${name_suffix}" ]
+      then
+        # For libwinpthread-1.dll, possibly other.
+        if [ "$(uname -o)" == "Msys" ]
+        then
+          export PATH="${TEST_PREFIX}/lib;${PATH:-}" 
+          echo "PATH=${PATH}"
+        elif [ "$(uname)" == "Linux" ]
+        then
+          export WINEPATH="${TEST_PREFIX}/lib;${WINEPATH:-}" 
+          echo "WINEPATH=${WINEPATH}"
+        fi
+      fi
 
-    test_expect "simple-hello-cpp1" "Hello"
+      test_clang_one "${name_suffix}"
+      test_clang_one "${name_suffix}" --gc
+      test_clang_one "${name_suffix}" --lto
+      test_clang_one "${name_suffix}" --gc --lto
+      test_clang_one "${name_suffix}" --crt
+      test_clang_one "${name_suffix}" --gc --crt
+      test_clang_one "${name_suffix}" --lto --crt
+      test_clang_one "${name_suffix}" --gc --lto --crt
+    )
 
-    # Test C++ compile and link in separate steps.
-    run_app "${CXX}" -o simple-hello-cpp.o -c simple-hello.cpp -ffunction-sections -fdata-sections
-    run_app "${CXX}" ${VERBOSE_FLAG} -o simple-hello-cpp2${DOT_EXE} simple-hello-cpp.o -ffunction-sections -fdata-sections ${GC_SECTION}
-
-    test_expect "simple-hello-cpp2" "Hello"
-
-    # Test LTO C++ compile and link in a single step.
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "lto-simple-hello-cpp1" "Hello"
-
-    # Test LTO C++ compile and link in separate steps.
-    run_app "${CXX}" -flto -o lto-simple-hello-cpp.o -c simple-hello.cpp -ffunction-sections -fdata-sections
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-cpp2${DOT_EXE} lto-simple-hello-cpp.o -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o lto-simple-hello-cpp2${DOT_EXE} lto-simple-hello-cpp.o -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "lto-simple-hello-cpp2" "Hello"
-
-    # Test C++ compile and link in a single step.
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-simple-hello-cpp1" "Hello"
-
-    # Test C++ compile and link in separate steps.
-    run_app "${CXX}" -o simple-hello-cpp.o -c simple-hello.cpp -stdlib=libc++ -ffunction-sections -fdata-sections
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-hello-cpp2${DOT_EXE} simple-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-hello-cpp2${DOT_EXE} simple-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-simple-hello-cpp2" "Hello"
-
-    # Test LTO C++ compile and link in a single step.
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-cpp1${DOT_EXE} simple-hello.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-lto-simple-hello-cpp1" "Hello"
-
-    # Test LTO C++ compile and link in separate steps.
-    run_app "${CXX}" -flto -o lto-simple-hello-cpp.o -c simple-hello.cpp -stdlib=libc++ -ffunction-sections -fdata-sections
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-cpp2${DOT_EXE} lto-simple-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -flto -o rt-lto-simple-hello-cpp2${DOT_EXE} lto-simple-hello-cpp.o -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-lto-simple-hello-cpp2" "Hello"
-
-    # -------------------------------------------------------------------------
-
-    # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o simple-exception${DOT_EXE} -O0 simple-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-
-    test_expect "simple-exception" "MyException"
+    # The recommended use case is with `-static-libgcc`, and the following
+    # combinations are expected to work properly on all platforms.
+    test_clang_one "${name_suffix}" --static-lib
+    test_clang_one "${name_suffix}" --static-lib --gc
+    test_clang_one "${name_suffix}" --static-lib --lto
+    test_clang_one "${name_suffix}" --static-lib --gc --lto
 
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-exception${DOT_EXE} -O0 simple-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-exception${DOT_EXE} -O0 simple-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-simple-exception" "MyException"
-
-    # -O0 is an attempt to prevent any interferences with the optimiser.
-    run_app "${CXX}" ${VERBOSE_FLAG} -o simple-str-exception${DOT_EXE} -O0 simple-str-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-    
-    test_expect "simple-str-exception" "MyStringException"
-
-    # -O0 is an attempt to prevent any interferences with the optimiser.
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-str-exception${DOT_EXE} -O0 simple-str-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION} -fuse-ld=lld
-    else
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-simple-str-exception${DOT_EXE} -O0 simple-str-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-    fi
-
-    test_expect "rt-simple-str-exception" "MyStringException"
-
-    if [ "${TARGET_PLATFORM}" == "linux" ]
-    then
-
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-simple-exception${DOT_EXE} -static -O0 simple-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-
-      test_expect "static-simple-exception" "MyException"
-
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-simple-str-exception${DOT_EXE} -static -O0 simple-str-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-
-      test_expect "simple-str-exception" "MyStringException"
-
-      # Static & libc++ do not work.
+      # Static lib and compiler-rt fail on Linux x86_64 and ia32
       echo
-      echo "Skip rt-static-simple-exception"
+      echo "Skip all --static-lib --crt on Linux."
+    else
+      test_clang_one "${name_suffix}" --static-lib --crt
+      test_clang_one "${name_suffix}" --static-lib --gc --crt
+      test_clang_one "${name_suffix}" --static-lib --lto --crt
+      test_clang_one "${name_suffix}" --static-lib --gc --lto --crt
+    fi
 
-      echo
-      echo "Skip rt-static-simple-str-exception"
-
-    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    if [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-simple-exception${DOT_EXE} -static -O0 simple-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
+      test_clang_one "${name_suffix}" --static
+      test_clang_one "${name_suffix}" --static --gc
+      test_clang_one "${name_suffix}" --static --lto
+      test_clang_one "${name_suffix}" --static --gc --lto
+      test_clang_one "${name_suffix}" --static --crt
+      test_clang_one "${name_suffix}" --static --gc --crt
+      test_clang_one "${name_suffix}" --static --lto --crt
+      test_clang_one "${name_suffix}" --static --gc --lto --crt
 
-      test_expect "static-simple-exception" "MyException"
+    elif [ "${TARGET_PLATFORM}" == "linux" ]
+    then
 
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-simple-exception${DOT_EXE} -static -O0 simple-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
+      # On Linux static linking is highly discouraged.
+      # On RedHat and derived, the static libraries must be installed explicitly.
+      test_clang_one "${name_suffix}" --static
+      test_clang_one "${name_suffix}" --static --gc
 
-      test_expect "rt-static-simple-exception" "MyException"
+      if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "ia32" ]
+      then
+        # Static lib and LTO fail on Linux i386
+        echo
+        echo "Skip all --static --lto on linux-x64."
+      else
+        test_clang_one "${name_suffix}" --static --lto
+        test_clang_one "${name_suffix}" --static --gc --lto
+      fi
 
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o static-simple-str-exception${DOT_EXE} -static -O0 simple-str-exception.cpp -ffunction-sections -fdata-sections ${GC_SECTION}
-      
-      test_expect "simple-str-exception" "MyStringException"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        # Static lib and compiler-rt fail on Linux
+        echo
+        echo "Skip all --static --crt on Intel Linux."
+      else
+        test_clang_one "${name_suffix}" --static --crt
+        test_clang_one "${name_suffix}" --static --gc --crt
+        test_clang_one "${name_suffix}" --static --lto --crt
+        test_clang_one "${name_suffix}" --static --gc --lto --crt
+      fi
 
-      # -O0 is an attempt to prevent any interferences with the optimiser.
-      run_app "${CXX}" ${VERBOSE_FLAG} -o rt-static-simple-str-exception${DOT_EXE} -static -O0 simple-str-exception.cpp -rtlib=compiler-rt -stdlib=libc++ -ffunction-sections -fdata-sections ${GC_SECTION}
-      
-      test_expect "rt-static-simple-str-exception" "MyStringException"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+
+      # On macOS static linking is not available at all.
+      echo
+      echo "Skip all --static on macOS"
 
     fi
 
@@ -1276,7 +1171,7 @@ function test_llvm()
       run_app "${CC}" -o librt-add-shared.${SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
     fi
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
 
     test_expect "static-adder" "42" 40 2
 
@@ -1284,9 +1179,9 @@ function test_llvm()
     then
       # -ladd-shared is in fact libadd-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     else
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     fi
 
     (
@@ -1295,7 +1190,7 @@ function test_llvm()
       test_expect "shared-adder" "42" 40 2
     )
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     
     test_expect "rt-static-adder" "42" 40 2
 
@@ -1303,9 +1198,9 @@ function test_llvm()
     then
       # -lrt-add-shared is in fact librt-add-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     else
-      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${GC_SECTION}
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     fi
 
     (
@@ -1317,13 +1212,13 @@ function test_llvm()
     # -------------------------------------------------------------------------
     # Tests borrowed from the llvm-mingw project.
 
-    run_app "${CC}" hello.c -o hello${DOT_EXE} ${VERBOSE_FLAG} -lm
-    show_libs hello
-    run_app ./hello
+    # run_app "${CC}" hello.c -o hello${DOT_EXE} ${VERBOSE_FLAG} -lm
+    # show_libs hello
+    # run_app ./hello
 
-    run_app "${CC}" setjmp-patched.c -o setjmp${DOT_EXE} ${VERBOSE_FLAG} -lm
-    show_libs setjmp
-    run_app ./setjmp
+    # run_app "${CC}" setjmp-patched.c -o setjmp${DOT_EXE} ${VERBOSE_FLAG} -lm
+    # show_libs setjmp
+    # run_app ./setjmp
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1349,12 +1244,12 @@ function test_llvm()
       run_app ./idltest 
     fi
 
-    for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
-    do
-      run_app ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
-      show_libs $test
-      run_app ./$test
-    done
+    # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
+    # do
+    #   run_app ${CXX} $test.cpp -o $test${DOT_EXE} ${VERBOSE_FLAG}
+    #   show_libs $test
+    #   run_app ./$test
+    # done
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1390,10 +1285,234 @@ function test_llvm()
       show_libs throwcatch-main
       run_app ./throwcatch-main
     )
+    # -------------------------------------------------------------------------
+
   )
 
   echo
   echo "Testing the llvm${name_suffix} binaries completed successfuly."
+}
+
+# ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
+function test_clang_one()
+{
+  (
+    unset IFS
+
+    local is_gc=""
+    local is_lto=""
+    local is_crt=""
+    local is_static=""
+    local is_static_lib=""
+
+    local prefix=""
+
+    local suffix="$1"
+    shift
+
+    while [ $# -gt 0 ]
+    do
+      case "$1" in
+
+        --gc)
+        is_gc="y"
+        shift
+        ;;
+
+        --lto)
+        is_lto="y"
+        shift
+        ;;
+
+        --crt)
+        is_crt="y"
+        shift
+        ;;
+
+        --static)
+        is_static="y"
+        shift
+        ;;
+
+        --static-lib)
+        is_static_lib="y"
+        shift
+        ;;
+
+      *)
+        echo "Unknown action/option $1"
+        exit 1
+        ;;
+
+      esac
+    done
+
+    CFLAGS=""
+    CXXFLAGS=""
+    LDFLAGS=""
+    LDXXFLAGS=""
+
+    if [ "${is_crt}" == "y" ]
+    then
+      CFLAGS+=" -rtlib=compiler-rt"
+      CXXFLAGS+=" -rtlib=compiler-rt"
+      LDFLAGS+=" -rtlib=compiler-rt"
+      LDXXFLAGS+=" -rtlib=compiler-rt"
+      prefix="crt-${prefix}"
+    fi
+
+    if [ "${is_lto}" == "y" ]
+    then
+      CFLAGS+=" -flto"
+      CXXFLAGS+=" -flto"
+      LDFLAGS+=" -flto"
+      LDXXFLAGS+=" -flto"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -fuse-ld=lld"
+        LDXXFLAGS+=" -fuse-ld=lld"
+      fi
+      prefix="lto-${prefix}"
+    fi
+
+    if [ "${is_gc}" == "y" ]
+    then
+      CFLAGS+=" -ffunction-sections -fdata-sections"
+      CXXFLAGS+=" -ffunction-sections -fdata-sections"
+      LDFLAGS+=" -ffunction-sections -fdata-sections"
+      LDXXFLAGS+=" -ffunction-sections -fdata-sections"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,--gc-sections"
+        LDXXFLAGS+=" -Wl,--gc-sections"
+      elif [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        LDFLAGS+=" -Wl,-dead_strip"
+        LDXXFLAGS+=" -Wl,-dead_strip"
+      fi
+      prefix="gc-${prefix}"
+    fi
+
+    # --static takes precedence over --static-lib.
+    if [ "${is_static}" == "y" ]
+    then
+      LDFLAGS+=" -static"
+      LDXXFLAGS+=" -static"
+      prefix="static-${prefix}"
+    elif [ "${is_static_lib}" == "y" ]
+    then
+      LDFLAGS+=" -static-libgcc"
+      LDXXFLAGS+=" -static-libgcc -static-libstdc++"
+      prefix="static-lib-${prefix}"
+    fi
+
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      CFLAGS+=" -v"
+      CXXFLAGS+=" -v"
+      LDFLAGS+=" -v"
+      LDXXFLAGS+=" -v"
+    fi
+
+    # Test C compile and link in a single step.
+    run_app "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${DOT_EXE} ${LDFLAGS}
+    test_expect "${prefix}simple-hello-c-one${suffix}" "Hello"
+
+    # Test C compile and link in separate steps.
+    run_app "${CC}" -c simple-hello.c -o simple-hello.c.o ${CFLAGS}
+    run_app "${CC}" simple-hello.c.o -o ${prefix}simple-hello-c-two${suffix}${DOT_EXE} ${LDFLAGS}
+    test_expect "${prefix}simple-hello-c-two${suffix}" "Hello"
+
+    # -------------------------------------------------------------------------
+
+    # Test C++ compile and link in a single step.
+    run_app "${CXX}" simple-hello.cpp -o ${prefix}simple-hello-cpp-one${suffix}${DOT_EXE} ${LDXXFLAGS}
+    test_expect "${prefix}simple-hello-cpp-one${suffix}" "Hello"
+
+    # Test C++ compile and link in separate steps.
+    run_app "${CXX}" -c simple-hello.cpp -o ${prefix}simple-hello${suffix}.cpp.o ${CXXFLAGS}
+    run_app "${CXX}" ${prefix}simple-hello${suffix}.cpp.o -o ${prefix}simple-hello-cpp-two${suffix}${DOT_EXE} ${LDXXFLAGS}
+    test_expect "${prefix}simple-hello-cpp-two${suffix}" "Hello"
+
+    # -------------------------------------------------------------------------
+
+    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ] 
+    then 
+
+      # On Linux it works only with the full LLVM runtime and lld
+
+      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      test_expect "${prefix}simple-exception${suffix}" "MyException"
+
+      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      test_expect "${prefix}simple-str-exception${suffix}" "MyStringException"
+
+      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      test_expect "${prefix}simple-int-exception${suffix}" "42"
+
+    else
+
+      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
+      test_expect "${prefix}simple-exception${suffix}" "MyException"
+
+      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
+      test_expect "${prefix}simple-str-exception${suffix}" "MyStringException"
+
+      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
+      test_expect "${prefix}simple-int-exception${suffix}" "42"
+
+    fi
+
+    # -------------------------------------------------------------------------
+    # Tests borrowed from the llvm-mingw project.
+
+    run_app "${CC}" hello.c -o ${prefix}hello${suffix}${DOT_EXE} ${LDFLAGS} -lm
+    show_libs ${prefix}hello${suffix}
+    run_app ./${prefix}hello${suffix}
+
+    run_app "${CC}" setjmp-patched.c -o ${prefix}setjmp${suffix}${DOT_EXE} ${LDFLAGS} -lm
+    show_libs ${prefix}setjmp${suffix}
+    run_app ./${prefix}setjmp${suffix}
+
+    for test in hello-cpp global-terminate
+    do
+      run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${DOT_EXE} ${LDXXFLAGS}
+      show_libs ${prefix}${test}${suffix}
+      run_app ./${prefix}${test}${suffix}
+    done
+
+    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ] 
+    then 
+
+      # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
+      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      show_libs ${prefix}longjmp-cleanup${suffix}
+      run_app ./${prefix}longjmp-cleanup${suffix}
+
+      for test in hello-exception exception-locale exception-reduced
+      do
+        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+        show_libs ${prefix}${test}${suffix}
+        run_app ./${prefix}${test}${suffix}
+      done
+
+    else
+
+      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${DOT_EXE} ${LDXXFLAGS}
+      show_libs ${prefix}longjmp-cleanup${suffix}
+      run_app ./${prefix}longjmp-cleanup${suffix}
+
+      for test in hello-exception exception-locale exception-reduced
+      do
+        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${DOT_EXE} ${LDXXFLAGS}
+        show_libs ${prefix}${test}${suffix}
+        run_app ./${prefix}${test}${suffix}
+      done
+
+    fi
+
+    # -------------------------------------------------------------------------
+  )
 }
 
 # $1="${BOOTSTRAP_SUFFIX}"
