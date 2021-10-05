@@ -918,7 +918,11 @@ function test_llvm()
 
     show_libs "${TEST_PREFIX}/bin/clang"
     show_libs "${TEST_PREFIX}/bin/lld"
-    show_libs "${TEST_PREFIX}/bin/lldb"
+    if [ -f "${TEST_PREFIX}/bin/lldb" ]
+    then
+      # lldb not available on Ubuntu 16 Arm.
+      show_libs "${TEST_PREFIX}/bin/lldb"
+    fi
 
     echo
     echo "Testing if llvm binaries start properly..."
