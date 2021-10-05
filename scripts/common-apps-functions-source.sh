@@ -1116,30 +1116,9 @@ function test_llvm()
 
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
-      test_clang_one "${name_suffix}" --static
-      test_clang_one "${name_suffix}" --static --gc
 
-      if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "ia32" ]
-      then
-        # Static lib and LTO fail on Linux i386
-        echo
-        echo "Skip all --static --lto on linux-x64."
-      else
-        test_clang_one "${name_suffix}" --static --lto
-        test_clang_one "${name_suffix}" --static --gc --lto
-      fi
-
-      if [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        # Static lib and compiler-rt fail on Linux
-        echo
-        echo "Skip all --static --crt on Intel Linux."
-      else
-        test_clang_one "${name_suffix}" --static --crt
-        test_clang_one "${name_suffix}" --static --gc --crt
-        test_clang_one "${name_suffix}" --static --lto --crt
-        test_clang_one "${name_suffix}" --static --gc --lto --crt
-      fi
+      echo
+      echo "Skip all --static on Linux."
 
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
