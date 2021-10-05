@@ -411,8 +411,10 @@ program from there. For example on macOS the output should
 look like:
 
 ```console
-$ /Users/ilg/Work/clang-12.0.1-1/darwin-x64/install/clang/bin/clang --version
-clang version 12.0.1
+$ ...xpack-clang-12.0.1-1/bin/clang --version
+xPack 64-bit clang version 12.0.1
+Target: x86_64-apple-darwin20.6.0
+Thread model: posix
 ```
 
 ## Installed folders
