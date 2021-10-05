@@ -1059,10 +1059,18 @@ function test_llvm()
       test_clang_one "${name_suffix}" --gc
       test_clang_one "${name_suffix}" --lto
       test_clang_one "${name_suffix}" --gc --lto
-      test_clang_one "${name_suffix}" --crt
-      test_clang_one "${name_suffix}" --gc --crt
-      test_clang_one "${name_suffix}" --lto --crt
-      test_clang_one "${name_suffix}" --gc --lto --crt
+
+      if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm" ]
+      then
+        # C++ fails on Arm 32 Linux.
+        echo
+        echo "Skip all --crt on Arm 32 Linux."
+      else
+        test_clang_one "${name_suffix}" --crt
+        test_clang_one "${name_suffix}" --gc --crt
+        test_clang_one "${name_suffix}" --lto --crt
+        test_clang_one "${name_suffix}" --gc --lto --crt
+      fi
     )
 
     if [ "${TARGET_PLATFORM}" == "darwin" ]
