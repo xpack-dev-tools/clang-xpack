@@ -20,6 +20,13 @@ In the `xpack-dev-tools/clang-xpack` Git repo:
 
 No need to add a tag here, it'll be added when the release is created.
 
+### Check the latest upstream release
+
+Check the LLVM GitHub [releases](https://github.com/llvm/llvm-project/releases)
+and compare the the xPack [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/).
+Find the latest release that seems stable; usually skip X.Y.0 releases,
+since they are usually followed by a X.Y.1 release in several month.
+
 ### Increase the version
 
 Determine the version (like `12.0.1`) and update the `scripts/VERSION`
@@ -47,16 +54,29 @@ but in the web release files.
 - update version in `README-BUILD.md`
 - update version in `README.md`
 
-## Update `CHANGELOG.md`
+### Update `CHANGELOG.md`
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
-- add a new entry like _v12.0.1-1 prepared_
+- add a new entry like _- v12.0.1-1 prepared_
 - commit with a message like _prepare v12.0.1-1_
 
 Note: if you missed to update the `CHANGELOG.md` before starting the build,
 edit the file and rerun the build, it should take only a few minutes to
 recreate the archives with the correct file.
+
+### Merge upstream repo
+
+To keep the development repository fork in sync with the upstream LLVM
+repository, in the `xpack-dev-tools/llvm-project` Git repo:
+
+- checkout the `llvmorg-12.0.1` tag
+- create a branch like `v12.0.1-xpack`
+- chery pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
+  enable commit immediately
+- push to `origin`
+- add a `v12.0.1-1-xpack` tag; enable push to origin
+- remember the current commit ID
 
 ### Update the version specific code
 
@@ -77,24 +97,24 @@ or the production machine (`xbbm`):
 ```sh
 sudo rm -rf ~/Work/clang-*
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --osx
 ```
 
 Similarly on the Intel Linux (`xbbi`):
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux64
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --linux64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --linux32
 
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --win64
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --win32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --win64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --win32
 ```
 
 And on the Arm Linux (`xbba`):
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm32
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --arm64
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --arm32
 ```
 
 Work on the scripts until all platforms pass the build.
@@ -220,7 +240,7 @@ clang (xPack LLVM clang x86_64) 12.0.1
 
 ## Create a new GitHub pre-release draft
 
-- in `CHANGELOG.md`, add release date
+- in `CHANGELOG.md`, add the release date and a message like _- v12.0.1-1 released_
 - commit and push the `xpack-develop` branch
 - run the xPack action `trigger-workflow-publish-release`
 
@@ -229,6 +249,8 @@ The result is a
 tagged like **v12.0.1-1** (mind the dash in the middle!) and
 named like **xPack LLVM clang v12.0.1-1** (mind the dash),
 with all binaries attached.
+
+- edit the draft and attach it to the `xpack-develop` branch (important!)
 
 ## Prepare a new blog post
 
@@ -255,7 +277,10 @@ If any, refer to closed
 
 - go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - perform the final edits and check if everything is fine
-- save the release
+- temporarily fill in the _Continue Reading »_ with the URL of the
+  web-preview release
+- keep the pre-release button enabled
+- publish the release
 
 Note: at this moment the system should send a notification to all clients
 watching this project.
@@ -277,8 +302,8 @@ watching this project.
 
 - select the `xpack-develop` branch
 - check the latest commits `npm run git-log`
-- update `CHANGELOG.md`; commit with a message like
-  _CHANGELOG: publish npm v12.0.1-1.1_
+- update `CHANGELOG.md`, add a line like _- v12.0.1-1.1 published on npmjs.com_
+- commit with a message like _CHANGELOG: publish npm v12.0.1-1.1_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
@@ -295,12 +320,11 @@ After a few moments the version will be visible at:
 
 ## Test if the npm binaries can be installed with xpm
 
-Run the `scripts/tests/trigger-travis-xpm-install.sh` script, this
+Run the xPack action `trigger-workflow-test-xpm`, this
 will install the package via `xpm install` on all supported platforms.
 
-The test results are available from:
-
-- <https://travis-ci.com/github/xpack-dev-tools/clang-xpack/>
+The tests results are available from the
+[Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
 
 ## Update the repo
 
@@ -327,6 +351,7 @@ When the release is considered stable, promote it as `latest`:
 - go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - check the download counter, it should match the number of tests
 - add a link to the Web page `[Continue reading »]()`; use an same blog URL
+- remove the _tests only_ notice
 - **disable** the **pre-release** button
 - click the **Update Release** button
 
