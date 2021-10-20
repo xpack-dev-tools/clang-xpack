@@ -168,7 +168,7 @@ function build_versions()
     BINUTILS_BRANDING="${DISTRO_NAME} binutils ${TARGET_MACHINE}"
   fi
 
-  LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
+  LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-.*||')"
 
   export BOOTSTRAP_SUFFIX="-bootstrap"
 
