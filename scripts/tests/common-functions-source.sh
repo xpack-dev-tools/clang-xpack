@@ -19,7 +19,7 @@
 
 function run_tests()
 {
-  GCC_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-[0-9]*||')"
+  GCC_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-.*||')"
 
   # Call the functions defined in the build code.
   test_llvm
