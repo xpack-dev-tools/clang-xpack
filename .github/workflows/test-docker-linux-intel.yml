@@ -214,11 +214,11 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image fedora:25 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Fedora 20 x64'
-        uses: docker://fedora:20
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image fedora:20 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Fedora 20 x64'
+      #   uses: docker://fedora:20
+      #   with:
+      #     entrypoint: /bin/bash
+      #     args: /github/workspace/scripts/helper/tests/native-test.sh --image fedora:20 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   ubuntu-x64-latest:
     name: 'x64 LLVM clang ${{ github.event.inputs.version }} test on Ubuntu latest'
