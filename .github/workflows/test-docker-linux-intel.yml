@@ -81,11 +81,11 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image ubuntu:16.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Ubuntu 14.04 x64'
-        uses: docker://ubuntu:14.04
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image ubuntu:14.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Ubuntu 14.04 x64'
+      #   uses: docker://ubuntu:14.04
+      #   with:
+      #     entrypoint: /bin/bash
+      #     args: /github/workspace/scripts/helper/tests/native-test.sh --image ubuntu:14.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # https://en.wikipedia.org/wiki/Debian_version_history
   # https://hub.docker.com/_/debian
@@ -108,11 +108,11 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:stretch --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Debian 8 x64'
-        uses: docker://debian:jessie
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Debian 8 x64'
+      #   uses: docker://debian:jessie
+      #   with:
+      #     entrypoint: /bin/bash
+      #     args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # End of life. See RedHat.
   # https://en.wikipedia.org/wiki/CentOS
@@ -176,11 +176,11 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/leap:15.3 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'OpenSUSE 13 x64'
-        uses: docker://opensuse/amd64:13.2
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/amd64:13.2 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'OpenSUSE 13 x64'
+      #   uses: docker://opensuse/amd64:13.2
+      #   with:
+      #     entrypoint: /bin/bash
+      #     args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/amd64:13.2 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # https://en.wikipedia.org/wiki/Fedora_version_history
   # https://hub.docker.com/_/fedora
@@ -310,11 +310,11 @@ jobs:
         with:
           entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:16.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Ubuntu 14.04 ia32'
-        uses: docker://i386/ubuntu:14.04
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:14.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Ubuntu 14.04 ia32'
+      #   uses: docker://i386/ubuntu:14.04
+      #   with:
+      #     entrypoint: /usr/bin/linux32
+      #     args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:14.04 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # https://hub.docker.com/r/i386/debian
   debian-ia32:
@@ -336,11 +336,11 @@ jobs:
         with:
           entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:stretch --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Debian 8 ia32'
-        uses: docker://i386/debian:jessie
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Debian 8 ia32'
+      #   uses: docker://i386/debian:jessie
+      #   with:
+      #     entrypoint: /usr/bin/linux32
+      #     args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # docker://i386/ubuntu:latest is 18.04, no need to test
 
