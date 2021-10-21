@@ -1437,7 +1437,7 @@ function test_clang_one()
 
       # On Linux it works only with the full LLVM runtime and lld
 
-      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld -v
       test_expect "${prefix}simple-exception${suffix}" "MyException"
 
       run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
