@@ -39,7 +39,10 @@ function update_image()
   
   # Make sure that the minimum prerequisites are met.
   # The GCC libraries and headers are required by clang.
-  if [[ ${image_name} == *ubuntu* ]] || [[ ${image_name} == *debian* ]] || [[ ${image_name} == *raspbian* ]]
+  if [[ ${image_name} == github-actions-ubuntu* ]]
+  then
+    sudo apt-get -qq install -y g++
+  elif [[ ${image_name} == *ubuntu* ]] || [[ ${image_name} == *debian* ]] || [[ ${image_name} == *raspbian* ]]
   then
     run_verbose apt-get -qq update 
     run_verbose apt-get -qq install -y git-core curl tar gzip lsb-release binutils
