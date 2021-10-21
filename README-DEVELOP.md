@@ -1,6 +1,8 @@
 TODO
 
-Note: Tests fail on ubuntu-latest, in crt-simple-exception, with a
+## ubuntu-latest
+
+Tests fail on ubuntu-latest, in crt-simple-exception, with:
 
 ```console
 [/home/runner/Work/linux-x64/tests/xpack-clang-12.0.1-1/bin/clang++ simple-exception.cpp -o crt-simple-exception -rtlib=compiler-rt -stdlib=libc++ -fuse-ld=lld]
@@ -15,3 +17,9 @@ ld.lld: error: undefined symbol: _Unwind_Resume
 clang-12: error: linker command failed with exit code 1 (use -v to see invocation)
 Error: Process completed with exit code 1.
 ```
+
+The same test on a plain Ubuntu 20 passes.
+
+## -static-libstdc++
+
+On RedHat systems, the tests that expected a `libstdc++.a` fail.
