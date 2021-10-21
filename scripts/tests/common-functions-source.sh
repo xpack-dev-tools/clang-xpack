@@ -39,7 +39,7 @@ function update_image()
   then
     run_verbose apt-get -qq update 
     run_verbose apt-get -qq install -y git-core curl tar gzip lsb-release binutils
-    run_verbose apt-get -qq install -y libc6-dev libstdc++6 # TODO: get rid of them
+    run_verbose apt-get -qq install -y g++ libc6-dev libstdc++6 # TODO: get rid of them
   elif [[ ${image_name} == *centos* ]] || [[ ${image_name} == *redhat* ]] || [[ ${image_name} == *fedora* ]]
   then
     run_verbose yum install -y -q git curl tar gzip redhat-lsb-core binutils
