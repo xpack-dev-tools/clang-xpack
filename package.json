@@ -40,64 +40,99 @@
       "platforms": {
         "darwin-x64": {
           "fileName": "xpack-clang-12.0.1-1-darwin-x64.tar.gz",
-          "sha256": "5ca5abb0e6d7a3048d47bd46f0278c7534b7f817ac2cbc4b54cea646373e8b89"
+          "sha256": "c89264fcb7045421f897c3beb1d70b510aab2ee33d9a9d123a18b73e3f8b72c3"
         },
         "linux-arm64": {
           "fileName": "xpack-clang-12.0.1-1-linux-arm64.tar.gz",
-          "sha256": "efda34b8865198853edac865737824dfa76d24480f4a057c22fa4d6bef81dee6"
+          "sha256": "a5005d804700cf02f88d37bd53cff72ed788487326538f80a35c314fa11d5919"
         },
         "linux-arm": {
           "fileName": "xpack-clang-12.0.1-1-linux-arm.tar.gz",
-          "sha256": "bf96d4f185c17043bf84f2803252a1b0af63266c023dd62396a667f025bcfe96"
+          "sha256": "3844fb7a70d519722b07bba4c4846ffa7cba8f3b19440746c2db1145b31e7993"
         },
         "linux-ia32": {
           "fileName": "xpack-clang-12.0.1-1-linux-ia32.tar.gz",
-          "sha256": "de97e4242e1c691f488a32f0bab76e8019b3959e9d0078b25a4f34bcf3a14ab6"
+          "sha256": "5945a56690f9c2d39f822305a3d2f01429d6a7bc4e745a722bdfaad2623e3022"
         },
         "linux-x64": {
           "fileName": "xpack-clang-12.0.1-1-linux-x64.tar.gz",
-          "sha256": "ef74a7b554e586f84ce5d17bb6d2074f4ab59e07da3038029f04f8a2fa657cc5"
+          "sha256": "2645701c746a8ba49ddf6b3223acae99bef449ffb23b2a71f8b1364e61ab710c"
         },
         "win32-ia32": {
           "fileName": "xpack-clang-12.0.1-1-win32-ia32.zip",
-          "sha256": "84db4ad846a25156def667e18d3ca376497388494abe08636f825f9f84f9d847"
+          "sha256": "82d42ea1d81462bdda1f36b8bb0dc4f00d31764ea559c112b6d5d8d226c03762"
         },
         "win32-x64": {
           "fileName": "xpack-clang-12.0.1-1-win32-x64.zip",
-          "sha256": "71c9a4744b207e080b7ab94e777b8a8f90018cccf1896fa650cbee2d91ac779c"
+          "sha256": "a6417c60ae33b41844ed84185f017c056a4c35116e8c87566222f56b024035e3"
         }
       }
     },
     "bin": {
-      "addr2line": "./.content/bin/addr2line",
-      "ar": "./.content/bin/ar",
-      "as": "./.content/bin/as",
-      "c++": "./.content/bin/c++",
-      "c++filt": "./.content/bin/c++filt",
-      "cpp": "./.content/bin/cpp",
-      "dwp": "./.content/bin/dwp",
-      "elfedit": "./.content/bin/elfedit",
-      "g++": "./.content/bin/g++",
-      "clang": "./.content/bin/clang",
-      "clang-ar": "./.content/bin/clang-ar",
-      "clang-nm": "./.content/bin/clang-nm",
-      "clang-ranlib": "./.content/bin/clang-ranlib",
-      "gcov": "./.content/bin/gcov",
-      "gcov-dump": "./.content/bin/gcov-dump",
-      "gcov-tool": "./.content/bin/gcov-tool",
-      "gfortran": "./.content/bin/gfortran",
-      "gprof": "./.content/bin/gprof",
-      "ld": "./.content/bin/ld",
-      "ld.bfd": "./.content/bin/ld.bfd",
-      "ld.gold": "./.content/bin/ld.gold",
-      "nm": "./.content/bin/nm",
-      "objcopy": "./.content/bin/objcopy",
-      "objdump": "./.content/bin/objdump",
-      "ranlib": "./.content/bin/ranlib",
-      "readelf": "./.content/bin/readelf",
-      "size": "./.content/bin/size",
-      "strings": "./.content/bin/strings",
-      "strip": "./.content/bin/strip"
+      "clang": "./content/bin/clang",
+      "clang++": "./content/bin/clang++",
+      "clang-check": "./content/bin/clang-check",
+      "clang-cl": "./content/bin/clang-cl",
+      "clang-cpp": "./content/bin/clang-cpp",
+      "clang-doc": "./content/bin/clang-doc",
+      "clang-format": "./content/bin/clang-format",
+      "clang-offload-bundler": "./content/bin/clang-offload-bundler",
+      "clang-offload-wrapper": "./content/bin/clang-offload-wrapper",
+      "clang-refactor": "./content/bin/clang-refactor",
+      "clang-rename": "./content/bin/clang-rename",
+      "clang-scan-deps": "./content/bin/clang-scan-deps",
+      "clang-target-wrapper": "./content/bin/clang-target-wrapper",
+      "clang-tidy": "./content/bin/clang-tidy",
+      "clangd": "./content/bin/clangd",
+      "clangd-xpc-test-client": "./content/bin/clangd-xpc-test-client",
+      "darwin-debug": "./content/bin/darwin-debug",
+      "diagtool": "./content/bin/diagtool",
+      "dwp": "./content/bin/dwp",
+      "gendef": "./content/bin/gendef",
+      "git-clang-format": "./content/bin/git-clang-format",
+      "hmaptool": "./content/bin/hmaptool",
+      "ld64.lld": "./content/bin/ld64.lld",
+      "ld64.lld.darwinnew": "./content/bin/ld64.lld.darwinnew",
+      "ld.gold": "./content/bin/ld.gold",
+      "ld.lld": "./content/bin/ld.lld",
+      "lld": "./content/bin/lld",
+      "lld-link": "./content/bin/lld-link",
+      "lldb": "./content/bin/lldb",
+      "lldb-argdumper": "./content/bin/lldb-argdumper",
+      "lldb-instr": "./content/bin/lldb-instr",
+      "lldb-server": "./content/bin/lldb-server",
+      "lldb-vscode": "./content/bin/lldb-vscode",
+      "llvm-addr2line": "./content/bin/llvm-addr2line",
+      "llvm-ar": "./content/bin/llvm-ar",
+      "llvm-as": "./content/bin/llvm-as",
+      "llvm-bitcode-strip": "./content/bin/llvm-bitcode-strip",
+      "llvm-config": "./content/bin/llvm-config",
+      "llvm-cov": "./content/bin/llvm-cov",
+      "llvm-cxxdump": "./content/bin/llvm-cxxdump",
+      "llvm-cxxfilt": "./content/bin/llvm-cxxfilt",
+      "llvm-cxxmap": "./content/bin/llvm-cxxmap",
+      "llvm-diff": "./content/bin/llvm-diff",
+      "llvm-dis": "./content/bin/llvm-dis",
+      "llvm-dlltool": "./content/bin/llvm-dlltool",
+      "llvm-lib": "./content/bin/llvm-lib",
+      "llvm-libtool-darwin": "./content/bin/llvm-libtool-darwin",
+      "llvm-nm": "./content/bin/llvm-nm",
+      "llvm-objcopy": "./content/bin/llvm-objcopy",
+      "llvm-objdump": "./content/bin/llvm-objdump",
+      "llvm-profdata": "./content/bin/llvm-profdata",
+      "llvm-ranlib": "./content/bin/llvm-ranlib",
+      "llvm-rc": "./content/bin/llvm-rc",
+      "llvm-readelf": "./content/bin/llvm-readelf",
+      "llvm-readobj": "./content/bin/llvm-readobj",
+      "llvm-size": "./content/bin/llvm-size",
+      "llvm-strings": "./content/bin/llvm-strings",
+      "llvm-strip": "./content/bin/llvm-strip",
+      "llvm-symbolizer": "./content/bin/llvm-symbolizer",
+      "llvm-tblgen": "./content/bin/llvm-tblgen",
+      "set-xcode-analyzer": "./content/bin/set-xcode-analyzer",
+      "split-file": "./content/bin/split-file",
+      "wasm-ld": "./content/bin/wasm-ld",
+      "widl": "./content/bin/widl"
     },
     "properties": {
       "appName": "LLVM clang",
@@ -115,7 +150,7 @@
         "cat scripts/helper/templates/test-docker-linux-arm-liquid.yml | {{ properties.LIQUIDJS }} > .github/workflows/test-docker-linux-arm-0.yml",
         "cat scripts/helper/templates/publish-release-liquid.yml | {{ properties.LIQUIDJS }} > .github/workflows/publish-release.yml",
         "cat scripts/helper/templates/test-xpm-liquid.yml | {{ properties.LIQUIDJS }} > .github/workflows/test-xpm.yml"
-        ],
+      ],
       "trigger-workflow-build": "bash scripts/helper/trigger-workflow-build.sh",
       "trigger-workflow-test-prime": "bash scripts/helper/tests/trigger-workflow-test-prime.sh",
       "trigger-workflow-test-docker-linux-intel": "bash scripts/helper/tests/trigger-workflow-test-docker-linux-intel.sh",
