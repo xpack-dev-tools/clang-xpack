@@ -41,7 +41,7 @@ function update_image()
   # The GCC libraries and headers are required by clang.
   if [[ ${image_name} == github-actions-ubuntu* ]]
   then
-    sudo apt-get -qq install -y g++
+    sudo apt-get -qq install -y g++ libunwind8
   elif [[ ${image_name} == *ubuntu* ]] || [[ ${image_name} == *debian* ]] || [[ ${image_name} == *raspbian* ]]
   then
     run_verbose apt-get -qq update 
