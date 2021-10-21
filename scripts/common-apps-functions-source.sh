@@ -1082,7 +1082,7 @@ function test_llvm()
       # and the following combinations are expected to work properly on
       # Linux and Windows.
       local distro=$(lsb_release -is)
-      if [[ ${image_name} == CentOS ]] || [[ ${image_name} == RedHat* ]] || [[ ${image_name} == Fedora ]]
+      if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
         # Unfortunatelly this is not true on RedHat, which has no libstdc++.a:
         # /usr/bin/ld: cannot find -lstdc++
