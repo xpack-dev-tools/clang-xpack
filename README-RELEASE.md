@@ -226,7 +226,6 @@ On GNU/Linux and macOS systems, use:
 
 ```sh
 .../xpack-clang-12.0.1-1/bin/clang --version
-
 clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
@@ -234,7 +233,6 @@ On Windows use:
 
 ```doscon
 ...\xpack-clang-12.0.1-1\bin\clang --version
-
 clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
