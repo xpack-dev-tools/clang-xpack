@@ -306,11 +306,11 @@ jobs:
         with:
           entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image arm32v7/debian:stretch --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'Debian 8 arm'
-        uses: docker://arm32v7/debian:jessie
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image arm32v7/debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'Debian 8 arm'
+      #   uses: docker://arm32v7/debian:jessie
+      #   with:
+      #     entrypoint: /usr/bin/linux32
+      #     args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image arm32v7/debian:jessie --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # docker://arm32v7/debian:testing - fails to update
 
