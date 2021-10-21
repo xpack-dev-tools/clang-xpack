@@ -10,7 +10,10 @@ patches/
 pkgconfig/
 scripts/
 tests/
+wrappers/
 
 README-*
 *.tgz
 LICENSE-*
+TODO*
+
