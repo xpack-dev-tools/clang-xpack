@@ -1081,11 +1081,19 @@ function test_llvm()
       # Except on macOS, the recommended use case is with `-static-libgcc`, 
       # and the following combinations are expected to work properly on
       # Linux and Windows.
-      test_clang_one "${name_suffix}" --static-lib
-      test_clang_one "${name_suffix}" --static-lib --gc
-      test_clang_one "${name_suffix}" --static-lib --lto
-      test_clang_one "${name_suffix}" --static-lib --gc --lto
-
+      local distro=$(lsb_release -is)
+      if [[ ${image_name} == CentOS ]] || [[ ${image_name} == RedHat* ]] || [[ ${image_name} == Fedora ]]
+      then
+        # Unfortunatelly this is not true on RedHat, which has no libstdc++.a:
+        # /usr/bin/ld: cannot find -lstdc++
+        echo
+        echo "Skip all --static-lib on RedHat & derived."
+      else
+        test_clang_one "${name_suffix}" --static-lib
+        test_clang_one "${name_suffix}" --static-lib --gc
+        test_clang_one "${name_suffix}" --static-lib --lto
+        test_clang_one "${name_suffix}" --static-lib --gc --lto
+      fi
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         # Static lib and compiler-rt fail on Linux x86_64 and ia32

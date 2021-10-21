@@ -50,7 +50,8 @@ function update_image()
   elif [[ ${image_name} == *centos* ]] || [[ ${image_name} == *redhat* ]] || [[ ${image_name} == *fedora* ]]
   then
     run_verbose yum install -y -q git curl tar gzip redhat-lsb-core binutils
-    run_verbose yum install -y -q gcc-c++ glibc-devel libstdc++-devel glibc-static
+    # glibc-static not found on CentOS
+    run_verbose yum install -y -q gcc-c++ glibc-devel libstdc++-devel 
   elif [[ ${image_name} == *suse* ]]
   then
     run_verbose zypper -q in -y git-core curl tar gzip lsb-release binutils findutils util-linux
