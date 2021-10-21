@@ -132,11 +132,11 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image centos:8 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
-      - name: 'CentOS 7 x64'
-        uses: docker://centos:7
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image centos:7 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      # - name: 'CentOS 7 x64'
+      #   uses: docker://centos:7
+      #   with:
+      #     entrypoint: /bin/bash
+      #     args: /github/workspace/scripts/helper/tests/native-test.sh --image centos:7 --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   # https://hub.docker.com/r/i386/centos
   # docker://i386/centos:7 - fails not finding -lc
