@@ -36,7 +36,7 @@ are the **Raspberry Pi** class devices." %}{% endraw %}
 
 ## Download
 
-The binary files are available from GitHub [releases]({% raw %}{{ page.download_url }}{% endraw %}).
+The binary files are available from GitHub [Releases]({% raw %}{{ page.download_url }}{% endraw %}).
 
 ## Prerequisites
 

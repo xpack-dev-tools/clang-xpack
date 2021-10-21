@@ -22,8 +22,8 @@ No need to add a tag here, it'll be added when the release is created.
 
 ### Check the latest upstream release
 
-Check the LLVM GitHub [releases](https://github.com/llvm/llvm-project/releases)
-and compare the the xPack [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/).
+Check the LLVM GitHub [Releases](https://github.com/llvm/llvm-project/releases)
+and compare the the xPack [Releases](https://github.com/xpack-dev-tools/clang-xpack/releases/).
 Find the latest release that seems stable; usually skip X.Y.0 releases,
 since they are usually followed by a X.Y.1 release in several month.
 
@@ -274,7 +274,7 @@ If any, refer to closed
 
 ## Create the pre-release
 
-- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
+- go to the GitHub [Releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - perform the final edits and check if everything is fine
 - temporarily fill in the _Continue Reading »_ with the URL of the
   web-preview release
@@ -347,7 +347,7 @@ When the release is considered stable, promote it as `latest`:
 
 ## Create the final GitHub release
 
-- go to the GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
+- go to the GitHub [Releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 - check the download counter, it should match the number of tests
 - add a link to the Web page `[Continue reading »]()`; use an same blog URL
 - remove the _tests only_ notice
