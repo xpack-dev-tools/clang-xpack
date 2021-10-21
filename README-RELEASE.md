@@ -249,6 +249,7 @@ named like **xPack LLVM clang v12.0.1-1** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
+- save the draft
 
 ## Prepare a new blog post
 
