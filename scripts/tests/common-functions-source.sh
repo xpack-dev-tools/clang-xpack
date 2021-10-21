@@ -76,7 +76,7 @@ function update_image()
 
   echo
   echo "The system C/C++ libraries..."
-  find /usr/lib* /lib -name 'libc.*' -o -name 'libstdc++.*' -o -name 'libgcc_s.*'
+  find /usr/lib* /lib -name 'libc.*' -o -name 'libstdc++.*' -o -name 'libgcc_s.*' -o -name 'libunwind*'
 }
 
 # -----------------------------------------------------------------------------
