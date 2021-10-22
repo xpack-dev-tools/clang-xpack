@@ -891,91 +891,101 @@ function test_llvm()
   echo "Testing the llvm${name_suffix} binaries..."
 
   (
-    if [ -n "${name_suffix}" ]
+    if [ -d "xpacks/.bin" ]
     then
-      TEST_PREFIX="${INSTALL_FOLDER_PATH}/clang${BOOTSTRAP_SUFFIX}"
-      # Help the loader find the .dll files if the native is not static.
-      export WINEPATH=${TEST_PREFIX}/${CROSS_COMPILE_PREFIX}/bin 
-
-      CC="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
-      CXX="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++"
-      DLLTOOL="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-dlltool"
-      WIDL="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-widl"
-      GENDEF="${TEST_PREFIX}/bin/gendef"
-      AR="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-ar"
-      RANLIB="${TEST_PREFIX}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
+      TEST_BIN_PATH="$(pwd)/xpacks/.bin"
+    elif [ -d "${APP_PREFIX}${name_suffix}/bin" ]
+    then
+      TEST_BIN_PATH="${APP_PREFIX}${name_suffix}/bin"
     else
-      TEST_PREFIX="${APP_PREFIX}"
-
-      CC="${TEST_PREFIX}/bin/clang"
-      CXX="${TEST_PREFIX}/bin/clang++"
-      DLLTOOL="${TEST_PREFIX}/bin/llvm-dlltool"
-      WIDL="${TEST_PREFIX}/bin/widl"
-      GENDEF="${TEST_PREFIX}/bin/gendef"
-      AR="${TEST_PREFIX}/bin/llvm-ar"
-      RANLIB="${TEST_PREFIX}/bin/llvm-ranlib"
+      echo "Wrong folder."
+      exit 1
     fi
 
-    show_libs "${TEST_PREFIX}/bin/clang"
-    show_libs "${TEST_PREFIX}/bin/lld"
-    if [ -f "${TEST_PREFIX}/bin/lldb" ]
+    run_verbose ls -l "${TEST_BIN_PATH}"
+
+    if [ -n "${name_suffix}" ]
+    then
+      # Help the loader find the .dll files if the native is not static.
+      export WINEPATH=${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}/bin 
+
+      CC="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-clang"
+      CXX="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-clang++"
+      DLLTOOL="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-dlltool"
+      WIDL="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-widl"
+      GENDEF="${TEST_BIN_PATH}/gendef"
+      AR="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-ar"
+      RANLIB="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-ranlib"
+    else
+      CC="${TEST_BIN_PATH}/clang"
+      CXX="${TEST_BIN_PATH}/clang++"
+      DLLTOOL="${TEST_BIN_PATH}/llvm-dlltool"
+      WIDL="${TEST_BIN_PATH}/widl"
+      GENDEF="${TEST_BIN_PATH}/gendef"
+      AR="${TEST_BIN_PATH}/llvm-ar"
+      RANLIB="${TEST_BIN_PATH}/llvm-ranlib"
+    fi
+
+    show_libs "${TEST_BIN_PATH}/clang"
+    show_libs "${TEST_BIN_PATH}/lld"
+    if [ -f "${TEST_BIN_PATH}/lldb" ]
     then
       # lldb not available on Ubuntu 16 Arm.
-      show_libs "${TEST_PREFIX}/bin/lldb"
+      show_libs "${TEST_BIN_PATH}/lldb"
     fi
 
     echo
     echo "Testing if llvm binaries start properly..."
 
-    run_app "${TEST_PREFIX}/bin/clang" --version
-    run_app "${TEST_PREFIX}/bin/clang++" --version
+    run_app "${TEST_BIN_PATH}/clang" --version
+    run_app "${TEST_BIN_PATH}/clang++" --version
 
-    if [ -f "${TEST_PREFIX}/bin/clang-format${DOT_EXE}" ]
+    if [ -f "${TEST_BIN_PATH}/clang-format${DOT_EXE}" ]
     then
-      run_app "${TEST_PREFIX}/bin/clang-format" --version
+      run_app "${TEST_BIN_PATH}/clang-format" --version
     fi
 
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    run_app "${TEST_PREFIX}/bin/lld" --version || true
+    run_app "${TEST_BIN_PATH}/lld" --version || true
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      run_app "${TEST_PREFIX}/bin/ld.lld" --version || true
+      run_app "${TEST_BIN_PATH}/ld.lld" --version || true
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      run_app "${TEST_PREFIX}/bin/ld64.lld" --version || true
+      run_app "${TEST_BIN_PATH}/ld64.lld" --version || true
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      run_app "${TEST_PREFIX}/bin/ld-link" --version || true
+      run_app "${TEST_BIN_PATH}/ld-link" --version || true
     fi
 
-    run_app "${TEST_PREFIX}/bin/llvm-ar" --version
-    run_app "${TEST_PREFIX}/bin/llvm-nm" --version
-    run_app "${TEST_PREFIX}/bin/llvm-objcopy" --version
-    run_app "${TEST_PREFIX}/bin/llvm-objdump" --version
-    run_app "${TEST_PREFIX}/bin/llvm-ranlib" --version
-    if [ -f "${TEST_PREFIX}/bin/llvm-readelf" ]
+    run_app "${TEST_BIN_PATH}/llvm-ar" --version
+    run_app "${TEST_BIN_PATH}/llvm-nm" --version
+    run_app "${TEST_BIN_PATH}/llvm-objcopy" --version
+    run_app "${TEST_BIN_PATH}/llvm-objdump" --version
+    run_app "${TEST_BIN_PATH}/llvm-ranlib" --version
+    if [ -f "${TEST_BIN_PATH}/llvm-readelf" ]
     then
-      run_app "${TEST_PREFIX}/bin/llvm-readelf" --version
+      run_app "${TEST_BIN_PATH}/llvm-readelf" --version
     fi
-    if [ -f "${TEST_PREFIX}/bin/llvm-size" ]
+    if [ -f "${TEST_BIN_PATH}/llvm-size" ]
     then
-      run_app "${TEST_PREFIX}/bin/llvm-size" --version
+      run_app "${TEST_BIN_PATH}/llvm-size" --version
     fi
-    run_app "${TEST_PREFIX}/bin/llvm-strings" --version
-    run_app "${TEST_PREFIX}/bin/llvm-strip" --version
+    run_app "${TEST_BIN_PATH}/llvm-strings" --version
+    run_app "${TEST_BIN_PATH}/llvm-strip" --version
 
     echo
     echo "Testing clang configuration..."
 
-    run_app "${TEST_PREFIX}/bin/clang" -print-target-triple
-    run_app "${TEST_PREFIX}/bin/clang" -print-targets
-    run_app "${TEST_PREFIX}/bin/clang" -print-supported-cpus
-    run_app "${TEST_PREFIX}/bin/clang" -print-search-dirs
-    run_app "${TEST_PREFIX}/bin/clang" -print-resource-dir
-    run_app "${TEST_PREFIX}/bin/clang" -print-libgcc-file-name
+    run_app "${TEST_BIN_PATH}/clang" -print-target-triple
+    run_app "${TEST_BIN_PATH}/clang" -print-targets
+    run_app "${TEST_BIN_PATH}/clang" -print-supported-cpus
+    run_app "${TEST_BIN_PATH}/clang" -print-search-dirs
+    run_app "${TEST_BIN_PATH}/clang" -print-resource-dir
+    run_app "${TEST_BIN_PATH}/clang" -print-libgcc-file-name
 
-    # run_app "${TEST_PREFIX}/bin/llvm-config" --help
+    # run_app "${TEST_BIN_PATH}/llvm-config" --help
 
     echo
     echo "Testing if clang compiles simple Hello programs..."
@@ -1046,11 +1056,11 @@ function test_llvm()
         # For libwinpthread-1.dll, possibly other.
         if [ "$(uname -o)" == "Msys" ]
         then
-          export PATH="${TEST_PREFIX}/lib;${PATH:-}" 
+          export PATH="${TEST_BIN_PATH}/lib;${PATH:-}" 
           echo "PATH=${PATH}"
         elif [ "$(uname)" == "Linux" ]
         then
-          export WINEPATH="${TEST_PREFIX}/lib;${WINEPATH:-}" 
+          export WINEPATH="${TEST_BIN_PATH}/lib;${WINEPATH:-}" 
           echo "WINEPATH=${WINEPATH}"
         fi
       fi
