@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 3
           submodules: true
       - name: 'Run ${{ github.event.inputs.version }} xpm test'
-        uses: docker://debian:buster
+        uses: docker://ilegeul/debian:amd64-10-npm-v1
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/xpm-test.sh --image debian:buster --version ${{ github.event.inputs.version }}
