@@ -338,6 +338,10 @@ When the release is considered stable, promote it as `latest`:
 - `npm dist-tag add @xpack-dev-tools/clang@12.0.1-1.2 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
+In case the previous version is not functional and needs to be unpublished:
+
+- `npm unpublish @xpack-dev-tools/clang@12.0.1-1.X`
+
 ## Update the Web
 
 - in the `master` branch, merge the `develop` branch
