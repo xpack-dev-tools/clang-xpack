@@ -243,12 +243,23 @@ function build_binutils_ld_gold()
 function test_binutils_ld_gold()
 {
   (
-    show_libs "${APP_PREFIX}/bin/ld.gold"
+    if [ -d "xpacks/.bin" ]
+    then
+      TEST_BIN_PATH="$(pwd)/xpacks/.bin"
+    elif [ -d "${APP_PREFIX}/bin" ]
+    then
+      TEST_BIN_PATH="${APP_PREFIX}/bin"
+    else
+      echo "Wrong folder."
+      exit 1
+    fi
+
+    show_libs "${TEST_BIN_PATH}/ld.gold"
 
     echo
     echo "Testing if binutils ld.gold starts properly..."
 
-    run_app "${APP_PREFIX}/bin/ld.gold" --version
+    run_app "${TEST_BIN_PATH}/ld.gold" --version
   )
 
   echo
