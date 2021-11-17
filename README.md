@@ -4,7 +4,7 @@
 
 # The xPack LLVM clang
 
-A standalone cross-platform (Windows/macOS/Linux) LLVM clang
+A standalone cross-platform (Windows/macOS/Linux) **LLVM clang**
 binary distribution, intended for reproducible builds.
 
 In addition to the the binary archives and the package meta data,

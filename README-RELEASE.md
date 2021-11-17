@@ -149,7 +149,7 @@ Check that both the project Git and the submodule are pushed to GitHub.
 
 To trigger the GitHub Actions build, use the xPack action:
 
-- `trigger-workflow-build`
+- `trigger-workflow-build-all`
 
 This is equivalent to:
 
@@ -190,7 +190,7 @@ bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-workflow-test-dock
 bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-workflow-test-docker-linux-arm.sh
 ```
 
-These scripts require the `GITHUB_API_DISPATCH_TOKEN` to be present
+These scripts require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
 in the environment.
 
 These actions use the `xpack-develop` branch of this repo and the
@@ -213,7 +213,8 @@ This is equivalent to:
 bash ~/Downloads/clang-xpack.git/scripts/helper/tests/trigger-travis-macos.sh
 ```
 
-This script requires the `TRAVIS_COM_TOKEN` to be present in the environment.
+This script requires the `TRAVIS_COM_TOKEN` variable to be present
+in the environment.
 
 The test results are available from
 [travis-ci.com](https://app.travis-ci.com/github/xpack-dev-tools/clang-xpack/builds/).
@@ -249,7 +250,7 @@ named like **xPack LLVM clang v12.0.1-1** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
-- save the draft
+- save the draft (do **not** publish yet!)
 
 ## Prepare a new blog post
 

@@ -263,14 +263,14 @@ network connection or a computer entering sleep.
 screen -S clang
 
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
 or, for development builds:
 
 ```sh
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --all
+bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -424,8 +424,106 @@ only the first two depth levels are shown):
 ```console
 $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/12.0.1-1.1/.content/
 /Users/ilg/Library/xPacks/@xpack-dev-tools/clang/12.0.1-1.1/.content/
+├── README.md
+├── bin
+│   ├── clang -> clang-12
+│   ├── clang++ -> clang
+│   ├── clang-12
+│   ├── clang-check
+│   ├── clang-cl -> clang
+│   ├── clang-cpp -> clang
+│   ├── clang-doc
+│   ├── clang-format
+│   ├── clang-offload-bundler
+│   ├── clang-offload-wrapper
+│   ├── clang-refactor
+│   ├── clang-rename
+│   ├── clang-scan-deps
+│   ├── clang-tidy
+│   ├── clangd
+│   ├── clangd-xpc-test-client
+│   ├── darwin-debug
+│   ├── diagtool
+│   ├── git-clang-format
+│   ├── hmaptool
+│   ├── ld.lld -> lld
+│   ├── ld64.lld -> lld
+│   ├── ld64.lld.darwinnew -> lld
+│   ├── lld
+│   ├── lld-link -> lld
+│   ├── lldb
+│   ├── lldb-argdumper
+│   ├── lldb-instr
+│   ├── lldb-server
+│   ├── lldb-vscode
+│   ├── llvm-addr2line -> llvm-symbolizer
+│   ├── llvm-ar
+│   ├── llvm-as
+│   ├── llvm-bitcode-strip -> llvm-objcopy
+│   ├── llvm-config
+│   ├── llvm-cov
+│   ├── llvm-cxxdump
+│   ├── llvm-cxxfilt
+│   ├── llvm-cxxmap
+│   ├── llvm-diff
+│   ├── llvm-dis
+│   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-lib -> llvm-ar
+│   ├── llvm-libtool-darwin
+│   ├── llvm-nm
+│   ├── llvm-objcopy
+│   ├── llvm-objdump
+│   ├── llvm-profdata
+│   ├── llvm-ranlib -> llvm-ar
+│   ├── llvm-rc
+│   ├── llvm-readelf -> llvm-readobj
+│   ├── llvm-readobj
+│   ├── llvm-size
+│   ├── llvm-strings
+│   ├── llvm-strip -> llvm-objcopy
+│   ├── llvm-symbolizer
+│   ├── llvm-tblgen
+│   ├── set-xcode-analyzer
+│   ├── split-file
+│   └── wasm-ld -> lld
+├── distro-info
+│   ├── CHANGELOG.md
+│   ├── licenses
+│   ├── patches
+│   └── scripts
+├── include
+├── lib
+│   ├── LLVMPolly.so
+│   ├── clang
+│   ├── cmake
+│   ├── libLLVM.dylib
+│   ├── libLTO.dylib
+│   ├── libRemarks.dylib
+│   ├── libclang-cpp.dylib
+│   ├── libclang.dylib
+│   ├── liblldb.12.0.1.dylib
+│   └── liblldb.dylib -> liblldb.12.0.1.dylib
+├── libexec
+│   ├── c++-analyzer
+│   ├── ccc-analyzer
+│   ├── libedit.0.dylib
+│   ├── libffi.8.dylib
+│   ├── libform.6.dylib
+│   ├── libgcc_s.1.dylib
+│   ├── libiconv.2.dylib
+│   ├── liblzma.5.dylib
+│   ├── libncurses.6.dylib
+│   ├── libpanel.6.dylib
+│   ├── libxml2.2.dylib
+│   ├── libz.1.2.11.dylib
+│   └── libz.1.dylib -> libz.1.2.11.dylib
+└── share
+    ├── clang
+    ├── opt-viewer
+    ├── scan-build
+    └── scan-view
 
-TODO
+15 directories, 83 files
 ```
 
 No other files are installed in any system folders or other locations.
