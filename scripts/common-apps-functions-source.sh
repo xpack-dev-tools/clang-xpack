@@ -549,9 +549,16 @@ function build_llvm()
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
 
-            # TODO
-            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
+            if [ "${TARGET_ARCH}" == "x64" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+            elif [ "${TARGET_ARCH}" == "arm64" ]
+            then
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
+            else
+              echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
+              exit 1
+            fi
 
             # No longer needed if disabled in LLVM_ENABLE_PROJECTS.
             if false
