@@ -22,7 +22,7 @@ function run_tests()
   GCC_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-.*||')"
 
   echo
-  env
+  env | sort
 
   # Call the functions defined in the build code.
   test_llvm
