@@ -37,25 +37,26 @@ on:
 jobs:
 
   linux-x64:
-    name: 'x64 Linux LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Linux x64 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run ${{ github.event.inputs.version }} docker test'
-        uses: docker://debian:buster
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:buster --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+      - name: 'Run ${{ github.event.inputs.version }} native test'
+        run: bash scripts/helper/tests/native-test.sh --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
 
   
   linux-ia32:
-    name: 'ia32 Linux LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Linux ia32 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -69,9 +70,11 @@ jobs:
 
   
   linux-arm64:
-    name: 'arm64 Linux LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Linux arm64 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: [self-hosted, Linux, Arm64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -85,9 +88,11 @@ jobs:
 
   
   linux-arm32:
-    name: 'arm32 Linux LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Linux arm32 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: [self-hosted, Linux, Arm64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -101,9 +106,30 @@ jobs:
 
   
   macos-x64:
-    name: 'x64 macOS LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'macOS x64 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: macos-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Run ${{ github.event.inputs.version }} native test'
+        run: bash scripts/helper/tests/native-test.sh --version ${{ github.event.inputs.version }} --base-url ${{ github.event.inputs.base_url }}
+
+  
+  macos-arm64:
+    name: 'macOS arm64 LLVM clang ${{ github.event.inputs.version }} test'
+    runs-on: [self-hosted, macos, apple]
+    defaults:
+      run:
+        shell: "/usr/bin/arch -arch arm64e /bin/bash -l {0}"
+
+    steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -114,9 +140,11 @@ jobs:
 
   
   windows-x64:
-    name: 'x64 Windows LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Windows x64 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: windows-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -127,9 +155,11 @@ jobs:
 
   
   windows-ia32:
-    name: 'ia32 Windows LLVM clang ${{ github.event.inputs.version }} test'
+    name: 'Windows ia32 LLVM clang ${{ github.event.inputs.version }} test'
     runs-on: windows-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:

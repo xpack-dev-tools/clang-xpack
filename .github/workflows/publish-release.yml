@@ -32,9 +32,11 @@ on:
 jobs:
 
   linux-x64:
-    name: 'Intel Linux LLVM clang ${{ github.event.inputs.version }} publish release'
-    runs-on: [self-hosted, Linux, X64]
+    name: 'Linux Intel LLVM clang ${{ github.event.inputs.version }} publish release'
+    runs-on: [self-hosted, linux, x64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -69,9 +71,11 @@ jobs:
 
 
   linux-arm64:
-    name: 'Arm Linux LLVM clang ${{ github.event.inputs.version }} publish release'
-    runs-on: [self-hosted, Linux, ARM64]
+    name: 'Linux Arm LLVM clang ${{ github.event.inputs.version }} publish release'
+    runs-on: [self-hosted, linux, arm64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -106,9 +110,55 @@ jobs:
 
 
   macos-x64:
-    name: 'Intel macOS LLVM clang ${{ github.event.inputs.version }} publish release'
-    runs-on: [self-hosted, macOS, X64]
+    name: 'macOS Intel LLVM clang ${{ github.event.inputs.version }} publish release'
+    runs-on: [self-hosted, macos, intel]
+    steps:      
+      - name: 'Machine'
+        run: uname -a
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Create body'
+        run: |
+          npm install
+          cat scripts/templates/body-github-release-liquid.md | npm run liquidjs --silent -- '{ "RELEASE_VERSION": "${{ github.event.inputs.version }}" }' >.github/workflows/body-github-release.md
+          cat .github/workflows/body-github-release.md
+      - name: 'Publish release'
+        # https://github.com/ncipollo/release-action
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: '~/Work/clang-${{ github.event.inputs.version }}/deploy/*'
+          bodyFile: '.github/workflows/body-github-release.md'
+          commit: 'master'
+          draft: true
+          name: 'xPack LLVM clang v${{ github.event.inputs.version }}'
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          owner: 'xpack-dev-tools'
+          prerelease: true
+          replacesArtifacts: true
+          repo: 'clang-xpack'
+          tag: 'v${{ github.event.inputs.version }}'
+          token: ${{ secrets.PUBLISH_TOKEN }}
+      - name: 'Show SHA'
+        run: cat ~/Work/clang-${{ github.event.inputs.version }}/deploy/*.sha
+
+
+
+  macos-arm64:
+    name: 'macOS Arm LLVM clang ${{ github.event.inputs.version }} publish release'
+    runs-on: [self-hosted, macos, apple]
+    defaults:
+      run:
+        shell: "/usr/bin/arch -arch arm64e /bin/bash -l {0}"
+
     steps:
+      - name: 'Machine'
+        run: uname -a
+
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
