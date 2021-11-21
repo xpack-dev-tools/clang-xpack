@@ -104,7 +104,7 @@ not be accepted by bash.
 
 ## Versioning
 
-The version string is an extension to semver, the format looks like `12.0.1-1`.
+The version string is an extension to semver, the format looks like `12.0.1-2`.
 It includes the three digits with the original LLVM version and a fourth
 digit with the xPack release number.
 
@@ -208,14 +208,14 @@ archives and their SHA signatures, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 247864
--rw-rw-rw- 1 ilg ilg 56884326 May 17 13:14 xpack-clang-12.0.1-1-linux-ia32.tar.gz
--rw-rw-rw- 1 ilg ilg      102 May 17 13:14 xpack-clang-12.0.1-1-linux-ia32.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 56023096 May 17 12:57 xpack-clang-12.0.1-1-linux-x64.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 12:57 xpack-clang-12.0.1-1-linux-x64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 67975780 May 17 13:23 xpack-clang-12.0.1-1-win32-ia32.zip
--rw-rw-rw- 1 ilg ilg       99 May 17 13:23 xpack-clang-12.0.1-1-win32-ia32.zip.sha
--rw-rw-rw- 1 ilg ilg 72906421 May 17 13:06 xpack-clang-12.0.1-1-win32-x64.zip
--rw-rw-rw- 1 ilg ilg       98 May 17 13:06 xpack-clang-12.0.1-1-win32-x64.zip.sha
+-rw-rw-rw- 1 ilg ilg 56884326 May 17 13:14 xpack-clang-12.0.1-2-linux-ia32.tar.gz
+-rw-rw-rw- 1 ilg ilg      102 May 17 13:14 xpack-clang-12.0.1-2-linux-ia32.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 56023096 May 17 12:57 xpack-clang-12.0.1-2-linux-x64.tar.gz
+-rw-rw-rw- 1 ilg ilg      101 May 17 12:57 xpack-clang-12.0.1-2-linux-x64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 67975780 May 17 13:23 xpack-clang-12.0.1-2-win32-ia32.zip
+-rw-rw-rw- 1 ilg ilg       99 May 17 13:23 xpack-clang-12.0.1-2-win32-ia32.zip.sha
+-rw-rw-rw- 1 ilg ilg 72906421 May 17 13:06 xpack-clang-12.0.1-2-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       98 May 17 13:06 xpack-clang-12.0.1-2-win32-x64.zip.sha
 ```
 
 ### Build the Arm GNU/Linux binaries
@@ -282,10 +282,10 @@ archives and their SHA signatures, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 93168
--rw-rw-rw- 1 ilg ilg 48777570 May 17 10:38 xpack-clang-12.0.1-1-linux-arm64.tar.gz
--rw-rw-rw- 1 ilg ilg      103 May 17 10:38 xpack-clang-12.0.1-1-linux-arm64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 46615122 May 17 11:15 xpack-clang-12.0.1-1-linux-arm.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 11:15 xpack-clang-12.0.1-1-linux-arm.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 48777570 May 17 10:38 xpack-clang-12.0.1-2-linux-arm64.tar.gz
+-rw-rw-rw- 1 ilg ilg      103 May 17 10:38 xpack-clang-12.0.1-2-linux-arm64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 46615122 May 17 11:15 xpack-clang-12.0.1-2-linux-arm.tar.gz
+-rw-rw-rw- 1 ilg ilg      101 May 17 11:15 xpack-clang-12.0.1-2-linux-arm.tar.gz.sha
 ```
 
 ### Build the macOS binaries
@@ -324,8 +324,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-*/deploy
 total 163376
--rw-r--r--  1 ilg  staff  83643088 May 17 13:19 xpack-clang-12.0.1-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       102 May 17 13:19 xpack-clang-12.0.1-1-darwin-x64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  83643088 May 17 13:19 xpack-clang-12.0.1-2-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       102 May 17 13:19 xpack-clang-12.0.1-2-darwin-x64.tar.gz.sha
 ```
 
 ## Subsequent runs
@@ -410,7 +410,7 @@ program from there. For example on macOS the output should
 look like:
 
 ```console
-$ ...xpack-clang-12.0.1-1/bin/clang --version
+$ ...xpack-clang-12.0.1-2/bin/clang --version
 xPack 64-bit clang version 12.0.1
 Target: x86_64-apple-darwin20.6.0
 Thread model: posix
@@ -422,8 +422,8 @@ After install, the package should create a structure like this (macOS files;
 only the first two depth levels are shown):
 
 ```console
-$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/12.0.1-1.1/.content/
-/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/12.0.1-1.1/.content/
+$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/12.0.1-2.1/.content/
+/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/12.0.1-2.1/.content/
 ├── README.md
 ├── bin
 │   ├── clang -> clang-12
@@ -579,10 +579,10 @@ The compiler on macOS 10.10 seems a bit too old (LLVM 3.6.0)
 and the build fails with:
 
 ```console
-/Users/ilg/Work/clang-12.0.1-1/darwin-x64/sources/llvm-project-12.0.1.src/llvm/utils/TableGen/GlobalISelEmitter.cpp:4298:7: error: no matching function for call to 'makeArrayRef'
+/Users/ilg/Work/clang-12.0.1-2/darwin-x64/sources/llvm-project-12.0.1.src/llvm/utils/TableGen/GlobalISelEmitter.cpp:4298:7: error: no matching function for call to 'makeArrayRef'
       makeArrayRef({&BuildVector, &BuildVectorTrunc}));
       ^~~~~~~~~~~~
-/Users/ilg/Work/clang-12.0.1-1/darwin-x64/sources/llvm-project-12.0.1.src/llvm/include/llvm/ADT/ArrayRef.h:458:15: note: candidate template ignored: couldn't infer template argument 'T'
+/Users/ilg/Work/clang-12.0.1-2/darwin-x64/sources/llvm-project-12.0.1.src/llvm/include/llvm/ADT/ArrayRef.h:458:15: note: candidate template ignored: couldn't infer template argument 'T'
   ArrayRef<T> makeArrayRef(const T &OneElt) {
               ^
 ```

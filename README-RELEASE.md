@@ -30,7 +30,7 @@ since they are usually followed by a X.Y.1 release in several month.
 ### Increase the version
 
 Determine the version (like `12.0.1`) and update the `scripts/VERSION`
-file; the format is `12.0.1-1`. The fourth number is the xPack release number
+file; the format is `12.0.1-2`. The fourth number is the xPack release number
 of this version. A fifth number will be added when publishing
 the package on the `npm` server.
 
@@ -40,7 +40,7 @@ Check GitHub issues and pull requests:
 
 - <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
-and fix them; assign them to a milestone (like `12.0.1-1`).
+and fix them; assign them to a milestone (like `12.0.1-2`).
 
 ### Check `README.md`
 
@@ -58,8 +58,8 @@ but in the web release files.
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
-- add a new entry like _- v12.0.1-1 prepared_
-- commit with a message like _prepare v12.0.1-1_
+- add a new entry like _- v12.0.1-2 prepared_
+- commit with a message like _prepare v12.0.1-2_
 
 Note: if you missed to update the `CHANGELOG.md` before starting the build,
 edit the file and rerun the build, it should take only a few minutes to
@@ -75,7 +75,7 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - chery pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
   enable commit immediately
 - push to `origin`
-- add a `v12.0.1-1-xpack` tag; enable push to origin
+- add a `v12.0.1-2-xpack` tag; enable push to origin
 - remember the current commit ID
 
 ### Update the version specific code
@@ -226,27 +226,27 @@ Install the binaries on all platforms.
 On GNU/Linux and macOS systems, use:
 
 ```sh
-.../xpack-clang-12.0.1-1/bin/clang --version
+.../xpack-clang-12.0.1-2/bin/clang --version
 clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
 On Windows use:
 
 ```doscon
-...\xpack-clang-12.0.1-1\bin\clang --version
+...\xpack-clang-12.0.1-2\bin\clang --version
 clang (xPack LLVM clang x86_64) 12.0.1
 ```
 
 ## Create a new GitHub pre-release draft
 
-- in `CHANGELOG.md`, add the release date and a message like _- v12.0.1-1 released_
+- in `CHANGELOG.md`, add the release date and a message like _- v12.0.1-2 released_
 - commit and push the `xpack-develop` branch
 - run the xPack action `trigger-workflow-publish-release`
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-tagged like **v12.0.1-1** (mind the dash in the middle!) and
-named like **xPack LLVM clang v12.0.1-1** (mind the dash),
+tagged like **v12.0.1-2** (mind the dash in the middle!) and
+named like **xPack LLVM clang v12.0.1-2** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
@@ -268,7 +268,7 @@ If any, refer to closed
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like **xPack LLVM clang v12.0.1-1 released**
+  use a message like **xPack LLVM clang v12.0.1-2 released**
 - push to GitHub
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
@@ -296,18 +296,18 @@ watching this project.
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes, use a message like
-  `package.json: update urls for 12.0.1-1.2 release` (without `v`)
+  `package.json: update urls for 12.0.1-2.2 release` (without `v`)
 
 ## Publish on the npmjs.com server
 
 - select the `xpack-develop` branch
 - check the latest commits `npm run git-log`
-- update `CHANGELOG.md`, add a line like _- v12.0.1-1.2 published on npmjs.com_
-- commit with a message like _CHANGELOG: publish npm v12.0.1-1.2_
+- update `CHANGELOG.md`, add a line like _- v12.0.1-2.2 published on npmjs.com_
+- commit with a message like _CHANGELOG: publish npm v12.0.1-2.2_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
-- `npm version 12.0.1-1.2`; the first 5 numbers are the same as the
+- `npm version 12.0.1-2.2`; the first 5 numbers are the same as the
   GitHub release; the sixth number is the npm specific version
 - push the `xpack-develop` branch to GitHub
 - push tags with `git push origin --tags`
@@ -336,12 +336,12 @@ The tests results are available from the
 When the release is considered stable, promote it as `latest`:
 
 - `npm dist-tag ls @xpack-dev-tools/clang`
-- `npm dist-tag add @xpack-dev-tools/clang@12.0.1-1.2 latest`
+- `npm dist-tag add @xpack-dev-tools/clang@12.0.1-2.2 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
 In case the previous version is not functional and needs to be unpublished:
 
-- `npm unpublish @xpack-dev-tools/clang@12.0.1-1.X`
+- `npm unpublish @xpack-dev-tools/clang@12.0.1-2.X`
 
 ## Update the Web
 
@@ -363,7 +363,7 @@ In case the previous version is not functional and needs to be unpublished:
 
 - in a separate browser windows, open [TweetDeck](https://tweetdeck.twitter.com/)
 - using the `@xpack_project` account
-- paste the release name like **xPack LLVM clang v12.0.1-1 released**
+- paste the release name like **xPack LLVM clang v12.0.1-2 released**
 - paste the link to the Web page
   [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button

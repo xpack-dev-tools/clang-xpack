@@ -5,7 +5,7 @@ TODO
 Tests fail on ubuntu-latest, in crt-simple-exception, with:
 
 ```console
-[/home/runner/Work/linux-x64/tests/xpack-clang-12.0.1-1/bin/clang++ simple-exception.cpp -o crt-simple-exception -rtlib=compiler-rt -stdlib=libc++ -fuse-ld=lld]
+[/home/runner/Work/linux-x64/tests/xpack-clang-12.0.1-2/bin/clang++ simple-exception.cpp -o crt-simple-exception -rtlib=compiler-rt -stdlib=libc++ -fuse-ld=lld]
 ld.lld: error: undefined symbol: _Unwind_Resume
 >>> referenced by simple-exception.cpp
 >>>               /tmp/simple-exception-16524d.o:(main)
