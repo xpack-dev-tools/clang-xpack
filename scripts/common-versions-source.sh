@@ -174,7 +174,7 @@ function build_versions()
 
 # -----------------------------------------------------------------------------
   
-  if [[ "${RELEASE_VERSION}" =~ 12\.0\.1-[1] ]]
+  if [[ "${RELEASE_VERSION}" =~ 12\.0\.1-[12] ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
