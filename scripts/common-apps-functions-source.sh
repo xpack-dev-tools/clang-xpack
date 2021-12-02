@@ -3,12 +3,12 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the xPack build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the container build scripts.
 
 # -----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ function build_binutils_ld_gold()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}" 
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
@@ -100,7 +100,7 @@ function build_binutils_ld_gold()
 
           echo
           echo "Running binutils-ld.gold configure..."
-      
+
           bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
           bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/ld/configure" --help
 
@@ -165,7 +165,7 @@ function build_binutils_ld_gold()
           config_options+=("--enable-plugins")
           config_options+=("--enable-build-warnings=no")
           config_options+=("--enable-deterministic-archives")
-          
+
           # TODO
           # config_options+=("--enable-nls")
           config_options+=("--disable-nls")
@@ -176,15 +176,15 @@ function build_binutils_ld_gold()
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
             "${config_options[@]}"
-            
-          cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output.txt"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output-$(ndate).txt"
       fi
 
       (
         echo
         echo "Running binutils-ld.gold make..."
-      
+
         # Build.
         run_verbose make -j ${JOBS} all-gold
 
@@ -193,7 +193,7 @@ function build_binutils_ld_gold()
           # gcctestdir/collect-ld: relocation error: gcctestdir/collect-ld: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
           : # make maybe-check-gold
         fi
-      
+
         # Avoid strip here, it may interfere with patchelf.
         # make install-strip
         run_verbose make maybe-install-gold
@@ -224,7 +224,7 @@ function build_binutils_ld_gold()
 
         show_libs "${APP_PREFIX}/bin/ld.gold"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output-$(ndate).txt"
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}" \
@@ -268,7 +268,7 @@ function test_binutils_ld_gold()
 
 # -----------------------------------------------------------------------------
 
-function build_llvm() 
+function build_llvm()
 {
   # https://llvm.org
   # https://llvm.org/docs/GettingStarted.html
@@ -430,7 +430,7 @@ function build_llvm()
           # Colon separated list of directories clang will search for headers.
           # config_options+=("-DC_INCLUDE_DIRS=:")
 
-          # Distributions should never be built using the 
+          # Distributions should never be built using the
           # BUILD_SHARED_LIBS CMake option.
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
@@ -533,7 +533,7 @@ function build_llvm()
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
 
             # The libc++ & Co are not included because the system dynamic
-            # libraries are prefered by the linker anyway, and attempts to 
+            # libraries are prefered by the linker anyway, and attempts to
             # force the inclusion of the static library failed:
             # ld: warning: linker symbol '$ld$hide$os10.4$__Unwind_Backtrace' hides a non-existent symbol '__Unwind_Backtrace'
 
@@ -625,7 +625,7 @@ function build_llvm()
             config_options+=("-DCMAKE_PROGRAM_PATH=${APP_PREFIX}/bin")
 
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
-          
+
             config_options+=("-DLLVM_BINUTILS_INCDIR=${SOURCES_FOLDER_PATH}/binutils-${BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
@@ -634,7 +634,7 @@ function build_llvm()
             if [ "${TARGET_ARCH}" == "arm64" -o "${TARGET_ARCH}" == "arm" ]
             then
               # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
-              # not available in Ubuntu 16; 
+              # not available in Ubuntu 16;
               # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
               # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
               config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;polly;compiler-rt;libcxx;libcxxabi;libunwind")
@@ -729,7 +729,7 @@ function build_llvm()
 
           touch "cmake.done"
 
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/cmake-output.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/cmake-output-$(ndate).txt"
       fi
 
       (
@@ -741,7 +741,7 @@ function build_llvm()
           run_verbose_timed cmake --build . --verbose
           run_verbose cmake --build .  --verbose  --target install/strip
         else
-          run_verbose_timed cmake --build . 
+          run_verbose_timed cmake --build .
           run_verbose cmake --build . --target install/strip
         fi
 
@@ -832,7 +832,7 @@ function build_llvm()
             cd "${APP_PREFIX}/bin"
 
             # dlltool-wrapper windres-wrapper llvm-wrapper
-            for exec in clang-target-wrapper 
+            for exec in clang-target-wrapper
             do
               run_verbose ${CC} "${BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${CROSS_COMPILE_PREFIX}\"
             done
@@ -842,7 +842,7 @@ function build_llvm()
               mv -v clang.exe clang-${llvm_version_major}.exe
             fi
 
-            # clang clang++ gcc g++ cc c99 c11 c++ addr2line ar 
+            # clang clang++ gcc g++ cc c99 c11 c++ addr2line ar
             # dlltool ranlib nm objcopy strings strip windres
             for exec in clang clang++ clang-cl clang-cpp
             do
@@ -860,7 +860,7 @@ function build_llvm()
           show_libs "${APP_PREFIX}/bin/llvm-nm"
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
 
       if [ ! -n "${name_suffix}" ]
       then
@@ -925,7 +925,7 @@ function test_llvm()
     if [ -n "${name_suffix}" ]
     then
       # Help the loader find the .dll files if the native is not static.
-      export WINEPATH=${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}/bin 
+      export WINEPATH=${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}/bin
 
       CC="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-clang"
       CXX="${TEST_BIN_PATH}/${CROSS_COMPILE_PREFIX}-clang++"
@@ -1035,7 +1035,7 @@ function test_llvm()
       LD_GC_SECTIONS=""
     fi
 
-    echo 
+    echo
     env | sort
 
     run_verbose uname
@@ -1074,11 +1074,11 @@ function test_llvm()
         # For libwinpthread-1.dll, possibly other.
         if [ "$(uname -o)" == "Msys" ]
         then
-          export PATH="${TEST_BIN_PATH}/lib;${PATH:-}" 
+          export PATH="${TEST_BIN_PATH}/lib;${PATH:-}"
           echo "PATH=${PATH}"
         elif [ "$(uname)" == "Linux" ]
         then
-          export WINEPATH="${TEST_BIN_PATH}/lib;${WINEPATH:-}" 
+          export WINEPATH="${TEST_BIN_PATH}/lib;${WINEPATH:-}"
           echo "WINEPATH=${WINEPATH}"
         fi
       fi
@@ -1106,7 +1106,7 @@ function test_llvm()
       echo
       echo "Skip all --static-lib on macOS."
     else
-      # Except on macOS, the recommended use case is with `-static-libgcc`, 
+      # Except on macOS, the recommended use case is with `-static-libgcc`,
       # and the following combinations are expected to work properly on
       # Linux and Windows.
       local distro=$(lsb_release -is)
@@ -1182,7 +1182,7 @@ function test_llvm()
     then
       # The `--out-implib` creates an import library, which can be
       # directly used with -l.
-      run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows 
+      run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows
     else
       run_app "${CC}" -o libadd-shared.${SHLIB_EXT} -shared add.o
     fi
@@ -1195,7 +1195,7 @@ function test_llvm()
     fi
 
     rm -rf libadd-add-static.a
-    run_app "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o 
+    run_app "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o
     run_app "${RANLIB}" librt-add-static.a
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1225,7 +1225,7 @@ function test_llvm()
     )
 
     run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-    
+
     test_expect "rt-static-adder" "42" 40 2
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1256,26 +1256,26 @@ function test_llvm()
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      run_app "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG} 
+      run_app "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG}
       show_libs hello-tls
       run_app ./hello-tls
 
-      run_app "${CC}" crt-test.c -o crt-test.exe ${VERBOSE_FLAG} 
-      show_libs crt-test 
-      run_app ./crt-test 
+      run_app "${CC}" crt-test.c -o crt-test.exe ${VERBOSE_FLAG}
+      show_libs crt-test
+      run_app ./crt-test
 
-      run_app "${CC}" autoimport-lib.c -shared -o autoimport-lib.dll -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG} 
+      run_app "${CC}" autoimport-lib.c -shared -o autoimport-lib.dll -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG}
       show_libs autoimport-lib.dll
 
       run_app "${CC}" autoimport-main.c -o autoimport-main.exe -L. -lautoimport-lib ${VERBOSE_FLAG}
       show_libs autoimport-main
       run_app ./autoimport-main
 
-      # The IDL output isn't arch specific, but test each arch frontend 
-      run_app "${WIDL}" idltest.idl -h -o idltest.h 
-      run_app "${CC}" idltest.c -I. -o idltest.exe -lole32 ${VERBOSE_FLAG} 
+      # The IDL output isn't arch specific, but test each arch frontend
+      run_app "${WIDL}" idltest.idl -h -o idltest.h
+      run_app "${CC}" idltest.c -I. -o idltest.exe -lole32 ${VERBOSE_FLAG}
       show_libs idltest
-      run_app ./idltest 
+      run_app ./idltest
     fi
 
     # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
@@ -1297,7 +1297,7 @@ function test_llvm()
 
       run_app ${CXX} tlstest-main.cpp -o tlstest-main.exe ${VERBOSE_FLAG}
       show_libs tlstest-main
-      run_app ./tlstest-main 
+      run_app ./tlstest-main
     fi
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1468,8 +1468,8 @@ function test_clang_one()
 
     # -------------------------------------------------------------------------
 
-    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ] 
-    then 
+    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
+    then
 
       # On Linux it works only with the full LLVM runtime and lld
 
@@ -1513,8 +1513,8 @@ function test_clang_one()
       run_app ./${prefix}${test}${suffix}
     done
 
-    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ] 
-    then 
+    if [ \( "${TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
+    then
 
       # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
       run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
@@ -1612,7 +1612,7 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
         config_options+=("-DCMAKE_CXX_COMPILER=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-        
+
         config_options+=("-DCMAKE_AR=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ar")
         config_options+=("-DCMAKE_RANLIB=${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
@@ -1638,7 +1638,7 @@ function build_llvm_compiler_rt()
           "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output-$(ndate).txt"
 
       (
         run_verbose cmake --build . --verbose
@@ -1662,7 +1662,7 @@ function build_llvm_compiler_rt()
           done
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output-$(ndate).txt"
     )
 
     touch "${llvm_compiler_rt_stamp_file_path}"
@@ -1700,7 +1700,7 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-     
+
       (
         if [ "${IS_DEVELOP}" == "y" ]
         then
@@ -1746,13 +1746,13 @@ function build_llvm_libcxx()
           "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libunwind"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/cmake-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/cmake-output-$(ndate).txt"
 
       (
         run_verbose cmake --build . --verbose
         run_verbose cmake --build . --verbose --target install/strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/build-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/build-output-$(ndate).txt"
 
     )
 
@@ -1793,7 +1793,7 @@ function build_llvm_libcxx()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-     
+
       (
         if [ "${IS_DEVELOP}" == "y" ]
         then
@@ -1850,14 +1850,14 @@ function build_llvm_libcxx()
           "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxx"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
 
       (
         # Configure, but don't build libcxx yet, so that libcxxabi has
         # proper headers to refer to.
         run_verbose cmake --build . --verbose --target generate-cxx-headers
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/generate-cxx-headeres-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/generate-cxx-headeres-output-$(ndate).txt"
 
     )
 
@@ -1887,7 +1887,7 @@ function build_llvm_libcxx()
       export CXXFLAGS
       export LDFLAGS
       # Most probably not used
-     
+
       (
         if [ "${IS_DEVELOP}" == "y" ]
         then
@@ -1932,19 +1932,19 @@ function build_llvm_libcxx()
         config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
 
         config_options+=("-DLLVM_PATH=${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
-        
+
         run_verbose cmake \
           "${config_options[@]}" \
           "${SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/cmake-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/cmake-output-$(ndate).txt"
 
       (
         # Configure, but don't build libcxxabi yet, so that libcxxabi has
         # proper headers to refer to.
         run_verbose cmake --build . --verbose
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/build-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/build-output-$(ndate).txt"
     )
 
     touch "${llvm_libcxxabi_stamp_file_path}"
@@ -1980,7 +1980,7 @@ function build_llvm_libcxx()
           env | sort
         fi
 
-        run_verbose cmake --build . --verbose 
+        run_verbose cmake --build . --verbose
         run_verbose cmake --build . --verbose --target install/strip
 
         # Append libunwind to libc++.
@@ -1995,7 +1995,7 @@ function build_llvm_libcxx()
                   "${APP_PREFIX}/lib/libunwind.a"
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output-$(ndate).txt"
 
     )
 
