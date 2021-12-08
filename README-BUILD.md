@@ -304,14 +304,14 @@ To build the latest macOS version:
 screen -S clang
 
 rm -rf ~/Work/clang-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
 
 or, for development builds:
 
 ```sh
 rm -rf ~/Work/clang-arm-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --osx 
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --macos
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use

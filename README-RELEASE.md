@@ -97,7 +97,7 @@ or the production machine (`xbbm`):
 ```sh
 sudo rm -rf ~/Work/clang-*
 
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --osx
+caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
 
 Similarly on the Intel Linux (`xbbi`):
