@@ -92,7 +92,7 @@ With Sourcetree, go to the helper repo and update to the latest master commit.
 ### Development run the build scripts
 
 Before the real build, run a test build on the development machine (`wks`)
-or the production machine (`xbbm`):
+or the production machines (`xbbma`, `xbbmi`):
 
 ```sh
 sudo rm -rf ~/Work/clang-*
@@ -100,7 +100,7 @@ sudo rm -rf ~/Work/clang-*
 caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
 
-Similarly on the Intel Linux (`xbbi`):
+Similarly on the Intel Linux (`xbbli`):
 
 ```sh
 bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --linux64
@@ -110,7 +110,7 @@ bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --win64
 bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --win32
 ```
 
-And on the Arm Linux (`xbba`):
+And on the Arm Linux (`xbbla`):
 
 ```sh
 bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --arm64
@@ -130,13 +130,13 @@ From here it'll be later cloned on the production machines.
 
 ### Run the build scripts
 
-On the macOS machine (`xbbm`) open ssh sessions to both Linux machines
-(`xbbi` and `xbba`):
+On the macOS machine (`xbbmi`) open ssh sessions to both Linux machines
+(`xbbli` and `xbbla`):
 
 ```sh
-caffeinate ssh xbbi
+caffeinate ssh xbbli
 
-caffeinate ssh xbba
+caffeinate ssh xbbla
 ```
 
 Start the runner on all three machines:
