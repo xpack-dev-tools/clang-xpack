@@ -1,5 +1,5 @@
 ---
-title:  xPack LLVM clang {{ RELEASE_VERSION }} released
+title:  xPack LLVM clang v{{ RELEASE_VERSION }} released
 
 TODO: select one summary
 
