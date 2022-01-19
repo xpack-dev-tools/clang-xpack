@@ -9,12 +9,12 @@ The binaries can be available from one of the pre-releases:
 The test script is part of the LLVM clang xPack:
 
 ```sh
-rm -rf ~/Downloads/clang-xpack.git; \
+rm -rf ${HOME}/Work/clang-xpack.git; \
 git clone \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git  \
-  ~/Downloads/clang-xpack.git; \
-git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
+  ${HOME}/Work/clang-xpack.git; \
+git -C ${HOME}/Work/clang-xpack.git submodule update --init --recursive
 ```
 
 ## Start a local test
@@ -22,7 +22,7 @@ git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
 To check if LLVM clang starts on the current platform, run a native test:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/tests/native-test.sh \
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/tests/native-test.sh \
   --base-url "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 ```
 
@@ -41,15 +41,15 @@ The multi-platform tests run on GitHub Actions; they do not fire on
 git commits, but only via a manual POST to the GitHub API.
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/tests/trigger-workflow-test-native.sh \
+bash ${HOME}/Work/clang-xpack.git/scripts/tests/trigger-workflow-test-native.sh \
   --branch xpack-develop \
   --base-url "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 
-bash ~/Downloads/clang-xpack.git/scripts/tests/trigger-workflow-test-docker-linux-intel.sh \
+bash ${HOME}/Work/clang-xpack.git/scripts/tests/trigger-workflow-test-docker-linux-intel.sh \
   --branch xpack-develop \
   --base-url "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 
-bash ~/Downloads/clang-xpack.git/scripts/tests/trigger-workflow-test-docker-linux-arm.sh \
+bash ${HOME}/Work/clang-xpack.git/scripts/tests/trigger-workflow-test-docker-linux-arm.sh \
   --branch xpack-develop \
   --base-url "https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 

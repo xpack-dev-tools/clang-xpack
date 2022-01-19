@@ -56,11 +56,11 @@ Git repo.
 To download them, use the following commands:
 
 ```sh
-rm -rf ~/Downloads/clang-xpack.git; \
+rm -rf ${HOME}/Work/clang-xpack.git; \
 git clone \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Downloads/clang-xpack.git; \
-git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
+  ${HOME}/Work/clang-xpack.git; \
+git -C ${HOME}/Work/clang-xpack.git submodule update --init --recursive
 ```
 
 > Note: the repository uses submodules; for a successful build it is
@@ -69,12 +69,12 @@ git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
 To use the `xpack-develop` branch of the build scripts, issue:
 
 ```sh
-rm -rf ~/Downloads/clang-xpack.git; \
+rm -rf ${HOME}/Work/clang-xpack.git; \
 git clone \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Downloads/clang-xpack.git; \
-git -C ~/Downloads/clang-xpack.git submodule update --init --recursive
+  ${HOME}/Work/clang-xpack.git; \
+git -C ${HOME}/Work/clang-xpack.git submodule update --init --recursive
 ```
 
 ## The `Work` folder
@@ -153,7 +153,7 @@ Before running a build for the first time, it is recommended to preload the
 docker images.
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh preload-images
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh preload-images
 ```
 
 The result should look similar to:
@@ -188,14 +188,14 @@ network connection or a computer entering sleep.
 screen -S clang
 
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --all
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
 or, for development builds:
 
 ```sh
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -240,7 +240,7 @@ Before running a build for the first time, it is recommended to preload the
 docker images.
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh preload-images
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh preload-images
 ```
 
 The result should look similar to:
@@ -260,14 +260,14 @@ network connection or a computer entering sleep.
 screen -S clang
 
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --all
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
 or, for development builds:
 
 ```sh
 sudo rm -rf ~/Work/clang-*
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -306,14 +306,14 @@ To build the latest macOS version:
 screen -S clang
 
 rm -rf ~/Work/clang-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --macos
+caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
 
 or, for development builds:
 
 ```sh
 rm -rf ~/Work/clang-arm-*
-caffeinate bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --macos
+caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --macos
 ```
 
 To detach from the session, use `Ctrl-a` `Ctrl-d`; to reattach use
@@ -351,19 +351,19 @@ On Arm, instead of `--all`, you can use any combination of:
 To remove most build temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all clean
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --all clean
 ```
 
 To also remove the library build temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all cleanlibs
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --all cleanlibs
 ```
 
 To remove all temporary files, use:
 
 ```sh
-bash ~/Downloads/clang-xpack.git/scripts/helper/build.sh --all cleanall
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --all cleanall
 ```
 
 Instead of `--all`, any combination of `--win64 --linux64`
