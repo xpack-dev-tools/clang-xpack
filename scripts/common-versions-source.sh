@@ -190,6 +190,8 @@ function build_versions()
     LIBXML2_VERSION="2.9.11"
     LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
 
+    NCURSES_DISABLE_WIDEC="y"
+
     build_common
 
     # -------------------------------------------------------------------------
