@@ -3,12 +3,12 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the GNU MCU Eclipse build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the GNU MCU Eclipse build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the container build scripts.
 
 # -----------------------------------------------------------------------------
@@ -113,7 +113,7 @@ function build_common()
         build_xz "${XZ_VERSION}"
 
         # Build mingw-w64 components.
-        prepare_mingw_env "${MINGW_VERSION}" 
+        prepare_mingw_env "${MINGW_VERSION}"
 
         build_mingw_headers
         build_mingw_crt
@@ -128,7 +128,7 @@ function build_common()
 
         build_llvm_compiler_rt
         build_llvm_libcxx # libunwind, libcxx, libcxxabi
-        
+
       fi
 
     else # linux or darwin
@@ -173,7 +173,7 @@ function build_versions()
   export BOOTSTRAP_SUFFIX="-bootstrap"
 
 # -----------------------------------------------------------------------------
-  
+
   if [[ "${RELEASE_VERSION}" =~ 12\.0\.1-[12] ]]
   then
 
