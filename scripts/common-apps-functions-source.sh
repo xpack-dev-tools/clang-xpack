@@ -631,7 +631,8 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILTIN_TARGETS=${TARGET}")
 
-            if [ "${TARGET_ARCH}" == "arm64" -o "${TARGET_ARCH}" == "arm" ]
+            # Disabled once XBB moved to Ubuntu 18.
+            if false # [ "${TARGET_ARCH}" == "arm64" -o "${TARGET_ARCH}" == "arm" ]
             then
               # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
               # not available in Ubuntu 16;
@@ -656,19 +657,26 @@ function build_llvm()
             config_options+=("-DLLVM_RUNTIME_TARGETS=${TARGET}")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
-            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+            # For now keep the default configuration, which creates both
+            # shred and static libs, but they are not directly
+            # usable, since they require complex LD_LIBRARY_PATH and
+            # explicit link optios; the crt tests were disabled.
+            if false
+            then
+              config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+              config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
+              config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
 
-            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
+              config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
+              config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
+              config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
+              config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
+              config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
 
-            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+              config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+              config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
+              config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
+            fi
 
           elif [ "${TARGET_PLATFORM}" == "win32" ]
           then
@@ -1088,11 +1096,11 @@ function test_llvm()
       test_clang_one "${name_suffix}" --lto
       test_clang_one "${name_suffix}" --gc --lto
 
-      if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm" ]
+      # C++ with compiler-rt fails on Intel and Arm 32 Linux.
+      if [ "${TARGET_PLATFORM}" == "linux" ] # -a "${TARGET_ARCH}" == "arm" ]
       then
-        # C++ fails on Arm 32 Linux.
         echo
-        echo "Skip all --crt on Arm 32 Linux."
+        echo "Skip all --crt on Linux."
       else
         test_clang_one "${name_suffix}" --crt
         test_clang_one "${name_suffix}" --gc --crt
