@@ -28,9 +28,9 @@ tags:
 is a standalone cross-platform binary distribution of
 [LLVM clang](http://clang.org).
 
-There are separate binaries for **Windows** (Intel 32/64-bit),
+There are separate binaries for **Windows** (Intel 64-bit),
 **macOS** (Intel 64-bit, Apple Silicon 64-bit)
-and **GNU/Linux** (Intel 32/64-bit, Arm 32/64-bit).
+and **GNU/Linux** (Intel 64-bit, Arm 32/64-bit).
 
 {% raw %}{% include note.html content="The main targets for the Arm binaries
 are the **Raspberry Pi** class devices." %}{% endraw %}
@@ -117,8 +117,6 @@ The xPack LLVM clang generally follows the official
 
 The current version is based on:
 
-TODO: update commit id and date.
-
 - LLVM clang version [12.0.1](https://releases.llvm.org/download.html#12.0.1), from July 8th, 2021.
 
 ## Changes
@@ -135,7 +133,11 @@ Compared to the upstream, there are no functional changes.
 
 ## Known problems
 
-- none
+- on GNU/Linux, support for the clang run-time and C++ libraries is basic,
+  the libraries are available, but using them is tricky, since it requires
+  the compiled binaries to take care of the path to them, otherwise it is
+  very likely that the system libraries will be used; thus it is
+  recommended to avoid such use cases.
 
 ## Shared libraries
 
