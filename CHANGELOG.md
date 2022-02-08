@@ -4,7 +4,7 @@ Entries in this file are in reverse chronological order.
 
 ## 2022-02-08
 
-- v12.0.1-2.1 published on npmjs.com
+- v12.0.1-2.2 published on npmjs.com
 - v12.0.1-2 released
 
 ## 2022-02-06
