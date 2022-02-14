@@ -1551,6 +1551,26 @@ function test_clang_one()
 
     fi
 
+    run_app "${CC}" -c -o ${prefix}hello-weak${suffix}.c.o hello-weak.c ${CFLAGS}
+    run_app "${CC}" -c -o ${prefix}hello-f-weak${suffix}.c.o hello-f-weak.c ${CFLAGS}
+    run_app "${CC}" -o ${prefix}hello-weak${suffix}${DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
+    test_expect ./${prefix}hello-weak${suffix} "Hello World!"
+
+    # Test weak override.
+    (
+      cd weak-override
+
+      run_app "${CC}" -c main-weak.c -o ${prefix}main-weak${suffix}.c.o ${CFLAGS}
+      run_app "${CC}" -c add2.c -o ${prefix}add2${suffix}.c.o ${CFLAGS}
+      run_app "${CC}" -c dummy.c -o ${prefix}dummy${suffix}.c.o ${CFLAGS}
+      run_app "${CC}" -c expected3.c -o ${prefix}expected3${suffix}.c.o ${CFLAGS}
+
+      run_app "${CC}" ${prefix}main-weak${suffix}.c.o ${prefix}add2${suffix}.c.o ${prefix}dummy${suffix}.c.o ${prefix}expected3${suffix}.c.o -o ${prefix}weak-override${suffix}${DOT_EXE} ${LDFLAGS}
+
+      run_app ./${prefix}weak-override${suffix}
+    )
+
+
     # -------------------------------------------------------------------------
   )
 }
