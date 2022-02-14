@@ -1556,10 +1556,21 @@ function test_clang_one()
     run_app "${CC}" -o ${prefix}hello-weak${suffix}${DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
     test_expect ./${prefix}hello-weak${suffix} "Hello World!"
 
-    run_app "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
-    run_app "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
-    run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
-    test_expect ./${prefix}hello-weak-cpp${suffix} "Hello World!"
+    if [ \( "${TARGET_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
+    then
+      # lld-link: error: duplicate symbol: world()
+      # >>> defined at hello-weak-cpp.cpp
+      # >>>            lto-hello-weak-cpp.cpp.o
+      # >>> defined at hello-f-weak-cpp.cpp
+      # >>>            lto-hello-f-weak-cpp.cpp.o
+      # clang-12: error: linker command failed with exit code 1 (use -v to see invocation)
+      echo "Skip hello-weak-cpp with -flto on Windows."
+    else
+      run_app "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
+      run_app "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
+      run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
+      test_expect ./${prefix}hello-weak-cpp${suffix} "Hello World!"
+    fi
 
     # Test weak override.
     (
