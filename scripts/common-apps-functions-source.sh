@@ -1556,6 +1556,11 @@ function test_clang_one()
     run_app "${CC}" -o ${prefix}hello-weak${suffix}${DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
     test_expect ./${prefix}hello-weak${suffix} "Hello World!"
 
+    run_app "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
+    run_app "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
+    run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
+    test_expect ./${prefix}hello-weak-cpp${suffix} "Hello World!"
+
     # Test weak override.
     (
       cd weak-override
