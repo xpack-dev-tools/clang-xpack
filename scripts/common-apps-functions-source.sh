@@ -1064,7 +1064,7 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    run_verbose cp -v "${helper_folder_path}/tests/c-cpp"/* .
+    run_verbose cp -v -r "${helper_folder_path}/tests/c-cpp"/* .
 
     # -------------------------------------------------------------------------
 
