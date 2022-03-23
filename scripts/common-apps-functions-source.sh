@@ -36,6 +36,8 @@ function build_binutils_ld_gold()
   # 2021-01-24, "2.36"
   # 2021-01-30, "2.35.2"
   # 2021-02-06, "2.36.1"
+  # 2021-07-18, "2.37"
+  # 2022-02-09, "2.38"
 
   local binutils_version="$1"
 
@@ -289,6 +291,7 @@ function build_llvm()
   # 14 Apr 2021, "12.0.0"
   # 9 Jul 2021, "12.0.1"
   # 1 Oct 2021, "13.0.0"
+  # 2 Feb 2022, "13.0.1"
 
   export ACTUAL_LLVM_VERSION="$1"
   local name_suffix=${2-''}
@@ -311,7 +314,7 @@ function build_llvm()
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
-  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch"
+  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch.diff"
   local llvm_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
