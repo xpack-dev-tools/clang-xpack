@@ -228,14 +228,14 @@ On GNU/Linux and macOS systems, use:
 
 ```sh
 .../xpack-clang-13.0.1-1/bin/clang --version
-clang (xPack LLVM clang x86_64) 13.0.1
+xPack x86_64 clang version 13.0.1
 ```
 
 On Windows use:
 
 ```doscon
 ...\xpack-clang-13.0.1-1\bin\clang --version
-clang (xPack LLVM clang x86_64) 13.0.1
+xPack x86_64 clang version 13.0.1
 ```
 
 ## Create a new GitHub pre-release draft
