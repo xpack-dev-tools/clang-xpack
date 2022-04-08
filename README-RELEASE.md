@@ -80,7 +80,7 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-13.0.1.patch`
+- rename `llvm-13.0.1.patch.diff`
 
 ### Update the version specific code
 
