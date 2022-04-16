@@ -32,7 +32,7 @@ does not download it again if available locally.
 To force a new download, remove the local archive:
 
 ```sh
-rm -rf ~/Work/cache/xpack-clang-*
+rm -rf ~/Work/cache/xpack-clang-*-*
 ```
 
 ## Start the GitHub Actions tests

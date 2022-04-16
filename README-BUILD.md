@@ -187,14 +187,14 @@ network connection or a computer entering sleep.
 ```sh
 screen -S clang
 
-sudo rm -rf ~/Work/clang-*
+sudo rm -rf ~/Work/clang-*-*
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
 or, for development builds:
 
 ```sh
-sudo rm -rf ~/Work/clang-*
+sudo rm -rf ~/Work/clang-*-*
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --linux64 --win64
 ```
 
@@ -260,14 +260,14 @@ network connection or a computer entering sleep.
 ```sh
 screen -S clang
 
-sudo rm -rf ~/Work/clang-*
+sudo rm -rf ~/Work/clang-*-*
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --all
 ```
 
 or, for development builds:
 
 ```sh
-sudo rm -rf ~/Work/clang-*
+sudo rm -rf ~/Work/clang-*-*
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --arm64 --arm32
 ```
 
@@ -306,14 +306,14 @@ To build the latest macOS version:
 ```sh
 screen -S clang
 
-rm -rf ~/Work/clang-*
+rm -rf ~/Work/clang-*-*
 caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
 
 or, for development builds:
 
 ```sh
-rm -rf ~/Work/clang-arm-*
+rm -rf ~/Work/clang-arm-*-*
 caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --without-pdf --without-html --disable-tests --macos
 ```
 
