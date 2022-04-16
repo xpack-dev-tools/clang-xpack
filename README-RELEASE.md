@@ -108,13 +108,19 @@ Similarly on the Intel Linux (`xbbli`):
 
 ```sh
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --linux64
+
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --win64
 ```
 
-And on the Arm Linux (`xbbla`):
+... the Arm Linux 64-bit (`xbbla64`):
 
 ```sh
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --arm64
+```
+
+... and on the Arm Linux 32-bit (`xbbla32`):
+
+```sh
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --arm32
 ```
 
@@ -131,13 +137,14 @@ From here it'll be later cloned on the production machines.
 
 ### Run the build scripts
 
-On the macOS machine (`xbbmi`) open ssh sessions to both Linux machines
-(`xbbli` and `xbbla`):
+- on the macOS machine (`xbbmi`) open ssh sessions to the Linux
+machines (`xbbli`, `xbbla64` and `xbbla32`):
 
 ```sh
 caffeinate ssh xbbli
 
-caffeinate ssh xbbla
+caffeinate ssh xbbla64
+caffeinate ssh xbbla32
 ```
 
 Start the runner on all three machines:
