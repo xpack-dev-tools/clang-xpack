@@ -95,7 +95,7 @@ With a git client, go to the helper repo and update to the latest master commit.
 
 ### Development run the build scripts
 
-Before the real build, run a test build on the development machine (`wks`)
+Before the real build, run a test build on the development machine (`wksi`)
 or the production machines (`xbbma`, `xbbmi`):
 
 ```sh
@@ -137,40 +137,57 @@ From here it'll be later cloned on the production machines.
 
 ### Run the build scripts
 
-- on the macOS machine (`xbbmi`) open ssh sessions to the Linux
-machines (`xbbli`, `xbbla64` and `xbbla32`):
+- on the macOS machine (`xbbmi`) open ssh sessions to the build
+machines (`xbbma`, `xbbli`, `xbbla64` and `xbbla32`):
 
 ```sh
+caffeinate ssh xbbma
 caffeinate ssh xbbli
-
 caffeinate ssh xbbla64
 caffeinate ssh xbbla32
 ```
 
-Start the runner on all three machines:
+Start the runner on all machines:
 
 ```sh
-~/actions-runner/run.sh
+~/actions-runners/xpack-dev-tools/run.sh &
 ```
 
 Check that both the project Git and the submodule are pushed to GitHub.
 
 To trigger the GitHub Actions build, use the xPack action:
 
-- `trigger-workflow-build-all`
+- `trigger-workflow-build-xbbli`
+- `trigger-workflow-build-xbbla64`
+- `trigger-workflow-build-xbbla32`
+- `trigger-workflow-build-xbbmi`
+- `trigger-workflow-build-xbbma`
 
 This is equivalent to:
 
 ```sh
-bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh --machine xbbli
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh --machine xbbla64
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh --machine xbbla32
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh --machine xbbmi
+bash ${HOME}/Work/clang-xpack.git/scripts/helper/trigger-workflow-build.sh --machine xbbma
 ```
 
-This script requires the `GITHUB_API_DISPATCH_TOKEN` to be present
-in the environment.
+These scripts require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
+in the environment, and the organization `PUBLISH_TOKEN` to be visible in the
+Settings → Action →
+[Secrets](https://github.com/xpack-dev-tools/clang-xpack/settings/secrets/actions)
+page.
 
 This command uses the `xpack-develop` branch of this repo.
 
-The builds take about 13 hours to complete.
+The builds take about 13 hours to complete:
+
+- `xbbmi`: ? min
+- `xbbma`: ? min
+- `xbbli`: ? min (Windows included)
+- `xbbla64`: ? min
+- `xbbla32`: ? min
 
 The workflow result and logs are available from the
 [Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
@@ -183,6 +200,20 @@ The resulting binaries are available for testing from
 ### CI tests
 
 The automation is provided by GitHub Actions.
+
+On the macOS machine (`xbbmi`) open a ssh sessions to the Arm/Linux
+test machine `xbbla`:
+
+```sh
+caffeinate ssh xbbla
+```
+
+Start both runners (to allow the 32/64-bit tests to run in parallel):
+
+```sh
+~/actions-runners/xpack-dev-tools/1/run.sh &
+~/actions-runners/xpack-dev-tools/2/run.sh &
+```
 
 To trigger the GitHub Actions tests, use the xPack actions:
 
@@ -240,7 +271,7 @@ xPack x86_64 clang version 13.0.1
 
 On Windows use:
 
-```doscon
+```dos
 ...\xpack-clang-13.0.1-1\bin\clang --version
 xPack x86_64 clang version 13.0.1
 ```
@@ -250,6 +281,9 @@ xPack x86_64 clang version 13.0.1
 - in `CHANGELOG.md`, add the release date and a message like _- v13.0.1-1 released_
 - commit and push the `xpack-develop` branch
 - run the xPack action `trigger-workflow-publish-release`
+
+The workflow result and logs are available from the
+[Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
@@ -294,6 +328,19 @@ If any, refer to closed
 Note: at this moment the system should send a notification to all clients
 watching this project.
 
+## Update the README-BUILD listings and examples
+
+- check and possibly update the `ls -l` output
+- check and possibly update the output of the `--version` runs
+- check and possibly update the output of `tree -L 2`
+- commit changes
+
+## Check the list of links
+
+- open the `package.json` file
+- check if the links in the `bin` property cover the actual binaries
+- if necessary, also check on Windows
+
 ## Update package.json binaries
 
 - select the `xpack-develop` branch
@@ -318,7 +365,7 @@ watching this project.
   possibly adjust `.npmignore`
 - `npm version 13.0.1-1.1`; the first 5 numbers are the same as the
   GitHub release; the sixth number is the npm specific version
-- the commits and the tag should have beed pushed by the `postversion` script;
+- the commits and the tag should have been pushed by the `postversion` script;
   if not, push them with `git push origin --tags`
 - `npm publish --tag next` (use `--access public` when publishing for
   the first time)
