@@ -174,7 +174,28 @@ function build_versions()
 
 # -----------------------------------------------------------------------------
 
-  if [[ "${RELEASE_VERSION}" =~ 13\.0\.1-[1] ]]
+  if [[ "${RELEASE_VERSION}" =~ 14\.0\.6-[1] ]]
+  then
+
+    # Also used in -DLLVM_BINUTILS_INCDIR
+    BINUTILS_VERSION="2.38"
+
+    MINGW_VERSION="9.0.0" # "8.0.2"
+
+    ZLIB_VERSION="1.2.11"
+    LIBFFI_VERSION="3.4.2" # "3.3"
+    NCURSES_VERSION="6.3"
+    LIBICONV_VERSION="1.16"
+    XZ_VERSION="5.2.5"
+    LIBXML2_VERSION="2.9.11"
+    LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
+
+    NCURSES_DISABLE_WIDEC="y"
+
+    build_common
+
+    # -------------------------------------------------------------------------
+  elif [[ "${RELEASE_VERSION}" =~ 13\.0\.1-[1] ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR

@@ -119,15 +119,15 @@ For more details please read the
 ### Versioning
 
 The version strings used by the LLVM project are three number strings
-like `13.0.1`; to this string the xPack distribution adds a four number,
+like `14.0.6`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,
-like `13.0.1-1`. When published as a npm package, the version gets
-a fifth number, like `13.0.1-1.1`.
+like `14.0.6-1`. When published as a npm package, the version gets
+a fifth number, like `14.0.6-1.1`.
 
 Since adherence of third party packages to semver is not guaranteed,
-it is recommended to use semver expressions like `^13.0.1` and `~13.0.1`
-with caution, and prefer exact matches, like `13.0.1-1.1`.
+it is recommended to use semver expressions like `^14.0.6` and `~14.0.6`
+with caution, and prefer exact matches, like `14.0.6-1.1`.
 
 ## Maintainer info
 

@@ -8,5 +8,18 @@
   "spellright.language": [
     "en_GB"
   ],
-  "spellright.notificationClass": "warning"
+  "spellright.notificationClass": "warning",
+  "cSpell.ignoreWords": [
+    "caffeinate",
+    "llvmorg",
+    "npmignore",
+    "npmjs",
+    "postversion",
+    "wksi",
+    "xbbla",
+    "xbbli",
+    "xbbma",
+    "xbbmi",
+    "xpack"
+  ]
 }
