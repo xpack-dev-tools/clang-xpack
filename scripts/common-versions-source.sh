@@ -178,16 +178,25 @@ function build_versions()
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    BINUTILS_VERSION="2.38"
+    # https://ftp.gnu.org/gnu/binutils/
+    BINUTILS_VERSION="2.39" # "2.38"
 
-    MINGW_VERSION="9.0.0" # "8.0.2"
+    # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
+    MINGW_VERSION="10.0.0" # "9.0.0" # "8.0.2"
 
-    ZLIB_VERSION="1.2.11"
+    # https://zlib.net/fossils/
+    ZLIB_VERSION="1.2.12" # "1.2.11"
+    # https://github.com/libffi/libffi/releases
     LIBFFI_VERSION="3.4.2" # "3.3"
+    # https://ftp.gnu.org/gnu/ncurses/
     NCURSES_VERSION="6.3"
-    LIBICONV_VERSION="1.16"
-    XZ_VERSION="5.2.5"
-    LIBXML2_VERSION="2.9.11"
+    # https://ftp.gnu.org/pub/gnu/libiconv/
+    LIBICONV_VERSION="1.17" # "1.16"
+    # https://sourceforge.net/projects/lzmautils/files/
+    XZ_VERSION="5.2.6" # "5.2.5"
+    # https://download.gnome.org/sources/libxml2/
+    LIBXML2_VERSION="2.10.0" # "2.9.11"
+    # https://www.thrysoee.dk/editline/
     LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
 
     NCURSES_DISABLE_WIDEC="y"

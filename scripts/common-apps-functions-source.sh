@@ -38,6 +38,7 @@ function build_binutils_ld_gold()
   # 2021-02-06, "2.36.1"
   # 2021-07-18, "2.37"
   # 2022-02-09, "2.38"
+  # 2022-08-05, "2.39"
 
   local binutils_version="$1"
 
@@ -292,6 +293,7 @@ function build_llvm()
   # 9 Jul 2021, "12.0.1"
   # 1 Oct 2021, "13.0.0"
   # 2 Feb 2022, "13.0.1"
+  # 25 Jun 2022, "14.0.6"
 
   export ACTUAL_LLVM_VERSION="$1"
   local name_suffix=${2-''}
