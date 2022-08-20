@@ -39,7 +39,7 @@ to use the LLVM clang binaries. For full details please read the
 
 ### Supported languages
 
-The xPack LLVM clang binaries include suport for C/C++ and the LLVM utilities.
+The xPack LLVM clang binaries include support for C/C++ and the LLVM utilities.
 
 ### Easy install
 
@@ -133,7 +133,7 @@ with caution, and prefer exact matches, like `14.0.6-1.1`.
 
 - [How to build](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-BUILD.md)
 - [How to make new releases](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-RELEASE.md)
-- [How to deveop](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-DEVELOP.md)
+- [How to develop](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-DEVELOP.md)
 
 ## Support
 
