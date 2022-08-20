@@ -398,6 +398,8 @@ function build_llvm()
 
           export CC=clang
           export CXX=clang++
+          # clang: error: unsupported option '-static-libgcc'
+          LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
           export CC="${APP_PREFIX}${BOOTSTRAP_SUFFIX}/bin/${CROSS_COMPILE_PREFIX}-clang"
