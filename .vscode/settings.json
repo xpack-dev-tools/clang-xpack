@@ -10,16 +10,26 @@
   ],
   "spellright.notificationClass": "warning",
   "cSpell.ignoreWords": [
+    "Ionescu",
+    "Liviu",
+    "Somsubhra",
+    "aarch",
+    "armhf",
     "caffeinate",
+    "cleanall",
+    "cleanlibs",
+    "ilegeul",
     "llvmorg",
     "npmignore",
     "npmjs",
+    "posix",
     "postversion",
     "wksi",
     "xbbla",
     "xbbli",
     "xbbma",
     "xbbmi",
-    "xpack"
+    "xpack",
+    "xpacks"
   ]
 }
