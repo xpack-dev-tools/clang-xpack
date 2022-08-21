@@ -38,32 +38,32 @@
     "minimumXpmRequired": "0.10.2",
     "binaries": {
       "destination": "./.content",
-      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v13.0.1-1",
+      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v14.0.6-1",
       "skip": 1,
       "platforms": {
         "darwin-arm64": {
-          "fileName": "xpack-clang-13.0.1-1-darwin-arm64.tar.gz",
-          "sha256": "f22c74222f536b69f1315a1d1774077faf2cfb506a04fe0d39ceee5a7e748cda"
+          "fileName": "xpack-clang-14.0.6-1-darwin-arm64.tar.gz",
+          "sha256": "6549d53975baef14d5ad859dc3684294cd58dc7100ec340e1672d89fd21d672e"
         },
         "darwin-x64": {
-          "fileName": "xpack-clang-13.0.1-1-darwin-x64.tar.gz",
-          "sha256": "95a3324a8beea2c22b206f1de4832a4c2eccb10b005a19e3ef0201447cd6ad3e"
+          "fileName": "xpack-clang-14.0.6-1-darwin-x64.tar.gz",
+          "sha256": "dac37350fdc16472979dc3a7c7da0f371057b984414466c6fa50c07f3fe51aef"
         },
         "linux-arm64": {
-          "fileName": "xpack-clang-13.0.1-1-linux-arm64.tar.gz",
-          "sha256": "01d694decc6e3603b6675c4e55a18dfe833babe364151f087823e578f8dd8d83"
+          "fileName": "xpack-clang-14.0.6-1-linux-arm64.tar.gz",
+          "sha256": "b9a56eca928254c8035ecede9f73802e2a804554d15796699016adb959e275be"
         },
         "linux-arm": {
-          "fileName": "xpack-clang-13.0.1-1-linux-arm.tar.gz",
-          "sha256": "9680d353e68ac5195b386c905c561403404a714432e225b9774a54ff04223127"
+          "fileName": "xpack-clang-14.0.6-1-linux-arm.tar.gz",
+          "sha256": "233214194d9db548c4652454781dace86817d39c6800d48b329c41f3512a0686"
         },
         "linux-x64": {
-          "fileName": "xpack-clang-13.0.1-1-linux-x64.tar.gz",
-          "sha256": "36ed757719f3de422eee0d44a2e43d01cdc710783ea77d8c54a11cc6ca353e7e"
+          "fileName": "xpack-clang-14.0.6-1-linux-x64.tar.gz",
+          "sha256": "3c002f31d3f9d4cd0fd17b9cac3a8703b7408a74c5efac90a0b14b51b71da716"
         },
         "win32-x64": {
-          "fileName": "xpack-clang-13.0.1-1-win32-x64.zip",
-          "sha256": "7dfb1102eb981139684adcb3ba4396dcb6e3c6450f7ce9a90a556f6871c58ef0"
+          "fileName": "xpack-clang-14.0.6-1-win32-x64.zip",
+          "sha256": "2f7810861d12c1dfa13f29ff9a898882b269b9ee54b18fc5c272b4e44c6c6f4c"
         }
       }
     },
