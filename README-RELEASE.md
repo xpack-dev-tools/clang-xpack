@@ -436,4 +436,4 @@ Run the xPack action `trigger-workflow-deep-clean`, this
 will remove the build folders on all supported platforms.
 
 The tests results are available from the
-[Actions](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/actions/) page.
+[Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
