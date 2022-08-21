@@ -206,13 +206,11 @@ archives and their SHA signatures, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-*/deploy
-total 247864
--rw-rw-rw- 1 ilg ilg 56023096 May 17 12:57 xpack-clang-14.0.6-1-linux-x64.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 12:57 xpack-clang-14.0.6-1-linux-x64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 67975780 May 17 13:23 xpack-clang-14.0.6-1-win32-ia32.zip
--rw-rw-rw- 1 ilg ilg       99 May 17 13:23 xpack-clang-14.0.6-1-win32-ia32.zip.sha
--rw-rw-rw- 1 ilg ilg 72906421 May 17 13:06 xpack-clang-14.0.6-1-win32-x64.zip
--rw-rw-rw- 1 ilg ilg       98 May 17 13:06 xpack-clang-14.0.6-1-win32-x64.zip.sha
+total 390380
+-rw-rw-rw- 1 ilg ilg 101828916 Aug 20 13:42 xpack-clang-14.0.6-1-linux-x64.tar.gz
+-rw-rw-rw- 1 ilg ilg       104 Aug 20 13:42 xpack-clang-14.0.6-1-linux-x64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 297910243 Aug 20 15:32 xpack-clang-14.0.6-1-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       101 Aug 20 15:32 xpack-clang-14.0.6-1-win32-x64.zip.sha
 ```
 
 ### Build the Arm GNU/Linux binaries
@@ -280,11 +278,16 @@ archives and their SHA signatures, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-*/deploy
-total 93168
--rw-rw-rw- 1 ilg ilg 48777570 May 17 10:38 xpack-clang-14.0.6-1-linux-arm64.tar.gz
--rw-rw-rw- 1 ilg ilg      103 May 17 10:38 xpack-clang-14.0.6-1-linux-arm64.tar.gz.sha
--rw-rw-rw- 1 ilg ilg 46615122 May 17 11:15 xpack-clang-14.0.6-1-linux-arm.tar.gz
--rw-rw-rw- 1 ilg ilg      101 May 17 11:15 xpack-clang-14.0.6-1-linux-arm.tar.gz.sha
+total 91980
+-rw-rw-rw- 1 root root 94181557 Aug 21 05:04 xpack-clang-14.0.6-1-linux-arm64.tar.gz
+-rw-rw-rw- 1 root root      106 Aug 21 05:04 xpack-clang-14.0.6-1-linux-arm64.tar.gz.sha
+```
+
+```console
+$ ls -l ~/Work/clang-*/deploy
+total 87700
+-rw-rw-rw- 1 ilg ilg 89795445 Aug 20 20:16 xpack-clang-14.0.6-1-linux-arm.tar.gz
+-rw-rw-rw- 1 ilg ilg      104 Aug 20 20:16 xpack-clang-14.0.6-1-linux-arm.tar.gz.sha
 ```
 
 ### Build the macOS binaries
@@ -326,9 +329,16 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-*/deploy
-total 163376
--rw-r--r--  1 ilg  staff  83643088 May 17 13:19 xpack-clang-14.0.6-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       102 May 17 13:19 xpack-clang-14.0.6-1-darwin-x64.tar.gz.sha
+total 262920
+-rw-r--r--  1 ilg  staff  132413536 Aug 20 13:48 xpack-clang-14.0.6-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Aug 20 13:48 xpack-clang-14.0.6-1-darwin-x64.tar.gz.sha
+```
+
+```console
+$ ls -l ~/Work/clang-*/deploy
+total 230408
+-rw-r--r--  1 ilg  staff  110761767 Aug 20 12:48 xpack-clang-14.0.6-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff        107 Aug 20 12:48 xpack-clang-14.0.6-1-darwin-arm64.tar.gz.sha
 ```
 
 ## Subsequent runs
@@ -428,18 +438,22 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-1.1/.conten
 /Users/ilg/Library/xPacks/@xpack-dev-tools/clang/14.0.6-1.1/.content/
 ├── README.md
 ├── bin
-│   ├── clang -> clang-13
+│   ├── analyze-build
+│   ├── clang -> clang-14
 │   ├── clang++ -> clang
-│   ├── clang-13
+│   ├── clang-14
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
 │   ├── clang-doc
 │   ├── clang-format
+│   ├── clang-linker-wrapper
+│   ├── clang-nvlink-wrapper
 │   ├── clang-offload-bundler
 │   ├── clang-offload-wrapper
 │   ├── clang-refactor
 │   ├── clang-rename
+│   ├── clang-repl
 │   ├── clang-scan-deps
 │   ├── clang-tidy
 │   ├── clangd
@@ -448,9 +462,9 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-1.1/.conten
 │   ├── diagtool
 │   ├── git-clang-format
 │   ├── hmaptool
+│   ├── intercept-build
 │   ├── ld.lld -> lld
 │   ├── ld64.lld -> lld
-│   ├── ld64.lld.darwinnew -> lld
 │   ├── lld
 │   ├── lld-link -> lld
 │   ├── lldb
@@ -467,6 +481,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-1.1/.conten
 │   ├── llvm-cxxdump
 │   ├── llvm-cxxfilt
 │   ├── llvm-cxxmap
+│   ├── llvm-debuginfod-find
 │   ├── llvm-diff
 │   ├── llvm-dis
 │   ├── llvm-dlltool -> llvm-ar
@@ -475,16 +490,23 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-1.1/.conten
 │   ├── llvm-nm
 │   ├── llvm-objcopy
 │   ├── llvm-objdump
+│   ├── llvm-otool -> llvm-objdump
 │   ├── llvm-profdata
 │   ├── llvm-ranlib -> llvm-ar
 │   ├── llvm-rc
 │   ├── llvm-readelf -> llvm-readobj
 │   ├── llvm-readobj
+│   ├── llvm-sim
 │   ├── llvm-size
 │   ├── llvm-strings
 │   ├── llvm-strip -> llvm-objcopy
 │   ├── llvm-symbolizer
+│   ├── llvm-tapi-diff
 │   ├── llvm-tblgen
+│   ├── llvm-tli-checker
+│   ├── llvm-windres -> llvm-rc
+│   ├── run-clang-tidy
+│   ├── scan-build-py
 │   ├── set-xcode-analyzer
 │   ├── split-file
 │   └── wasm-ld -> lld
@@ -503,29 +525,38 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-1.1/.conten
 │   ├── libRemarks.dylib
 │   ├── libclang-cpp.dylib
 │   ├── libclang.dylib
+│   ├── libear
 │   ├── liblldb.14.0.6.dylib
-│   └── liblldb.dylib -> liblldb.14.0.6.dylib
+│   ├── liblldb.dylib -> liblldb.14.0.6.dylib
+│   └── libscanbuild
 ├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
 │   ├── c++-analyzer
 │   ├── ccc-analyzer
+│   ├── intercept-c++
+│   ├── intercept-cc
+│   ├── libLLVM.dylib
+│   ├── libclang-cpp.dylib
 │   ├── libedit.0.dylib
 │   ├── libffi.8.dylib
 │   ├── libform.6.dylib
 │   ├── libgcc_s.1.dylib
 │   ├── libiconv.2.dylib
+│   ├── liblldb.14.0.6.dylib
 │   ├── liblzma.5.dylib
 │   ├── libncurses.6.dylib
 │   ├── libpanel.6.dylib
 │   ├── libxml2.2.dylib
-│   ├── libz.1.2.11.dylib
-│   └── libz.1.dylib -> libz.1.2.11.dylib
+│   ├── libz.1.2.12.dylib
+│   └── libz.1.dylib -> libz.1.2.12.dylib
 └── share
     ├── clang
     ├── opt-viewer
     ├── scan-build
     └── scan-view
 
-15 directories, 83 files
+17 directories, 102 files
 ```
 
 No other files are installed in any system folders or other locations.
