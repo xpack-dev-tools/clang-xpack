@@ -122,12 +122,12 @@ The version strings used by the LLVM project are three number strings
 like `14.0.6`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,
-like `14.0.6-1`. When published as a npm package, the version gets
-a fifth number, like `14.0.6-1.1`.
+like `14.0.6-2`. When published as a npm package, the version gets
+a fifth number, like `14.0.6-2.1`.
 
 Since adherence of third party packages to semver is not guaranteed,
 it is recommended to use semver expressions like `^14.0.6` and `~14.0.6`
-with caution, and prefer exact matches, like `14.0.6-1.1`.
+with caution, and prefer exact matches, like `14.0.6-2.1`.
 
 ## Maintainer info
 
