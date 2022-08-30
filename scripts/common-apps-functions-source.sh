@@ -271,6 +271,8 @@ function test_binutils_ld_gold()
 
 # -----------------------------------------------------------------------------
 
+# LLVM_PATCH_FILE_NAME
+
 function build_llvm()
 {
   # https://llvm.org
@@ -316,7 +318,6 @@ function build_llvm()
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
-  local llvm_patch_file_name="llvm-${ACTUAL_LLVM_VERSION}.patch.diff"
   local llvm_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
@@ -324,7 +325,7 @@ function build_llvm()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${llvm_url}" "${llvm_archive}" \
-      "${llvm_src_folder_name}" "${llvm_patch_file_name}"
+      "${llvm_src_folder_name}" "${LLVM_PATCH_FILE_NAME}"
 
     # Disable the use of libxar.
     run_verbose sed -i.bak \

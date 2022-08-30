@@ -1,5 +1,10 @@
 # Patches
 
+## llvm-14.0.6-2
+
+In addition, patch the clangd bug
+[1072](https://github.com/clangd/clangd/issues/1072).
+
 ## llvm-12.0.1
 
 This patch adds `/Library/Developer/CommandLineTools/usr/include/c++/v1`

@@ -169,13 +169,19 @@ function build_versions()
   fi
 
   LLVM_VERSION="$(echo "${RELEASE_VERSION}" | sed -e 's|-.*||')"
+  LLVM_PATCH_FILE_NAME="llvm-${LLVM_VERSION}.patch.diff"
 
   export BOOTSTRAP_SUFFIX="-bootstrap"
 
 # -----------------------------------------------------------------------------
 
-  if [[ "${RELEASE_VERSION}" =~ 14\.0\.6-[1] ]]
+  if [[ "${RELEASE_VERSION}" =~ 14\.0\.6-[12] ]]
   then
+
+    if [ "${RELEASE_VERSION}" == "14.0.6-2" ]
+    then
+      LLVM_PATCH_FILE_NAME="llvm-14.0.6-2.patch.diff"
+    fi
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
