@@ -280,7 +280,9 @@ xPack x86_64 clang version 14.0.6
 ## Create a new GitHub pre-release draft
 
 - in `CHANGELOG.md`, add the release date and a message like _- v14.0.6-2 released_
-- commit and push the `xpack-develop` branch
+- commit with _CHANGELOG update_
+- check and possibly update the `templates/body-github-release-liquid.md`
+- push the `xpack-develop` branch
 - run the xPack action `trigger-workflow-publish-release`
 
 The workflow result and logs are available from the
@@ -297,7 +299,8 @@ with all binaries attached.
 
 ## Prepare a new blog post
 
-Run the xPack action `generate-jekyll-post`; this will leave a file
+- check and possibly update the `templates/body-jekyll-release-*-liquid.md`
+- run the xPack action `generate-jekyll-post`; this will leave a file
 on the Desktop.
 
 In the `xpack/web-jekyll` GitHub repo:
