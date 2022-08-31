@@ -8,7 +8,7 @@ the latest upstream master."
 
 summary: "Version **{{ RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
-version: {{ RELEASE_VERSION }}
+version: "{{ RELEASE_VERSION }}"
 clang_version: "14.0.6"
 clang_date: "25 Jun 2022"
 npm_subversion: 1
