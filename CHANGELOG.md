@@ -4,6 +4,7 @@ Entries in this file are in reverse chronological order.
 
 ## 2022-08-31
 
+- v14.0.6-2.1 published on npmjs.com
 - v14.0.6-2 released
 
 ## 2022-08-30
