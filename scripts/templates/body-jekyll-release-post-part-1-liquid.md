@@ -9,6 +9,8 @@ the latest upstream master."
 summary: "Version **{{ RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
 version: {{ RELEASE_VERSION }}
+clang_version: "14.0.6"
+clang_date: "25 Jun 2022"
 npm_subversion: 1
 download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ RELEASE_VERSION }}/
 
@@ -118,7 +120,7 @@ The xPack LLVM clang generally follows the official
 
 The current version is based on:
 
-- LLVM clang version [12.0.1](https://releases.llvm.org/download.html#12.0.1), from July 8th, 2021.
+- LLVM clang version [{% raw %}{{ page.clang_version }}{% endraw %}](https://releases.llvm.org/download.html#{% raw %}{{ page.clang_version }}{% endraw %}), from {% raw %}{{ page.clang_date }}{% endraw %}.
 
 ## Changes
 
