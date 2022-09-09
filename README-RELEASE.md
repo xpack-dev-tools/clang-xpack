@@ -10,6 +10,26 @@ get the latest release after a new major release is published.
 
 Before starting the build, perform some checks and tweaks.
 
+### Download the build scripts
+
+The build scripts are available in the `scripts` folder of the
+[`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack)
+Git repo.
+
+To download them on a new machine, clone the `xpack-develop` branch:
+
+```sh
+rm -rf ${HOME}/Work/clang-xpack.git; \
+git clone \
+  --branch xpack-develop \
+  https://github.com/xpack-dev-tools/clang-xpack.git \
+  ${HOME}/Work/clang-xpack.git; \
+git -C ${HOME}/Work/clang-xpack.git submodule update --init --recursive
+```
+
+> Note: the repository uses submodules; for a successful build it is
+> mandatory to recurse the submodules.
+
 ### Check Git
 
 In the `xpack-dev-tools/clang-xpack` Git repo:
@@ -18,6 +38,10 @@ In the `xpack-dev-tools/clang-xpack` Git repo:
 - if needed, merge the `xpack` branch
 
 No need to add a tag here, it'll be added when the release is created.
+
+### Update helper
+
+With a git client, go to the helper repo and update to the latest master commit.
 
 ### Check the latest upstream release
 
@@ -88,10 +112,6 @@ Note: currently the patch is required to fix the CLT library path.
 - open the `common-versions-source.sh` file
 - add a new `if` with the new version before the existing code
 
-### Update helper
-
-With a git client, go to the helper repo and update to the latest master commit.
-
 ## Build
 
 ### Development run the build scripts
@@ -100,7 +120,7 @@ Before the real build, run a test build on the development machine (`wksi`)
 or the production machines (`xbbma`, `xbbmi`):
 
 ```sh
-sudo rm -rf ~/Work/clang-*-*
+rm -rf ~/Work/clang-*-*
 
 caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --macos
 ```
@@ -108,6 +128,8 @@ caffeinate bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop -
 Similarly on the Intel Linux (`xbbli`):
 
 ```sh
+sudo rm -rf ~/Work/clang-*-*
+
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --linux64
 
 bash ${HOME}/Work/clang-xpack.git/scripts/helper/build.sh --develop --win64
@@ -182,7 +204,7 @@ page.
 
 This command uses the `xpack-develop` branch of this repo.
 
-The builds take about 13 hours to complete:
+The builds take about 10 hours to complete:
 
 - `xbbmi`: 1h22 (vm)
 - `xbbma`: 31m

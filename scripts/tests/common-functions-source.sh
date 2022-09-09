@@ -54,8 +54,8 @@ function update_image()
     run_verbose yum install -y -q gcc-c++ glibc-devel libstdc++-devel
   elif [[ ${image_name} == *suse* ]]
   then
-    run_verbose zypper -q in -y git-core curl tar gzip lsb-release binutils findutils util-linux
-    run_verbose zypper -q in -y gcc-c++ glibc-devel libstdc++6 glibc-static
+    run_verbose zypper -q --no-gpg-checks in -y git-core curl tar gzip lsb-release binutils findutils util-linux
+    run_verbose zypper -q --no-gpg-checks in -y gcc-c++ glibc-devel libstdc++6 glibc-static
   elif [[ ${image_name} == *manjaro* ]]
   then
     # run_verbose pacman-mirrors -g
