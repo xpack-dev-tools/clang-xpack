@@ -1337,6 +1337,11 @@ function test_llvm()
     )
     # -------------------------------------------------------------------------
 
+    (
+      run_app ${TEST_BIN_PATH}/clangd --check=hello-cpp.cpp
+      run_app ${TEST_BIN_PATH}/clangd --check=unchecked-exception.cpp
+    )
+
   )
 
   echo
