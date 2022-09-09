@@ -1337,7 +1337,9 @@ function test_llvm()
     )
     # -------------------------------------------------------------------------
 
-    (
+    # On Windows there is no clangd.exe. (Why?)
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
       run_app ${TEST_BIN_PATH}/clangd --check=hello-cpp.cpp
       cat <<'__EOF__' > ${tmp}/unchecked-exception.cpp
 // repro for clangd crash from github.com/clangd/clangd issue #1072
@@ -1349,7 +1351,7 @@ int main() {
 }
 __EOF__
       run_app ${TEST_BIN_PATH}/clangd --check=${tmp}/unchecked-exception.cpp
-    )
+    fi
 
   )
 
