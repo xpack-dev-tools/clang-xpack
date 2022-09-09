@@ -1339,15 +1339,15 @@ function test_llvm()
 
     (
       run_app ${TEST_BIN_PATH}/clangd --check=hello-cpp.cpp
-      cat <<-EOTESTFILE > ${tmp}/unchecked-exception.cpp
-      // repro for clangd crash from github.com/clangd/clangd issue #1072
-        #include <exception>
-        int main() {
-            std::exception_ptr foo;
-            try {} catch (...) { }
-            return 0;
-        }
-EOTESTFILE
+      cat <<'__EOF__' > ${tmp}/unchecked-exception.cpp
+// repro for clangd crash from github.com/clangd/clangd issue #1072
+#include <exception>
+int main() {
+    std::exception_ptr foo;
+    try {} catch (...) { }
+    return 0;
+}
+__EOF__
       run_app ${TEST_BIN_PATH}/clangd --check=${tmp}/unchecked-exception.cpp
     )
 
