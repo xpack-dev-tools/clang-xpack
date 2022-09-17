@@ -283,7 +283,10 @@ function build_llvm()
   # https://github.com/llvm/llvm-project/releases/tag/llvmorg-11.1.0/
   # https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-project-11.1.0.src.tar.xz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/llvm/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/llvm.rb
 
   # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
   # https://llvm.org/docs/BuildingADistribution.html
