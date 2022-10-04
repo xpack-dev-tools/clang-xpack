@@ -1226,7 +1226,7 @@ function test_llvm()
 
     run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
 
-    test_expect "static-adder" "42" 40 2
+    test_expect "42" "static-adder" 40 2
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1240,12 +1240,12 @@ function test_llvm()
     (
       LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
       export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-      test_expect "shared-adder" "42" 40 2
+      test_expect "42" "shared-adder" 40 2
     )
 
     run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
 
-    test_expect "rt-static-adder" "42" 40 2
+    test_expect "42" "rt-static-adder" 40 2
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -1259,7 +1259,7 @@ function test_llvm()
     (
       LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
       export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-      test_expect "rt-shared-adder" "42" 40 2
+      test_expect "42" "rt-shared-adder" 40 2
     )
 
     # -------------------------------------------------------------------------
@@ -1483,23 +1483,23 @@ function test_clang_one()
 
     # Test C compile and link in a single step.
     run_app "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${DOT_EXE} ${LDFLAGS}
-    test_expect "${prefix}simple-hello-c-one${suffix}" "Hello"
+    test_expect "Hello" "${prefix}simple-hello-c-one${suffix}"
 
     # Test C compile and link in separate steps.
     run_app "${CC}" -c simple-hello.c -o simple-hello.c.o ${CFLAGS}
     run_app "${CC}" simple-hello.c.o -o ${prefix}simple-hello-c-two${suffix}${DOT_EXE} ${LDFLAGS}
-    test_expect "${prefix}simple-hello-c-two${suffix}" "Hello"
+    test_expect "Hello" "${prefix}simple-hello-c-two${suffix}"
 
     # -------------------------------------------------------------------------
 
     # Test C++ compile and link in a single step.
     run_app "${CXX}" simple-hello.cpp -o ${prefix}simple-hello-cpp-one${suffix}${DOT_EXE} ${LDXXFLAGS}
-    test_expect "${prefix}simple-hello-cpp-one${suffix}" "Hello"
+    test_expect "Hello" "${prefix}simple-hello-cpp-one${suffix}"
 
     # Test C++ compile and link in separate steps.
     run_app "${CXX}" -c simple-hello.cpp -o ${prefix}simple-hello${suffix}.cpp.o ${CXXFLAGS}
     run_app "${CXX}" ${prefix}simple-hello${suffix}.cpp.o -o ${prefix}simple-hello-cpp-two${suffix}${DOT_EXE} ${LDXXFLAGS}
-    test_expect "${prefix}simple-hello-cpp-two${suffix}" "Hello"
+    test_expect "Hello" "${prefix}simple-hello-cpp-two${suffix}"
 
     # -------------------------------------------------------------------------
 
@@ -1509,24 +1509,24 @@ function test_clang_one()
       # On Linux it works only with the full LLVM runtime and lld
 
       run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld -v
-      test_expect "${prefix}simple-exception${suffix}" "MyException"
+      test_expect "MyException" "${prefix}simple-exception${suffix}"
 
       run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      test_expect "${prefix}simple-str-exception${suffix}" "MyStringException"
+      test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
 
       run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      test_expect "${prefix}simple-int-exception${suffix}" "42"
+      test_expect "42" "${prefix}simple-int-exception${suffix}"
 
     else
 
       run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
-      test_expect "${prefix}simple-exception${suffix}" "MyException"
+      test_expect "MyException" "${prefix}simple-exception${suffix}"
 
       run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
-      test_expect "${prefix}simple-str-exception${suffix}" "MyStringException"
+      test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
 
       run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${DOT_EXE} ${LDXXFLAGS}
-      test_expect "${prefix}simple-int-exception${suffix}" "42"
+      test_expect "42" "${prefix}simple-int-exception${suffix}"
 
     fi
 
@@ -1581,7 +1581,7 @@ function test_clang_one()
     run_app "${CC}" -c -o ${prefix}hello-weak${suffix}.c.o hello-weak.c ${CFLAGS}
     run_app "${CC}" -c -o ${prefix}hello-f-weak${suffix}.c.o hello-f-weak.c ${CFLAGS}
     run_app "${CC}" -o ${prefix}hello-weak${suffix}${DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
-    test_expect ./${prefix}hello-weak${suffix} "Hello World!"
+    test_expect "Hello World!" ./${prefix}hello-weak${suffix}
 
     if [ \( "${TARGET_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
     then
@@ -1596,7 +1596,7 @@ function test_clang_one()
       run_app "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
       run_app "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
       run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
-      test_expect ./${prefix}hello-weak-cpp${suffix} "Hello World!"
+      test_expect "Hello World!" ./${prefix}hello-weak-cpp${suffix}
     fi
 
     # Test weak override.
