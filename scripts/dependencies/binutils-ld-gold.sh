@@ -186,7 +186,7 @@ function build_binutils_ld_gold()
         # Build.
         run_verbose make -j ${XBB_JOBS} all-gold
 
-        if [ "${WITH_TESTS}" == "y" ]
+        if [ "${XBB_WITH_TESTS}" == "y" ]
         then
           # gcctestdir/collect-ld: relocation error: gcctestdir/collect-ld: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
           : # make maybe-check-gold
