@@ -18,13 +18,13 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 export PATH="$DIR":"$PATH"
 
 BASENAME="$(basename "$0")"
-TARGET="${BASENAME%-*}"
+XBB_TARGET="${BASENAME%-*}"
 DEFAULT_TARGET=x86_64-w64-mingw32
-if [ "$TARGET" = "$BASENAME" ]; then
-    TARGET=$DEFAULT_TARGET
+if [ "$XBB_TARGET" = "$BASENAME" ]; then
+    XBB_TARGET=$DEFAULT_TARGET
 fi
-ARCH="${TARGET%%-*}"
-TARGET_OS="${TARGET##*-}"
+ARCH="${XBB_TARGET%%-*}"
+TARGET_OS="${XBB_TARGET##*-}"
 case $ARCH in
 i686)    M=i386pe   ;;
 x86_64)  M=i386pep  ;;

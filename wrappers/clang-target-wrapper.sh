@@ -16,14 +16,14 @@
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 BASENAME="$(basename "$0")"
-TARGET="${BASENAME%-*}"
+XBB_TARGET="${BASENAME%-*}"
 EXE="${BASENAME##*-}"
 DEFAULT_TARGET=x86_64-w64-mingw32
-if [ "$TARGET" = "$BASENAME" ]; then
-    TARGET=$DEFAULT_TARGET
+if [ "$XBB_TARGET" = "$BASENAME" ]; then
+    XBB_TARGET=$DEFAULT_TARGET
 fi
-ARCH="${TARGET%%-*}"
-TARGET_OS="${TARGET##*-}"
+ARCH="${XBB_TARGET%%-*}"
+TARGET_OS="${XBB_TARGET##*-}"
 
 # Check if trying to compile Ada; if we try to do this, invoking clang
 # would end up invoking <triplet>-gcc with the same arguments, which ends
@@ -82,7 +82,7 @@ mingw32uwp)
     ;;
 esac
 
-FLAGS="$FLAGS -target $TARGET"
+FLAGS="$FLAGS -target $XBB_TARGET"
 FLAGS="$FLAGS -rtlib=compiler-rt"
 FLAGS="$FLAGS -stdlib=libc++"
 FLAGS="$FLAGS -fuse-ld=lld"

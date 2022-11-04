@@ -37,7 +37,7 @@ Entries in this file are in reverse chronological order.
 ## 2022-02-06
 
 - v12.0.1-2 prepared again
-- NCURSES_DISABLE_WIDEC="y"
+- XBB_NCURSES_DISABLE_WIDEC="y"
 - update for new helper
 
 ## 2021-11-21

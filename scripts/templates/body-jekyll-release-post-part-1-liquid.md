@@ -1,18 +1,18 @@
 ---
-title:  xPack LLVM clang v{{ RELEASE_VERSION }} released
+title:  xPack LLVM clang v{{ XBB_RELEASE_VERSION }} released
 
 TODO: select one summary
 
-summary: "Version **{{ RELEASE_VERSION }}** is a maintenance release; it updates to
+summary: "Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it updates to
 the latest upstream master."
 
-summary: "Version **{{ RELEASE_VERSION }}** is a new release; it follows the upstream release."
+summary: "Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
-version: "{{ RELEASE_VERSION }}"
+version: "{{ XBB_RELEASE_VERSION }}"
 clang_version: "14.0.6"
 clang_date: "25 Jun 2022"
 npm_subversion: 1
-download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ RELEASE_VERSION }}/
+download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ XBB_RELEASE_VERSION }}/
 
 date:   {{ RELEASE_DATE }}
 
@@ -99,7 +99,7 @@ xpm install --global @xpack-dev-tools/clang@latest
 
 ### Uninstall
 
-To remove the links from the current project:
+To remove the links created by xpm in the current project:
 
 ```sh
 cd my-project

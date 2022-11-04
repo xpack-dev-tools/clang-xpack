@@ -7,10 +7,21 @@
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build
-# scripts. As the name implies, it should contain only functions and
-# should be included with 'source' by the container build scripts.
-
 # -----------------------------------------------------------------------------
+
+function tests_run_all()
+{
+  local test_bin_path="$1"
+
+  # GCC_VERSION="$(echo "${XBB_RELEASE_VERSION}" | sed -e 's|-.*||')"
+
+  # Call the functions defined in the build code.
+  test_llvm "${test_bin_path}"
+
+  if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+  then
+    test_binutils_ld_gold "${test_bin_path}"
+  fi
+}
 
 # -----------------------------------------------------------------------------
