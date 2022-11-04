@@ -112,7 +112,7 @@ function build_binutils_ld_gold()
           config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
           config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
 
-          config_options+=("--build=${BUILD}")
+          config_options+=("--build=${XBB_BUILD}")
           config_options+=("--host=${XBB_HOST}")
           config_options+=("--target=${XBB_TARGET}")
 
@@ -197,7 +197,7 @@ function build_binutils_ld_gold()
         run_verbose make maybe-install-gold
 
         # Remove the separate folder, the xPack distribution is single target.
-        rm -rf "${XBB_BINARIES_INSTALL_FOLDER_PATH}/${BUILD}"
+        rm -rf "${XBB_BINARIES_INSTALL_FOLDER_PATH}/${XBB_BUILD}"
 
         if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
         then
