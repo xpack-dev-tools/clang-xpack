@@ -221,30 +221,19 @@ function build_binutils_ld_gold()
     echo "Component binutils ld.gold already installed."
   fi
 
-  tests_add "test_binutils_ld_gold"
+  tests_add "test_binutils_ld_gold" "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_binutils_ld_gold()
 {
-  (
-    if [ -d "xpacks/.bin" ]
-    then
-      TEST_BIN_PATH="$(pwd)/xpacks/.bin"
-    elif [ -d "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin" ]
-    then
-      TEST_BIN_PATH="${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin"
-    else
-      echo "Wrong folder."
-      exit 1
-    fi
+  local test_bin_path="$1"
 
-    show_libs "${TEST_BIN_PATH}/ld.gold"
+  show_libs "${test_bin_path}/ld.gold"
 
-    echo
-    echo "Testing if binutils ld.gold starts properly..."
+  echo
+  echo "Testing if binutils ld.gold starts properly..."
 
-    run_app "${TEST_BIN_PATH}/ld.gold" --version
-  )
+  run_app "${test_bin_path}/ld.gold" --version
 
   echo
   echo "Local binutils ld.gold tests completed successfuly."
