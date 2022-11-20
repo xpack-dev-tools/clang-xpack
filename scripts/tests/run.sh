@@ -18,7 +18,7 @@ function tests_run_all()
   # Call the functions defined in the build code.
   test_llvm "${test_bin_path}"
 
-  if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+  if [ "${XBB_HOST_PLATFORM}" == "linux" ]
   then
     test_binutils_ld_gold "${test_bin_path}"
   fi
