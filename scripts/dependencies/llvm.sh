@@ -1356,7 +1356,7 @@ function build_llvm_compiler_rt()
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
-  local llvm_compiler_rt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
+  local llvm_compiler_rt_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_compiler_rt_folder_name}-installed"
   if [ ! -f "${llvm_compiler_rt_stamp_file_path}" ]
   then
     (
@@ -1485,7 +1485,7 @@ function build_llvm_libcxx()
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
 
-  local llvm_libunwind_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
+  local llvm_libunwind_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
   if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
   then
     (
@@ -1582,7 +1582,7 @@ function build_llvm_libcxx()
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
-  local llvm_libcxx_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
+  local llvm_libcxx_headers_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
   if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
   then
     (
@@ -1679,7 +1679,7 @@ function build_llvm_libcxx()
     echo "Component llvm-libcxx-headers${name_suffix} already installed."
   fi
 
-  local llvm_libcxxabi_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxxabi_folder_name}-installed"
+  local llvm_libcxxabi_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxxabi_folder_name}-installed"
   if [ ! -f "${llvm_libcxxabi_stamp_file_path}" ]
   then
     (
@@ -1769,7 +1769,7 @@ function build_llvm_libcxx()
     echo "Component llvm-libcxxabi${name_suffix} already installed."
   fi
 
-  local llvm_libcxx_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-installed"
+  local llvm_libcxx_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-installed"
   if [ ! -f "${llvm_libcxx_stamp_file_path}" ]
   then
     (
