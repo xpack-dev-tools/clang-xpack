@@ -650,7 +650,7 @@ function _test_llvm_bootstrap()
 function test_llvm()
 {
   local test_bin_path="$1"
-  local name_suffix=${2-''}
+  local name_suffix="${2:-""}"
 
   echo
   echo "Testing the llvm${name_suffix} binaries..."
@@ -1334,7 +1334,7 @@ function test_clang_one()
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
 function _build_llvm_compiler_rt()
 {
-  local name_suffix=${1-''}
+  local name_suffix="${1:-""}"
 
   local llvm_compiler_rt_folder_name="llvm-${ACTUAL_LLVM_VERSION}-compiler-rt${name_suffix}"
 
@@ -1463,7 +1463,7 @@ function _build_llvm_compiler_rt()
 
 function _build_llvm_libcxx()
 {
-  local name_suffix=${1-''}
+  local name_suffix="${1:-""}"
 
   local llvm_libunwind_folder_name="llvm-${ACTUAL_LLVM_VERSION}-libunwind${name_suffix}"
 
