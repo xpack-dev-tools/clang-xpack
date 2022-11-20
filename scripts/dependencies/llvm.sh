@@ -114,7 +114,8 @@ function build_llvm()
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+        # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+        LDFLAGS="${XBB_LDFLAGS_APP}"
 
       else
 
@@ -126,8 +127,8 @@ function build_llvm()
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
         # Non-static will have trouble to find the llvm bootstrap libc++.
-        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
-        # LDFLAGS="${XBB_LDFLAGS_APP}"
+        # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+        LDFLAGS="${XBB_LDFLAGS_APP}"
         xbb_adjust_ldflags_rpath
 
         if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
