@@ -70,8 +70,9 @@ function build_binutils_ld_gold()
 
       # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       LDFLAGS="${XBB_LDFLAGS_APP}"
+      xbb_adjust_ldflags_rpath
 
-      if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+      if [ "${XBB_HOST_PLATFORM}" == "win32" ]
       then
         if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
         then
@@ -122,7 +123,7 @@ function build_binutils_ld_gold()
           config_options+=("--without-system-zlib")
           config_options+=("--with-pic")
 
-          if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+          if [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
 
             config_options+=("--enable-ld")
@@ -136,7 +137,7 @@ function build_binutils_ld_gold()
             config_options+=("--enable-shared")
             config_options+=("--enable-shared-libgcc")
 
-          elif [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+          elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
           then
 
             config_options+=("--enable-ld")
@@ -145,7 +146,7 @@ function build_binutils_ld_gold()
             config_options+=("--disable-shared-libgcc")
 
           else
-            echo "Oops! Unsupported ${XBB_TARGET_PLATFORM}."
+            echo "Oops! Unsupported ${XBB_HOST_PLATFORM}."
             exit 1
           fi
 
@@ -196,7 +197,7 @@ function build_binutils_ld_gold()
         # Remove the separate folder, the xPack distribution is single target.
         rm -rf "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_BUILD_TRIPLET}"
 
-        if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           : # rm -rv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/strip"
         fi
