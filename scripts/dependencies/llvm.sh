@@ -74,7 +74,7 @@ function build_llvm()
       -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
       "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
-    if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
       # Add -lpthread -ldl
       run_verbose sed -i.bak \
@@ -136,7 +136,7 @@ function build_llvm()
 
           # clang: error: unsupported option '-static-libgcc'
           # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
-        elif [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+        elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
         then
           export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
           export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
@@ -251,7 +251,7 @@ function build_llvm()
 
           fi
 
-          if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+          if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
@@ -289,10 +289,10 @@ function build_llvm()
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET}")
 
-            if [ "${XBB_TARGET_ARCH}" == "x64" ]
+            if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+            elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
             else
@@ -322,7 +322,7 @@ function build_llvm()
             config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
 
-          elif [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+          elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
           then
 
             # LLVMgold.so
@@ -331,16 +331,16 @@ function build_llvm()
             # Then either gold was not configured with plugins enabled, or clang
             # was not built with `-DLLVM_BINUTILS_INCDIR` set properly.
 
-            if [ "${XBB_TARGET_ARCH}" == "x64" ]
+            if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            elif [ "${XBB_TARGET_ARCH}" == "ia32" ]
+            elif [ "${XBB_HOST_ARCH}" == "ia32" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+            elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
-            elif [ "${XBB_TARGET_ARCH}" == "arm" ]
+            elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
             else
@@ -374,7 +374,7 @@ function build_llvm()
             config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET}")
 
             # Disabled once XBB moved to Ubuntu 18.
-            if false # [ "${XBB_TARGET_ARCH}" == "arm64" -o "${XBB_TARGET_ARCH}" == "arm" ]
+            if false # [ "${XBB_HOST_ARCH}" == "arm64" -o "${XBB_HOST_ARCH}" == "arm" ]
             then
               # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
               # not available in Ubuntu 16;
@@ -420,7 +420,7 @@ function build_llvm()
               config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
             fi
 
-          elif [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+          elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
 
             # Mind the links in llvm to clang, lld, lldb.
@@ -575,7 +575,7 @@ fi
             run_verbose rm -rf man
           )
 
-          if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+          if [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
             echo
             echo "Add wrappers instead of links..."
@@ -703,13 +703,13 @@ function test_llvm()
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
     run_app "${test_bin_path}/lld" --version || true
-    if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
       run_app "${test_bin_path}/ld.lld" --version || true
-    elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
       run_app "${test_bin_path}/ld64.lld" --version || true
-    elif [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${test_bin_path}/ld-link" --version || true
     fi
@@ -757,10 +757,10 @@ function test_llvm()
       VERBOSE_FLAG="-v"
     fi
 
-    if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
       LD_GC_SECTIONS="-Wl,--gc-sections"
-    elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
       LD_GC_SECTIONS="-Wl,-dead_strip"
     else
@@ -771,7 +771,7 @@ function test_llvm()
     env | sort
 
     run_verbose uname
-    if [ "${XBB_TARGET_PLATFORM}" != "darwin" ]
+    if [ "${XBB_HOST_PLATFORM}" != "darwin" ]
     then
       run_verbose uname -o
     fi
@@ -793,7 +793,7 @@ function test_llvm()
     # -------------------------------------------------------------------------
 
     (
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         # Instruct the linker to add a RPATH pointing to the folder with the
         # compiler shared libraries. Alternatelly -Wl,-rpath=xxx can be used
@@ -801,7 +801,7 @@ function test_llvm()
         export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
         echo
         echo "LD_RUN_PATH=${LD_RUN_PATH}"
-      elif [ "${XBB_TARGET_PLATFORM}" == "win32" -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+      elif [ "${XBB_HOST_PLATFORM}" == "win32" -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
       then
         # For libwinpthread-1.dll, possibly other.
         if [ "$(uname -o)" == "Msys" ]
@@ -821,7 +821,7 @@ function test_llvm()
       test_clang_one "${name_suffix}" --gc --lto
 
       # C++ with compiler-rt fails on Intel and Arm 32 Linux.
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ] # -a "${XBB_TARGET_ARCH}" == "arm" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ] # -a "${XBB_HOST_ARCH}" == "arm" ]
       then
         echo
         echo "Skip all --crt on Linux."
@@ -833,7 +833,7 @@ function test_llvm()
       fi
     )
 
-    if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+    if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
       echo
       echo "Skip all --static-lib on macOS."
@@ -854,7 +854,7 @@ function test_llvm()
         test_clang_one "${name_suffix}" --static-lib --lto
         test_clang_one "${name_suffix}" --static-lib --gc --lto
       fi
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         # Static lib and compiler-rt fail on Linux x86_64 and ia32
         echo
@@ -867,7 +867,7 @@ function test_llvm()
       fi
     fi
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
       test_clang_one "${name_suffix}" --static
@@ -879,7 +879,7 @@ function test_llvm()
       test_clang_one "${name_suffix}" --static --lto --crt
       test_clang_one "${name_suffix}" --static --gc --lto --crt
 
-    elif [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
 
       # On Linux static linking is highly discouraged.
@@ -888,7 +888,7 @@ function test_llvm()
       echo
       echo "Skip all --static on Linux."
 
-    elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
       # On macOS static linking is not available at all.
@@ -899,7 +899,7 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${CC}" -o add.o -c add.c -ffunction-sections -fdata-sections
     else
@@ -910,7 +910,7 @@ function test_llvm()
     run_app "${AR}" -r ${VERBOSE_FLAG} libadd-static.a add.o
     run_app "${RANLIB}" libadd-static.a
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       # The `--out-implib` creates an import library, which can be
       # directly used with -l.
@@ -919,7 +919,7 @@ function test_llvm()
       run_app "${CC}" -o libadd-shared.${XBB_HOST_SHLIB_EXT} -shared add.o
     fi
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${CC}" -o rt-add.o -c add.c -ffunction-sections -fdata-sections
     else
@@ -930,7 +930,7 @@ function test_llvm()
     run_app "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o
     run_app "${RANLIB}" librt-add-static.a
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
     else
@@ -941,7 +941,7 @@ function test_llvm()
 
     test_expect "42" "static-adder" 40 2
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       # -ladd-shared is in fact libadd-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
@@ -960,7 +960,7 @@ function test_llvm()
 
     test_expect "42" "rt-static-adder" 40 2
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       # -lrt-add-shared is in fact librt-add-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
@@ -986,7 +986,7 @@ function test_llvm()
     # show_libs setjmp
     # run_app ./setjmp
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG}
       show_libs hello-tls
@@ -1017,7 +1017,7 @@ function test_llvm()
     #   run_app ./$test
     # done
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app ${CXX} hello-exception.cpp -static -o hello-exception-static${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
 
@@ -1032,7 +1032,7 @@ function test_llvm()
       run_app ./tlstest-main
     fi
 
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app ${CXX} throwcatch-lib.cpp -shared -o throwcatch-lib.dll -Wl,--out-implib,libthrowcatch-lib.dll.a ${VERBOSE_FLAG}
     elif [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
@@ -1054,7 +1054,7 @@ function test_llvm()
     # -------------------------------------------------------------------------
 
     # On Windows there is no clangd.exe. (Why?)
-    if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app ${test_bin_path}/clangd --check=hello-cpp.cpp
       cat <<'__EOF__' > ${tmp}/unchecked-exception.cpp
@@ -1147,7 +1147,7 @@ function test_clang_one()
       CXXFLAGS+=" -flto"
       LDFLAGS+=" -flto"
       LDXXFLAGS+=" -flto"
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -fuse-ld=lld"
         LDXXFLAGS+=" -fuse-ld=lld"
@@ -1161,11 +1161,11 @@ function test_clang_one()
       CXXFLAGS+=" -ffunction-sections -fdata-sections"
       LDFLAGS+=" -ffunction-sections -fdata-sections"
       LDXXFLAGS+=" -ffunction-sections -fdata-sections"
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,--gc-sections"
         LDXXFLAGS+=" -Wl,--gc-sections"
-      elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+      elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
       then
         LDFLAGS+=" -Wl,-dead_strip"
         LDXXFLAGS+=" -Wl,-dead_strip"
@@ -1216,7 +1216,7 @@ function test_clang_one()
 
     # -------------------------------------------------------------------------
 
-    if [ \( "${XBB_TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
+    if [ \( "${XBB_HOST_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
     then
 
       # On Linux it works only with the full LLVM runtime and lld
@@ -1261,7 +1261,7 @@ function test_clang_one()
       run_app ./${prefix}${test}${suffix}
     done
 
-    if [ \( "${XBB_TARGET_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
+    if [ \( "${XBB_HOST_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
     then
 
       # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
@@ -1296,7 +1296,7 @@ function test_clang_one()
     run_app "${CC}" -o ${prefix}hello-weak${suffix}${XBB_HOST_DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
     test_expect "Hello World!" ./${prefix}hello-weak${suffix}
 
-    if [ \( "${XBB_TARGET_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
+    if [ \( "${XBB_HOST_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
     then
       # lld-link: error: duplicate symbol: world()
       # >>> defined at hello-weak-cpp.cpp
@@ -1412,7 +1412,7 @@ function _build_llvm_compiler_rt()
         config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON")
         config_options+=("-DSANITIZER_CXX_ABI=libc++")
 
-        if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           # Otherwise it'll generate two -mmacosx-version-min
           config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
@@ -1527,7 +1527,7 @@ function _build_llvm_libcxx()
         config_options+=("-DLLVM_COMPILER_CHECKED=ON")
         config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
 
-        if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           # Otherwise it'll generate two -mmacosx-version-min
           config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
@@ -1635,7 +1635,7 @@ function _build_llvm_libcxx()
 
         config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
 
-        if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           # Otherwise it'll generate two -mmacosx-version-min
           config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
@@ -1726,7 +1726,7 @@ function _build_llvm_libcxx()
 
         config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
 
-        if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           # Otherwise it'll generate two -mmacosx-version-min
           config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
@@ -1815,7 +1815,7 @@ function strip_libs()
 
       cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}"
 
-      if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         local libs=$(find "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}" -type f \( -name \*.a -o -name \*.o -o -name \*.so \))
         for lib in ${libs}
