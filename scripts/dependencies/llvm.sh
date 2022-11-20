@@ -1329,16 +1329,6 @@ function build_llvm_compiler_rt()
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
-      if [ "${HOST_MACHINE}" == "i686" ]
-      then
-        # The 32-bit build fails to find assert.h
-        if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          CFLAGS+=" -I${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/include"
-        else
-          CFLAGS+=" -I${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/include"
-        fi
-      fi
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS}"
