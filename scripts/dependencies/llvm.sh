@@ -557,7 +557,7 @@ then
               scan-build scan-build.bat scan-view \
               verify-uselistorder yaml-bench yaml2obj
             do
-              rm -rfv $f $f${XBB_DOT_EXE}
+              rm -rfv $f $f${XBB_HOST_DOT_EXE}
             done
 
             # So far not used.
@@ -695,7 +695,7 @@ function test_llvm()
     run_app "${test_bin_path}/clang" --version
     run_app "${test_bin_path}/clang++" --version
 
-    if [ -f "${test_bin_path}/clang-format${XBB_DOT_EXE}" ]
+    if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
       run_app "${test_bin_path}/clang-format" --version
     fi
@@ -937,7 +937,7 @@ function test_llvm()
       run_app "${CC}" -o librt-add-shared.${XBB_SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
     fi
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${XBB_DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
+    run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${XBB_HOST_DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
 
     test_expect "42" "static-adder" 40 2
 
@@ -945,7 +945,7 @@ function test_llvm()
     then
       # -ladd-shared is in fact libadd-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${XBB_DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
+      run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder${XBB_HOST_DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     else
       run_app "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     fi
@@ -956,7 +956,7 @@ function test_llvm()
       test_expect "42" "shared-adder" 40 2
     )
 
-    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${XBB_DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
+    run_app "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${XBB_HOST_DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
 
     test_expect "42" "rt-static-adder" 40 2
 
@@ -964,7 +964,7 @@ function test_llvm()
     then
       # -lrt-add-shared is in fact librt-add-shared.dll.a
       # The library does not show as DLL, it is loaded dynamically.
-      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${XBB_DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
+      run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${XBB_HOST_DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     else
       run_app "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
     fi
@@ -978,11 +978,11 @@ function test_llvm()
     # -------------------------------------------------------------------------
     # Tests borrowed from the llvm-mingw project.
 
-    # run_app "${CC}" hello.c -o hello${XBB_DOT_EXE} ${VERBOSE_FLAG} -lm
+    # run_app "${CC}" hello.c -o hello${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
     # show_libs hello
     # run_app ./hello
 
-    # run_app "${CC}" setjmp-patched.c -o setjmp${XBB_DOT_EXE} ${VERBOSE_FLAG} -lm
+    # run_app "${CC}" setjmp-patched.c -o setjmp${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
     # show_libs setjmp
     # run_app ./setjmp
 
@@ -1012,14 +1012,14 @@ function test_llvm()
 
     # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     # do
-    #   run_app ${CXX} $test.cpp -o $test${XBB_DOT_EXE} ${VERBOSE_FLAG}
+    #   run_app ${CXX} $test.cpp -o $test${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
     #   show_libs $test
     #   run_app ./$test
     # done
 
     if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
     then
-      run_app ${CXX} hello-exception.cpp -static -o hello-exception-static${XBB_DOT_EXE} ${VERBOSE_FLAG}
+      run_app ${CXX} hello-exception.cpp -static -o hello-exception-static${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
 
       show_libs hello-exception-static
       run_app ./hello-exception-static
@@ -1042,7 +1042,7 @@ function test_llvm()
       run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_SHLIB_EXT} ${VERBOSE_FLAG}
     fi
 
-    run_app ${CXX} throwcatch-main.cpp -o throwcatch-main${XBB_DOT_EXE} -L. -lthrowcatch-lib ${VERBOSE_FLAG}
+    run_app ${CXX} throwcatch-main.cpp -o throwcatch-main${XBB_HOST_DOT_EXE} -L. -lthrowcatch-lib ${VERBOSE_FLAG}
 
     (
       LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
@@ -1195,23 +1195,23 @@ function test_clang_one()
     fi
 
     # Test C compile and link in a single step.
-    run_app "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${XBB_DOT_EXE} ${LDFLAGS}
+    run_app "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
     test_expect "Hello" "${prefix}simple-hello-c-one${suffix}"
 
     # Test C compile and link in separate steps.
     run_app "${CC}" -c simple-hello.c -o simple-hello.c.o ${CFLAGS}
-    run_app "${CC}" simple-hello.c.o -o ${prefix}simple-hello-c-two${suffix}${XBB_DOT_EXE} ${LDFLAGS}
+    run_app "${CC}" simple-hello.c.o -o ${prefix}simple-hello-c-two${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
     test_expect "Hello" "${prefix}simple-hello-c-two${suffix}"
 
     # -------------------------------------------------------------------------
 
     # Test C++ compile and link in a single step.
-    run_app "${CXX}" simple-hello.cpp -o ${prefix}simple-hello-cpp-one${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+    run_app "${CXX}" simple-hello.cpp -o ${prefix}simple-hello-cpp-one${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
     test_expect "Hello" "${prefix}simple-hello-cpp-one${suffix}"
 
     # Test C++ compile and link in separate steps.
     run_app "${CXX}" -c simple-hello.cpp -o ${prefix}simple-hello${suffix}.cpp.o ${CXXFLAGS}
-    run_app "${CXX}" ${prefix}simple-hello${suffix}.cpp.o -o ${prefix}simple-hello-cpp-two${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+    run_app "${CXX}" ${prefix}simple-hello${suffix}.cpp.o -o ${prefix}simple-hello-cpp-two${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
     test_expect "Hello" "${prefix}simple-hello-cpp-two${suffix}"
 
     # -------------------------------------------------------------------------
@@ -1221,24 +1221,24 @@ function test_clang_one()
 
       # On Linux it works only with the full LLVM runtime and lld
 
-      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld -v
+      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld -v
       test_expect "MyException" "${prefix}simple-exception${suffix}"
 
-      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
       test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
 
-      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
       test_expect "42" "${prefix}simple-int-exception${suffix}"
 
     else
 
-      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+      run_app "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
       test_expect "MyException" "${prefix}simple-exception${suffix}"
 
-      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+      run_app "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
       test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
 
-      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+      run_app "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
       test_expect "42" "${prefix}simple-int-exception${suffix}"
 
     fi
@@ -1246,17 +1246,17 @@ function test_clang_one()
     # -------------------------------------------------------------------------
     # Tests borrowed from the llvm-mingw project.
 
-    run_app "${CC}" hello.c -o ${prefix}hello${suffix}${XBB_DOT_EXE} ${LDFLAGS} -lm
+    run_app "${CC}" hello.c -o ${prefix}hello${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
     show_libs ${prefix}hello${suffix}
     run_app ./${prefix}hello${suffix}
 
-    run_app "${CC}" setjmp-patched.c -o ${prefix}setjmp${suffix}${XBB_DOT_EXE} ${LDFLAGS} -lm
+    run_app "${CC}" setjmp-patched.c -o ${prefix}setjmp${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
     show_libs ${prefix}setjmp${suffix}
     run_app ./${prefix}setjmp${suffix}
 
     for test in hello-cpp global-terminate
     do
-      run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+      run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
       show_libs ${prefix}${test}${suffix}
       run_app ./${prefix}${test}${suffix}
     done
@@ -1265,26 +1265,26 @@ function test_clang_one()
     then
 
       # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
-      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
       show_libs ${prefix}longjmp-cleanup${suffix}
       run_app ./${prefix}longjmp-cleanup${suffix}
 
       for test in hello-exception exception-locale exception-reduced
       do
-        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
+        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
         show_libs ${prefix}${test}${suffix}
         run_app ./${prefix}${test}${suffix}
       done
 
     else
 
-      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+      run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
       show_libs ${prefix}longjmp-cleanup${suffix}
       run_app ./${prefix}longjmp-cleanup${suffix}
 
       for test in hello-exception exception-locale exception-reduced
       do
-        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_DOT_EXE} ${LDXXFLAGS}
+        run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
         show_libs ${prefix}${test}${suffix}
         run_app ./${prefix}${test}${suffix}
       done
@@ -1293,7 +1293,7 @@ function test_clang_one()
 
     run_app "${CC}" -c -o ${prefix}hello-weak${suffix}.c.o hello-weak.c ${CFLAGS}
     run_app "${CC}" -c -o ${prefix}hello-f-weak${suffix}.c.o hello-f-weak.c ${CFLAGS}
-    run_app "${CC}" -o ${prefix}hello-weak${suffix}${XBB_DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
+    run_app "${CC}" -o ${prefix}hello-weak${suffix}${XBB_HOST_DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
     test_expect "Hello World!" ./${prefix}hello-weak${suffix}
 
     if [ \( "${XBB_TARGET_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
@@ -1308,7 +1308,7 @@ function test_clang_one()
     else
       run_app "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
       run_app "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
-      run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${XBB_DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
+      run_app "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${XBB_HOST_DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
       test_expect "Hello World!" ./${prefix}hello-weak-cpp${suffix}
     fi
 
@@ -1321,7 +1321,7 @@ function test_clang_one()
       run_app "${CC}" -c dummy.c -o ${prefix}dummy${suffix}.c.o ${CFLAGS}
       run_app "${CC}" -c expected3.c -o ${prefix}expected3${suffix}.c.o ${CFLAGS}
 
-      run_app "${CC}" ${prefix}main-weak${suffix}.c.o ${prefix}add2${suffix}.c.o ${prefix}dummy${suffix}.c.o ${prefix}expected3${suffix}.c.o -o ${prefix}weak-override${suffix}${XBB_DOT_EXE} ${LDFLAGS}
+      run_app "${CC}" ${prefix}main-weak${suffix}.c.o ${prefix}add2${suffix}.c.o ${prefix}dummy${suffix}.c.o ${prefix}expected3${suffix}.c.o -o ${prefix}weak-override${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
 
       run_app ./${prefix}weak-override${suffix}
     )
