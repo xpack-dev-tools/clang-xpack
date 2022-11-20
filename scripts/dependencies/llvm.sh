@@ -39,13 +39,25 @@ function build_llvm()
   # 25 Jun 2022, "14.0.6"
 
   export ACTUAL_LLVM_VERSION="$1"
-  local name_suffix=${2-''}
+  shift
 
-  if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" -a "${XBB_TARGET_PLATFORM}" != "win32" ]
-  then
-    echo "Native supported only for Windows binaries."
-    exit 1
-  fi
+  local is_bootstrap="n"
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --bootstrap )
+        bootstrap="y"
+        ;;
+
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+    shift
+  done
+
+  local name_suffix=""
 
   local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
   local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
@@ -99,14 +111,15 @@ function build_llvm()
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
       cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
 
-      if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+      if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
       then
 
         # Use XBB libs in native-llvm
-        xbb_activate_dev
+        # xbb_activate_dev
 
         # Required to satisfy the reference to /opt/xbb/lib/libncurses.so.
-        xbb_activate_libs
+        # xbb_activate_libs
+
         xbb_activate_dependencies_dev
 
         # CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
@@ -139,8 +152,8 @@ function build_llvm()
           # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
         elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
         then
-          export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
-          export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
+          : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
+          : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
         fi
 
       fi
@@ -190,7 +203,7 @@ function build_llvm()
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
-          if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+          if [ "${is_bootstrap}" == "y" ] # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
           then
 
             # Please note the trailing space.
@@ -429,7 +442,7 @@ function build_llvm()
             config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
-            if [ -z "${name_suffix}" ]
+            if [ "${is_bootstrap}" != "y" ] # [ -z "${name_suffix}" ]
             then
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
               config_options+=("-DCLANG_DEFAULT_LINKER=lld")
@@ -437,7 +450,6 @@ function build_llvm()
 
               config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/${XBB_TARGET}")
               config_options+=("-DCMAKE_RC_COMPILER=${RC}")
 
               config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
@@ -495,7 +507,7 @@ function build_llvm()
           run_verbose cmake --build . --target install/strip
         fi
 
-        if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
           (
             # Add wrappers for the mingw-w64 binaries.
@@ -603,7 +615,7 @@ function build_llvm()
           fi
         fi
 
-        if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin/clang"
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin/llvm-nm"
@@ -614,7 +626,7 @@ function build_llvm()
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
 
-      if [ ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+      if true # [ ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
       then
         copy_license \
           "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
@@ -629,7 +641,7 @@ function build_llvm()
     echo "Component llvm${name_suffix} already installed."
   fi
 
-  if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+  if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
   then
     tests_add "test_llvm_bootstrap"
   else
