@@ -270,7 +270,7 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
-            # config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET}")
+            # config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
             # The libc++ & Co are not included because the system dynamic
             # libraries are prefered by the linker anyway, and attempts to
@@ -281,13 +281,13 @@ function build_llvm()
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
 
             config_options+=("-DLLVM_ENABLE_FFI=ON")
-            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET}")
+            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
             # Fails with: Please use architecture with 4 or 8 byte pointers.
-            # config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET}")
+            # config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
 
             if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
@@ -371,7 +371,7 @@ function build_llvm()
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
-            config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET}")
+            config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
             # Disabled once XBB moved to Ubuntu 18.
             if false # [ "${XBB_HOST_ARCH}" == "arm64" -o "${XBB_HOST_ARCH}" == "arm" ]
@@ -391,12 +391,12 @@ function build_llvm()
             # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
             config_options+=("-DLLVM_ENABLE_FFI=ON")
-            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET}")
+            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
-            config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET}")
+            config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
             # For now keep the default configuration, which creates both
@@ -445,15 +445,15 @@ function build_llvm()
 
               config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/${XBB_TARGET_TRIPLET}")
+
               config_options+=("-DCLANG_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/clang-tblgen")
               config_options+=("-DLLDB_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/lldb-tblgen")
               config_options+=("-DLLVM_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-tblgen")
 
-              config_options+=("-DCROSS_TOOLCHAIN_FLAGS_NATIVE=")
-
               config_options+=("-DLLVM_CONFIG_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
 
-              config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET}")
+              config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             fi
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
@@ -509,24 +509,24 @@ function build_llvm()
 
             for exec in clang clang++ gcc g++ cc c99 c11 c++ as
             do
-              ln -sf clang-target-wrapper.sh ${XBB_CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf clang-target-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
             done
             for exec in addr2line ar ranlib nm objcopy strings strip
             do
-              ln -sf llvm-${exec} ${XBB_CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf llvm-${exec} ${XBB_TARGET_TRIPLET}-${exec}
             done
             if [ -f "llvm-windres" ]
             then
               # windres can't use llvm-wrapper, as that loses the original
               # target arch prefix.
-              ln -sf llvm-windres ${XBB_CROSS_COMPILE_PREFIX}-windres
+              ln -sf llvm-windres ${XBB_TARGET_TRIPLET}-windres
             else
-              ln -sf windres-wrapper ${XBB_CROSS_COMPILE_PREFIX}-windres
+              ln -sf windres-wrapper ${XBB_TARGET_TRIPLET}-windres
             fi
-            ln -sf dlltool-wrapper ${XBB_CROSS_COMPILE_PREFIX}-dlltool
+            ln -sf dlltool-wrapper ${XBB_TARGET_TRIPLET}-dlltool
             for exec in ld objdump
             do
-              ln -sf ${exec}-wrapper.sh ${XBB_CROSS_COMPILE_PREFIX}-${exec}
+              ln -sf ${exec}-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
             done
           )
         else
@@ -585,7 +585,7 @@ fi
             # dlltool-wrapper windres-wrapper llvm-wrapper
             for exec in clang-target-wrapper
             do
-              run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_CROSS_COMPILE_PREFIX}\"
+              run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_TARGET_TRIPLET}\"
             done
 
             if [ ! -L clang.exe ] && [ -f clang.exe ] && [ ! -f clang-${llvm_version_major}.exe ]
@@ -662,15 +662,15 @@ function test_llvm()
     if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
     then
       # Help the loader find the .dll files if the native is not static.
-      export WINEPATH=${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}/bin
+      export WINEPATH=${test_bin_path}/${XBB_TARGET_TRIPLET}/bin
 
-      CC="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-clang"
-      CXX="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-clang++"
-      DLLTOOL="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-dlltool"
-      WIDL="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-widl"
+      CC="${test_bin_path}/${XBB_TARGET_TRIPLET}-clang"
+      CXX="${test_bin_path}/${XBB_TARGET_TRIPLET}-clang++"
+      DLLTOOL="${test_bin_path}/${XBB_TARGET_TRIPLET}-dlltool"
+      WIDL="${test_bin_path}/${XBB_TARGET_TRIPLET}-widl"
       GENDEF="${test_bin_path}/gendef"
-      AR="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-ar"
-      RANLIB="${test_bin_path}/${XBB_CROSS_COMPILE_PREFIX}-ranlib"
+      AR="${test_bin_path}/${XBB_TARGET_TRIPLET}-ar"
+      RANLIB="${test_bin_path}/${XBB_TARGET_TRIPLET}-ranlib"
     else
       CC="${test_bin_path}/clang"
       CXX="${test_bin_path}/clang++"
@@ -1715,7 +1715,7 @@ function _build_llvm_libcxx()
         config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
         config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
         config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
-        config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET}")
+        config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
         config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
         config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
         config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=")
