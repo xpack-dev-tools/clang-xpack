@@ -13,8 +13,6 @@ function tests_run_all()
 {
   local test_bin_path="$1"
 
-  # GCC_VERSION="$(echo "${XBB_RELEASE_VERSION}" | sed -e 's|-.*||')"
-
   # Call the functions defined in the build code.
   test_llvm "${test_bin_path}"
 
