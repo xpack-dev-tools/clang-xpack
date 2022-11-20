@@ -143,7 +143,7 @@ with caution, and prefer exact matches, like `14.0.6-2.1`.
 
 ## Support
 
-The quick answer is to use the GitHub
+The quick advice for getting support is to use the GitHub
 [Discussions](https://github.com/xpack-dev-tools/clang-xpack/discussions/).
 
 For more details please read the

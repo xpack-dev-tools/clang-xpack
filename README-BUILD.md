@@ -56,11 +56,11 @@ Git repo.
 To download them, use the following commands:
 
 ```sh
-rm -rf ~/Work/clang-xpack.git; \
-mkdir -p ~/Work; \
+rm -rf ~/Work/clang-xpack.git && \
+mkdir -p ~/Work && \
 git clone \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Work/clang-xpack.git; \
+  ~/Work/clang-xpack.git && \
 git -C ~/Work/clang-xpack.git submodule update --init --recursive
 ```
 
@@ -70,12 +70,12 @@ git -C ~/Work/clang-xpack.git submodule update --init --recursive
 For development purposes, clone the `xpack-develop` branch:
 
 ```sh
-rm -rf ~/Work/clang-xpack.git; \
-mkdir -p ~/Work; \
+rm -rf ~/Work/clang-xpack.git && \
+mkdir -p ~/Work && \
 git clone \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Work/clang-xpack.git; \
+  ~/Work/clang-xpack.git && \
 git -C ~/Work/clang-xpack.git submodule update --init --recursive
 ```
 
