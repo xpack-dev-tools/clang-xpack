@@ -916,7 +916,7 @@ function test_llvm()
       # directly used with -l.
       run_app "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows
     else
-      run_app "${CC}" -o libadd-shared.${XBB_SHLIB_EXT} -shared add.o
+      run_app "${CC}" -o libadd-shared.${XBB_HOST_SHLIB_EXT} -shared add.o
     fi
 
     if [ "${XBB_TARGET_PLATFORM}" == "win32" ]
@@ -934,7 +934,7 @@ function test_llvm()
     then
       run_app "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
     else
-      run_app "${CC}" -o librt-add-shared.${XBB_SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
+      run_app "${CC}" -o librt-add-shared.${XBB_HOST_SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
     fi
 
     run_app "${CC}" ${VERBOSE_FLAG} -o static-adder${XBB_HOST_DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
@@ -1037,9 +1037,9 @@ function test_llvm()
       run_app ${CXX} throwcatch-lib.cpp -shared -o throwcatch-lib.dll -Wl,--out-implib,libthrowcatch-lib.dll.a ${VERBOSE_FLAG}
     elif [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
     then
-      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_SHLIB_EXT} ${VERBOSE_FLAG} -fuse-ld=lld
+      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_HOST_SHLIB_EXT} ${VERBOSE_FLAG} -fuse-ld=lld
     else
-      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_SHLIB_EXT} ${VERBOSE_FLAG}
+      run_app ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_HOST_SHLIB_EXT} ${VERBOSE_FLAG}
     fi
 
     run_app ${CXX} throwcatch-main.cpp -o throwcatch-main${XBB_HOST_DOT_EXE} -L. -lthrowcatch-lib ${VERBOSE_FLAG}
