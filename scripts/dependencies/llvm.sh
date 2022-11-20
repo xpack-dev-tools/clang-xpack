@@ -531,46 +531,46 @@ function build_llvm()
           )
         else
           (
-if false
-then
-            echo
-            echo "Removing less used files..."
+            if true
+            then
+              echo
+              echo "Removing less used files..."
 
-            # Remove less used LLVM libraries and leave only the toolchain.
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
-            for f in bugpoint c-index-test \
-              clang-apply-replacements clang-change-namespace \
-              clang-extdef-mapping clang-include-fixer clang-move clang-query \
-              clang-reorder-fields find-all-symbols \
-              count dsymutil FileCheck \
-              llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
-              llvm-cat llvm-cfi-verify llvm-cvtres \
-              llvm-dwarfdump llvm-dwp \
-              llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
-              llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
-              llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
-              llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
-              llvm-profgen \
-              llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
-              llvm-stress llvm-undname llvm-xray \
-              modularize not obj2yaml opt pp-trace sancov sanstats \
-              scan-build scan-build.bat scan-view \
-              verify-uselistorder yaml-bench yaml2obj
-            do
-              rm -rfv $f $f${XBB_HOST_DOT_EXE}
-            done
+              # Remove less used LLVM libraries and leave only the toolchain.
+              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+              for f in bugpoint c-index-test \
+                clang-apply-replacements clang-change-namespace \
+                clang-extdef-mapping clang-include-fixer clang-move clang-query \
+                clang-reorder-fields find-all-symbols \
+                count dsymutil FileCheck \
+                llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
+                llvm-cat llvm-cfi-verify llvm-cvtres \
+                llvm-dwarfdump llvm-dwp \
+                llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
+                llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
+                llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
+                llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
+                llvm-profgen \
+                llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
+                llvm-stress llvm-undname llvm-xray \
+                modularize not obj2yaml opt pp-trace sancov sanstats \
+                scan-build scan-build.bat scan-view \
+                verify-uselistorder yaml-bench yaml2obj
+              do
+                rm -rfv $f $f${XBB_HOST_DOT_EXE}
+              done
 
-            # So far not used.
-            rm -rfv libclang.dll
-            rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
+              # So far not used.
+              rm -rfv libclang.dll
+              rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
 
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
-            run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
+              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
+              run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
-            run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
-            # rm -rf cmake/lld cmake/llvm cmake/polly
-fi
+              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
+              run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
+              # rm -rf cmake/lld cmake/llvm cmake/polly
+            fi
             cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/share"
             run_verbose rm -rf man
           )
