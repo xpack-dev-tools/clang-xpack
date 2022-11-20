@@ -1347,7 +1347,7 @@ function build_llvm_compiler_rt()
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}")
         else
