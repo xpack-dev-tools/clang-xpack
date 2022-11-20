@@ -102,7 +102,7 @@ function build_binutils_ld_gold()
           # ? --without-python --without-curses, --with-expat
           config_options=()
 
-          config_options+=("--prefix=${XBB_BINARIES_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
 
           config_options+=("--infodir=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/share/info")
           config_options+=("--mandir=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/share/man")
@@ -117,7 +117,7 @@ function build_binutils_ld_gold()
           config_options+=("--with-pkgversion=${XBB_BINUTILS_BRANDING}")
 
           # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
-          config_options+=("--with-sysroot=${XBB_BINARIES_INSTALL_FOLDER_PATH}")
+          config_options+=("--with-sysroot=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
 
           config_options+=("--without-system-zlib")
           config_options+=("--with-pic")
@@ -194,14 +194,14 @@ function build_binutils_ld_gold()
         run_verbose make maybe-install-gold
 
         # Remove the separate folder, the xPack distribution is single target.
-        rm -rf "${XBB_BINARIES_INSTALL_FOLDER_PATH}/${XBB_BUILD}"
+        rm -rf "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_BUILD_TRIPLET}"
 
         if [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
         then
-          : # rm -rv "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin/strip"
+          : # rm -rv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/strip"
         fi
 
-        show_libs "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin/ld.gold"
+        show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/ld.gold"
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output-$(ndate).txt"
 
@@ -218,7 +218,7 @@ function build_binutils_ld_gold()
     echo "Component binutils ld.gold already installed."
   fi
 
-  tests_add "test_binutils_ld_gold" "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin"
+  tests_add "test_binutils_ld_gold" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_binutils_ld_gold()
