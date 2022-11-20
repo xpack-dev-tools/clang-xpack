@@ -108,19 +108,18 @@ function build_mingw_clang_bootstrap()
     build_mingw_libmangle # Refered by gendef
     build_mingw_gendef
 
-    (
-      # xbb_activate_llvm_bootstrap_bins
-      # prepare_bootstrap_cross_env
-      xbb_activate_installed_bin
+    # xbb_activate_llvm_bootstrap_bins
+    # prepare_bootstrap_cross_env
+    xbb_activate_installed_bin
 
-      build_llvm_compiler_rt "${XBB_BOOTSTRAP_SUFFIX}"
+    build_llvm_compiler_rt # "${XBB_BOOTSTRAP_SUFFIX}"
 
-      build_mingw_crt
-      build_mingw_winpthreads
-      # build_mingw_winstorecompat # Not needed by the bootstrap.
+    build_mingw_crt
+    build_mingw_winpthreads
+    # build_mingw_winstorecompat # Not needed by the bootstrap.
 
-      build_llvm_libcxx "${XBB_BOOTSTRAP_SUFFIX}" # libunwind, libcxx, libcxxabi
-    )
+    build_llvm_libcxx "${XBB_BOOTSTRAP_SUFFIX}" # libunwind, libcxx, libcxxabi
+
   )
 }
 
@@ -137,13 +136,15 @@ function build_common()
     # Number
     XBB_MINGW_VERSION_MAJOR=$(echo ${XBB_MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
 
-    XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.patch.diff"
+    # XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.patch.diff"
 
     download_mingw "${XBB_MINGW_VERSION}"
 
     # -------------------------------------------------------------------------
     # Build the native dependencies.
 
+    # Not really, the clang bootstrap build is native, it handles
+    # the mingw specifics by itself.
     xbb_set_target "mingw-w64-native"
 
     build_mingw_clang_bootstrap
