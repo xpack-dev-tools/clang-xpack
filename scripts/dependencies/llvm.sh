@@ -296,7 +296,7 @@ function build_llvm()
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
             else
-              echo "Oops! Unsupported XBB_TARGET_ARCH=${XBB_TARGET_ARCH}."
+              echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}()"
               exit 1
             fi
 
@@ -344,7 +344,7 @@ function build_llvm()
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
             else
-              echo "Oops! Unsupported XBB_TARGET_ARCH=${XBB_TARGET_ARCH}."
+              echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}()"
               exit 1
             fi
 
@@ -465,7 +465,7 @@ function build_llvm()
             # in separate steps intertwined with mingw.
 
           else
-            echo "Oops! Unsupported XBB_TARGET_PLATFORM=${XBB_TARGET_PLATFORM}."
+            echo "Unsupported XBB_HOST_PLATFORM=${XBB_HOST_PLATFORM} in ${FUNCNAME[0]}()"
             exit 1
           fi
 
@@ -1122,7 +1122,7 @@ function test_clang_one()
         ;;
 
       *)
-        echo "Unknown action/option $1"
+        echo "Unsupported action/option $1 in ${FUNCNAME[0]}()"
         exit 1
         ;;
 
@@ -1404,7 +1404,7 @@ function _build_llvm_compiler_rt()
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          echo "Oops! Unsupported HOST_MACHINE=${HOST_MACHINE}."
+          echo "Unsupported HOST_MACHINE=${HOST_MACHINE} in ${FUNCNAME[0]}()"
           exit 1
         fi
 
