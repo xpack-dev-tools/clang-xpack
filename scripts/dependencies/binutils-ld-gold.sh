@@ -74,7 +74,7 @@ function build_binutils_ld_gold()
 
       if [ "${XBB_HOST_PLATFORM}" == "win32" ]
       then
-        if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+        if [ "${XBB_TARGET_ARCH}" == "x32" -o "${XBB_TARGET_ARCH}" == "ia32" ]
         then
           # From MSYS2 MINGW
           LDFLAGS+=" -Wl,--large-address-aware"
@@ -128,7 +128,7 @@ function build_binutils_ld_gold()
 
             config_options+=("--enable-ld")
 
-            if [ "${TARGET_ARCH}" == "x64" ]
+            if [ "${XBB_TARGET_ARCH}" == "x64" ]
             then
               # From MSYS2 MINGW
               config_options+=("--enable-64-bit-bfd")
