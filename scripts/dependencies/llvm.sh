@@ -138,8 +138,8 @@ function build_llvm()
           # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
         elif [ "${XBB_TARGET_PLATFORM}" == "win32" ]
         then
-          export CC="${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang"
-          export CXX="${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang++"
+          export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
+          export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
         fi
 
       fi
@@ -178,7 +178,7 @@ function build_llvm()
           config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release")
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}")
 
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
           config_options+=("-DCMAKE_C_COMPILER=${CC}")
@@ -260,7 +260,7 @@ function build_llvm()
             # To help find the locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
-            config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin")
+            config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin")
 
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
@@ -364,7 +364,7 @@ function build_llvm()
             # To help find the just locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
-            config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin")
+            config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin")
 
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
@@ -498,7 +498,7 @@ function build_llvm()
         then
           (
             # Add wrappers for the mingw-w64 binaries.
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/bin"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin"
 
             cp "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
 
@@ -537,7 +537,7 @@ then
             echo "Removing less used files..."
 
             # Remove less used LLVM libraries and leave only the toolchain.
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
             for f in bugpoint c-index-test \
               clang-apply-replacements clang-change-namespace \
               clang-extdef-mapping clang-include-fixer clang-move clang-query \
@@ -564,14 +564,14 @@ then
             rm -rfv libclang.dll
             rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
 
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}/include"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
             run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}/lib"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
             run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
             # rm -rf cmake/lld cmake/llvm cmake/polly
 fi
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}/share"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/share"
             run_verbose rm -rf man
           )
 
@@ -580,7 +580,7 @@ fi
             echo
             echo "Add wrappers instead of links..."
 
-            cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin"
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 
             # dlltool-wrapper windres-wrapper llvm-wrapper
             for exec in clang-target-wrapper
@@ -604,11 +604,11 @@ fi
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          show_native_libs "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/bin/clang"
-          show_native_libs "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/bin/llvm-nm"
+          show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin/clang"
+          show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin/llvm-nm"
         else
-          show_libs "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin/clang"
-          show_libs "${XBB_BINARIES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
+          show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
+          show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
@@ -632,7 +632,7 @@ fi
   then
     tests_add "test_llvm_bootstrap"
   else
-    tests_add "test_llvm" "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/bin"
+    tests_add "test_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin"
   fi
 }
 
@@ -642,7 +642,7 @@ function _test_llvm_bootstrap()
     # Use XBB libs in native-llvm
     xbb_activate_libs
 
-    test_llvm "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/bin" "${XBB_BOOTSTRAP_SUFFIX}"
+    test_llvm "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin" "${XBB_BOOTSTRAP_SUFFIX}"
   )
 }
 
@@ -1354,9 +1354,9 @@ function _build_llvm_compiler_rt()
         # The 32-bit build fails to find assert.h
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          CFLAGS+=" -I${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}/include"
+          CFLAGS+=" -I${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/include"
         else
-          CFLAGS+=" -I${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/include"
+          CFLAGS+=" -I${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/include"
         fi
       fi
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -1379,23 +1379,23 @@ function _build_llvm_compiler_rt()
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}")
         else
           # Traditionally the runtime is in a versioned folder.
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}")
         fi
 
         config_options+=("-DCMAKE_BUILD_TYPE=Release")
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         if [ "${HOST_MACHINE}" == "x86_64" ]
         then
@@ -1419,7 +1419,7 @@ function _build_llvm_compiler_rt()
         fi
 
         # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
-        # config_options+=("-DLLVM_CONFIG_PATH=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
+        # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
 
         run_verbose cmake \
           "${config_options[@]}" \
@@ -1433,18 +1433,18 @@ function _build_llvm_compiler_rt()
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          mkdir -pv "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
+          mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
           for i in lib/windows/libclang_rt.*.a
           do
-              cp -v $i "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
+              cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
           done
 
-          mkdir -pv "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}/bin"
+          mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/bin"
           for i in lib/windows/libclang_rt.*.dll
           do
               if [ -f $i ]
               then
-                  cp -v $i "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}/bin"
+                  cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/bin"
               fi
           done
         fi
@@ -1500,22 +1500,22 @@ function _build_llvm_libcxx()
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}")
         else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
         fi
 
         config_options+=("-DCMAKE_BUILD_TYPE=Release")
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
         config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
@@ -1597,22 +1597,22 @@ function _build_llvm_libcxx()
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}")
         else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
         fi
 
         config_options+=("-DCMAKE_BUILD_TYPE=Release")
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
 
@@ -1695,22 +1695,22 @@ function _build_llvm_libcxx()
 
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}")
         else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_BINARIES_INSTALL_FOLDER_PATH}")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
         fi
 
         config_options+=("-DCMAKE_BUILD_TYPE=Release")
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_CROSS_COMPILE_PREFIX}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
 
         config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
         config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
@@ -1783,13 +1783,13 @@ function _build_llvm_libcxx()
         # Append libunwind to libc++.
         if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         then
-          run_verbose "${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
-                  "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}/lib/libc++.a" \
-                  "${XBB_BINARIES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_CROSS_COMPILE_PREFIX}/lib/libunwind.a"
+          run_verbose "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
+                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/lib/libc++.a" \
+                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/${XBB_TARGET_TRIPLET}/lib/libunwind.a"
         else
-          run_verbose "${XBB_BINARIES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
-                  "${XBB_BINARIES_INSTALL_FOLDER_PATH}/lib/libc++.a" \
-                  "${XBB_BINARIES_INSTALL_FOLDER_PATH}/lib/libunwind.a"
+          run_verbose "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
+                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/libc++.a" \
+                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/libunwind.a"
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output-$(ndate).txt"
@@ -1813,11 +1813,11 @@ function strip_libs()
       echo
       echo "Stripping libraries..."
 
-      cd "${XBB_BINARIES_INSTALL_FOLDER_PATH}"
+      cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}"
 
       if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
       then
-        local libs=$(find "${XBB_BINARIES_INSTALL_FOLDER_PATH}" -type f \( -name \*.a -o -name \*.o -o -name \*.so \))
+        local libs=$(find "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}" -type f \( -name \*.a -o -name \*.o -o -name \*.so \))
         for lib in ${libs}
         do
           echo "strip -S ${lib}"
