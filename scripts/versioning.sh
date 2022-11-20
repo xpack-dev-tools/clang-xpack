@@ -265,7 +265,7 @@ function build_common()
 
 function build_application_versioned_components()
 {
-  if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+  if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
   then
     XBB_LLVM_BOOTSTRAP_BRANDING="${XBB_APPLICATION_DISTRO_NAME} bootstrap ${XBB_TARGET_MACHINE}"
 
