@@ -1369,13 +1369,17 @@ function build_llvm_compiler_rt()
         config_options+=("-DCMAKE_CROSSCOMPILING=ON")
         config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
 
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
+        # config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
+        config_options+=("-DCMAKE_C_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang)")
         config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
+        # config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
+        config_options+=("-DCMAKE_CXX_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang++)")
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        # config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
+        config_options+=("-DCMAKE_AR=$(which llvm-ar)")
+        # config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
+        config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
 
         if [ "${HOST_MACHINE}" == "x86_64" ]
         then
