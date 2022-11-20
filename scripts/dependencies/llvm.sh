@@ -107,6 +107,7 @@ function build_llvm()
 
         # Required to satisfy the reference to /opt/xbb/lib/libncurses.so.
         xbb_activate_libs
+        xbb_activate_dependencies_dev
 
         # CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
         CPPFLAGS="${XBB_CPPFLAGS}"
@@ -118,7 +119,7 @@ function build_llvm()
       else
 
         # Use install/libs/lib & include
-        xbb_activate_installed_dev
+        xbb_activate_dependencies_dev
 
         CPPFLAGS="${XBB_CPPFLAGS}"
         CFLAGS="${XBB_CFLAGS_NO_W}"
