@@ -552,31 +552,30 @@ function build_llvm()
           run_verbose rm -rf man
         )
 
-          if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+        if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+        then
+          echo
+          echo "Add wrappers instead of links..."
+
+          cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+
+          # dlltool-wrapper windres-wrapper llvm-wrapper
+          for exec in clang-target-wrapper
+          do
+            run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_TARGET_TRIPLET}\"
+          done
+
+          if [ ! -L clang.exe ] && [ -f clang.exe ] && [ ! -f clang-${llvm_version_major}.exe ]
           then
-            echo
-            echo "Add wrappers instead of links..."
-
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
-
-            # dlltool-wrapper windres-wrapper llvm-wrapper
-            for exec in clang-target-wrapper
-            do
-              run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_TARGET_TRIPLET}\"
-            done
-
-            if [ ! -L clang.exe ] && [ -f clang.exe ] && [ ! -f clang-${llvm_version_major}.exe ]
-            then
-              mv -v clang.exe clang-${llvm_version_major}.exe
-            fi
-
-            # clang clang++ gcc g++ cc c99 c11 c++ addr2line ar
-            # dlltool ranlib nm objcopy strings strip windres
-            for exec in clang clang++ clang-cl clang-cpp
-            do
-                ln -sfv clang-target-wrapper.exe ${exec}.exe
-            done
+            mv -v clang.exe clang-${llvm_version_major}.exe
           fi
+
+          # clang clang++ gcc g++ cc c99 c11 c++ addr2line ar
+          # dlltool ranlib nm objcopy strings strip windres
+          for exec in clang clang++ clang-cl clang-cpp
+          do
+              ln -sfv clang-target-wrapper.exe ${exec}.exe
+          done
         fi
 
         if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
@@ -590,12 +589,9 @@ function build_llvm()
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
 
-      if true # [ ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-      then
-        copy_license \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
-          "${llvm_folder_name}"
-      fi
+      copy_license \
+        "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+        "${llvm_folder_name}"
     )
 
     mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
