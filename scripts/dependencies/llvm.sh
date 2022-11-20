@@ -1381,14 +1381,14 @@ function build_llvm_compiler_rt()
         # config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
         config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
 
-        if [ "${HOST_MACHINE}" == "x86_64" ]
+        if [ "${XBB_HOST_MACHINE}" == "x86_64" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu")
-        elif [ "${HOST_MACHINE}" == "i686" ]
+        elif [ "${XBB_HOST_MACHINE}" == "i686" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          echo "Unsupported HOST_MACHINE=${HOST_MACHINE} in ${FUNCNAME[0]}()"
+          echo "Unsupported XBB_HOST_MACHINE=${XBB_HOST_MACHINE} in ${FUNCNAME[0]}()"
           exit 1
         fi
 
