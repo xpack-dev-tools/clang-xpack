@@ -46,7 +46,7 @@ function build_llvm()
   do
     case "$1" in
       --bootstrap )
-        bootstrap="y"
+        is_bootstrap="y"
         ;;
 
       * )
@@ -507,86 +507,50 @@ function build_llvm()
           run_verbose cmake --build . --target install/strip
         fi
 
-        if false # [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          (
-            # Add wrappers for the mingw-w64 binaries.
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin"
+        (
+          if [ "${is_bootstrap}" != "y" ]
+          then
+            echo
+            echo "Removing less used files..."
 
-            cp "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
-
-            for exec in clang-target-wrapper dlltool-wrapper windres-wrapper llvm-wrapper
+            # Remove less used LLVM libraries and leave only the toolchain.
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+            for f in bugpoint c-index-test \
+              clang-apply-replacements clang-change-namespace \
+              clang-extdef-mapping clang-include-fixer clang-move clang-query \
+              clang-reorder-fields find-all-symbols \
+              count dsymutil FileCheck \
+              llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
+              llvm-cat llvm-cfi-verify llvm-cvtres \
+              llvm-dwarfdump llvm-dwp \
+              llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
+              llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
+              llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
+              llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
+              llvm-profgen \
+              llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
+              llvm-stress llvm-undname llvm-xray \
+              modularize not obj2yaml opt pp-trace sancov sanstats \
+              scan-build scan-build.bat scan-view \
+              verify-uselistorder yaml-bench yaml2obj
             do
-              ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -O2 -v -o ${exec}
+              rm -rfv $f $f${XBB_HOST_DOT_EXE}
             done
 
-            for exec in clang clang++ gcc g++ cc c99 c11 c++ as
-            do
-              ln -sf clang-target-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
-            done
-            for exec in addr2line ar ranlib nm objcopy strings strip
-            do
-              ln -sf llvm-${exec} ${XBB_TARGET_TRIPLET}-${exec}
-            done
-            if [ -f "llvm-windres" ]
-            then
-              # windres can't use llvm-wrapper, as that loses the original
-              # target arch prefix.
-              ln -sf llvm-windres ${XBB_TARGET_TRIPLET}-windres
-            else
-              ln -sf windres-wrapper ${XBB_TARGET_TRIPLET}-windres
-            fi
-            ln -sf dlltool-wrapper ${XBB_TARGET_TRIPLET}-dlltool
-            for exec in ld objdump
-            do
-              ln -sf ${exec}-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
-            done
-          )
-        else
-          (
-            if true
-            then
-              echo
-              echo "Removing less used files..."
+            # So far not used.
+            rm -rfv libclang.dll
+            rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
 
-              # Remove less used LLVM libraries and leave only the toolchain.
-              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
-              for f in bugpoint c-index-test \
-                clang-apply-replacements clang-change-namespace \
-                clang-extdef-mapping clang-include-fixer clang-move clang-query \
-                clang-reorder-fields find-all-symbols \
-                count dsymutil FileCheck \
-                llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
-                llvm-cat llvm-cfi-verify llvm-cvtres \
-                llvm-dwarfdump llvm-dwp \
-                llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
-                llvm-ifs llvm-install-name-tool llvm-jitlink llvm-link \
-                llvm-lipo llvm-lto llvm-lto2 llvm-mc llvm-mca llvm-ml \
-                llvm-modextract llvm-mt llvm-opt-report llvm-pdbutil \
-                llvm-profgen \
-                llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
-                llvm-stress llvm-undname llvm-xray \
-                modularize not obj2yaml opt pp-trace sancov sanstats \
-                scan-build scan-build.bat scan-view \
-                verify-uselistorder yaml-bench yaml2obj
-              do
-                rm -rfv $f $f${XBB_HOST_DOT_EXE}
-              done
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
+            run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
 
-              # So far not used.
-              rm -rfv libclang.dll
-              rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
-
-              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
-              run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
-
-              cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
-              run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
-              # rm -rf cmake/lld cmake/llvm cmake/polly
-            fi
-            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/share"
-            run_verbose rm -rf man
-          )
+            cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
+            run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
+            # rm -rf cmake/lld cmake/llvm cmake/polly
+          fi
+          cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/share"
+          run_verbose rm -rf man
+        )
 
           if [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
