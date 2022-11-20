@@ -146,7 +146,7 @@ function build_binutils_ld_gold()
             config_options+=("--disable-shared-libgcc")
 
           else
-            echo "Oops! Unsupported ${XBB_HOST_PLATFORM}."
+            echo "Unsupported ${XBB_HOST_PLATFORM} in ${FUNCNAME[0]}()"
             exit 1
           fi
 
