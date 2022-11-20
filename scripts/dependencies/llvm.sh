@@ -1332,8 +1332,11 @@ function test_clang_one()
   )
 }
 
+
+# -----------------------------------------------------------------------------
+
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
-function _build_llvm_compiler_rt()
+function build_llvm_compiler_rt()
 {
   local name_suffix="${1:-""}"
 
@@ -1462,7 +1465,7 @@ function _build_llvm_compiler_rt()
 
 }
 
-function _build_llvm_libcxx()
+function build_llvm_libcxx()
 {
   local name_suffix="${1:-""}"
 
