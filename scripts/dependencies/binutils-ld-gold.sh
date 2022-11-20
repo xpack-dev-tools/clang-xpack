@@ -80,10 +80,6 @@ function build_binutils_ld_gold()
 
         # Used to enable wildcard; inspired from arm-none-eabi-gcc.
         LDFLAGS+=" -Wl,${XBB_FOLDER_PATH}/usr/${XBB_CROSS_COMPILE_PREFIX}/lib/CRT_glob.o"
-      elif [ "${XBB_TARGET_PLATFORM}" == "linux" ]
-      then
-        xbb_activate_cxx_rpath
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
       export CPPFLAGS

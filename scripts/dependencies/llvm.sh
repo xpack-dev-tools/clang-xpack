@@ -127,12 +127,9 @@ function build_llvm()
         # Non-static will have trouble to find the llvm bootstrap libc++.
         LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
         # LDFLAGS="${XBB_LDFLAGS_APP}"
+        xbb_adjust_ldflags_rpath
 
-        if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
-        then
-          xbb_activate_cxx_rpath
-          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-        elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
+        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           LDFLAGS+=" -Wl,-search_paths_first"
 
