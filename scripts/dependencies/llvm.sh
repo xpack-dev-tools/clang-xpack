@@ -612,41 +612,56 @@ function build_llvm()
   tests_add "test_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
-function _test_llvm_bootstrap()
-{
-  (
-    # Use XBB libs in native-llvm
-    xbb_activate_libs
-
-    test_llvm "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${name_suffix}/bin" "${XBB_BOOTSTRAP_SUFFIX}"
-  )
-}
-
-
 function test_llvm()
 {
   local test_bin_path="$1"
-  local name_suffix="${2:-""}"
+  shift
+
+  local name_suffix=""
+
+  local triplet="" # "x86_64-w64-mingw32"
+  local name_prefix=""
+  local is_bootstrap="n"
+
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --triplet=* )
+        triplet=$(xbb_parse_option "$1")
+        name_prefix="${triplet}-"
+        ;;
+
+      --bootstrap )
+        is_bootstrap="y"
+        ;;
+
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+    shift
+  done
 
   echo
-  echo "Testing the llvm${name_suffix} binaries..."
+  echo "Testing the ${name_prefix}llvm binaries..."
 
   (
 
     run_verbose ls -l "${test_bin_path}"
 
-    if [ "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+    if [ "${is_bootstrap}" == "y" ]
     then
       # Help the loader find the .dll files if the native is not static.
-      export WINEPATH=${test_bin_path}/${XBB_TARGET_TRIPLET}/bin
+      export WINEPATH=${test_bin_path}/${triplet}/bin
 
-      CC="${test_bin_path}/${XBB_TARGET_TRIPLET}-clang"
-      CXX="${test_bin_path}/${XBB_TARGET_TRIPLET}-clang++"
-      DLLTOOL="${test_bin_path}/${XBB_TARGET_TRIPLET}-dlltool"
-      WIDL="${test_bin_path}/${XBB_TARGET_TRIPLET}-widl"
+      CC="${test_bin_path}/${triplet}-clang"
+      CXX="${test_bin_path}/${triplet}-clang++"
+      DLLTOOL="${test_bin_path}/${triplet}-dlltool"
+      WIDL="${test_bin_path}/${triplet}-widl"
       GENDEF="${test_bin_path}/gendef"
-      AR="${test_bin_path}/${XBB_TARGET_TRIPLET}-ar"
-      RANLIB="${test_bin_path}/${XBB_TARGET_TRIPLET}-ranlib"
+      AR="${test_bin_path}/${triplet}-ar"
+      RANLIB="${test_bin_path}/${triplet}-ranlib"
     else
       CC="${test_bin_path}/clang"
       CXX="${test_bin_path}/clang++"
@@ -666,10 +681,10 @@ function test_llvm()
     fi
 
     echo
-    echo "Testing if llvm binaries start properly..."
+    echo "Testing if the llvm binaries start properly..."
 
-    run_app "${test_bin_path}/clang" --version
-    run_app "${test_bin_path}/clang++" --version
+    run_app "${CC}" --version
+    run_app "${CXX}" --version
 
     if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
@@ -678,7 +693,7 @@ function test_llvm()
 
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    run_app "${test_bin_path}/lld" --version || true
+    # run_app "${test_bin_path}/lld" --version || true
     if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
       run_app "${test_bin_path}/ld.lld" --version || true
@@ -722,10 +737,23 @@ function test_llvm()
     echo "Testing if clang compiles simple Hello programs..."
 
     rm -rf "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
-    mkdir -pv "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"; cd "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
+    mkdir -pv "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
+    cd "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
 
     echo
     echo "pwd: $(pwd)"
+
+    # -------------------------------------------------------------------------
+
+    run_verbose cp -rv "${helper_folder_path}/tests/c-cpp" .
+    chmod -R a+w c-cpp
+    run_verbose cp -rv "${helper_folder_path}/tests/wine"/* c-cpp
+    chmod -R a+w c-cpp
+
+    # run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
+    # chmod -R a+w fortran
+
+    # -------------------------------------------------------------------------
 
     local VERBOSE_FLAG=""
     if [ "${XBB_IS_DEVELOP}" == "y" ]
@@ -733,21 +761,20 @@ function test_llvm()
       VERBOSE_FLAG="-v"
     fi
 
-    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
     then
       LD_GC_SECTIONS="-Wl,--gc-sections"
-    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
     then
       LD_GC_SECTIONS="-Wl,-dead_strip"
     else
       LD_GC_SECTIONS=""
     fi
 
-    echo
-    env | sort
+    xbb_show_env_develop
 
     run_verbose uname
-    if [ "${XBB_HOST_PLATFORM}" != "darwin" ]
+    if [ "${XBB_BUILD_PLATFORM}" != "darwin" ]
     then
       run_verbose uname -o
     fi
@@ -764,10 +791,6 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    run_verbose cp -v -r "${helper_folder_path}/tests/c-cpp"/* .
-
-    # -------------------------------------------------------------------------
-
     (
       if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
@@ -777,16 +800,16 @@ function test_llvm()
         export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
         echo
         echo "LD_RUN_PATH=${LD_RUN_PATH}"
-      elif [ "${XBB_HOST_PLATFORM}" == "win32" -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+      elif [ "${XBB_HOST_PLATFORM}" == "win32" ] # -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
       then
         # For libwinpthread-1.dll, possibly other.
         if [ "$(uname -o)" == "Msys" ]
         then
-          export PATH="${test_bin_path}/lib;${PATH:-}"
+          export PATH="${test_bin_path}/../lib;${PATH:-}"
           echo "PATH=${PATH}"
         elif [ "$(uname)" == "Linux" ]
         then
-          export WINEPATH="${test_bin_path}/lib;${WINEPATH:-}"
+          export WINEPATH="${test_bin_path}/../lib;${WINEPATH:-}"
           echo "WINEPATH=${WINEPATH}"
         fi
       fi
@@ -874,6 +897,9 @@ function test_llvm()
     fi
 
     # -------------------------------------------------------------------------
+
+    (
+      cd c-cpp
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
@@ -1044,7 +1070,7 @@ int main() {
 __EOF__
       run_app ${test_bin_path}/clangd --check=${tmp}/unchecked-exception.cpp
     fi
-
+    )
   )
 
   echo
@@ -1054,6 +1080,9 @@ __EOF__
 # ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
 function test_clang_one()
 {
+  echo_develop
+  echo_develop "[test_clang_one $@]"
+
   (
     unset IFS
 
@@ -1169,6 +1198,9 @@ function test_clang_one()
       LDFLAGS+=" -v"
       LDXXFLAGS+=" -v"
     fi
+
+    (
+      cd c-cpp
 
     # Test C compile and link in a single step.
     run_app "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
@@ -1301,7 +1333,7 @@ function test_clang_one()
 
       run_app ./${prefix}weak-override${suffix}
     )
-
+    )
 
     # -------------------------------------------------------------------------
   )
