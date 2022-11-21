@@ -87,7 +87,6 @@ function build_mingw_clang_bootstrap()
   # Build a bootstrap toolchain, that runs on Linux and creates Windows
   # binaries.
   (
-
     # Build libraries refered by LLVM.
     build_zlib "${XBB_ZLIB_VERSION}"
     build_ncurses "${XBB_NCURSES_VERSION}"
@@ -99,7 +98,7 @@ function build_mingw_clang_bootstrap()
 
     # Build LLVM with the host XBB compiler.
     # Has a reference to /opt/xbb/lib/libncurses.so.
-    build_llvm "${XBB_LLVM_VERSION}" --bootstrap
+    build_mingw_llvm_first "${XBB_LLVM_VERSION}"
     add_mingw_wrappers
 
     # Build native widl & gendef.
@@ -112,14 +111,15 @@ function build_mingw_clang_bootstrap()
     # prepare_bootstrap_cross_env
     xbb_activate_installed_bin
 
-    build_llvm_compiler_rt # "${XBB_BOOTSTRAP_SUFFIX}"
+    xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
+
+    build_mingw_llvm_compiler_rt # "${XBB_BOOTSTRAP_SUFFIX}"
 
     build_mingw_crt
     build_mingw_winpthreads
     # build_mingw_winstorecompat # Not needed by the bootstrap.
 
-    build_llvm_libcxx "${XBB_BOOTSTRAP_SUFFIX}" # libunwind, libcxx, libcxxabi
-
+    build_mingw_llvm_libcxx # "${XBB_BOOTSTRAP_SUFFIX}" # libunwind, libcxx, libcxxabi
   )
 }
 
@@ -188,8 +188,8 @@ function build_common()
       # Finally build LLVM clang.
       build_llvm "${XBB_LLVM_VERSION}"
 
-      build_llvm_compiler_rt
-      build_llvm_libcxx # libunwind, libcxx, libcxxabi
+      build_mingw_llvm_compiler_rt
+      build_mingw_llvm_libcxx # libunwind, libcxx, libcxxabi
 
     fi
 
