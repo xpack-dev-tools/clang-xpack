@@ -1307,6 +1307,191 @@ function test_clang_one()
 
 # -----------------------------------------------------------------------------
 
+function build_mingw_llvm_first()
+{
+  export ACTUAL_LLVM_VERSION="$1"
+  shift
+
+  local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
+  local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
+
+  export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
+
+  local llvm_archive="${llvm_src_folder_name}.tar.xz"
+  local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
+
+  local llvm_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-first"
+
+  mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
+
+  local llvm_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
+  if [ ! -f "${llvm_stamp_file_path}" ]
+  then
+
+    mkdir -pv "${XBB_SOURCES_FOLDER_PATH}"
+    cd "${XBB_SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${llvm_url}" "${llvm_archive}" \
+      "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
+
+    # Disable the use of libxar.
+    run_verbose sed -i.bak \
+      -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
+      "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
+
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    then
+      # Add -lpthread -ldl
+      run_verbose sed -i.bak \
+        -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
+        "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
+    fi
+
+    (
+      cd "${llvm_src_folder_name}/llvm/tools"
+
+      # This trick will allow to build the toolchain only and still get clang
+      for p in clang lld lldb
+      do
+        if [ ! -e $p ]
+        then
+            ln -s ../../$p .
+        fi
+      done
+    )
+
+    (
+      mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
+      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
+
+      # Use install/libs/lib & include
+      xbb_activate_dependencies_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      # Non-static will have trouble to find the llvm bootstrap libc++.
+      # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
+      xbb_adjust_ldflags_rpath
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "cmake.done" ]
+      then
+        (
+          xbb_show_env_develop
+
+          echo
+          echo "Running mingw-64-llvm-first cmake..."
+
+          config_options=()
+
+          config_options+=("-G" "Ninja")
+
+          # https://llvm.org/docs/GettingStarted.html
+          # https://llvm.org/docs/CMake.html
+
+          # flang fails:
+          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
+
+          # Colon separated list of directories clang will search for headers.
+          # config_options+=("-DC_INCLUDE_DIRS=:")
+
+          # Distributions should never be built using the
+          # BUILD_SHARED_LIBS CMake option.
+          # https://llvm.org/docs/BuildingADistribution.html
+          config_options+=("-DBUILD_SHARED_LIBS=OFF")
+
+          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+
+          config_options+=("-DCMAKE_BUILD_TYPE=Release")
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
+
+          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
+          config_options+=("-DCMAKE_C_COMPILER=${CC}")
+
+          config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
+          config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
+          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
+
+          config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
+
+          # Please note the trailing space.
+          config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
+          config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
+          config_options+=("-DLLD_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
+          config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
+
+          config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
+          config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+
+
+          # Mind the links in llvm to clang, lld, lldb.
+          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+          config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+          config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+
+
+          # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
+          # This option is not available on Windows
+          # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
+          # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+
+          # compiler-rt, libunwind, libc++ and libc++-abi are built
+          # in separate steps intertwined with mingw.
+
+
+          echo
+          which ${CC} && ${CC} --version && echo || true
+
+          run_verbose cmake \
+            "${config_options[@]}" \
+            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
+
+          touch "cmake.done"
+
+        ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/cmake-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running mingw-w64-llvm-first build..."
+
+        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        then
+          run_verbose_timed cmake --build . --verbose
+          run_verbose cmake --build .  --verbose  --target install/strip
+        else
+          run_verbose_timed cmake --build .
+          run_verbose cmake --build . --target install/strip
+        fi
+
+
+        show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
+        show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
+
+      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
+
+      copy_license \
+        "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm" \
+        "${llvm_folder_name}"
+    )
+
+    mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
+    touch "${llvm_stamp_file_path}"
+
+  else
+    echo "Component mingw-w64-llvm-first already installed."
+  fi
+
+  tests_add "test_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin" "${XBB_BOOTSTRAP_SUFFIX}"
+}
+
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
 function build_llvm_compiler_rt()
 {
