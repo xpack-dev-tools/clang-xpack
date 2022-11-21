@@ -1567,6 +1567,8 @@ function build_llvm_compiler_rt()
         config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON")
         config_options+=("-DSANITIZER_CXX_ABI=libc++")
 
+        config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+
         if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
           # Otherwise it'll generate two -mmacosx-version-min
