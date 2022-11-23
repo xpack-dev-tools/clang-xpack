@@ -842,37 +842,35 @@ function test_mingw_llvm()
 
     # -------------------------------------------------------------------------
 
-if false
-then
-    test_clang_mingw_one "${test_bin_path}" "${triplet}"
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --gc
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --lto
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --gc --lto
+    test_mingw_clang_single "${test_bin_path}"
+    test_mingw_clang_single "${test_bin_path}" --gc
+    test_mingw_clang_single "${test_bin_path}" --lto
+    test_mingw_clang_single "${test_bin_path}" --gc --lto
 
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --gc --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --lto --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --gc --lto --crt
+    test_mingw_clang_single "${test_bin_path}" --crt
+    test_mingw_clang_single "${test_bin_path}" --gc --crt
+    test_mingw_clang_single "${test_bin_path}" --lto --crt
+    test_mingw_clang_single "${test_bin_path}" --gc --lto --crt
 
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --gc
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --lto
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --gc --lto
+    test_mingw_clang_single "${test_bin_path}" --static-lib
+    test_mingw_clang_single "${test_bin_path}" --static-lib --gc
+    test_mingw_clang_single "${test_bin_path}" --static-lib --lto
+    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --lto
 
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --gc --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --lto --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static-lib --gc --lto --crt
+    test_mingw_clang_single "${test_bin_path}" --static-lib --crt
+    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --crt
+    test_mingw_clang_single "${test_bin_path}" --static-lib --lto --crt
+    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --lto --crt
 
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --gc
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --lto
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --gc --lto
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --gc --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --lto --crt
-    test_clang_mingw_one "${test_bin_path}" "${triplet}" --static --gc --lto --crt
-fi
+    test_mingw_clang_single "${test_bin_path}" --static
+    test_mingw_clang_single "${test_bin_path}" --static --gc
+    test_mingw_clang_single "${test_bin_path}" --static --lto
+    test_mingw_clang_single "${test_bin_path}" --static --gc --lto
+    test_mingw_clang_single "${test_bin_path}" --static --crt
+    test_mingw_clang_single "${test_bin_path}" --static --gc --crt
+    test_mingw_clang_single "${test_bin_path}" --static --lto --crt
+    test_mingw_clang_single "${test_bin_path}" --static --gc --lto --crt
+
     # -------------------------------------------------------------------------
 
     (
@@ -1055,16 +1053,13 @@ __EOF__
 }
 
 # ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
-function test_clang_mingw_one()
+function test_mingw_clang_single()
 {
   echo_develop
-  echo_develop "[test_clang_mingw_one $@]"
+  echo_develop "[test_mingw_clang_single $@]"
 
   local test_bin_path="$1"
   shift
-  local mingw_triplet="$1"
-  shift
-  local suffix="" # "$1"
   # shift
 
   (
@@ -1077,41 +1072,47 @@ function test_clang_mingw_one()
     local is_static_lib=""
 
     local prefix=""
+    local suffix=""
 
 
     while [ $# -gt 0 ]
     do
       case "$1" in
 
-        --gc)
-        is_gc="y"
-        shift
-        ;;
+        --suffix=* )
+          suffix=$(xbb_parse_option "$1")
+          shift
+          ;;
 
-        --lto)
-        is_lto="y"
-        shift
-        ;;
+        --gc )
+          is_gc="y"
+          shift
+          ;;
 
-        --crt)
-        is_crt="y"
-        shift
-        ;;
+        --lto )
+          is_lto="y"
+          shift
+          ;;
 
-        --static)
-        is_static="y"
-        shift
-        ;;
+        --crt )
+          is_crt="y"
+          shift
+          ;;
 
-        --static-lib)
-        is_static_lib="y"
-        shift
-        ;;
+        --static )
+          is_static="y"
+          shift
+          ;;
 
-      *)
-        echo "Unsupported action/option $1 in ${FUNCNAME[0]}()"
-        exit 1
-        ;;
+        --static-lib )
+          is_static_lib="y"
+          shift
+          ;;
+
+        * )
+          echo "Unsupported option $1 in ${FUNCNAME[0]}()"
+          exit 1
+          ;;
 
       esac
     done
