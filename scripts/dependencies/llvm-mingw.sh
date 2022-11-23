@@ -692,12 +692,12 @@ function build_mingw_llvm_libcxx()
     echo "Component mingw-w64-llvm-libcxx already installed."
   fi
 
-  tests_add "test_llvm_mingw" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+  tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
 # -----------------------------------------------------------------------------
 
-function test_llvm_mingw()
+function test_mingw_llvm()
 {
   local test_bin_path="$1"
   shift
