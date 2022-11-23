@@ -176,8 +176,8 @@ function build_mingw_llvm_first()
         fi
 
 
-        show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
-        show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
+        show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
+        show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
 
@@ -745,12 +745,12 @@ function test_llvm_mingw()
     AR="${test_bin_path}/${triplet}-ar"
     RANLIB="${test_bin_path}/${triplet}-ranlib"
 
-    show_libs "${test_bin_path}/clang"
-    show_libs "${test_bin_path}/lld"
+    show_host_libs "${test_bin_path}/clang"
+    show_host_libs "${test_bin_path}/lld"
     if [ -f "${test_bin_path}/lldb" ]
     then
       # lldb not available on Ubuntu 16 Arm.
-      show_libs "${test_bin_path}/lldb"
+      show_host_libs "${test_bin_path}/lldb"
     fi
 
     echo
