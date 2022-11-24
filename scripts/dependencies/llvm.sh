@@ -591,8 +591,8 @@ function build_llvm()
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
         else
-          show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
-          show_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
+          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
+          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
@@ -672,12 +672,12 @@ function test_llvm()
       RANLIB="${test_bin_path}/llvm-ranlib"
     fi
 
-    show_libs "${test_bin_path}/clang"
-    show_libs "${test_bin_path}/lld"
-    if [ -f "${test_bin_path}/lldb" ]
+    show_host_libs "${test_bin_path}/clang"
+    show_host_libs "${test_bin_path}/lld"
+    if [ -f "${test_bin_path}/lldb${XBB_HOST_DOT_EXE}" ]
     then
       # lldb not available on Ubuntu 16 Arm.
-      show_libs "${test_bin_path}/lldb"
+      show_host_libs "${test_bin_path}/lldb"
     fi
 
     echo
@@ -981,41 +981,41 @@ function test_llvm()
     # Tests borrowed from the llvm-mingw project.
 
     # run_app "${CC}" hello.c -o hello${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
-    # show_libs hello
+    # show_target_libs hello
     # run_app ./hello
 
     # run_app "${CC}" setjmp-patched.c -o setjmp${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
-    # show_libs setjmp
+    # show_target_libs setjmp
     # run_app ./setjmp
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
       run_app "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG}
-      show_libs hello-tls
+      show_target_libs hello-tls
       run_app ./hello-tls
 
       run_app "${CC}" crt-test.c -o crt-test.exe ${VERBOSE_FLAG}
-      show_libs crt-test
+      show_target_libs crt-test
       run_app ./crt-test
 
       run_app "${CC}" autoimport-lib.c -shared -o autoimport-lib.dll -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG}
-      show_libs autoimport-lib.dll
+      show_target_libs autoimport-lib.dll
 
       run_app "${CC}" autoimport-main.c -o autoimport-main.exe -L. -lautoimport-lib ${VERBOSE_FLAG}
-      show_libs autoimport-main
+      show_target_libs autoimport-main
       run_app ./autoimport-main
 
       # The IDL output isn't arch specific, but test each arch frontend
       run_app "${WIDL}" idltest.idl -h -o idltest.h
       run_app "${CC}" idltest.c -I. -o idltest.exe -lole32 ${VERBOSE_FLAG}
-      show_libs idltest
+      show_target_libs idltest
       run_app ./idltest
     fi
 
     # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
     # do
     #   run_app ${CXX} $test.cpp -o $test${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
-    #   show_libs $test
+    #   show_target_libs $test
     #   run_app ./$test
     # done
 
@@ -1023,14 +1023,14 @@ function test_llvm()
     then
       run_app ${CXX} hello-exception.cpp -static -o hello-exception-static${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
 
-      show_libs hello-exception-static
+      show_target_libs hello-exception-static
       run_app ./hello-exception-static
 
       run_app ${CXX} tlstest-lib.cpp -shared -o tlstest-lib.dll -Wl,--out-implib,libtlstest-lib.dll.a ${VERBOSE_FLAG}
-      show_libs tlstest-lib.dll
+      show_target_libs tlstest-lib.dll
 
       run_app ${CXX} tlstest-main.cpp -o tlstest-main.exe ${VERBOSE_FLAG}
-      show_libs tlstest-main
+      show_target_libs tlstest-main
       run_app ./tlstest-main
     fi
 
@@ -1050,7 +1050,7 @@ function test_llvm()
       LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
       export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
 
-      show_libs throwcatch-main
+      show_target_libs throwcatch-main
       run_app ./throwcatch-main
     )
     # -------------------------------------------------------------------------
@@ -1255,17 +1255,17 @@ function test_clang_one()
     # Tests borrowed from the llvm-mingw project.
 
     run_app "${CC}" hello.c -o ${prefix}hello${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
-    show_libs ${prefix}hello${suffix}
+    show_target_libs ${prefix}hello${suffix}
     run_app ./${prefix}hello${suffix}
 
     run_app "${CC}" setjmp-patched.c -o ${prefix}setjmp${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
-    show_libs ${prefix}setjmp${suffix}
+    show_target_libs ${prefix}setjmp${suffix}
     run_app ./${prefix}setjmp${suffix}
 
     for test in hello-cpp global-terminate
     do
       run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      show_libs ${prefix}${test}${suffix}
+      show_target_libs ${prefix}${test}${suffix}
       run_app ./${prefix}${test}${suffix}
     done
 
@@ -1274,26 +1274,26 @@ function test_clang_one()
 
       # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
       run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      show_libs ${prefix}longjmp-cleanup${suffix}
+      show_target_libs ${prefix}longjmp-cleanup${suffix}
       run_app ./${prefix}longjmp-cleanup${suffix}
 
       for test in hello-exception exception-locale exception-reduced
       do
         run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-        show_libs ${prefix}${test}${suffix}
+        show_target_libs ${prefix}${test}${suffix}
         run_app ./${prefix}${test}${suffix}
       done
 
     else
 
       run_app ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      show_libs ${prefix}longjmp-cleanup${suffix}
+      show_target_libs ${prefix}longjmp-cleanup${suffix}
       run_app ./${prefix}longjmp-cleanup${suffix}
 
       for test in hello-exception exception-locale exception-reduced
       do
         run_app ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-        show_libs ${prefix}${test}${suffix}
+        show_target_libs ${prefix}${test}${suffix}
         run_app ./${prefix}${test}${suffix}
       done
 
