@@ -745,7 +745,7 @@ function test_mingw_llvm()
     AR="${test_bin_path}/${triplet}-ar"
     RANLIB="${test_bin_path}/${triplet}-ranlib"
 
-    show_host_libs "${test_bin_path}/clang"
+    show_host_libs "$(realpath ${test_bin_path}/clang)"
     show_host_libs "${test_bin_path}/lld"
     if [ -f "${test_bin_path}/lldb" ]
     then
@@ -813,18 +813,10 @@ function test_mingw_llvm()
     run_verbose cp -rv "${helper_folder_path}/tests/wine"/* c-cpp
     chmod -R a+w c-cpp
 
-    # run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
-    # chmod -R a+w fortran
+    run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
+    chmod -R a+w fortran
 
     # -------------------------------------------------------------------------
-
-    local VERBOSE_FLAG=""
-    if [ "${XBB_IS_DEVELOP}" == "y" ]
-    then
-      VERBOSE_FLAG="-v"
-    fi
-
-    LD_GC_SECTIONS=""
 
     xbb_show_env_develop
 
@@ -842,199 +834,50 @@ function test_mingw_llvm()
 
     # -------------------------------------------------------------------------
 
-    test_mingw_clang_single "${test_bin_path}"
-    test_mingw_clang_single "${test_bin_path}" --gc
-    test_mingw_clang_single "${test_bin_path}" --lto
-    test_mingw_clang_single "${test_bin_path}" --gc --lto
+    test_compiler_single "${test_bin_path}"
+    test_compiler_single "${test_bin_path}" --gc
+    test_compiler_single "${test_bin_path}" --lto
+    test_compiler_single "${test_bin_path}" --gc --lto
 
-    test_mingw_clang_single "${test_bin_path}" --crt
-    test_mingw_clang_single "${test_bin_path}" --gc --crt
-    test_mingw_clang_single "${test_bin_path}" --lto --crt
-    test_mingw_clang_single "${test_bin_path}" --gc --lto --crt
+    test_compiler_single "${test_bin_path}" --static-lib
+    test_compiler_single "${test_bin_path}" --static-lib --gc
+    test_compiler_single "${test_bin_path}" --static-lib --lto
+    test_compiler_single "${test_bin_path}" --static-lib --gc --lto
 
-    test_mingw_clang_single "${test_bin_path}" --static-lib
-    test_mingw_clang_single "${test_bin_path}" --static-lib --gc
-    test_mingw_clang_single "${test_bin_path}" --static-lib --lto
-    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --lto
+    test_compiler_single "${test_bin_path}" --static
+    test_compiler_single "${test_bin_path}" --static --gc
+    test_compiler_single "${test_bin_path}" --static --lto
+    test_compiler_single "${test_bin_path}" --static --gc --lto
 
-    test_mingw_clang_single "${test_bin_path}" --static-lib --crt
-    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --crt
-    test_mingw_clang_single "${test_bin_path}" --static-lib --lto --crt
-    test_mingw_clang_single "${test_bin_path}" --static-lib --gc --lto --crt
+    # Once again with --crt
+    test_compiler_single "${test_bin_path}" --crt
+    test_compiler_single "${test_bin_path}" --gc --crt
+    test_compiler_single "${test_bin_path}" --lto --crt
+    test_compiler_single "${test_bin_path}" --gc --lto --crt
 
-    test_mingw_clang_single "${test_bin_path}" --static
-    test_mingw_clang_single "${test_bin_path}" --static --gc
-    test_mingw_clang_single "${test_bin_path}" --static --lto
-    test_mingw_clang_single "${test_bin_path}" --static --gc --lto
-    test_mingw_clang_single "${test_bin_path}" --static --crt
-    test_mingw_clang_single "${test_bin_path}" --static --gc --crt
-    test_mingw_clang_single "${test_bin_path}" --static --lto --crt
-    test_mingw_clang_single "${test_bin_path}" --static --gc --lto --crt
+    test_compiler_single "${test_bin_path}" --static-lib --crt
+    test_compiler_single "${test_bin_path}" --static-lib --gc --crt
+    test_compiler_single "${test_bin_path}" --static-lib --lto --crt
+    test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt
+
+    test_compiler_single "${test_bin_path}" --static --crt
+    test_compiler_single "${test_bin_path}" --static --gc --crt
+    test_compiler_single "${test_bin_path}" --static --lto --crt
+    test_compiler_single "${test_bin_path}" --static --gc --lto --crt
 
     # -------------------------------------------------------------------------
 
     (
       cd c-cpp
 
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose "${CC}" -o add.o -c add.c -ffunction-sections -fdata-sections
-      else
-        run_app_verbose "${CC}" -o add.o -fpic -c add.c -ffunction-sections -fdata-sections
-      fi
-
-      rm -rf libadd-static.a
-      run_app_verbose "${AR}" -r ${VERBOSE_FLAG} libadd-static.a add.o
-      run_app_verbose "${RANLIB}" libadd-static.a
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        # The `--out-implib` creates an import library, which can be
-        # directly used with -l.
-        run_app_verbose "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows
-      else
-        run_app_verbose "${CC}" -o libadd-shared.${XBB_HOST_SHLIB_EXT} -shared add.o
-      fi
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose "${CC}" -o rt-add.o -c add.c -ffunction-sections -fdata-sections
-      else
-        run_app_verbose "${CC}" -o rt-add.o -fpic -c add.c -ffunction-sections -fdata-sections
-      fi
-
-      rm -rf libadd-add-static.a
-      run_app_verbose "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o
-      run_app_verbose "${RANLIB}" librt-add-static.a
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
-      else
-        run_app_verbose "${CC}" -o librt-add-shared.${XBB_HOST_SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
-      fi
-
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o static-adder${XBB_TARGET_DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-
-      test_mingw_expect "42" "static-adder${XBB_TARGET_DOT_EXE}" 40 2
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        # -ladd-shared is in fact libadd-shared.dll.a
-        # The library does not show as DLL, it is loaded dynamically.
-        run_app_verbose "${CC}" ${VERBOSE_FLAG} -o shared-adder${XBB_TARGET_DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-      else
-        run_app_verbose "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-      fi
-
-      (
-        # LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        # export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-        test_mingw_expect "42" "shared-adder${XBB_TARGET_DOT_EXE}" 40 2
-      )
-
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${XBB_TARGET_DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-
-      test_mingw_expect "42" "rt-static-adder${XBB_TARGET_DOT_EXE}" 40 2
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        # -lrt-add-shared is in fact librt-add-shared.dll.a
-        # The library does not show as DLL, it is loaded dynamically.
-        run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${XBB_TARGET_DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-      else
-        run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-      fi
-
-      (
-        # LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        # export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-        test_mingw_expect "42" "rt-shared-adder${XBB_TARGET_DOT_EXE}" 40 2
-      )
-
-      # -------------------------------------------------------------------------
-      # Tests borrowed from the llvm-mingw project.
-
-      # run_app_verbose "${CC}" hello.c -o hello${XBB_TARGET_DOT_EXE} ${VERBOSE_FLAG} -lm
-      # show_target_libs hello
-      # run_app_verbose ./hello
-
-      # run_app_verbose "${CC}" setjmp-patched.c -o setjmp${XBB_TARGET_DOT_EXE} ${VERBOSE_FLAG} -lm
-      # show_target_libs setjmp
-      # run_app_verbose ./setjmp
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose "${CC}" "hello-tls.c" -o "hello-tls${XBB_TARGET_DOT_EXE}" ${VERBOSE_FLAG}
-        show_target_libs "hello-tls${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./hello-tls"
-
-        run_app_verbose "${CC}" "crt-test.c" -o "crt-test${XBB_TARGET_DOT_EXE}" ${VERBOSE_FLAG}
-        show_target_libs "crt-test${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./crt-test"
-
-        run_app_verbose "${CC}" "autoimport-lib.c" -shared -o "autoimport-lib.dll" -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG}
-        show_target_libs "autoimport-lib.dll"
-
-        run_app_verbose "${CC}" "autoimport-main.c" -o "autoimport-main${XBB_TARGET_DOT_EXE}" -L. -lautoimport-lib ${VERBOSE_FLAG}
-        show_target_libs "autoimport-main${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./autoimport-main"
-
-        # The IDL output isn't arch specific, but test each arch frontend
-        run_app_verbose "${WIDL}" idltest.idl -h -o idltest.h
-        run_app_verbose "${CC}" idltest.c -I. -o idltest${XBB_TARGET_DOT_EXE} -lole32 ${VERBOSE_FLAG}
-        show_target_libs idltest${XBB_TARGET_DOT_EXE}
-        run_app_verbose ./idltest
-      fi
-
-      # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
-      # do
-      #   run_app_verbose ${CXX} $test.cpp -o $test${XBB_TARGET_DOT_EXE} ${VERBOSE_FLAG}
-      #   show_target_libs $test
-      #   run_app_verbose ./$test
-      # done
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose ${CXX} "hello-exception.cpp" -static -o "hello-exception-static${XBB_TARGET_DOT_EXE}" ${VERBOSE_FLAG}
-
-        show_target_libs "hello-exception-static${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./hello-exception-static"
-
-        run_app_verbose ${CXX} "tlstest-lib.cpp" -shared -o "tlstest-lib.dll" -Wl,--out-implib,libtlstest-lib.dll.a ${VERBOSE_FLAG}
-        show_target_libs "tlstest-lib.dll"
-
-        run_app_verbose ${CXX} "tlstest-main.cpp" -o "tlstest-main${XBB_TARGET_DOT_EXE}" ${VERBOSE_FLAG}
-        show_target_libs "tlstest-main${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./tlstest-main"
-      fi
-
-      if true # [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        run_app_verbose ${CXX} "throwcatch-lib.cpp" -shared -o "throwcatch-lib.dll" -Wl,--out-implib,libthrowcatch-lib.dll.a ${VERBOSE_FLAG}
-      elif false # [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
-      then
-        run_app_verbose ${CXX} "throwcatch-lib.cpp" -shared -fpic -o "libthrowcatch-lib.${XBB_HOST_SHLIB_EXT}" ${VERBOSE_FLAG} -fuse-ld=lld
-      else
-        run_app_verbose ${CXX} "throwcatch-lib.cpp" -shared -fpic -o "libthrowcatch-lib.${XBB_HOST_SHLIB_EXT}" ${VERBOSE_FLAG}
-      fi
-
-      run_app_verbose ${CXX} "throwcatch-main.cpp" -o "throwcatch-main${XBB_TARGET_DOT_EXE}" -L. -lthrowcatch-lib ${VERBOSE_FLAG}
-
-      (
-        # LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-        # export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-
-        show_target_libs "throwcatch-main${XBB_TARGET_DOT_EXE}"
-        run_app_verbose "./throwcatch-main"
-      )
       # -------------------------------------------------------------------------
 
       # On Windows there is no clangd.exe. (Why?)
-      if false # [ "${XBB_HOST_PLATFORM}" == "win32" ]
+      if is_native
       then
-        run_app_verbose ${test_bin_path}/clangd --check=hello-cpp.cpp
-        cat <<'__EOF__' > ${tmp}/unchecked-exception.cpp
+        run_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+
+        cat <<'__EOF__' > "unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
 #include <exception>
 int main() {
@@ -1043,256 +886,9 @@ int main() {
     return 0;
 }
 __EOF__
-        run_app_verbose ${test_bin_path}/clangd --check=${tmp}/unchecked-exception.cpp
+        run_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
       fi
     )
-  )
-
-  echo
-  echo "Testing the llvm${name_suffix} binaries completed successfuly."
-}
-
-# ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
-function test_mingw_clang_single()
-{
-  echo_develop
-  echo_develop "[test_mingw_clang_single $@]"
-
-  local test_bin_path="$1"
-  shift
-  # shift
-
-  (
-    unset IFS
-
-    local is_gc=""
-    local is_lto=""
-    local is_crt=""
-    local is_static=""
-    local is_static_lib=""
-
-    local prefix=""
-    local suffix=""
-
-
-    while [ $# -gt 0 ]
-    do
-      case "$1" in
-
-        --suffix=* )
-          suffix=$(xbb_parse_option "$1")
-          shift
-          ;;
-
-        --gc )
-          is_gc="y"
-          shift
-          ;;
-
-        --lto )
-          is_lto="y"
-          shift
-          ;;
-
-        --crt )
-          is_crt="y"
-          shift
-          ;;
-
-        --static )
-          is_static="y"
-          shift
-          ;;
-
-        --static-lib )
-          is_static_lib="y"
-          shift
-          ;;
-
-        * )
-          echo "Unsupported option $1 in ${FUNCNAME[0]}()"
-          exit 1
-          ;;
-
-      esac
-    done
-
-    CFLAGS=""
-    CXXFLAGS=""
-    LDFLAGS=""
-    LDXXFLAGS=""
-
-    if [ "${is_crt}" == "y" ]
-    then
-      LDFLAGS+=" -rtlib=compiler-rt"
-      LDXXFLAGS+=" -rtlib=compiler-rt"
-      prefix="crt-${prefix}"
-    fi
-
-    if [ "${is_lto}" == "y" ]
-    then
-      CFLAGS+=" -flto"
-      CXXFLAGS+=" -flto"
-      LDFLAGS+=" -flto"
-      LDXXFLAGS+=" -flto"
-      if false # [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -fuse-ld=lld"
-        LDXXFLAGS+=" -fuse-ld=lld"
-      fi
-      prefix="lto-${prefix}"
-    fi
-
-    if [ "${is_gc}" == "y" ]
-    then
-      CFLAGS+=" -ffunction-sections -fdata-sections"
-      CXXFLAGS+=" -ffunction-sections -fdata-sections"
-      LDFLAGS+=" -ffunction-sections -fdata-sections"
-      LDXXFLAGS+=" -ffunction-sections -fdata-sections"
-      if true # [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,--gc-sections"
-        LDXXFLAGS+=" -Wl,--gc-sections"
-      elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-      then
-        LDFLAGS+=" -Wl,-dead_strip"
-        LDXXFLAGS+=" -Wl,-dead_strip"
-      fi
-      prefix="gc-${prefix}"
-    fi
-
-    # --static takes precedence over --static-lib.
-    if [ "${is_static}" == "y" ]
-    then
-      LDFLAGS+=" -static"
-      LDXXFLAGS+=" -static"
-      prefix="static-${prefix}"
-    elif [ "${is_static_lib}" == "y" ]
-    then
-      LDFLAGS+=" -static-libgcc"
-      LDXXFLAGS+=" -static-libgcc -static-libstdc++"
-      prefix="static-lib-${prefix}"
-    fi
-
-    if [ "${XBB_IS_DEVELOP}" == "y" ]
-    then
-      CFLAGS+=" -v"
-      CXXFLAGS+=" -v"
-      LDFLAGS+=" -v"
-      LDXXFLAGS+=" -v"
-    fi
-
-    (
-      cd c-cpp
-
-      # Test C compile and link in a single step.
-      run_app_verbose "${CC}" "simple-hello.c" -o "${prefix}simple-hello-c-one${suffix}${XBB_TARGET_DOT_EXE}" ${LDFLAGS}
-      test_mingw_expect "Hello" "${prefix}simple-hello-c-one${suffix}${XBB_TARGET_DOT_EXE}"
-
-      # Test C compile and link in separate steps.
-      run_app_verbose "${CC}" -c "simple-hello.c" -o "simple-hello.c.o" ${CFLAGS}
-      run_app_verbose "${CC}" "simple-hello.c.o" -o "${prefix}simple-hello-c-two${suffix}${XBB_TARGET_DOT_EXE}" ${LDFLAGS}
-      test_mingw_expect "Hello" "${prefix}simple-hello-c-two${suffix}${XBB_TARGET_DOT_EXE}"
-
-      # -------------------------------------------------------------------------
-
-      # Test C++ compile and link in a single step.
-      run_app_verbose "${CXX}" "simple-hello.cpp" -o "${prefix}simple-hello-cpp-one${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      test_mingw_expect "Hello" "${prefix}simple-hello-cpp-one${suffix}${XBB_TARGET_DOT_EXE}"
-
-      # Test C++ compile and link in separate steps.
-      run_app_verbose "${CXX}" -c "simple-hello.cpp" -o "${prefix}simple-hello${suffix}.cpp.o" ${CXXFLAGS}
-      run_app_verbose "${CXX}" "${prefix}simple-hello${suffix}.cpp.o" -o "${prefix}simple-hello-cpp-two${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      test_mingw_expect "Hello" "${prefix}simple-hello-cpp-two${suffix}${XBB_TARGET_DOT_EXE}"
-
-      # -------------------------------------------------------------------------
-
-      run_app_verbose "${CXX}" "simple-exception.cpp" -o "${prefix}simple-exception${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      test_mingw_expect "MyException" "${prefix}simple-exception${suffix}${XBB_TARGET_DOT_EXE}"
-
-      run_app_verbose "${CXX}" "simple-str-exception.cpp" -o "${prefix}simple-str-exception${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      test_mingw_expect "MyStringException" "${prefix}simple-str-exception${suffix}${XBB_TARGET_DOT_EXE}"
-
-      run_app_verbose "${CXX}" "simple-int-exception.cpp" -o "${prefix}simple-int-exception${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      test_mingw_expect "42" "${prefix}simple-int-exception${suffix}${XBB_TARGET_DOT_EXE}"
-
-      # -------------------------------------------------------------------------
-      # Tests borrowed from the llvm-mingw project.
-
-      run_app_verbose "${CC}" "hello.c" -o "${prefix}hello${suffix}${XBB_TARGET_DOT_EXE}" ${LDFLAGS} -lm
-      show_target_libs "${prefix}hello${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}hello${suffix}"
-
-      run_app_verbose "${CC}" "setjmp-patched.c" -o "${prefix}setjmp${suffix}${XBB_TARGET_DOT_EXE}" ${LDFLAGS} -lm
-      show_target_libs "${prefix}setjmp${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}setjmp${suffix}"
-
-      run_app_verbose ${CXX} "hello-cpp.cpp" -o "${prefix}hello-cpp${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}hello-cpp${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}hello-cpp${suffix}"
-
-      run_app_verbose ${CXX} "global-terminate.cpp" -o "${prefix}global-terminate${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}global-terminate${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}global-terminate${suffix}"
-
-      run_app_verbose ${CXX} "longjmp-cleanup.cpp" -o "${prefix}longjmp-cleanup${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}longjmp-cleanup${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}longjmp-cleanup${suffix}"
-
-      run_app_verbose ${CXX} "hello-exception.cpp" -o "${prefix}hello-exception${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}hello-exception${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}hello-exception${suffix}"
-
-      run_app_verbose ${CXX} "exception-locale.cpp" -o "${prefix}exception-locale${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}exception-locale${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}exception-locale${suffix}"
-
-      run_app_verbose ${CXX} "exception-reduced.cpp" -o "${prefix}exception-reduced${suffix}${XBB_TARGET_DOT_EXE}" ${LDXXFLAGS}
-      show_target_libs "${prefix}exception-reduced${suffix}${XBB_TARGET_DOT_EXE}"
-      run_app_verbose "./${prefix}exception-reduced${suffix}"
-
-      run_app_verbose "${CC}" -c -o "${prefix}hello-weak${suffix}.c.o" "hello-weak.c" ${CFLAGS}
-      run_app_verbose "${CC}" -c -o "${prefix}hello-f-weak${suffix}.c.o" "hello-f-weak.c" ${CFLAGS}
-      run_app_verbose "${CC}" -o "${prefix}hello-weak${suffix}${XBB_TARGET_DOT_EXE}" "${prefix}hello-weak${suffix}.c.o" "${prefix}hello-f-weak${suffix}.c.o" ${VERBOSE_FLAG} -lm ${LDFLAGS}
-      test_mingw_expect "Hello World!" "./${prefix}hello-weak${suffix}${XBB_TARGET_DOT_EXE}"
-
-      if [ "${is_lto}" == "y" ]
-      then
-        # lld-link: error: duplicate symbol: world()
-        # >>> defined at hello-weak-cpp.cpp
-        # >>>            lto-hello-weak-cpp.cpp.o
-        # >>> defined at hello-f-weak-cpp.cpp
-        # >>>            lto-hello-f-weak-cpp.cpp.o
-        # clang-12: error: linker command failed with exit code 1 (use -v to see invocation)
-        # -Wl,--allow-multiple-definition fixes this, but then
-        # Test "./lto-hello-weak-cpp.exe " failed :-(
-        # expected 12: "Hello World!"
-        # got 11: "Hello there"
-        echo "Skip hello-weak-cpp with -flto with Windows binaries"
-      else
-        run_app_verbose "${CXX}" -c -o "${prefix}hello-weak-cpp${suffix}.cpp.o" "hello-weak-cpp.cpp" ${CXXFLAGS}
-        run_app_verbose "${CXX}" -c -o "${prefix}hello-f-weak-cpp${suffix}.cpp.o" "hello-f-weak-cpp.cpp" ${CXXFLAGS}
-        run_app_verbose "${CXX}" -o "${prefix}hello-weak-cpp${suffix}${XBB_TARGET_DOT_EXE}" "${prefix}hello-weak-cpp${suffix}.cpp.o" "${prefix}hello-f-weak-cpp${suffix}.cpp.o" ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
-        test_mingw_expect "Hello World!" "./${prefix}hello-weak-cpp${suffix}${XBB_TARGET_DOT_EXE}"
-      fi
-
-      # Test weak override.
-      (
-        cd weak-override
-
-        run_app_verbose "${CC}" -c "main-weak.c" -o "${prefix}main-weak${suffix}.c.o" ${CFLAGS}
-        run_app_verbose "${CC}" -c "add2.c" -o "${prefix}add2${suffix}.c.o" ${CFLAGS}
-        run_app_verbose "${CC}" -c "dummy.c" -o "${prefix}dummy${suffix}.c.o" ${CFLAGS}
-        run_app_verbose "${CC}" -c "expected3.c" -o "${prefix}expected3${suffix}.c.o" ${CFLAGS}
-
-        run_app_verbose "${CC}" "${prefix}main-weak${suffix}.c.o" "${prefix}add2${suffix}.c.o" "${prefix}dummy${suffix}.c.o" "${prefix}expected3${suffix}.c.o" -o "${prefix}weak-override${suffix}${XBB_TARGET_DOT_EXE}" ${LDFLAGS}
-
-        # The test returns success if the weak override is effective, 1 otherwise.
-        run_app_verbose "./${prefix}weak-override${suffix}"
-      )
-    )
-
-    # -------------------------------------------------------------------------
   )
 }
 
