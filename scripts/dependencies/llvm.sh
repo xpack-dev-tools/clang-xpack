@@ -1039,8 +1039,9 @@ function test_llvm()
     # On Windows there is no clangd.exe. (Why?)
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
-      run_app_verbose ${test_bin_path}/clangd --check=hello-cpp.cpp
-      cat <<'__EOF__' > ${tmp}/unchecked-exception.cpp
+      run_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+
+      cat <<'__EOF__' > "unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
 #include <exception>
 int main() {
@@ -1049,7 +1050,7 @@ int main() {
     return 0;
 }
 __EOF__
-      run_app_verbose ${test_bin_path}/clangd --check=${tmp}/unchecked-exception.cpp
+      run_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
     fi
     )
   )
