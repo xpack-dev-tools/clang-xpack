@@ -555,7 +555,7 @@ function test_mingw_llvm()
     # For consistency, on Linux it is available in the system.
     local realpath=$(which grealpath || which realpath || echo realpath)
 
-    show_host_libs "$(${realpath} ${test_bin_path}/clang)"
+    show_host_libs "${test_bin_path}/clang"
     show_host_libs "${test_bin_path}/lld"
     if [ -f "${test_bin_path}/lldb" ]
     then
