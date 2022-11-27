@@ -25,6 +25,8 @@ XBB_APPLICATION_DESCRIPTION="${XBB_APPLICATION_DISTRO_NAME} ${XBB_APPLICATION_NA
 declare -a XBB_APPLICATION_DEPENDENCIES=( llvm llvm-mingw )
 declare -a XBB_APPLICATION_COMMON_DEPENDENCIES=( libiconv autoconf automake libtool pkg-config zlib libffi ncurses libiconv xz libxml2 libedit mingw binutils compiler-tests )
 
+# XBB_APPLICATION_BOOTSTRAP_ONLY="y"
+
 # -----------------------------------------------------------------------------
 
 XBB_GITHUB_ORG="${XBB_GITHUB_ORG:-"xpack-dev-tools"}"
