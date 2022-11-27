@@ -148,7 +148,7 @@ function build_common()
       build_mingw_winpthreads
       build_mingw_winstorecompat
 
-      # Finally build LLVM clang.
+      # Build LLVM clang.
       build_llvm "${XBB_LLVM_VERSION}"
 
       build_mingw_llvm_compiler_rt
