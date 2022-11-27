@@ -112,7 +112,8 @@ function build_common()
 
     build_mingw_clang_bootstrap
 
-    if false # Switch used during development to test bootstrap.
+    # Switch used during development to test bootstrap.
+    if [ -z ${XBB_APPLICATION_BOOTSTRAP_ONLY+x} ]
     then
       xbb_activate_installed_bin
 
