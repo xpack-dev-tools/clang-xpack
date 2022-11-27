@@ -16,6 +16,8 @@ function build_mingw_llvm_first()
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
+  local name_prefix="mingw-w64-"
+
   local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
   local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
 
@@ -24,7 +26,7 @@ function build_mingw_llvm_first()
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
   local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
 
-  local llvm_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-first"
+  local llvm_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-first"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
@@ -43,26 +45,26 @@ function build_mingw_llvm_first()
       -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
       "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
-    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-    then
-      # Add -lpthread -ldl
-      run_verbose sed -i.bak \
-        -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
-        "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
-    fi
+    # if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    # then
+    #   # Add -lpthread -ldl
+    #   run_verbose sed -i.bak \
+    #     -e 's|if (ToolChain.ShouldLinkCXXStdlib(Args)) {$|if (ToolChain.ShouldLinkCXXStdlib(Args)) { CmdArgs.push_back("-lpthread"); CmdArgs.push_back("-ldl");|' \
+    #     "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
+    # fi
 
-    (
-      cd "${llvm_src_folder_name}/llvm/tools"
+    # (
+    #   cd "${llvm_src_folder_name}/llvm/tools"
 
-      # This trick will allow to build the toolchain only and still get clang
-      for p in clang lld lldb
-      do
-        if [ ! -e $p ]
-        then
-            ln -s ../../$p .
-        fi
-      done
-    )
+    #   # This trick will allow to build the toolchain only and still get clang
+    #   for p in clang lld lldb
+    #   do
+    #     if [ ! -e $p ]
+    #     then
+    #         ln -s ../../$p .
+    #     fi
+    #   done
+    # )
 
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
@@ -91,7 +93,7 @@ function build_mingw_llvm_first()
           xbb_show_env_develop
 
           echo
-          echo "Running mingw-64-llvm-first cmake..."
+          echo "Running ${name_prefix}llvm-first cmake..."
 
           config_options=()
 
@@ -100,29 +102,17 @@ function build_mingw_llvm_first()
           # https://llvm.org/docs/GettingStarted.html
           # https://llvm.org/docs/CMake.html
 
-          # flang fails:
-          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
+          config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}") # MS
 
-          # Colon separated list of directories clang will search for headers.
-          # config_options+=("-DC_INCLUDE_DIRS=:")
+          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+          config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
 
-          # Distributions should never be built using the
-          # BUILD_SHARED_LIBS CMake option.
-          # https://llvm.org/docs/BuildingADistribution.html
-          config_options+=("-DBUILD_SHARED_LIBS=OFF")
+          config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}") # MS
+          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}") # MS
 
-          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
-
-          config_options+=("-DCMAKE_BUILD_TYPE=Release")
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
-
-          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
-          config_options+=("-DCMAKE_C_COMPILER=${CC}")
-
-          config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
-          config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
-          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
-
+          # To avoid running out of memory.
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
           # Please note the trailing space.
@@ -131,24 +121,23 @@ function build_mingw_llvm_first()
           config_options+=("-DLLD_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
           config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
 
-          config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
-          config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+          config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
+          # Keep tests, to be sure all dependencies are built.
+          # config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
 
+          config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # MS
 
           # Mind the links in llvm to clang, lld, lldb.
-          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
+          config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON") # MS
+
+          # config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM;AArch64;X86")  # MS
           config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-          config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
 
-
-          # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
-          # This option is not available on Windows
-          # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-          # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+          config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra")  # MS
+          config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf")  # MS
 
           # compiler-rt, libunwind, libc++ and libc++-abi are built
           # in separate steps intertwined with mingw.
-
 
           echo
           which ${CC} && ${CC} --version && echo || true
@@ -164,14 +153,14 @@ function build_mingw_llvm_first()
 
       (
         echo
-        echo "Running mingw-w64-llvm-first build..."
+        echo "Running ${name_prefix}llvm-first build..."
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          run_verbose_timed cmake --build . --verbose
+          run_verbose cmake --build . --verbose
           run_verbose cmake --build .  --verbose  --target install/strip
         else
-          run_verbose_timed cmake --build .
+          run_verbose cmake --build .
           run_verbose cmake --build . --target install/strip
         fi
 
@@ -190,14 +179,33 @@ function build_mingw_llvm_first()
     touch "${llvm_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-llvm-first already installed."
+    echo "Component ${name_prefix}llvm-first already installed."
   fi
 }
 
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
 function build_mingw_llvm_compiler_rt()
 {
-  local llvm_compiler_rt_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
+  local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
+  local name_prefix="mingw-w64-"
+
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --triplet=* )
+        triplet=$(xbb_parse_option "$1")
+        name_prefix="${triplet}-"
+        ;;
+
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+    shift
+  done
+
+  local llvm_compiler_rt_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
@@ -208,75 +216,78 @@ function build_mingw_llvm_compiler_rt()
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
       cd "${XBB_BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      # Actually not used.
+      # CPPFLAGS="${XBB_CPPFLAGS}"
+      # CFLAGS="${XBB_CFLAGS_NO_W}"
+      # CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS}"
+      # LDFLAGS="${XBB_LDFLAGS}"
 
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
+      # export CPPFLAGS
+      # export CFLAGS
+      # export CXXFLAGS
+      # export LDFLAGS
 
       (
         xbb_show_env_develop
 
         echo
-        echo "Running llvm-compiler-rt cmake..."
+        echo "Running ${name_prefix}llvm-compiler-rt cmake..."
 
         config_options=()
         config_options+=("-G" "Ninja")
 
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        # Traditionally the runtime is in a versioned folder.
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+        # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
+
+        config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
+        # config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+        config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+        # config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+
+        config_options+=("-DCMAKE_AR=${AR}") # MS
+        config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+
+        if [ "${XBB_TARGET_MACHINE}" == "x86_64" ]
         then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}")
-        else
-          # Traditionally the runtime is in a versioned folder.
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}")
-        fi
-
-        config_options+=("-DCMAKE_BUILD_TYPE=Release")
-        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-
-        # config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
-        config_options+=("-DCMAKE_C_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang)")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        # config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang++)")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        # config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_AR=$(which llvm-ar)")
-        # config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
-        config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
-
-        if [ "${XBB_HOST_MACHINE}" == "x86_64" ]
-        then
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu")
-        elif [ "${XBB_HOST_MACHINE}" == "i686" ]
+          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+        elif [ "${XBB_TARGET_MACHINE}" == "i686" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          echo "Unsupported XBB_HOST_MACHINE=${XBB_HOST_MACHINE} in ${FUNCNAME[0]}()"
+          echo "Unsupported XBB_TARGET_MACHINE=${XBB_TARGET_MACHINE} in ${FUNCNAME[0]}()"
           exit 1
         fi
 
-        config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON")
-        config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON")
-        config_options+=("-DSANITIZER_CXX_ABI=libc++")
+        config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON") # MS
+        config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
+        config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
+
+        config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
 
         config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
 
-        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        then
-          # Otherwise it'll generate two -mmacosx-version-min
-          config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        fi
+        # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+        # then
+        #   # Otherwise it'll generate two -mmacosx-version-min
+        #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
+        # fi
+
+        config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
+        config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
+        config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
 
         # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
         # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
+        config_options+=("-DLLVM_CONFIG_PATH=") # MS
+
+        # No C/C++ options.
+        config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+        config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
 
         run_verbose cmake \
           "${config_options[@]}" \
@@ -288,23 +299,23 @@ function build_mingw_llvm_compiler_rt()
         run_verbose cmake --build . --verbose
         run_verbose cmake --build . --verbose --target install/strip
 
-        if true # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
-          for i in lib/windows/libclang_rt.*.a
-          do
-              cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
-          done
+        # if [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        # then
+        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
+        #   for i in lib/windows/libclang_rt.*.a
+        #   do
+        #       run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
+        #   done
 
-          mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
-          for i in lib/windows/libclang_rt.*.dll
-          do
-              if [ -f $i ]
-              then
-                  cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
-              fi
-          done
-        fi
+        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
+        #   for i in lib/windows/libclang_rt.*.dll
+        #   do
+        #       if [ -f $i ]
+        #       then
+        #           run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
+        #       fi
+        #   done
+        # fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output-$(ndate).txt"
     )
@@ -313,332 +324,35 @@ function build_mingw_llvm_compiler_rt()
     touch "${llvm_compiler_rt_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-llvm-compiler-rt already installed."
+    echo "Component ${name_prefix}llvm-compiler-rt already installed."
   fi
 
 }
 
 function build_mingw_llvm_libcxx()
 {
-  local llvm_libunwind_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-libunwind"
+  local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
+  local name_prefix="mingw-w64-"
 
-  mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --triplet=* )
+        triplet=$(xbb_parse_option "$1")
+        name_prefix="${triplet}-"
+        ;;
 
-  local llvm_libunwind_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libunwind_folder_name}-installed"
-  if [ ! -f "${llvm_libunwind_stamp_file_path}" ]
-  then
-    (
-      mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libunwind_folder_name}"
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+    shift
+  done
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-      # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-
-      LDFLAGS="${XBB_LDFLAGS}"
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-
-      (
-        xbb_show_env_develop
-
-        echo
-        echo "Running mingw-w64-llvm-libunwind cmake..."
-
-        config_options=()
-        config_options+=("-G" "Ninja")
-
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}")
-        else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
-        fi
-
-        config_options+=("-DCMAKE_BUILD_TYPE=Release")
-        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-
-  if false
-  then
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
-  else
-        config_options+=("-DCMAKE_C_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang)")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang++)")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=$(which llvm-ar)")
-        config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
-  fi
-        config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
-        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-        config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON")
-        config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
-        config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-
-        # When compiling the bootstrap, the compiler is not yet fully functional.
-        config_options+=("-DLLVM_COMPILER_CHECKED=ON")
-        config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
-
-        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        then
-          # Otherwise it'll generate two -mmacosx-version-min
-          config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        fi
-
-        run_verbose cmake \
-          "${config_options[@]}" \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libunwind"
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/cmake-output-$(ndate).txt"
-
-      (
-        run_verbose cmake --build . --verbose
-        run_verbose cmake --build . --verbose --target install/strip
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libunwind_folder_name}/build-output-$(ndate).txt"
-
-    )
-
-    mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
-    touch "${llvm_libunwind_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64-llvm-libunwind already installed."
-  fi
-
-  # ---------------------------------------------------------------------------
-
-  # Define & prepare the folder, will be used later.
-  local llvm_libcxxabi_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-libcxxabi"
-  mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
-
-  mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
-
-  local llvm_libcxx_folder_name="mingw-w64-llvm-${ACTUAL_LLVM_VERSION}-libcxx"
+  local llvm_libcxx_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-libcxx"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-  local llvm_libcxx_headers_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-headers-installed"
-  if [ ! -f "${llvm_libcxx_headers_stamp_file_path}" ]
-  then
-    (
-      mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-      # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-
-      LDFLAGS="${XBB_LDFLAGS}"
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-
-      (
-        xbb_show_env_develop
-
-        echo
-        echo "Running mingw-w64-llvm-libcxx-headers cmake..."
-
-        config_options=()
-        config_options+=("-G" "Ninja")
-
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}")
-        else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
-        fi
-
-        config_options+=("-DCMAKE_BUILD_TYPE=Release")
-        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-
-  if false
-  then
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
-  else
-        config_options+=("-DCMAKE_C_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang)")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang++)")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=$(which llvm-ar)")
-        config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
-  fi
-
-        config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
-
-        config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
-        config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
-        config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
-        config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
-        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-        config_options+=("-DLIBCXX_ENABLE_STATIC=ON")
-        config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
-        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-        config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
-        config_options+=("-DLIBCXX_CXX_ABI=libcxxabi")
-        config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
-        config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
-        config_options+=("-DLIBCXX_LIBDIR_SUFFIX=")
-        config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF")
-        config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF")
-        config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-        config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
-
-        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        then
-          # Otherwise it'll generate two -mmacosx-version-min
-          config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        fi
-
-        run_verbose cmake \
-          "${config_options[@]}" \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxx"
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
-
-      (
-        # Configure, but don't build libcxx yet, so that libcxxabi has
-        # proper headers to refer to.
-        run_verbose cmake --build . --verbose --target generate-cxx-headers
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/generate-cxx-headeres-output-$(ndate).txt"
-
-    )
-
-    mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
-    touch "${llvm_libcxx_headers_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64-llvm-libcxx-headers already installed."
-  fi
-
-  local llvm_libcxxabi_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxxabi_folder_name}-installed"
-  if [ ! -f "${llvm_libcxxabi_stamp_file_path}" ]
-  then
-    (
-      mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}"
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-      # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-
-      LDFLAGS="${XBB_LDFLAGS}"
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-      # Most probably not used
-
-      (
-        xbb_show_env_develop
-
-        echo
-        echo "Running mingw-w64-llvm-libcxxabi cmake..."
-
-        config_options=()
-        config_options+=("-G" "Ninja")
-
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}")
-        else
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
-        fi
-
-        config_options+=("-DCMAKE_BUILD_TYPE=Release")
-        config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
-
-  if false
-  then
-        config_options+=("-DCMAKE_C_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar")
-        config_options+=("-DCMAKE_RANLIB=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ranlib")
-  else
-        config_options+=("-DCMAKE_C_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang)")
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=$(which ${XBB_TARGET_TRIPLET}-clang++)")
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
-
-        config_options+=("-DCMAKE_AR=$(which llvm-ar)")
-        config_options+=("-DCMAKE_RANLIB=$(which llvm-ranlib)")
-  fi
-
-        config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-        config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
-        config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
-        config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
-        config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-        config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
-        config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=")
-        config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
-
-        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-
-        config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm")
-
-        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        then
-          # Otherwise it'll generate two -mmacosx-version-min
-          config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        fi
-
-        run_verbose cmake \
-          "${config_options[@]}" \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi"
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/cmake-output-$(ndate).txt"
-
-      (
-        # Configure, but don't build libcxxabi yet, so that libcxxabi has
-        # proper headers to refer to.
-        run_verbose cmake --build . --verbose
-
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/build-output-$(ndate).txt"
-    )
-
-    mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
-    touch "${llvm_libcxxabi_stamp_file_path}"
-
-  else
-    echo "Component mingw-w64-llvm-libcxxabi already installed."
-  fi
 
   local llvm_libcxx_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_libcxx_folder_name}-installed"
   if [ ! -f "${llvm_libcxx_stamp_file_path}" ]
@@ -647,39 +361,126 @@ function build_mingw_llvm_libcxx()
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
       cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
-      # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
+      # Actually not used
+      # CPPFLAGS="${XBB_CPPFLAGS}"
+      # CFLAGS="${XBB_CFLAGS_NO_W}"
+      # CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      # # CFLAGS="${XBB_CFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
+      # # CXXFLAGS="${XBB_CXXFLAGS_NO_W} -Wno-dll-attribute-on-redeclaration"
 
-      LDFLAGS="${XBB_LDFLAGS}"
+      # LDFLAGS="${XBB_LDFLAGS}"
 
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-      export LDFLAGS
-      # Most probably not used
+      # export CPPFLAGS
+      # export CFLAGS
+      # export CXXFLAGS
+      # export LDFLAGS
 
       (
         xbb_show_env_develop
 
-        run_verbose cmake --build . --verbose
-        run_verbose cmake --build . --verbose --target install/strip
+        echo
+        echo "Running ${name_prefix}llvm-libcxx cmake..."
 
-        # Append libunwind to libc++.
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+        config_options=()
+        config_options+=("-G" "Ninja")
+
+        config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
+
+        config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+        # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+        config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
+
+        config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
+        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
+        config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON") # MS
+
+        config_options+=("-DCMAKE_AR=${AR}") # MS
+        config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+
+        if [ "${XBB_TARGET_MACHINE}" == "x86_64" ]
         then
-          run_verbose "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-ar" qcsL \
-                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/lib/libc++.a" \
-                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/lib/libunwind.a"
+          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+        elif [ "${XBB_TARGET_MACHINE}" == "i686" ]
+        then
+          config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          run_verbose "$(which llvm-ar)" qcsL \
-                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/libc++.a" \
-                  "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/libunwind.a"
-
-
+          echo "Unsupported XBB_TARGET_MACHINE=${XBB_TARGET_MACHINE} in ${FUNCNAME[0]}()"
+          exit 1
         fi
+
+        config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
+
+        # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
+
+        # For now disable shared libc++ and libunwind, it requires an
+        # explicit -lunwind in the link.
+        # config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
+        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+
+        config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
+        # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
+        config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
+
+        # config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
+
+        # config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
+        # config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
+        # config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
+        # config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
+
+        # config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
+        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF") # MS
+
+        config_options+=("-DLIBCXX_ENABLE_STATIC=ON") # MS
+        # config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
+        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON") # MS
+        # config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
+        config_options+=("-DLIBCXX_CXX_ABI=libcxxabi") # MS
+        # config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
+        # config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
+        config_options+=("-DLIBCXX_LIBDIR_SUFFIX=") # MS
+        config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF") # MS
+        config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF") # MS
+        config_options+=("-DLIBCXX_USE_COMPILER_RT=ON") # MS
+
+        config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON") # MS
+        config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON") # MS
+        # config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
+        # config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
+        # config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
+        config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF") # MS
+        # config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
+        config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=") # MS
+        # config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+
+       config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+       config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+
+        config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
+
+        # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+        # then
+        #   # Otherwise it'll generate two -mmacosx-version-min
+        #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
+        # fi
+
+        run_verbose cmake \
+          "${config_options[@]}" \
+          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/runtimes"
+
+      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
+
+      (
+        run_verbose cmake --build . --verbose --target install
+
+        # Append libunwind to libc++, to simplify things.
+        # It hels when there are no shared libc++ and linunwind.
+        run_verbose "${AR}" qcsL \
+                "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
+                "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
+
+        run_verbose "${NM}" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a"
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output-$(ndate).txt"
 
@@ -689,7 +490,7 @@ function build_mingw_llvm_libcxx()
     touch "${llvm_libcxx_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-llvm-libcxx already installed."
+    echo "Component ${name_prefix}llvm-libcxx already installed."
   fi
 
   tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
