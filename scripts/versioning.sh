@@ -9,42 +9,6 @@
 
 # -----------------------------------------------------------------------------
 
-function _xbb_activate_llvm_bootstrap_bins()
-{
-  # Warning, this should not bring llvm-config into the PATH, since
-  # it crashes the compiler-rt build.
-  export PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin:${PATH}"
-
-  # Set LD_LIBRARY_PATH to XBB folders, refered by the bootstrap.
-  xbb_activate_libs
-}
-
-function _prepare_bootstrap_cross_env()
-{
-  unset_compiler_env
-
-  export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-gcc"
-  export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-g++"
-
-  export AR="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-ar"
-  export AS="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-as"
-  export DLLTOOL="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-dlltool"
-  export LD="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-ld"
-  export NM="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-nm"
-  export OBJCOPY="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-objcopy"
-  export OBJDUMP="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-objdump"
-  export RANLIB="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-ranlib"
-  # export READELF="${prefix}readelf"
-  # export SIZE="${prefix}size"
-  export STRIP="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-strip"
-  export WINDRES="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-windres"
-  # export WINDMC="${prefix}windmc"
-  # Use the XBB one, not the native llvm?
-  export RC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-windres"
-
-  set_xbb_extras
-}
-
 function add_mingw_wrappers()
 {
   (
