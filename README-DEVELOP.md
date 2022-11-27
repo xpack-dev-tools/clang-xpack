@@ -23,3 +23,309 @@ The same test on a plain Ubuntu 20 passes.
 ## -static-libstdc++
 
 On RedHat systems, the tests that expected a `libstdc++.a` fail.
+
+## mstorsjo/llvm-mingw
+
+The build scripts producing Windows binaries are inspired from the project
+[llvm-mingw](https://github.com/mstorsjo/llvm-mingw),
+maintained by Martin Storsjö.
+
+To get the actual configurations, the easiest way is to run the builds with
+the shell debug option enabled, and capture the console output.
+
+The direct invocation of the build script on an Ubuntu 18 fails,
+since cmake is too old, thus it is prefered to use the Docker builds.
+
+For this, on `xbbli`:
+
+```sh
+mkdir -pv ~/Work/mstorsjo
+git clone https://github.com/mstorsjo/llvm-mingw ~/Work/mstorsjo/llvm-mingw.git
+
+# Patch the shell scripts to add -x.
+find ~/Work/mstorsjo/llvm-mingw.git -name '*.sh' ! -iname '*-wrapper.sh' \
+  -exec sed -i.bak -e 's|^#!/bin/sh$|#!/bin/sh -x|' '{}' ';'
+
+# Build the development docker image.
+cd ~/Work/mstorsjo/llvm-mingw.git
+docker build -f Dockerfile.dev -t mstorsjo/llvm-mingw:dev . | tee ../build-output-x-dev.txt
+
+# Build the cross binaries.
+cd ~/Work/mstorsjo/llvm-mingw.git
+docker build -f Dockerfile.cross -t mstorsjo/llvm-mingw:cross . | tee ../build-output-x-cross.txt
+
+# For completeness, build the regular binaries.
+cd ~/Work/mstorsjo/llvm-mingw.git
+docker build  -t mstorsjo/llvm-mingw . | tee ../build-output-x.txt
+```
+
+With 01597c1d723ed08981d64e224f8860c3ce4a7596 from 22 Aug 2022, which
+builds LLVM 15.0.0, the configurations used for the docker images are as below.
+
+For `mstorsjo/llvm-mingw:dev`:
+
+```sh
+ENV TOOLCHAIN_PREFIX=/opt/llvm-mingw
+ARG FULL_LLVM
+RUN ./build-llvm.sh $TOOLCHAIN_PREFIX
+
+cd llvm-project/llvm/build
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_ASSERTIONS=OFF -DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra -DLLVM_TARGETS_TO_BUILD=ARM;AArch64;X86 -DLLVM_INSTALL_TOOLCHAIN_ONLY=ON -DLLVM_LINK_LLVM_DYLIB=ON -DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf ..
+ninja
+ninja install
+
+RUN ./build-lldb-mi.sh $TOOLCHAIN_PREFIX
+cd lldb-mi/build
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw -DCMAKE_BUILD_TYPE=Release ..
+ninja
+ninja install
+
+RUN ./strip-llvm.sh $TOOLCHAIN_PREFIX
+...
+
+ARG TOOLCHAIN_ARCHS="i686 x86_64 armv7 aarch64"
+
+RUN ./install-wrappers.sh $TOOLCHAIN_PREFIX
+...
+
+ARG DEFAULT_CRT=ucrt
+ARG CFGUARD_ARGS=--disable-cfguard
+RUN ./build-mingw-w64.sh $TOOLCHAIN_PREFIX --with-default-msvcrt=$DEFAULT_CRT $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Note: to save some space, install it once and make links.
+cd mingw-w64-headers/build
+../configure --prefix=/opt/llvm-mingw/generic-w64-mingw32 --enable-idl --with-default-win32-winnt=0x601 --with-default-msvcrt=ucrt INSTALL=install -C
+make install
+
+ln -sfn ../generic-w64-mingw32/include /opt/llvm-mingw/i686-w64-mingw32/include
+ln -sfn ../generic-w64-mingw32/include /opt/llvm-mingw/x86_64-w64-mingw32/include
+ln -sfn ../generic-w64-mingw32/include /opt/llvm-mingw/armv7-w64-mingw32/include
+ln -sfn ../generic-w64-mingw32/include /opt/llvm-mingw/aarch64-w64-mingw32/include
+
+# Also in cross .../prepare-cross-toolchain.sh
+# cp -a /opt/llvm-mingw/generic-w64-mingw32/include /opt/llvm-mingw-x86_64/include
+
+cd mingw-w64-crt/build-i686
+../configure --host=i686-w64-mingw32 --prefix=/opt/llvm-mingw/i686-w64-mingw32 --enable-lib32 --disable-lib64 --with-default-msvcrt=ucrt
+make
+make install
+
+cd mingw-w64-crt/build-x86_64
+../configure --host=x86_64-w64-mingw32 --prefix=/opt/llvm-mingw/x86_64-w64-mingw32 --disable-lib32 --enable-lib64 --with-default-msvcrt=ucrt
+make
+make install
+
+cd mingw-w64-crt/build-armv7
+../configure --host=armv7-w64-mingw32 --prefix=/opt/llvm-mingw/armv7-w64-mingw32 --disable-lib32 --disable-lib64 --enable-libarm32 --with-default-msvcrt=ucrt
+make
+make install
+
+cd mingw-w64-crt/build-aarch64
+./configure --host=aarch64-w64-mingw32 --prefix=/opt/llvm-mingw/aarch64-w64-mingw32 --disable-lib32 --disable-lib64 --enable-libarm64 --with-default-msvcrt=ucrt
+make
+make install
+
+# L18549
+RUN ./build-mingw-w64-tools.sh $TOOLCHAIN_PREFIX
+cd mingw-w64-tools/gendef/build
+../configure --prefix=/opt/llvm-mingw
+make
+make install-strip
+
+cd mingw-w64-tools/widl/build
+../configure --prefix=/opt/llvm-mingw --target=i686-w64-mingw32 --with-widl-includedir=/opt/llvm-mingw/generic-w64-mingw32/include
+make
+make install-strip
+
+RUN ./build-compiler-rt.sh $TOOLCHAIN_PREFIX $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd llvm-project/compiler-rt/build-i686
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+ninja
+ninja install
+
+cd llvm-project/compiler-rt/build-x86_64
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+ninja
+ninja install
+
+cd llvm-project/compiler-rt/build-armv7
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=armv7-w64-mingw32-clang -DCMAKE_CXX_COMPILER=armv7-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=armv7-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/armv7-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+ninja
+ninja install
+
+cd llvm-project/compiler-rt/build-aarch64
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=aarch64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/aarch64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+ninja
+ninja install
+
+# 19952
+RUN ./build-libcxx.sh $TOOLCHAIN_PREFIX $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd llvm-project/build-i686
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_CXX_COMPILER_TARGET=i686-w64-windows-gnu -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_WORKS=TRUE -DCMAKE_CXX_COMPILER_WORKS=TRUE -DLLVM_PATH=/build/llvm-project/llvm -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx -DLIBUNWIND_USE_COMPILER_RT=TRUE -DLIBUNWIND_ENABLE_SHARED=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXX_ENABLE_SHARED=ON -DLIBCXX_ENABLE_STATIC=ON -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_LIBDIR_SUFFIX= -DLIBCXX_INCLUDE_TESTS=FALSE -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_LIBDIR_SUFFIX= -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+cd llvm-project/build-x86_64
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_CXX_COMPILER_TARGET=x86_64-w64-windows-gnu -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_WORKS=TRUE -DCMAKE_CXX_COMPILER_WORKS=TRUE -DLLVM_PATH=/build/llvm-project/llvm -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx -DLIBUNWIND_USE_COMPILER_RT=TRUE -DLIBUNWIND_ENABLE_SHARED=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXX_ENABLE_SHARED=ON -DLIBCXX_ENABLE_STATIC=ON -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_LIBDIR_SUFFIX= -DLIBCXX_INCLUDE_TESTS=FALSE -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_LIBDIR_SUFFIX= -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+cd llvm-project/build-armv7
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/armv7-w64-mingw32 -DCMAKE_C_COMPILER=armv7-w64-mingw32-clang -DCMAKE_CXX_COMPILER=armv7-w64-mingw32-clang++ -DCMAKE_CXX_COMPILER_TARGET=armv7-w64-windows-gnu -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_WORKS=TRUE -DCMAKE_CXX_COMPILER_WORKS=TRUE -DLLVM_PATH=/build/llvm-project/llvm -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx -DLIBUNWIND_USE_COMPILER_RT=TRUE -DLIBUNWIND_ENABLE_SHARED=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXX_ENABLE_SHARED=ON -DLIBCXX_ENABLE_STATIC=ON -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_LIBDIR_SUFFIX= -DLIBCXX_INCLUDE_TESTS=FALSE -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_LIBDIR_SUFFIX= -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+cd llvm-project/build-aarch64
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/aarch64-w64-mingw32 -DCMAKE_C_COMPILER=aarch64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=aarch64-w64-mingw32-clang++ -DCMAKE_CXX_COMPILER_TARGET=aarch64-w64-windows-gnu -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER_WORKS=TRUE -DCMAKE_CXX_COMPILER_WORKS=TRUE -DLLVM_PATH=/build/llvm-project/llvm -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx -DLIBUNWIND_USE_COMPILER_RT=TRUE -DLIBUNWIND_ENABLE_SHARED=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXX_ENABLE_SHARED=ON -DLIBCXX_ENABLE_STATIC=ON -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=TRUE -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_LIBDIR_SUFFIX= -DLIBCXX_INCLUDE_TESTS=FALSE -DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=FALSE -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_LIBDIR_SUFFIX= -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+RUN ./build-mingw-w64-libraries.sh $TOOLCHAIN_PREFIX $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd mingw-w64/mingw-w64-libraries/winpthreads/build-i686
+../configure --host=i686-w64-mingw32 --prefix=/opt/llvm-mingw/i686-w64-mingw32 --libdir=/opt/llvm-mingw/i686-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winpthreads/build-x86_64
+../configure --host=x86_64-w64-mingw32 --prefix=/opt/llvm-mingw/x86_64-w64-mingw32 --libdir=/opt/llvm-mingw/x86_64-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winpthreads/build-armv7
+../configure --host=armv7-w64-mingw32 --prefix=/opt/llvm-mingw/armv7-w64-mingw32 --libdir=/opt/llvm-mingw/armv7-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winpthreads/build-aarch64
+../configure --host=aarch64-w64-mingw32 --prefix=/opt/llvm-mingw/aarch64-w64-mingw32 --libdir=/opt/llvm-mingw/aarch64-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winstorecompat/build-i686
+../configure --host=i686-w64-mingw32 --prefix=/opt/llvm-mingw/i686-w64-mingw32 --libdir=/opt/llvm-mingw/i686-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winstorecompat/build-x86_64
+../configure --host=x86_64-w64-mingw32 --prefix=/opt/llvm-mingw/x86_64-w64-mingw32 --libdir=/opt/llvm-mingw/x86_64-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winstorecompat/build-armv7
+../configure --host=armv7-w64-mingw32 --prefix=/opt/llvm-mingw/armv7-w64-mingw32 --libdir=/opt/llvm-mingw/armv7-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+cd mingw-w64/mingw-w64-libraries/winstorecompat/build-aarch64
+../configure --host=aarch64-w64-mingw32 --prefix=/opt/llvm-mingw/aarch64-w64-mingw32 --libdir=/opt/llvm-mingw/aarch64-w64-mingw32/lib CFLAGS=-g -O2 CXXFLAGS=-g -O2
+make
+make install
+
+ENV PATH=$TOOLCHAIN_PREFIX/bin:$PATH
+RUN cd test && ...
+
+RUN ./build-compiler-rt.sh $TOOLCHAIN_PREFIX --build-sanitizers
+export PATH=/opt/llvm-mingw/bin:/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd llvm-project/compiler-rt/build-i686-sanitizers
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+cd llvm-project/compiler-rt/build-x86_64-sanitizers
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.0 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+RUN ./build-libssp.sh $TOOLCHAIN_PREFIX $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd libssp/build-i686
+make -f ../Makefile -j12 CROSS=i686-w64-mingw32- CFGUARD_CFLAGS=
+
+cd libssp/build-x86_64
+make -f ../Makefile -j12 CROSS=x86_64-w64-mingw32- CFGUARD_CFLAGS=
+
+cd libssp/build-armv7
+make -f ../Makefile -j12 CROSS=armv7-w64-mingw32- CFGUARD_CFLAGS=
+
+cd libssp/build-aarch64
+make -f ../Makefile -j12 CROSS=aarch64-w64-mingw32- CFGUARD_CFLAGS=
+
+RUN ./build-openmp.sh $TOOLCHAIN_PREFIX $CFGUARD_ARGS
+export PATH=/opt/llvm-mingw/bin:/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+cd llvm-project/openmp/build-i686
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres -DCMAKE_ASM_MASM_COMPILER=llvm-ml -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLIBOMP_ENABLE_SHARED=TRUE -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+ninja
+ninja install
+
+cd llvm-project/openmp/build-x86_64
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DCMAKE_ASM_MASM_COMPILER=llvm-ml -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DLIBOMP_ENABLE_SHARED=TRUE -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= -DLIBOMP_ASMFLAGS=-m64 ..
+ninja
+ninja install
+```
+
+From `mstorsjo/llvm-mingw:cross`:
+
+```sh
+RUN if [ -n "$WITH_PYTHON" ]; then         ./build-python.sh /opt/python;     fi
+ENV PATH=/opt/python/bin:$PATH
+ARG CROSS_ARCH=x86_64
+ENV CROSS_TOOLCHAIN_PREFIX=/opt/llvm-mingw-$CROSS_ARCH
+ENV HOST=$CROSS_ARCH-w64-mingw32
+RUN if [ -n "$WITH_PYTHON" ]; then         ./build-python.sh $CROSS_TOOLCHAIN_PREFIX/python --host=$HOST &&         mkdir -p $CROSS_TOOLCHAIN_PREFIX/bin &&         cp $CROSS_TOOLCHAIN_PREFIX/python/bin/*.dll $CROSS_TOOLCHAIN_PREFIX/bin;     fi
+
+ARG FULL_LLVM
+RUN if [ -n "$WITH_PYTHON" ]; then ARG="--with-python"; fi &&     ./build-llvm.sh $CROSS_TOOLCHAIN_PREFIX --host=$HOST $ARG
+
+cd llvm-project/llvm/build-x86_64-w64-mingw32
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw-x86_64 -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_ASSERTIONS=OFF -DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra -DLLVM_TARGETS_TO_BUILD=ARM;AArch64;X86 -DLLVM_INSTALL_TOOLCHAIN_ONLY=ON -DLLVM_LINK_LLVM_DYLIB=ON -DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf -DLLVM_HOST_TRIPLE=x86_64-w64-mingw32 -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DLLVM_TABLEGEN=/build/llvm-project/llvm/build/bin/llvm-tblgen -DCLANG_TABLEGEN=/build/llvm-project/llvm/build/bin/clang-tblgen -DLLDB_TABLEGEN=/build/llvm-project/llvm/build/bin/lldb-tblgen -DLLVM_CONFIG_PATH=/build/llvm-project/llvm/build/bin/llvm-config -DCLANG_PSEUDO_GEN=/build/llvm-project/llvm/build/bin/clang-pseudo-gen -DCLANG_TIDY_CONFUSABLE_CHARS_GEN=/build/llvm-project/llvm/build/bin/clang-tidy-confusable-chars-gen -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DCLANG_DEFAULT_RTLIB=compiler-rt -DCLANG_DEFAULT_UNWINDLIB=libunwind -DCLANG_DEFAULT_CXX_STDLIB=libc++ -DCLANG_DEFAULT_LINKER=lld ..
+ninja install/strip
+
+RUN ./build-lldb-mi.sh $CROSS_TOOLCHAIN_PREFIX --host=$HOST
+cd lldb-mi/build-x86_64-w64-mingw32
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw-x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres -DCMAKE_FIND_ROOT_PATH=/build/llvm-project/llvm/build-x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY ..
+ninja install/strip
+
+RUN ./strip-llvm.sh $CROSS_TOOLCHAIN_PREFIX --host=$HOST
+
+RUN ./build-mingw-w64-tools.sh $CROSS_TOOLCHAIN_PREFIX --skip-include-triplet-prefix --host=$HOST
+
+cd mingw-w64-tools/gendef/build-x86_64-w64-mingw32
+../configure --prefix=/opt/llvm-mingw-x86_64 --host=x86_64-w64-mingw32
+make
+make install-strip
+
+cd mingw-w64-tools/widl/build-x86_64-w64-mingw32
+../configure --prefix=/opt/llvm-mingw-x86_64 --target=i686-w64-mingw32 --with-widl-includedir=/opt/llvm-mingw-x86_64/include --host=x86_64-w64-mingw32
+make
+make install-strip
+
+RUN ./install-wrappers.sh $CROSS_TOOLCHAIN_PREFIX --host=$HOST
+...
+
+RUN ./prepare-cross-toolchain.sh $TOOLCHAIN_PREFIX $CROSS_TOOLCHAIN_PREFIX $CROSS_ARCH
+
+RUN ./build-make.sh $CROSS_TOOLCHAIN_PREFIX --host=$HOST
+
+cd make-4.2.1/build-x86_64-w64-mingw32
+../configure --prefix=/opt/llvm-mingw-x86_64 --host=x86_64-w64-mingw32 --program-prefix=mingw32- --enable-job-server LDFLAGS=-Wl,-s
+make
+
+ARG TAG
+RUN ln -s $CROSS_TOOLCHAIN_PREFIX llvm-mingw-$TAG$CROSS_ARCH &&     zip -9r /llvm-mingw-$TAG$CROSS_ARCH.zip llvm-mingw-$TAG$CROSS_ARCH &&     ls -lh /llvm-mingw-$TAG$CROSS_ARCH.zip
+
+
+
+```
+
+
+
