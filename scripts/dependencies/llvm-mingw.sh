@@ -631,6 +631,10 @@ function test_mingw_llvm()
     xbb_show_env_develop
 
     run_verbose uname
+    if [ "${XBB_BUILD_PLATFORM}" != "darwin" ]
+    then
+      run_verbose uname -o
+    fi
 
     # -------------------------------------------------------------------------
 
