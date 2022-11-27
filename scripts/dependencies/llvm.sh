@@ -460,7 +460,10 @@ function build_llvm()
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
             # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # MS
+
+            # libclang_rt.builtins-x86_64.a ...
+            # ld.lld: error: too many exported symbols (max 65535)
+            # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # MS
 
             # compiler-rt, libunwind, libc++ and libc++-abi are built
             # in separate steps intertwined with mingw.
