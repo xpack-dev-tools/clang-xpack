@@ -164,6 +164,12 @@ function build_mingw_llvm_first()
           run_verbose cmake --build . --target install/strip
         fi
 
+        # Copy these tools to the install folder, to simplify access
+        # to them from the cross build.
+        run_verbose cp -v \
+          "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"/bin/*-tblgen* \
+          "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"/bin/*-config* \
+          "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 
         show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
         show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
@@ -546,7 +552,10 @@ function test_mingw_llvm()
     AR="${test_bin_path}/${triplet}-ar"
     RANLIB="${test_bin_path}/${triplet}-ranlib"
 
-    show_host_libs "$(realpath ${test_bin_path}/clang)"
+    # For consistency, on Linux it is available in the system.
+    local realpath=$(which grealpath || which realpath || echo realpath)
+
+    show_host_libs "$(${realpath} ${test_bin_path}/clang)"
     show_host_libs "${test_bin_path}/lld"
     if [ -f "${test_bin_path}/lldb" ]
     then
