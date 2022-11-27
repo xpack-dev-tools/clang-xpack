@@ -1054,9 +1054,6 @@ __EOF__
     fi
     )
   )
-
-  echo
-  echo "Testing the llvm${name_suffix} binaries completed successfuly."
 }
 
 # ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
