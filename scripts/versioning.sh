@@ -121,11 +121,10 @@ function build_common()
       # Build the target dependencies.
 
       xbb_set_target
+      xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
 
       # All of the following are cross compiled with the bootstrap LLVM
       # and the results are Windows binaries.
-      # xbb_activate_llvm_bootstrap_bins # Adjust paths.
-      prepare_bootstrap_cross_env # Define CC & family.
 
       # Build libraries refered by LLVM.
       build_zlib "${XBB_ZLIB_VERSION}"
