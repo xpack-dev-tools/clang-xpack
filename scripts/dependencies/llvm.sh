@@ -41,22 +41,6 @@ function build_llvm()
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
-  local is_bootstrap="n"
-  while [ $# -gt 0 ]
-  do
-    case "$1" in
-      --bootstrap )
-        is_bootstrap="y"
-        ;;
-
-      * )
-        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
-        exit 1
-        ;;
-    esac
-    shift
-  done
-
   local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
   local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
 
@@ -189,11 +173,11 @@ function build_llvm()
 
           config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
-          config_options+=("-DCMAKE_BUILD_TYPE=Release")
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}")
+          config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}") # MS
 
-          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}")
-          config_options+=("-DCMAKE_C_COMPILER=${CC}")
+          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+          config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
 
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
@@ -201,7 +185,7 @@ function build_llvm()
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
-          if [ "${is_bootstrap}" == "y" ] # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+          if false # [ "${is_bootstrap}" == "y" ] # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
           then
 
             # Please note the trailing space.
@@ -246,7 +230,7 @@ function build_llvm()
             config_options+=("-DLLVM_BUILD_DOCS=OFF")
             config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
             config_options+=("-DLLVM_BUILD_TESTS=OFF")
-            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
+            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
             config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
             config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
             config_options+=("-DLLVM_ENABLE_EH=ON")
@@ -436,51 +420,47 @@ function build_llvm()
           then
 
             # Mind the links in llvm to clang, lld, lldb.
-            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
+            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON") # MS
+            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86") # MS (ARM;AArch64;X86)
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf ") # MS
 
-            if [ "${is_bootstrap}" != "y" ]
+            if true # [ "${is_bootstrap}" != "y" ]
             then
-              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-              config_options+=("-DCLANG_DEFAULT_LINKER=lld")
-              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
+              config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
+              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
+              config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
-              config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+              # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-              config_options+=("-DCMAKE_RC_COMPILER=${RC}")
+              config_options+=("-DCMAKE_RC_COMPILER=${RC}") # MS
 
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY")
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY")
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY") # MS
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER") # MS
+              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
 
-              config_options+=("-DCMAKE_SYSTEM_NAME=Windows")
+              config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
-  if false
-  then
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/${XBB_TARGET_TRIPLET}")
+              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}") # MS
 
-              config_options+=("-DCLANG_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/clang-tblgen")
-              config_options+=("-DLLDB_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/lldb-tblgen")
-              config_options+=("-DLLVM_TABLEGEN=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-tblgen")
+              config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen") # MS
+              config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen") # MS
+              config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen") # MS
 
-              config_options+=("-DLLVM_CONFIG_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
-  else
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}")
+              # -DCLANG_PSEUDO_GEN=/build/llvm-project/llvm/build/bin/clang-pseudo-gen # MS
+              # -DCLANG_TIDY_CONFUSABLE_CHARS_GEN=/build/llvm-project/llvm/build/bin/clang-tidy-confusable-chars-gen # MS
 
-              config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen")
-              config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen")
-              config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen")
+              config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
 
-              config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config")
-  fi
-              config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
+              config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}") # MS
             fi
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
             # config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-            # config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # MS
 
             # compiler-rt, libunwind, libc++ and libc++-abi are built
             # in separate steps intertwined with mingw.
@@ -516,7 +496,7 @@ function build_llvm()
         fi
 
         (
-          if [ "${is_bootstrap}" != "y" ]
+          if true # [ "${is_bootstrap}" != "y" ]
           then
             echo
             echo "Removing less used files..."
@@ -591,8 +571,10 @@ function build_llvm()
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
           show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
         else
-          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
-          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
+          local realpath=$(which grealpath || which realpath || echo realpath)
+
+          show_host_libs "$(${realpath} ${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang${XBB_HOST_DOT_EXE})"
+          show_host_libs "(${realpath} ${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm${XBB_HOST_DOT_EXE})"
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
@@ -621,7 +603,6 @@ function test_llvm()
 
   local triplet="" # "x86_64-w64-mingw32"
   local name_prefix=""
-  local is_bootstrap="n"
 
   while [ $# -gt 0 ]
   do
@@ -629,10 +610,6 @@ function test_llvm()
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
         name_prefix="${triplet}-"
-        ;;
-
-      --bootstrap )
-        is_bootstrap="y"
         ;;
 
       * )
@@ -650,7 +627,7 @@ function test_llvm()
 
     run_verbose ls -l "${test_bin_path}"
 
-    if [ "${is_bootstrap}" == "y" ]
+    if false # [ "${is_bootstrap}" == "y" ]
     then
       # Help the loader find the .dll files if the native is not static.
       export WINEPATH=${test_bin_path}/${triplet}/bin
