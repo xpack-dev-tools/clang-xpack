@@ -661,14 +661,14 @@ function test_llvm()
     fi
 
     echo
-    echo "Testing if the llvm binaries start properly..."
+    echo "Testing if the ${name_prefix}llvm binaries start properly..."
 
-    run_app_verbose "${CC}" --version
-    run_app_verbose "${CXX}" --version
+    run_target_app_verbose "${CC}" --version
+    run_target_app_verbose "${CXX}" --version
 
     if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
-      run_app_verbose "${test_bin_path}/clang-format" --version
+      run_target_app_verbose "${test_bin_path}/clang-format" --version
     fi
 
     # lld is a generic driver.
@@ -676,49 +676,50 @@ function test_llvm()
     # run_app_verbose "${test_bin_path}/lld" --version || true
     if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
-      run_app_verbose "${test_bin_path}/ld.lld" --version || true
+      run_target_app_verbose "${test_bin_path}/ld.lld" --version || true
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
-      run_app_verbose "${test_bin_path}/ld64.lld" --version || true
+      run_target_app_verbose "${test_bin_path}/ld64.lld" --version || true
     elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
-      run_app_verbose "${test_bin_path}/ld-link" --version || true
+      # run_target_app_verbose "${test_bin_path}/ld-link" --version || true
+      run_target_app_verbose "${test_bin_path}/ld.lld" --version || true
     fi
 
-    run_app_verbose "${test_bin_path}/llvm-ar" --version
-    run_app_verbose "${test_bin_path}/llvm-nm" --version
-    run_app_verbose "${test_bin_path}/llvm-objcopy" --version
-    run_app_verbose "${test_bin_path}/llvm-objdump" --version
-    run_app_verbose "${test_bin_path}/llvm-ranlib" --version
-    if [ -f "${test_bin_path}/llvm-readelf" ]
+    run_target_app_verbose "${test_bin_path}/llvm-ar" --version
+    run_target_app_verbose "${test_bin_path}/llvm-nm" --version
+    run_target_app_verbose "${test_bin_path}/llvm-objcopy" --version
+    run_target_app_verbose "${test_bin_path}/llvm-objdump" --version
+    run_target_app_verbose "${test_bin_path}/llvm-ranlib" --version
+    if [ -f "${test_bin_path}/llvm-readelf${XBB_HOST_DOT_EXE}" ]
     then
-      run_app_verbose "${test_bin_path}/llvm-readelf" --version
+      run_target_app_verbose "${test_bin_path}/llvm-readelf" --version
     fi
     if [ -f "${test_bin_path}/llvm-size" ]
     then
-      run_app_verbose "${test_bin_path}/llvm-size" --version
+      run_target_app_verbose "${test_bin_path}/llvm-size" --version
     fi
-    run_app_verbose "${test_bin_path}/llvm-strings" --version
-    run_app_verbose "${test_bin_path}/llvm-strip" --version
+    run_target_app_verbose "${test_bin_path}/llvm-strings" --version
+    run_target_app_verbose "${test_bin_path}/llvm-strip" --version
 
     echo
-    echo "Testing clang configuration..."
+    echo "Testing the ${name_prefix}clang configuration..."
 
-    run_app_verbose "${test_bin_path}/clang" -print-target-triple
-    run_app_verbose "${test_bin_path}/clang" -print-targets
-    run_app_verbose "${test_bin_path}/clang" -print-supported-cpus
-    run_app_verbose "${test_bin_path}/clang" -print-search-dirs
-    run_app_verbose "${test_bin_path}/clang" -print-resource-dir
-    run_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
+    run_target_app_verbose "${test_bin_path}/clang" -print-target-triple
+    run_target_app_verbose "${test_bin_path}/clang" -print-targets
+    run_target_app_verbose "${test_bin_path}/clang" -print-supported-cpus
+    run_target_app_verbose "${test_bin_path}/clang" -print-search-dirs
+    run_target_app_verbose "${test_bin_path}/clang" -print-resource-dir
+    run_target_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
 
     # run_app_verbose "${test_bin_path}/llvm-config" --help
 
     echo
-    echo "Testing if clang compiles simple Hello programs..."
+    echo "Testing if ${name_prefix}clang compiles simple programs..."
 
-    rm -rf "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
-    mkdir -pv "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
-    cd "${XBB_TESTS_FOLDER_PATH}/clang${name_suffix}"
+    rm -rf "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
+    mkdir -pv "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
+    cd "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
 
     echo
     echo "pwd: $(pwd)"
@@ -730,8 +731,8 @@ function test_llvm()
     run_verbose cp -rv "${helper_folder_path}/tests/wine"/* c-cpp
     chmod -R a+w c-cpp
 
-    # run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
-    # chmod -R a+w fortran
+    run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
+    chmod -R a+w fortran
 
     # -------------------------------------------------------------------------
 
