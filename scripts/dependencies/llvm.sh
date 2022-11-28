@@ -772,55 +772,48 @@ function test_llvm()
 
     # -------------------------------------------------------------------------
 
-    (
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        # Instruct the linker to add a RPATH pointing to the folder with the
-        # compiler shared libraries. Alternatelly -Wl,-rpath=xxx can be used
-        # explicitly on each link command.
-        export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
-        echo
-        echo "LD_RUN_PATH=${LD_RUN_PATH}"
-      elif [ "${XBB_HOST_PLATFORM}" == "win32" ] # -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-      then
-        # For libwinpthread-1.dll, possibly other.
-        if [ "$(uname -o)" == "Msys" ]
-        then
-          export PATH="${test_bin_path}/../lib;${PATH:-}"
-          echo "PATH=${PATH}"
-        elif [ "$(uname)" == "Linux" ]
-        then
-          export WINEPATH="${test_bin_path}/../lib;${WINEPATH:-}"
-          echo "WINEPATH=${WINEPATH}"
-        fi
-      fi
-
-      test_clang_one "${name_suffix}"
-      test_clang_one "${name_suffix}" --gc
-      test_clang_one "${name_suffix}" --lto
-      test_clang_one "${name_suffix}" --gc --lto
-
-      # C++ with compiler-rt fails on Intel and Arm 32 Linux.
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ] # -a "${XBB_HOST_ARCH}" == "arm" ]
-      then
-        echo
-        echo "Skip all --crt on Linux."
-      else
-        test_clang_one "${name_suffix}" --crt
-        test_clang_one "${name_suffix}" --gc --crt
-        test_clang_one "${name_suffix}" --lto --crt
-        test_clang_one "${name_suffix}" --gc --lto --crt
-      fi
-    )
-
-    if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
-      echo
-      echo "Skip all --static-lib on macOS."
-    else
-      # Except on macOS, the recommended use case is with `-static-libgcc`,
-      # and the following combinations are expected to work properly on
-      # Linux and Windows.
+
+      test_compiler_single "${test_bin_path}"
+      test_compiler_single "${test_bin_path}" --gc
+      test_compiler_single "${test_bin_path}" --lto
+      test_compiler_single "${test_bin_path}" --gc --lto
+
+      test_compiler_single "${test_bin_path}" --static-lib
+      test_compiler_single "${test_bin_path}" --static-lib --gc
+      test_compiler_single "${test_bin_path}" --static-lib --lto
+      test_compiler_single "${test_bin_path}" --static-lib --gc --lto
+
+      test_compiler_single "${test_bin_path}" --static
+      test_compiler_single "${test_bin_path}" --static --gc
+      test_compiler_single "${test_bin_path}" --static --lto
+      test_compiler_single "${test_bin_path}" --static --gc --lto
+
+      # Once again with --crt
+      test_compiler_single "${test_bin_path}" --crt
+      test_compiler_single "${test_bin_path}" --gc --crt
+      test_compiler_single "${test_bin_path}" --lto --crt
+      test_compiler_single "${test_bin_path}" --gc --lto --crt
+
+      test_compiler_single "${test_bin_path}" --static-lib --crt
+      test_compiler_single "${test_bin_path}" --static-lib --gc --crt
+      test_compiler_single "${test_bin_path}" --static-lib --lto --crt
+      test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt
+
+      test_compiler_single "${test_bin_path}" --static --crt
+      test_compiler_single "${test_bin_path}" --static --gc --crt
+      test_compiler_single "${test_bin_path}" --static --lto --crt
+      test_compiler_single "${test_bin_path}" --static --gc --lto --crt
+
+    elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    then
+
+      test_compiler_single "${test_bin_path}"
+      test_compiler_single "${test_bin_path}" --gc
+      test_compiler_single "${test_bin_path}" --lto
+      test_compiler_single "${test_bin_path}" --gc --lto
+
       local distro=$(lsb_release -is)
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
@@ -829,212 +822,65 @@ function test_llvm()
         echo
         echo "Skip all --static-lib on RedHat & derived."
       else
-        test_clang_one "${name_suffix}" --static-lib
-        test_clang_one "${name_suffix}" --static-lib --gc
-        test_clang_one "${name_suffix}" --static-lib --lto
-        test_clang_one "${name_suffix}" --static-lib --gc --lto
+        test_compiler_single "${test_bin_path}" --static-lib
+        test_compiler_single "${test_bin_path}" --static-lib --gc
+        test_compiler_single "${test_bin_path}" --static-lib --lto
+        test_compiler_single "${test_bin_path}" --static-lib --gc --lto
       fi
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        # Static lib and compiler-rt fail on Linux x86_64 and ia32
-        echo
-        echo "Skip all --static-lib --crt on Linux."
-      else
-        test_clang_one "${name_suffix}" --static-lib --crt
-        test_clang_one "${name_suffix}" --static-lib --gc --crt
-        test_clang_one "${name_suffix}" --static-lib --lto --crt
-        test_clang_one "${name_suffix}" --static-lib --gc --lto --crt
-      fi
-    fi
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-
-      test_clang_one "${name_suffix}" --static
-      test_clang_one "${name_suffix}" --static --gc
-      test_clang_one "${name_suffix}" --static --lto
-      test_clang_one "${name_suffix}" --static --gc --lto
-      test_clang_one "${name_suffix}" --static --crt
-      test_clang_one "${name_suffix}" --static --gc --crt
-      test_clang_one "${name_suffix}" --static --lto --crt
-      test_clang_one "${name_suffix}" --static --gc --lto --crt
-
-    elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
-    then
 
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
-
-      echo
       echo "Skip all --static on Linux."
+
+      echo "Skip all --crt on Linux."
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
-      # On macOS static linking is not available at all.
-      echo
+      test_compiler_single "${test_bin_path}"
+      test_compiler_single "${test_bin_path}" --gc
+      test_compiler_single "${test_bin_path}" --lto
+      test_compiler_single "${test_bin_path}" --gc --lto
+
+      echo "Skip all --static-lib on macOS."
       echo "Skip all --static on macOS."
+
+      test_compiler_single "${test_bin_path}" --crt
+      test_compiler_single "${test_bin_path}" --gc --crt
+      test_compiler_single "${test_bin_path}" --lto --crt
+      test_compiler_single "${test_bin_path}" --gc --lto --crt
 
     fi
 
+    # (
+    #   if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    #   then
+    #     # Instruct the linker to add a RPATH pointing to the folder with the
+    #     # compiler shared libraries. Alternatelly -Wl,-rpath=xxx can be used
+    #     # explicitly on each link command.
+    #     export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
+    #     echo
+    #     echo "LD_RUN_PATH=${LD_RUN_PATH}"
+    #   elif [ "${XBB_HOST_PLATFORM}" == "win32" ] # -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+    #   then
+    #     # For libwinpthread-1.dll, possibly other.
+    #     if [ "$(uname -o)" == "Msys" ]
+    #     then
+    #       export PATH="${test_bin_path}/../lib;${PATH:-}"
+    #       echo "PATH=${PATH}"
+    #     elif [ "$(uname)" == "Linux" ]
+    #     then
+    #       export WINEPATH="${test_bin_path}/../lib;${WINEPATH:-}"
+    #       echo "WINEPATH=${WINEPATH}"
+    #     fi
+    #   fi
+    # )
+
     # -------------------------------------------------------------------------
+
 
     (
       cd c-cpp
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose "${CC}" -o add.o -c add.c -ffunction-sections -fdata-sections
-    else
-      run_app_verbose "${CC}" -o add.o -fpic -c add.c -ffunction-sections -fdata-sections
-    fi
-
-    rm -rf libadd-static.a
-    run_app_verbose "${AR}" -r ${VERBOSE_FLAG} libadd-static.a add.o
-    run_app_verbose "${RANLIB}" libadd-static.a
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      # The `--out-implib` creates an import library, which can be
-      # directly used with -l.
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -shared -o libadd-shared.dll -Wl,--out-implib,libadd-shared.dll.a add.o -Wl,--subsystem,windows
-    else
-      run_app_verbose "${CC}" -o libadd-shared.${XBB_HOST_SHLIB_EXT} -shared add.o
-    fi
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose "${CC}" -o rt-add.o -c add.c -ffunction-sections -fdata-sections
-    else
-      run_app_verbose "${CC}" -o rt-add.o -fpic -c add.c -ffunction-sections -fdata-sections
-    fi
-
-    rm -rf libadd-add-static.a
-    run_app_verbose "${AR}" -r ${VERBOSE_FLAG} librt-add-static.a rt-add.o
-    run_app_verbose "${RANLIB}" librt-add-static.a
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose "${CC}" -shared -o librt-add-shared.dll -Wl,--out-implib,librt-add-shared.dll.a rt-add.o -rtlib=compiler-rt
-    else
-      run_app_verbose "${CC}" -o librt-add-shared.${XBB_HOST_SHLIB_EXT} -shared rt-add.o -rtlib=compiler-rt
-    fi
-
-    run_app_verbose "${CC}" ${VERBOSE_FLAG} -o static-adder${XBB_HOST_DOT_EXE} adder.c -ladd-static -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-
-    test_expect "42" "static-adder" 40 2
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      # -ladd-shared is in fact libadd-shared.dll.a
-      # The library does not show as DLL, it is loaded dynamically.
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o shared-adder${XBB_HOST_DOT_EXE} adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-    else
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o shared-adder adder.c -ladd-shared -L . -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-    fi
-
-    (
-      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-      test_expect "42" "shared-adder" 40 2
-    )
-
-    run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-static-adder${XBB_HOST_DOT_EXE} adder.c -lrt-add-static -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-
-    test_expect "42" "rt-static-adder" 40 2
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      # -lrt-add-shared is in fact librt-add-shared.dll.a
-      # The library does not show as DLL, it is loaded dynamically.
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder${XBB_HOST_DOT_EXE} adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-    else
-      run_app_verbose "${CC}" ${VERBOSE_FLAG} -o rt-shared-adder adder.c -lrt-add-shared -L . -rtlib=compiler-rt -ffunction-sections -fdata-sections ${LD_GC_SECTIONS}
-    fi
-
-    (
-      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-      test_expect "42" "rt-shared-adder" 40 2
-    )
-
-    # -------------------------------------------------------------------------
-    # Tests borrowed from the llvm-mingw project.
-
-    # run_app_verbose "${CC}" hello.c -o hello${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
-    # show_target_libs hello
-    # run_app_verbose ./hello
-
-    # run_app_verbose "${CC}" setjmp-patched.c -o setjmp${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG} -lm
-    # show_target_libs setjmp
-    # run_app_verbose ./setjmp
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose "${CC}" hello-tls.c -o hello-tls.exe ${VERBOSE_FLAG}
-      show_target_libs hello-tls
-      run_app_verbose ./hello-tls
-
-      run_app_verbose "${CC}" crt-test.c -o crt-test.exe ${VERBOSE_FLAG}
-      show_target_libs crt-test
-      run_app_verbose ./crt-test
-
-      run_app_verbose "${CC}" autoimport-lib.c -shared -o autoimport-lib.dll -Wl,--out-implib,libautoimport-lib.dll.a ${VERBOSE_FLAG}
-      show_target_libs autoimport-lib.dll
-
-      run_app_verbose "${CC}" autoimport-main.c -o autoimport-main.exe -L. -lautoimport-lib ${VERBOSE_FLAG}
-      show_target_libs autoimport-main
-      run_app_verbose ./autoimport-main
-
-      # The IDL output isn't arch specific, but test each arch frontend
-      run_app_verbose "${WIDL}" idltest.idl -h -o idltest.h
-      run_app_verbose "${CC}" idltest.c -I. -o idltest.exe -lole32 ${VERBOSE_FLAG}
-      show_target_libs idltest
-      run_app_verbose ./idltest
-    fi
-
-    # for test in hello-cpp hello-exception exception-locale exception-reduced global-terminate longjmp-cleanup
-    # do
-    #   run_app_verbose ${CXX} $test.cpp -o $test${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
-    #   show_target_libs $test
-    #   run_app_verbose ./$test
-    # done
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose ${CXX} hello-exception.cpp -static -o hello-exception-static${XBB_HOST_DOT_EXE} ${VERBOSE_FLAG}
-
-      show_target_libs hello-exception-static
-      run_app_verbose ./hello-exception-static
-
-      run_app_verbose ${CXX} tlstest-lib.cpp -shared -o tlstest-lib.dll -Wl,--out-implib,libtlstest-lib.dll.a ${VERBOSE_FLAG}
-      show_target_libs tlstest-lib.dll
-
-      run_app_verbose ${CXX} tlstest-main.cpp -o tlstest-main.exe ${VERBOSE_FLAG}
-      show_target_libs tlstest-main
-      run_app_verbose ./tlstest-main
-    fi
-
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose ${CXX} throwcatch-lib.cpp -shared -o throwcatch-lib.dll -Wl,--out-implib,libthrowcatch-lib.dll.a ${VERBOSE_FLAG}
-    elif [ "$(lsb_release -rs)" == "12.04" -a \( "$(uname -m)" == "x86_64" -o "$(uname -m)" == "i686" \) ]
-    then
-      run_app_verbose ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_HOST_SHLIB_EXT} ${VERBOSE_FLAG} -fuse-ld=lld
-    else
-      run_app_verbose ${CXX} throwcatch-lib.cpp -shared -fpic -o libthrowcatch-lib.${XBB_HOST_SHLIB_EXT} ${VERBOSE_FLAG}
-    fi
-
-    run_app_verbose ${CXX} throwcatch-main.cpp -o throwcatch-main${XBB_HOST_DOT_EXE} -L. -lthrowcatch-lib ${VERBOSE_FLAG}
-
-    (
-      LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-      export LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH}
-
-      show_target_libs throwcatch-main
-      run_app_verbose ./throwcatch-main
-    )
-    # -------------------------------------------------------------------------
 
       # On Windows there is no clangd.exe. (Why?)
       if [ "${XBB_HOST_PLATFORM}" == "win32" ]
