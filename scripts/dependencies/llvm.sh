@@ -663,54 +663,54 @@ function test_llvm()
     echo
     echo "Testing if the ${name_prefix}llvm binaries start properly..."
 
-    run_target_app_verbose "${CC}" --version
-    run_target_app_verbose "${CXX}" --version
+    run_host_app_verbose "${CC}" --version
+    run_host_app_verbose "${CXX}" --version
 
     if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
-      run_target_app_verbose "${test_bin_path}/clang-format" --version
+      run_host_app_verbose "${test_bin_path}/clang-format" --version
     fi
 
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    # run_app_verbose "${test_bin_path}/lld" --version || true
+    # run_host_app_verbose "${test_bin_path}/lld" --version || true
     if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
-      run_target_app_verbose "${test_bin_path}/ld.lld" --version || true
+      run_host_app_verbose "${test_bin_path}/ld.lld" --version || true
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
-      run_target_app_verbose "${test_bin_path}/ld64.lld" --version || true
+      run_host_app_verbose "${test_bin_path}/ld64.lld" --version || true
     elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
-      # run_target_app_verbose "${test_bin_path}/ld-link" --version || true
-      run_target_app_verbose "${test_bin_path}/ld.lld" --version || true
+      # run_host_app_verbose "${test_bin_path}/ld-link" --version || true
+      run_host_app_verbose "${test_bin_path}/ld.lld" --version || true
     fi
 
-    run_target_app_verbose "${test_bin_path}/llvm-ar" --version
-    run_target_app_verbose "${test_bin_path}/llvm-nm" --version
-    run_target_app_verbose "${test_bin_path}/llvm-objcopy" --version
-    run_target_app_verbose "${test_bin_path}/llvm-objdump" --version
-    run_target_app_verbose "${test_bin_path}/llvm-ranlib" --version
+    run_host_app_verbose "${test_bin_path}/llvm-ar" --version
+    run_host_app_verbose "${test_bin_path}/llvm-nm" --version
+    run_host_app_verbose "${test_bin_path}/llvm-objcopy" --version
+    run_host_app_verbose "${test_bin_path}/llvm-objdump" --version
+    run_host_app_verbose "${test_bin_path}/llvm-ranlib" --version
     if [ -f "${test_bin_path}/llvm-readelf${XBB_HOST_DOT_EXE}" ]
     then
-      run_target_app_verbose "${test_bin_path}/llvm-readelf" --version
+      run_host_app_verbose "${test_bin_path}/llvm-readelf" --version
     fi
     if [ -f "${test_bin_path}/llvm-size" ]
     then
-      run_target_app_verbose "${test_bin_path}/llvm-size" --version
+      run_host_app_verbose "${test_bin_path}/llvm-size" --version
     fi
-    run_target_app_verbose "${test_bin_path}/llvm-strings" --version
-    run_target_app_verbose "${test_bin_path}/llvm-strip" --version
+    run_host_app_verbose "${test_bin_path}/llvm-strings" --version
+    run_host_app_verbose "${test_bin_path}/llvm-strip" --version
 
     echo
     echo "Testing the ${name_prefix}clang configuration..."
 
-    run_target_app_verbose "${test_bin_path}/clang" -print-target-triple
-    run_target_app_verbose "${test_bin_path}/clang" -print-targets
-    run_target_app_verbose "${test_bin_path}/clang" -print-supported-cpus
-    run_target_app_verbose "${test_bin_path}/clang" -print-search-dirs
-    run_target_app_verbose "${test_bin_path}/clang" -print-resource-dir
-    run_target_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
+    run_host_app_verbose "${test_bin_path}/clang" -print-target-triple
+    run_host_app_verbose "${test_bin_path}/clang" -print-targets
+    run_host_app_verbose "${test_bin_path}/clang" -print-supported-cpus
+    run_host_app_verbose "${test_bin_path}/clang" -print-search-dirs
+    run_host_app_verbose "${test_bin_path}/clang" -print-resource-dir
+    run_host_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
 
     # run_app_verbose "${test_bin_path}/llvm-config" --help
 
@@ -1036,12 +1036,12 @@ function test_llvm()
     )
     # -------------------------------------------------------------------------
 
-    # On Windows there is no clangd.exe. (Why?)
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      run_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+      # On Windows there is no clangd.exe. (Why?)
+      if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+      then
+        run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
 
-      cat <<'__EOF__' > "unchecked-exception.cpp"
+        cat <<'__EOF__' > "unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
 #include <exception>
 int main() {
@@ -1050,8 +1050,8 @@ int main() {
     return 0;
 }
 __EOF__
-      run_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
-    fi
+        run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
+      fi
     )
   )
 }
