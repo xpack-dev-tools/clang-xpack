@@ -566,45 +566,45 @@ function test_mingw_llvm()
     echo
     echo "Testing if the ${name_prefix}llvm binaries start properly..."
 
-    run_app_verbose "${CC}" --version
-    run_app_verbose "${CXX}" --version
+    run_host_app_verbose "${CC}" --version
+    run_host_app_verbose "${CXX}" --version
 
     if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
-      run_app_verbose "${test_bin_path}/clang-format" --version
+      run_host_app_verbose "${test_bin_path}/clang-format" --version
     fi
 
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    # run_app_verbose "${test_bin_path}/lld" --version || true
+    # run_host_app_verbose "${test_bin_path}/lld" --version || true
 
-    run_app_verbose "${test_bin_path}/llvm-ar" --version
-    run_app_verbose "${test_bin_path}/llvm-nm" --version
-    run_app_verbose "${test_bin_path}/llvm-objcopy" --version
-    run_app_verbose "${test_bin_path}/llvm-objdump" --version
-    run_app_verbose "${test_bin_path}/llvm-ranlib" --version
+    run_host_app_verbose "${test_bin_path}/llvm-ar" --version
+    run_host_app_verbose "${test_bin_path}/llvm-nm" --version
+    run_host_app_verbose "${test_bin_path}/llvm-objcopy" --version
+    run_host_app_verbose "${test_bin_path}/llvm-objdump" --version
+    run_host_app_verbose "${test_bin_path}/llvm-ranlib" --version
     if [ -f "${test_bin_path}/llvm-readelf" ]
     then
-      run_app_verbose "${test_bin_path}/llvm-readelf" --version
+      run_host_app_verbose "${test_bin_path}/llvm-readelf" --version
     fi
     if [ -f "${test_bin_path}/llvm-size" ]
     then
-      run_app_verbose "${test_bin_path}/llvm-size" --version
+      run_host_app_verbose "${test_bin_path}/llvm-size" --version
     fi
-    run_app_verbose "${test_bin_path}/llvm-strings" --version
-    run_app_verbose "${test_bin_path}/llvm-strip" --version
+    run_host_app_verbose "${test_bin_path}/llvm-strings" --version
+    run_host_app_verbose "${test_bin_path}/llvm-strip" --version
 
     echo
     echo "Testing ${name_prefix}clang configuration..."
 
-    run_app_verbose "${test_bin_path}/clang" -print-target-triple
-    run_app_verbose "${test_bin_path}/clang" -print-targets
-    run_app_verbose "${test_bin_path}/clang" -print-supported-cpus
-    run_app_verbose "${test_bin_path}/clang" -print-search-dirs
-    run_app_verbose "${test_bin_path}/clang" -print-resource-dir
-    run_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
+    run_host_app_verbose "${test_bin_path}/clang" -print-target-triple
+    run_host_app_verbose "${test_bin_path}/clang" -print-targets
+    run_host_app_verbose "${test_bin_path}/clang" -print-supported-cpus
+    run_host_app_verbose "${test_bin_path}/clang" -print-search-dirs
+    run_host_app_verbose "${test_bin_path}/clang" -print-resource-dir
+    run_host_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
 
-    # run_app_verbose "${test_bin_path}/llvm-config" --help
+    # run_host_app_verbose "${test_bin_path}/llvm-config" --help
 
     echo
     echo "Testing if ${name_prefix}clang compiles simple programs..."
@@ -689,7 +689,7 @@ function test_mingw_llvm()
       # On Windows there is no clangd.exe. (Why?)
       if is_native
       then
-        run_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+        run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
 
         cat <<'__EOF__' > "unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
@@ -700,7 +700,7 @@ int main() {
     return 0;
 }
 __EOF__
-        run_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
+        run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
       fi
     )
   )
