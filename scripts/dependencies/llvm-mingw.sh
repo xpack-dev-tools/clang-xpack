@@ -187,6 +187,8 @@ function build_mingw_llvm_first()
   else
     echo "Component ${name_prefix}llvm-first already installed."
   fi
+
+  tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
@@ -498,8 +500,6 @@ function build_mingw_llvm_libcxx()
   else
     echo "Component ${name_prefix}llvm-libcxx already installed."
   fi
-
-  tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
 # -----------------------------------------------------------------------------
