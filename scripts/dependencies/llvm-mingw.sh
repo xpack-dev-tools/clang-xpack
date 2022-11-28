@@ -334,7 +334,6 @@ function build_mingw_llvm_compiler_rt()
   else
     echo "Component ${name_prefix}llvm-compiler-rt already installed."
   fi
-
 }
 
 function build_mingw_llvm_libcxx()
