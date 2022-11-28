@@ -603,54 +603,21 @@ function test_llvm()
   shift
 
   local name_suffix=""
-
-  local triplet="" # "x86_64-w64-mingw32"
   local name_prefix=""
-
-  while [ $# -gt 0 ]
-  do
-    case "$1" in
-      --triplet=* )
-        triplet=$(xbb_parse_option "$1")
-        name_prefix="${triplet}-"
-        ;;
-
-      * )
-        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
-        exit 1
-        ;;
-    esac
-    shift
-  done
 
   echo
   echo "Testing the ${name_prefix}llvm binaries..."
 
   (
-
     run_verbose ls -l "${test_bin_path}"
 
-    if false # [ "${is_bootstrap}" == "y" ]
-    then
-      # Help the loader find the .dll files if the native is not static.
-      export WINEPATH=${test_bin_path}/${triplet}/bin
-
-      CC="${test_bin_path}/${triplet}-clang"
-      CXX="${test_bin_path}/${triplet}-clang++"
-      DLLTOOL="${test_bin_path}/${triplet}-dlltool"
-      WIDL="${test_bin_path}/${triplet}-widl"
-      GENDEF="${test_bin_path}/gendef"
-      AR="${test_bin_path}/${triplet}-ar"
-      RANLIB="${test_bin_path}/${triplet}-ranlib"
-    else
-      CC="${test_bin_path}/clang"
-      CXX="${test_bin_path}/clang++"
-      DLLTOOL="${test_bin_path}/llvm-dlltool"
-      WIDL="${test_bin_path}/widl"
-      GENDEF="${test_bin_path}/gendef"
-      AR="${test_bin_path}/llvm-ar"
-      RANLIB="${test_bin_path}/llvm-ranlib"
-    fi
+    CC="${test_bin_path}/clang"
+    CXX="${test_bin_path}/clang++"
+    DLLTOOL="${test_bin_path}/llvm-dlltool"
+    WIDL="${test_bin_path}/widl"
+    GENDEF="${test_bin_path}/gendef"
+    AR="${test_bin_path}/llvm-ar"
+    RANLIB="${test_bin_path}/llvm-ranlib"
 
     show_host_libs "${test_bin_path}/clang"
     show_host_libs "${test_bin_path}/lld"
@@ -731,26 +698,10 @@ function test_llvm()
     run_verbose cp -rv "${helper_folder_path}/tests/wine"/* c-cpp
     chmod -R a+w c-cpp
 
-    run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
-    chmod -R a+w fortran
+    # run_verbose cp -rv "${helper_folder_path}/tests/fortran" .
+    # chmod -R a+w fortran
 
     # -------------------------------------------------------------------------
-
-    local VERBOSE_FLAG=""
-    if [ "${XBB_IS_DEVELOP}" == "y" ]
-    then
-      VERBOSE_FLAG="-v"
-    fi
-
-    if [ "${XBB_TARGET_PLATFORM}" == "linux" ]
-    then
-      LD_GC_SECTIONS="-Wl,--gc-sections"
-    elif [ "${XBB_TARGET_PLATFORM}" == "darwin" ]
-    then
-      LD_GC_SECTIONS="-Wl,-dead_strip"
-    else
-      LD_GC_SECTIONS=""
-    fi
 
     xbb_show_env_develop
 
@@ -899,268 +850,7 @@ __EOF__
         run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
       fi
     )
-  )
-}
 
-# ("" | "-bootstrap") [--lto] [--gc] [--crt] [--static|--static-lib]
-function test_clang_one()
-{
-  echo_develop
-  echo_develop "[test_clang_one $@]"
-
-  (
-    unset IFS
-
-    local is_gc=""
-    local is_lto=""
-    local is_crt=""
-    local is_static=""
-    local is_static_lib=""
-
-    local prefix=""
-
-    local suffix="$1"
-    shift
-
-    while [ $# -gt 0 ]
-    do
-      case "$1" in
-
-        --gc)
-        is_gc="y"
-        shift
-        ;;
-
-        --lto)
-        is_lto="y"
-        shift
-        ;;
-
-        --crt)
-        is_crt="y"
-        shift
-        ;;
-
-        --static)
-        is_static="y"
-        shift
-        ;;
-
-        --static-lib)
-        is_static_lib="y"
-        shift
-        ;;
-
-      *)
-        echo "Unsupported action/option $1 in ${FUNCNAME[0]}()"
-        exit 1
-        ;;
-
-      esac
-    done
-
-    CFLAGS=""
-    CXXFLAGS=""
-    LDFLAGS=""
-    LDXXFLAGS=""
-
-    if [ "${is_crt}" == "y" ]
-    then
-      LDFLAGS+=" -rtlib=compiler-rt"
-      LDXXFLAGS+=" -rtlib=compiler-rt"
-      prefix="crt-${prefix}"
-    fi
-
-    if [ "${is_lto}" == "y" ]
-    then
-      CFLAGS+=" -flto"
-      CXXFLAGS+=" -flto"
-      LDFLAGS+=" -flto"
-      LDXXFLAGS+=" -flto"
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -fuse-ld=lld"
-        LDXXFLAGS+=" -fuse-ld=lld"
-      fi
-      prefix="lto-${prefix}"
-    fi
-
-    if [ "${is_gc}" == "y" ]
-    then
-      CFLAGS+=" -ffunction-sections -fdata-sections"
-      CXXFLAGS+=" -ffunction-sections -fdata-sections"
-      LDFLAGS+=" -ffunction-sections -fdata-sections"
-      LDXXFLAGS+=" -ffunction-sections -fdata-sections"
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,--gc-sections"
-        LDXXFLAGS+=" -Wl,--gc-sections"
-      elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-      then
-        LDFLAGS+=" -Wl,-dead_strip"
-        LDXXFLAGS+=" -Wl,-dead_strip"
-      fi
-      prefix="gc-${prefix}"
-    fi
-
-    # --static takes precedence over --static-lib.
-    if [ "${is_static}" == "y" ]
-    then
-      LDFLAGS+=" -static"
-      LDXXFLAGS+=" -static"
-      prefix="static-${prefix}"
-    elif [ "${is_static_lib}" == "y" ]
-    then
-      LDFLAGS+=" -static-libgcc"
-      LDXXFLAGS+=" -static-libgcc -static-libstdc++"
-      prefix="static-lib-${prefix}"
-    fi
-
-    if [ "${XBB_IS_DEVELOP}" == "y" ]
-    then
-      CFLAGS+=" -v"
-      CXXFLAGS+=" -v"
-      LDFLAGS+=" -v"
-      LDXXFLAGS+=" -v"
-    fi
-
-    (
-      cd c-cpp
-
-    # Test C compile and link in a single step.
-    run_app_verbose "${CC}" simple-hello.c -o ${prefix}simple-hello-c-one${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
-    test_expect "Hello" "${prefix}simple-hello-c-one${suffix}"
-
-    # Test C compile and link in separate steps.
-    run_app_verbose "${CC}" -c simple-hello.c -o simple-hello.c.o ${CFLAGS}
-    run_app_verbose "${CC}" simple-hello.c.o -o ${prefix}simple-hello-c-two${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
-    test_expect "Hello" "${prefix}simple-hello-c-two${suffix}"
-
-    # -------------------------------------------------------------------------
-
-    # Test C++ compile and link in a single step.
-    run_app_verbose "${CXX}" simple-hello.cpp -o ${prefix}simple-hello-cpp-one${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-    test_expect "Hello" "${prefix}simple-hello-cpp-one${suffix}"
-
-    # Test C++ compile and link in separate steps.
-    run_app_verbose "${CXX}" -c simple-hello.cpp -o ${prefix}simple-hello${suffix}.cpp.o ${CXXFLAGS}
-    run_app_verbose "${CXX}" ${prefix}simple-hello${suffix}.cpp.o -o ${prefix}simple-hello-cpp-two${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-    test_expect "Hello" "${prefix}simple-hello-cpp-two${suffix}"
-
-    # -------------------------------------------------------------------------
-
-    if [ \( "${XBB_HOST_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
-    then
-
-      # On Linux it works only with the full LLVM runtime and lld
-
-      run_app_verbose "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld -v
-      test_expect "MyException" "${prefix}simple-exception${suffix}"
-
-      run_app_verbose "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
-
-      run_app_verbose "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      test_expect "42" "${prefix}simple-int-exception${suffix}"
-
-    else
-
-      run_app_verbose "${CXX}" simple-exception.cpp -o ${prefix}simple-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      test_expect "MyException" "${prefix}simple-exception${suffix}"
-
-      run_app_verbose "${CXX}" simple-str-exception.cpp -o ${prefix}simple-str-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      test_expect "MyStringException" "${prefix}simple-str-exception${suffix}"
-
-      run_app_verbose "${CXX}" simple-int-exception.cpp -o ${prefix}simple-int-exception${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      test_expect "42" "${prefix}simple-int-exception${suffix}"
-
-    fi
-
-    # -------------------------------------------------------------------------
-    # Tests borrowed from the llvm-mingw project.
-
-    run_app_verbose "${CC}" hello.c -o ${prefix}hello${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
-    show_target_libs ${prefix}hello${suffix}
-    run_app_verbose ./${prefix}hello${suffix}
-
-    run_app_verbose "${CC}" setjmp-patched.c -o ${prefix}setjmp${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS} -lm
-    show_target_libs ${prefix}setjmp${suffix}
-    run_app_verbose ./${prefix}setjmp${suffix}
-
-    for test in hello-cpp global-terminate
-    do
-      run_app_verbose ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      show_target_libs ${prefix}${test}${suffix}
-      run_app_verbose ./${prefix}${test}${suffix}
-    done
-
-    if [ \( "${XBB_HOST_PLATFORM}" == "linux"  -a "${is_crt}" == "y" \) ]
-    then
-
-      # /usr/bin/ld: /tmp/longjmp-cleanup-e3da32.o: undefined reference to symbol '_Unwind_Resume@@GCC_3.0'
-      run_app_verbose ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-      show_target_libs ${prefix}longjmp-cleanup${suffix}
-      run_app_verbose ./${prefix}longjmp-cleanup${suffix}
-
-      for test in hello-exception exception-locale exception-reduced
-      do
-        run_app_verbose ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS} -stdlib=libc++ -fuse-ld=lld
-        show_target_libs ${prefix}${test}${suffix}
-        run_app_verbose ./${prefix}${test}${suffix}
-      done
-
-    else
-
-      run_app_verbose ${CXX} longjmp-cleanup.cpp -o ${prefix}longjmp-cleanup${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-      show_target_libs ${prefix}longjmp-cleanup${suffix}
-      run_app_verbose ./${prefix}longjmp-cleanup${suffix}
-
-      for test in hello-exception exception-locale exception-reduced
-      do
-        run_app_verbose ${CXX} ${test}.cpp -o ${prefix}${test}${suffix}${XBB_HOST_DOT_EXE} ${LDXXFLAGS}
-        show_target_libs ${prefix}${test}${suffix}
-        run_app_verbose ./${prefix}${test}${suffix}
-      done
-
-    fi
-
-    run_app_verbose "${CC}" -c -o ${prefix}hello-weak${suffix}.c.o hello-weak.c ${CFLAGS}
-    run_app_verbose "${CC}" -c -o ${prefix}hello-f-weak${suffix}.c.o hello-f-weak.c ${CFLAGS}
-    run_app_verbose "${CC}" -o ${prefix}hello-weak${suffix}${XBB_HOST_DOT_EXE} ${prefix}hello-weak${suffix}.c.o ${prefix}hello-f-weak${suffix}.c.o ${VERBOSE_FLAG} -lm ${LDFLAGS}
-    test_expect "Hello World!" ./${prefix}hello-weak${suffix}
-
-    if [ \( "${XBB_HOST_PLATFORM}" == "win32"  -a "${is_lto}" == "y" \) ]
-    then
-      # lld-link: error: duplicate symbol: world()
-      # >>> defined at hello-weak-cpp.cpp
-      # >>>            lto-hello-weak-cpp.cpp.o
-      # >>> defined at hello-f-weak-cpp.cpp
-      # >>>            lto-hello-f-weak-cpp.cpp.o
-      # clang-12: error: linker command failed with exit code 1 (use -v to see invocation)
-      echo "Skip hello-weak-cpp with -flto on Windows."
-    else
-      run_app_verbose "${CXX}" -c -o ${prefix}hello-weak-cpp${suffix}.cpp.o hello-weak-cpp.cpp ${CXXFLAGS}
-      run_app_verbose "${CXX}" -c -o ${prefix}hello-f-weak-cpp${suffix}.cpp.o hello-f-weak-cpp.cpp ${CXXFLAGS}
-      run_app_verbose "${CXX}" -o ${prefix}hello-weak-cpp${suffix}${XBB_HOST_DOT_EXE} ${prefix}hello-weak-cpp${suffix}.cpp.o ${prefix}hello-f-weak-cpp${suffix}.cpp.o ${VERBOSE_FLAG} -lm ${LDXXFLAGS}
-      test_expect "Hello World!" ./${prefix}hello-weak-cpp${suffix}
-    fi
-
-    # Test weak override.
-    (
-      cd weak-override
-
-      run_app_verbose "${CC}" -c main-weak.c -o ${prefix}main-weak${suffix}.c.o ${CFLAGS}
-      run_app_verbose "${CC}" -c add2.c -o ${prefix}add2${suffix}.c.o ${CFLAGS}
-      run_app_verbose "${CC}" -c dummy.c -o ${prefix}dummy${suffix}.c.o ${CFLAGS}
-      run_app_verbose "${CC}" -c expected3.c -o ${prefix}expected3${suffix}.c.o ${CFLAGS}
-
-      run_app_verbose "${CC}" ${prefix}main-weak${suffix}.c.o ${prefix}add2${suffix}.c.o ${prefix}dummy${suffix}.c.o ${prefix}expected3${suffix}.c.o -o ${prefix}weak-override${suffix}${XBB_HOST_DOT_EXE} ${LDFLAGS}
-
-      run_app_verbose ./${prefix}weak-override${suffix}
-    )
-    )
-
-    # -------------------------------------------------------------------------
   )
 }
 
