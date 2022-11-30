@@ -1,4 +1,43 @@
-TODO
+# Developer info
+
+## Notes
+
+- no Lua support in lldb
+- no python support in lldb
+- no sanitizers in compiler_rt
+- Linux default linker is GNU ld.gold, to allow LTO
+- Windows default linker is lld
+- macOS default linker is the system ld
+- on macOS, because the system linker prefers the system libc++.dylib,
+there are no C++ headers and libraries)
+- no rpc/xdr.h in compiler_rt
+- on Linux the default is with libstdc++ and the GNU libraries
+- on Linux, the clang libc++ fails to link with -static is exceptions are used
+- on Arm64, lldb failed with missing SVE_PT_FPSIMD_OFFSET; lldb disabled on Arm,
+to be re-enabled with Ubuntu 18.
+
+### macOS 10.10
+
+The compiler on macOS 10.10 seems a bit too old (LLVM 3.6.0)
+and the build fails with:
+
+```console
+/Users/ilg/Work/clang-14.0.6-2/darwin-x64/sources/llvm-project-14.0.6.src/llvm/utils/TableGen/GlobalISelEmitter.cpp:4298:7: error: no matching function for call to 'makeArrayRef'
+      makeArrayRef({&BuildVector, &BuildVectorTrunc}));
+      ^~~~~~~~~~~~
+/Users/ilg/Work/clang-14.0.6-2/darwin-x64/sources/llvm-project-14.0.6.src/llvm/include/llvm/ADT/ArrayRef.h:458:15: note: candidate template ignored: couldn't infer template argument 'T'
+  ArrayRef<T> makeArrayRef(const T &OneElt) {
+              ^
+```
+
+It is not clear if the issue is related to the compiler or rather the
+C++ standard library.
+
+On macOS 10.13 the compiler is relatively recent (Apple LLVM version 10.0.0)
+and is able to build the project without problems.
+
+Thus, for the xPack LLVM/clang, the minimum supported system will
+be macOS 10.13.
 
 ## ubuntu-latest
 
@@ -34,7 +73,7 @@ To get the actual configurations, the easiest way is to run the builds with
 the shell debug option enabled, and capture the console output.
 
 The direct invocation of the build script on an Ubuntu 18 fails,
-since cmake is too old, thus it is prefered to use the Docker builds.
+since cmake is too old, thus it is preferred to use the Docker builds.
 
 For this, on `xbbli`:
 

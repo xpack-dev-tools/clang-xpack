@@ -1,6 +1,8 @@
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/releases)
-[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/package.json)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
+[![npm (scoped)](https://img.shields.io/npm/v/@xpack-dev-tools/clang.svg?color=blue)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+[![license](https://img.shields.io/github/license/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/LICENSE)
 
 # The xPack LLVM clang
 
@@ -26,7 +28,8 @@ The binaries can be installed automatically as **binary xPacks** or manually as
 ## Release schedule
 
 This distribution follows the official
-[LLVM clang](https://github.com/llvm/llvm-project/releases/) releases.
+[LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
+but only the final patch of each version is released (like 14.0.6).
 
 The binaries can be installed automatically as **binary xPacks** or manually as
 **portable archives**.
@@ -89,9 +92,143 @@ This location is configurable via the environment variable
 `XPACKS_STORE_FOLDER`; for more details please check the
 [xpm folders](https://xpack.github.io/xpm/folders/) page.
 
-xPacks aware tools automatically
-identify binaries installed with
-`xpm` and provide a convenient method to manage paths.
+It is also possible to install LLVM clang globally, in the user home folder:
+
+```sh
+xpm install --global @xpack-dev-tools/clang@latest
+```
+
+After install, the package should create a structure like this (macOS files;
+only the first two depth levels are shown):
+
+```console
+$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-2.1/.content/
+/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/14.0.6-2.1/.content/
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang -> clang-14
+│   ├── clang++ -> clang
+│   ├── clang-14
+│   ├── clang-check
+│   ├── clang-cl -> clang
+│   ├── clang-cpp -> clang
+│   ├── clang-doc
+│   ├── clang-format
+│   ├── clang-linker-wrapper
+│   ├── clang-nvlink-wrapper
+│   ├── clang-offload-bundler
+│   ├── clang-offload-wrapper
+│   ├── clang-refactor
+│   ├── clang-rename
+│   ├── clang-repl
+│   ├── clang-scan-deps
+│   ├── clang-tidy
+│   ├── clangd
+│   ├── clangd-xpc-test-client
+│   ├── darwin-debug
+│   ├── diagtool
+│   ├── git-clang-format
+│   ├── hmaptool
+│   ├── intercept-build
+│   ├── ld.lld -> lld
+│   ├── ld64.lld -> lld
+│   ├── lld
+│   ├── lld-link -> lld
+│   ├── lldb
+│   ├── lldb-argdumper
+│   ├── lldb-instr
+│   ├── lldb-server
+│   ├── lldb-vscode
+│   ├── llvm-addr2line -> llvm-symbolizer
+│   ├── llvm-ar
+│   ├── llvm-as
+│   ├── llvm-bitcode-strip -> llvm-objcopy
+│   ├── llvm-config
+│   ├── llvm-cov
+│   ├── llvm-cxxdump
+│   ├── llvm-cxxfilt
+│   ├── llvm-cxxmap
+│   ├── llvm-debuginfod-find
+│   ├── llvm-diff
+│   ├── llvm-dis
+│   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-lib -> llvm-ar
+│   ├── llvm-libtool-darwin
+│   ├── llvm-nm
+│   ├── llvm-objcopy
+│   ├── llvm-objdump
+│   ├── llvm-otool -> llvm-objdump
+│   ├── llvm-profdata
+│   ├── llvm-ranlib -> llvm-ar
+│   ├── llvm-rc
+│   ├── llvm-readelf -> llvm-readobj
+│   ├── llvm-readobj
+│   ├── llvm-sim
+│   ├── llvm-size
+│   ├── llvm-strings
+│   ├── llvm-strip -> llvm-objcopy
+│   ├── llvm-symbolizer
+│   ├── llvm-tapi-diff
+│   ├── llvm-tblgen
+│   ├── llvm-tli-checker
+│   ├── llvm-windres -> llvm-rc
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   ├── set-xcode-analyzer
+│   ├── split-file
+│   └── wasm-ld -> lld
+├── distro-info
+│   ├── CHANGELOG.md
+│   ├── licenses
+│   ├── patches
+│   └── scripts
+├── include
+├── lib
+│   ├── LLVMPolly.so
+│   ├── clang
+│   ├── cmake
+│   ├── libLLVM.dylib
+│   ├── libLTO.dylib
+│   ├── libRemarks.dylib
+│   ├── libclang-cpp.dylib
+│   ├── libclang.dylib
+│   ├── libear
+│   ├── liblldb.14.0.6.dylib
+│   ├── liblldb.dylib -> liblldb.14.0.6.dylib
+│   └── libscanbuild
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── ccc-analyzer
+│   ├── intercept-c++
+│   ├── intercept-cc
+│   ├── libLLVM.dylib
+│   ├── libclang-cpp.dylib
+│   ├── libedit.0.dylib
+│   ├── libffi.8.dylib
+│   ├── libform.6.dylib
+│   ├── libgcc_s.1.dylib
+│   ├── libiconv.2.dylib
+│   ├── liblldb.14.0.6.dylib
+│   ├── liblzma.5.dylib
+│   ├── libncurses.6.dylib
+│   ├── libpanel.6.dylib
+│   ├── libxml2.2.dylib
+│   ├── libz.1.2.12.dylib
+│   └── libz.1.dylib -> libz.1.2.12.dylib
+└── share
+    ├── clang
+    ├── opt-viewer
+    ├── scan-build
+    └── scan-view
+
+17 directories, 102 files
+...
+```
+
+No other files are installed in any system folders or other locations.
 
 #### Uninstall
 
@@ -137,9 +274,8 @@ with caution, and prefer exact matches, like `14.0.6-2.1`.
 
 ## Maintainer info
 
-- [How to build](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-BUILD.md)
-- [How to make new releases](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-RELEASE.md)
-- [How to develop](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-DEVELOP.md)
+For maintainer info, please see the
+[README-MAINTAINER](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-MAINTAINER.md)
 
 ## Support
 

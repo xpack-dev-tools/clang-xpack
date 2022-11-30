@@ -1,4 +1,58 @@
-# How to make a new release (maintainer info)
+[![license](https://img.shields.io/github/license/xpack-dev-tools/clang-xpack)](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/xpack-dev-tools/clang-xpack.svg)](https://github.com/xpack-dev-tools/clang-xpack/issues/)
+[![GitHub pulls](https://img.shields.io/github/issues-pr/xpack-dev-tools/clang-xpack.svg)](https://github.com/xpack-dev-tools/clang-xpack/pulls)
+
+# Maintainer info
+
+The project is hosted on GitHub:
+
+- <https://github.com/xpack-dev-tools/clang-xpack.git>
+
+To clone the stable branch (`xpack`), run the following commands in a
+terminal (on Windows use the _Git Bash_ console):
+
+```sh
+rm -rf ~/Work/clang-xpack.git && \
+git clone https://github.com/xpack-dev-tools/clang-xpack.git \
+  ~/Work/clang-xpack.git
+```
+
+For development purposes, clone the `xpack-develop` branch:
+
+```sh
+rm -rf ~/Work/clang-xpack.git && \
+mkdir -p ~/Work && \
+git clone \
+  --branch xpack-develop \
+  https://github.com/xpack-dev-tools/clang-xpack.git \
+  ~/Work/clang-xpack.git
+```
+
+Same for the helper and link it to the central xPacks store:
+
+```sh
+rm -rf ~/Work/xbb-helper-xpack.git && \
+mkdir -p ~/Work && \
+git clone \
+  --branch xpack-develop \
+  https://github.com/xpack-dev-tools/xbb-helper-xpack.git \
+  ~/Work/xbb-helper-xpack.git && \
+xpm link -C ~/Work/xbb-helper-xpack.git
+```
+
+Or, if the repos were already cloned:
+
+```sh
+git -C ~/Work/clang-xpack.git pull
+
+git -C ~/Work/xbb-helper-xpack.git pull
+xpm link -C ~/Work/xbb-helper-xpack.git
+```
+
+## Prerequisites
+
+A recent [xpm](https://xpack.github.io/xpm/), which is a portable
+[Node.js](https://nodejs.org/) command line application.
 
 ## Release schedule
 
@@ -6,7 +60,7 @@ The xPack LLVM clang release schedule generally follows the original LLVM
 [releases](https://github.com/llvm/llvm-project/releases/), but aims to
 get the latest release after a new major release is published.
 
-## Prepare the build
+## How to make new releases
 
 Before starting the build, perform some checks and tweaks.
 
@@ -16,20 +70,8 @@ The build scripts are available in the `scripts` folder of the
 [`xpack-dev-tools/clang-xpack`](https://github.com/xpack-dev-tools/clang-xpack)
 Git repo.
 
-To download them on a new machine, clone the `xpack-develop` branch:
-
-```sh
-rm -rf ~/Work/clang-xpack.git && \
-mkdir -p ~/Work && \
-git clone \
-  --branch xpack-develop \
-  https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Work/clang-xpack.git && \
-git -C ~/Work/clang-xpack.git submodule update --init --recursive
-```
-
-> Note: the repository uses submodules; for a successful build it is
-> mandatory to recurse the submodules.
+To download them on a new machine, clone the `xpack-develop` branch,
+as seen above.
 
 ### Check Git
 
@@ -41,16 +83,11 @@ In the `xpack-dev-tools/clang-xpack` Git repo:
 
 No need to add a tag here, it'll be added when the release is created.
 
-### Update helper
-
-With a git client, go to the helper repo and update to the latest master commit.
-
 ### Check the latest upstream release
 
 Check the LLVM GitHub [Releases](https://github.com/llvm/llvm-project/releases)
 and compare the the xPack [Releases](https://github.com/xpack-dev-tools/clang-xpack/releases/).
-Find the latest release that seems stable; usually skip X.Y.0 releases,
-since they are usually followed by a X.Y.1 release in several month.
+Find the latest release that seems stable, usually like X.Y.6.
 
 ### Increase the version
 
@@ -85,6 +122,11 @@ but in the web release files.
 - add a new entry like _* v14.0.6-2 prepared_
 - commit with a message like _prepare v14.0.6-2_
 
+### Update the version specific code
+
+- open the `scripts/versioning.sh` file
+- add a new `if` with the new version before the existing code
+
 ### Merge upstream repo & prepare patch
 
 To keep the development repository fork in sync with the upstream LLVM
@@ -104,11 +146,6 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 
 Note: currently the patch is required to fix the CLT library path.
 
-### Update the version specific code
-
-- open the `scripts/versioning.sh` file
-- add a new `if` with the new version before the existing code
-
 ## Build
 
 The builds currently run on 5 dedicated machines (Intel GNU/Linux,
@@ -118,35 +155,260 @@ Arm 32 GNU/Linux, Arm 64 GNU/Linux, Intel macOS and Apple Silicon macOS).
 
 Before the real build, run test builds on all platforms.
 
-```sh
-rm -rf ~/Work/clang-[0-9]*-*
+#### Visual Studio Code
 
-caffeinate bash ~/Work/clang-xpack.git/scripts/helper/build.sh --develop --macos
-```
+All actions are defined as **xPack actions** and can be conveniently
+triggered via the VS Code graphical interface, using the
+[xPack extension](https://marketplace.visualstudio.com/items?itemName=ilg-vscode.xpack).
 
-Similarly on the Intel Linux (`xbbli`):
+#### Intel macOS
 
-```sh
-sudo rm -rf ~/Work/clang-[0-9]*-*
+For Intel macOS, first run the build on the development machine
+(`wksi`, a recent macOS):
 
-bash ~/Work/clang-xpack.git/scripts/helper/build.sh --develop --linux64
-
-bash ~/Work/clang-xpack.git/scripts/helper/build.sh --develop --win64
-```
-
-... the Arm Linux 64-bit (`xbbla64`):
+Update the build scripts (or clone them at the first use):
 
 ```sh
-bash ~/Work/clang-xpack.git/scripts/helper/build.sh --develop --arm64
+git -C ~/Work/clang-xpack.git pull
+
+xpm run deep-clean -C ~/Work/clang-xpack.git
 ```
 
-... and on the Arm Linux 32-bit (`xbbla32`):
+If the helper is also under development and needs changes,
+update it too:
 
 ```sh
-bash ~/Work/clang-xpack.git/scripts/helper/build.sh --develop --arm32
+git -C ~/Work/xbb-helper-xpack.git pull
 ```
 
-Work on the scripts until all platforms pass the build.
+Install project dependencies:
+
+```sh
+xpm install -C ~/Work/clang-xpack.git
+```
+
+If the writable helper is used,
+link it in the place of the read-only package:
+
+```sh
+xpm link -C ~/Work/xbb-helper-xpack.git
+
+xpm run link-deps -C ~/Work/clang-xpack.git
+```
+
+For repeated builds, clean the build folder and install de
+build configuration dependencies:
+
+```sh
+xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git
+
+xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
+```
+
+Run the native build:
+
+```sh
+caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+```
+
+The build takes about 22 minutes.
+
+When functional, push the `xpack-develop` branch to GitHub.
+
+Run the native build on the production machine
+(`xbbmi`, an older macOS);
+start a VS Code remote session, or connect with a terminal:
+
+```sh
+caffeinate ssh xbbmi
+```
+
+Repeat the same steps as before.
+
+```sh
+git -C ~/Work/clang-xpack.git pull && \
+xpm run deep-clean -C ~/Work/clang-xpack.git && \
+xpm install -C ~/Work/clang-xpack.git && \
+git -C ~/Work/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/clang-xpack.git && \
+xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git && \
+xpm install --config darwin-x64 -C ~/Work/clang-xpack.git && \
+caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+```
+
+About 26 minutes later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
+total 197704
+-rw-r--r--  1 ilg  staff  132413536 Aug 20 13:48 xpack-clang-14.0.6-2-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Aug 20 13:48 xpack-clang-14.0.6-2-darwin-x64.tar.gz.sha
+```
+
+#### Apple Silicon macOS
+
+Run the native build on the production machine
+(`xbbma`, an older macOS);
+start a VS Code remote session, or connect with a terminal:
+
+```sh
+caffeinate ssh xbbma
+```
+
+Update the build scripts (or clone them at the first use):
+
+```sh
+git -C ~/Work/clang-xpack.git pull && \
+xpm run deep-clean -C ~/Work/clang-xpack.git && \
+xpm install -C ~/Work/clang-xpack.git && \
+git -C ~/Work/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/clang-xpack.git && \
+xpm run deep-clean --config darwin-arm64  -C ~/Work/clang-xpack.git && \
+xpm install --config darwin-arm64 -C ~/Work/clang-xpack.git && \
+caffeinate xpm run build-develop --config darwin-arm64 -C ~/Work/clang-xpack.git
+```
+
+About 12 minutes later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
+total 165464
+-rw-r--r--  1 ilg  staff  110761767 Aug 20 12:48 xpack-clang-14.0.6-2-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff        107 Aug 20 12:48 xpack-clang-14.0.6-2-darwin-arm64.tar.gz.sha
+```
+
+#### Intel GNU/Linux
+
+Run the docker build on the production machine (`xbbli`);
+start a VS Code remote session, or connect with a terminal:
+
+```sh
+caffeinate ssh xbbli
+```
+
+##### Build the GNU/Linux binaries
+
+Update the build scripts (or clone them at the first use):
+
+```sh
+git -C ~/Work/clang-xpack.git pull && \
+xpm run deep-clean -C ~/Work/clang-xpack.git && \
+xpm run deep-clean --config linux-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-prepare --config linux-x64 -C ~/Work/clang-xpack.git && \
+git -C ~/Work/xbb-helper-xpack.git pull && \
+xpm run docker-link-deps --config linux-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-build-develop --config linux-x64 -C ~/Work/clang-xpack.git
+```
+
+About 12 minutes later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
+total 196820
+-rw-rw-rw- 1 ilg ilg 101828916 Aug 20 13:42 xpack-clang-14.0.6-2-linux-x64.tar.gz
+-rw-rw-rw- 1 ilg ilg       104 Aug 20 13:42 xpack-clang-14.0.6-2-linux-x64.tar.gz.sha
+```
+
+##### Build the Windows binaries
+
+Clean the build folder and prepare the docker container:
+
+```sh
+xpm run deep-clean --config win32-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-prepare --config win32-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-build-develop --config win32-x64 -C ~/Work/clang-xpack.git
+```
+
+About 13 minutes later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/win32-x64/deploy
+total 41300
+-rw-rw-rw- 1 ilg ilg 297910243 Aug 20 15:32 xpack-clang-14.0.6-2-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       101 Aug 20 15:32 xpack-clang-14.0.6-2-win32-x64.zip.sha
+```
+
+#### Arm GNU/Linux 64-bit
+
+Run the docker build on the production machine (`xbbla64`);
+start a VS Code remote session, or connect with a terminal:
+
+```sh
+caffeinate ssh xbbla64
+```
+
+Update the build scripts (or clone them at the first use):
+
+```sh
+git -C ~/Work/clang-xpack.git pull && \
+xpm run deep-clean -C ~/Work/clang-xpack.git && \
+xpm run deep-clean --config linux-arm64 -C ~/Work/clang-xpack.git && \
+xpm run docker-prepare --config linux-arm64 -C ~/Work/clang-xpack.git && \
+git -C ~/Work/xbb-helper-xpack.git pull && \
+xpm run docker-link-deps --config linux-arm64 -C ~/Work/clang-xpack.git && \
+xpm run docker-build-develop --config linux-arm64 -C ~/Work/clang-xpack.git
+```
+
+About 1h30 later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
+total 169440
+-rw-rw-rw- 1 root root 94181557 Aug 21 05:04 xpack-clang-14.0.6-2-linux-arm64.tar.gz
+-rw-rw-rw- 1 root root      106 Aug 21 05:04 xpack-clang-14.0.6-2-linux-arm64.tar.gz.sha
+```
+
+#### Arm GNU/Linux 32-bit
+
+Run the docker build on the production machine (`xbbla32`);
+start a VS Code remote session, or connect with a terminal:
+
+```sh
+caffeinate ssh xbbla32
+```
+
+Update the build scripts (or clone them at the first use):
+
+```sh
+git -C ~/Work/clang-xpack.git pull && \
+xpm run deep-clean -C ~/Work/clang-xpack.git && \
+xpm run deep-clean --config linux-arm -C ~/Work/clang-xpack.git && \
+xpm run docker-prepare --config linux-arm -C ~/Work/clang-xpack.git && \
+git -C ~/Work/xbb-helper-xpack.git pull && \
+xpm run docker-link-deps --config linux-arm -C ~/Work/clang-xpack.git && \
+xpm run docker-build-develop --config linux-arm -C ~/Work/clang-xpack.git
+```
+
+About 1h10 later, the output of the build script is a compressed
+archive and its SHA signature, created in the `deploy` folder:
+
+```console
+$ ls -l ~/Work/clang-xpack.git/build/linux-arm/deploy
+total 154256
+-rw-rw-rw- 1 ilg ilg 89795445 Aug 20 20:16 xpack-clang-14.0.6-2-linux-arm.tar.gz
+-rw-rw-rw- 1 ilg ilg      104 Aug 20 20:16 xpack-clang-14.0.6-2-linux-arm.tar.gz.sha
+```
+
+### Files cache
+
+The XBB build scripts use a local cache such that files are downloaded only
+during the first run, later runs being able to use the cached files.
+
+However, occasionally some servers may not be available, and the builds
+may fail.
+
+The workaround is to manually download the files from an alternate
+location (like
+<https://github.com/xpack-dev-tools/files-cache/tree/master/libs>),
+place them in the XBB cache (`Work/cache`) and restart the build.
 
 ## Push the build scripts
 
@@ -231,20 +493,6 @@ The resulting binaries are available for testing from
 ### CI tests
 
 The automation is provided by GitHub Actions.
-
-On the macOS machine (`xbbmi`) open a ssh sessions to the Arm/Linux
-test machine `xbbla`:
-
-```sh
-caffeinate ssh xbbla
-```
-
-Start both runners (to allow the 32/64-bit tests to run in parallel):
-
-```sh
-~/actions-runners/xpack-dev-tools/1/run.sh &
-~/actions-runners/xpack-dev-tools/2/run.sh &
-```
 
 To trigger the GitHub Actions tests, use the xPack actions:
 
