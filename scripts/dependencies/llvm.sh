@@ -768,10 +768,9 @@ function test_llvm()
       local distro=$(lsb_release -is)
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
-        # Unfortunatelly this is not true on RedHat, which has no libstdc++.a:
-        # /usr/bin/ld: cannot find -lstdc++
+        # RedHat has no static libstdc++.
         echo
-        echo "Skip all --static-lib on RedHat & derived."
+        echo "Skipping all --static-lib on RedHat & derived..."
       else
         test_compiler_single "${test_bin_path}" --static-lib
         test_compiler_single "${test_bin_path}" --static-lib --gc
@@ -781,9 +780,55 @@ function test_llvm()
 
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
-      echo "Skip all --static on Linux."
 
-      echo "Skip all --crt on Linux."
+      if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
+      then
+        echo
+        echo "Skipping all --static on RedHat & derived..."
+      else
+
+        test_compiler_single "${test_bin_path}" --static
+        test_compiler_single "${test_bin_path}" --static --gc
+        test_compiler_single "${test_bin_path}" --static --lto
+        test_compiler_single "${test_bin_path}" --static --gc --lto
+      fi
+
+      # -----------------------------------------------------------------------
+      # Once again with --crt
+
+      (
+        export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
+        echo
+        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+
+        test_compiler_single "${test_bin_path}" --crt --libunwind
+        test_compiler_single "${test_bin_path}" --gc --crt --libunwind
+        test_compiler_single "${test_bin_path}" --lto --crt --libunwind
+        test_compiler_single "${test_bin_path}" --gc --lto --crt --libunwind
+
+        test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static-lib --lto --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt --libunwind
+      )
+
+      if true
+      then
+        # There is something wrong in the link line and libunwind is not included.
+        # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: /usr/lib/x86_64-linux-gnu/libc.a(iofclose.o): in function `_IO_new_fclose':
+        # (.text+0x288): undefined reference to `_Unwind_Resume'
+        echo
+        echo "Skipping all --static --crt on Linux..."
+      elif [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
+      then
+        echo
+        echo "Skipping all --static on RedHat & derived..."
+      else
+        test_compiler_single "${test_bin_path}" --static --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static --gc --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static --lto --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static --gc --lto --crt --libunwind
+      fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
