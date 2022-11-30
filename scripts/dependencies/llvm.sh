@@ -838,8 +838,8 @@ function test_llvm()
       test_compiler_single "${test_bin_path}" --lto
       test_compiler_single "${test_bin_path}" --gc --lto
 
-      echo "Skip all --static-lib on macOS."
-      echo "Skip all --static on macOS."
+      echo "Skipping all --static-lib on macOS..."
+      echo "Skipping all --static on macOS..."
 
       test_compiler_single "${test_bin_path}" --crt
       test_compiler_single "${test_bin_path}" --gc --crt
