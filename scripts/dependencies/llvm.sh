@@ -842,18 +842,19 @@ function test_llvm()
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
+      # Old macOS linkers do not support LTO, thus use lld.
       test_compiler_single "${test_bin_path}"
       test_compiler_single "${test_bin_path}" --gc
-      test_compiler_single "${test_bin_path}" --lto
-      test_compiler_single "${test_bin_path}" --gc --lto
+      test_compiler_single "${test_bin_path}" --lto --lld
+      test_compiler_single "${test_bin_path}" --gc --lto --lld
 
       echo "Skipping all --static-lib on macOS..."
       echo "Skipping all --static on macOS..."
 
       test_compiler_single "${test_bin_path}" --crt
       test_compiler_single "${test_bin_path}" --gc --crt
-      test_compiler_single "${test_bin_path}" --lto --crt
-      test_compiler_single "${test_bin_path}" --gc --lto --crt
+      test_compiler_single "${test_bin_path}" --lto --crt --lld
+      test_compiler_single "${test_bin_path}" --gc --lto --crt --lld
 
     fi
 
