@@ -760,10 +760,14 @@ function test_llvm()
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
 
+      # The Linux system linker may fail with -flto, use the included lld.
+      # For example, on Raspberry Pi OS 32-bit:
+      # error: unable to execute command: Segmentation fault (core dumped)
+
       test_compiler_single "${test_bin_path}"
       test_compiler_single "${test_bin_path}" --gc
-      test_compiler_single "${test_bin_path}" --lto
-      test_compiler_single "${test_bin_path}" --gc --lto
+      test_compiler_single "${test_bin_path}" --lto --lld
+      test_compiler_single "${test_bin_path}" --gc --lto --lld
 
       local distro=$(lsb_release -is)
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
@@ -774,8 +778,8 @@ function test_llvm()
       else
         test_compiler_single "${test_bin_path}" --static-lib
         test_compiler_single "${test_bin_path}" --static-lib --gc
-        test_compiler_single "${test_bin_path}" --static-lib --lto
-        test_compiler_single "${test_bin_path}" --static-lib --gc --lto
+        test_compiler_single "${test_bin_path}" --static-lib --lto --lld
+        test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld
       fi
 
       # On Linux static linking is highly discouraged.
@@ -786,31 +790,36 @@ function test_llvm()
         echo
         echo "Skipping all --static on RedHat & derived..."
       else
-
         test_compiler_single "${test_bin_path}" --static
         test_compiler_single "${test_bin_path}" --static --gc
-        test_compiler_single "${test_bin_path}" --static --lto
-        test_compiler_single "${test_bin_path}" --static --gc --lto
+        test_compiler_single "${test_bin_path}" --static --lto --lld
+        test_compiler_single "${test_bin_path}" --static --gc --lto --lld
       fi
 
       # -----------------------------------------------------------------------
       # Once again with --crt
 
-      (
-        export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
+      if [ "${XBB_HOST_PLATFORM}" == "linux" -a "${XBB_HOST_ARCH}" == "arm" ]
+      then
         echo
-        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+        echo "Skipping all --crt on Linux Arm..."
+      else
+        (
+          export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-        test_compiler_single "${test_bin_path}" --crt --libunwind
-        test_compiler_single "${test_bin_path}" --gc --crt --libunwind
-        test_compiler_single "${test_bin_path}" --lto --crt --libunwind
-        test_compiler_single "${test_bin_path}" --gc --lto --crt --libunwind
+          test_compiler_single "${test_bin_path}" --crt --libunwind
+          test_compiler_single "${test_bin_path}" --gc --crt --libunwind
+          test_compiler_single "${test_bin_path}" --lto --lld --crt --libunwind
+          test_compiler_single "${test_bin_path}" --gc --lto --lld --crt --libunwind
 
-        test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static-lib --lto --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt --libunwind
-      )
+          test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
+          test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
+          test_compiler_single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
+          test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
+        )
+      fi
 
       if true
       then
@@ -826,8 +835,8 @@ function test_llvm()
       else
         test_compiler_single "${test_bin_path}" --static --crt --libunwind
         test_compiler_single "${test_bin_path}" --static --gc --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static --lto --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static --gc --lto --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static --lto --lld --crt --libunwind
+        test_compiler_single "${test_bin_path}" --static --gc --lto --lld --crt --libunwind
       fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
