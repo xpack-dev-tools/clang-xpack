@@ -790,7 +790,6 @@ function test_llvm()
         echo
         echo "Skipping all --static on RedHat & derived..."
       else
-
         test_compiler_single "${test_bin_path}" --static
         test_compiler_single "${test_bin_path}" --static --gc
         test_compiler_single "${test_bin_path}" --static --lto --lld
@@ -800,10 +799,15 @@ function test_llvm()
       # -----------------------------------------------------------------------
       # Once again with --crt
 
-      (
-        export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
+      if [ "${XBB_HOST_PLATFORM}" == "linux" -a "${XBB_HOST_ARCH}" == "arm" ]
+      then
         echo
-        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+        echo "Skipping all --crt on Linux Arm..."
+      else
+        (
+          export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
           test_compiler_single "${test_bin_path}" --crt --libunwind
           test_compiler_single "${test_bin_path}" --gc --crt --libunwind
@@ -815,6 +819,7 @@ function test_llvm()
           test_compiler_single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
           test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
         )
+      fi
 
       if true
       then
