@@ -107,7 +107,7 @@ function build_common()
     # Build the native dependencies.
 
     # Set the environment to initial values.
-    xbb_set_env
+    xbb_reset_env
     xbb_set_target "mingw-w64-native"
 
     build_mingw_clang_bootstrap
@@ -120,9 +120,9 @@ function build_common()
       # Build the target dependencies.
 
       # Set the environment to initial values.
-      xbb_set_env
+      xbb_reset_env
       xbb_activate_installed_bin # Before setting the target.
-      xbb_set_target
+      xbb_set_target "requested"
       xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
 
       # All of the following are cross compiled with the bootstrap LLVM
@@ -187,7 +187,8 @@ function build_common()
     # -------------------------------------------------------------------------
     # Build the target dependencies.
 
-    xbb_set_target
+    xbb_reset_env
+    xbb_set_target "requested"
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
