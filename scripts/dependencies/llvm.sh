@@ -591,7 +591,7 @@ function build_llvm()
     touch "${llvm_stamp_file_path}"
 
   else
-    echo "Component llvm already installed."
+    echo "Component llvm already installed"
   fi
 
   tests_add "test_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"

@@ -185,7 +185,7 @@ function build_mingw_llvm_first()
     touch "${llvm_stamp_file_path}"
 
   else
-    echo "Component ${name_prefix}llvm-first already installed."
+    echo "Component ${name_prefix}llvm-first already installed"
   fi
 
   tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
@@ -332,7 +332,7 @@ function build_mingw_llvm_compiler_rt()
     touch "${llvm_compiler_rt_stamp_file_path}"
 
   else
-    echo "Component ${name_prefix}llvm-compiler-rt already installed."
+    echo "Component ${name_prefix}llvm-compiler-rt already installed"
   fi
 }
 
@@ -497,7 +497,7 @@ function build_mingw_llvm_libcxx()
     touch "${llvm_libcxx_stamp_file_path}"
 
   else
-    echo "Component ${name_prefix}llvm-libcxx already installed."
+    echo "Component ${name_prefix}llvm-libcxx already installed"
   fi
 }
 
