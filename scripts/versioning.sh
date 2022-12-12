@@ -190,7 +190,7 @@ function build_common()
     xbb_reset_env
     xbb_set_target "requested"
 
-    if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
       build_libiconv "${XBB_LIBICONV_VERSION}"
     else
@@ -215,7 +215,7 @@ function build_common()
     xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
     # macOS has its own linker, cannot use the binutils ones.
-    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "linux" ]
     then
       # Build ld.gold to support LTO.
       build_binutils_ld_gold "${XBB_BINUTILS_VERSION}"
