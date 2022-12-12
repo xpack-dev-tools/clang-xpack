@@ -225,7 +225,6 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-2.1/.conten
     └── scan-view
 
 17 directories, 102 files
-...
 ```
 
 No other files are installed in any system folders or other locations.
