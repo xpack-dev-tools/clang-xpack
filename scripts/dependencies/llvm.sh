@@ -772,7 +772,7 @@ function test_llvm()
       local distro=$(lsb_release -is)
       echo
       echo "distro: ${distro}"
-set -x
+
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
         # RedHat has no static libstdc++.
@@ -784,7 +784,7 @@ set -x
         test_compiler_single "${test_bin_path}" --static-lib --lto --lld
         test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld
       fi
-exit 1
+
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
 
@@ -817,10 +817,19 @@ exit 1
           test_compiler_single "${test_bin_path}" --lto --lld --crt --libunwind
           test_compiler_single "${test_bin_path}" --gc --lto --lld --crt --libunwind
 
-          test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
-          test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
-          test_compiler_single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
-          test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
+          if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
+          then
+            # RedHat has no static libstdc++.
+            echo
+            echo "Skipping all --static-lib --crt on ${distro}..."
+          else
+
+            test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
+            test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
+            test_compiler_single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
+            test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
+
+          fi
         )
       fi
 
@@ -834,7 +843,7 @@ exit 1
       elif [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
         echo
-        echo "Skipping all --static on RedHat & derived..."
+        echo "Skipping all --static on ${distro}..."
       else
         test_compiler_single "${test_bin_path}" --static --crt --libunwind
         test_compiler_single "${test_bin_path}" --static --gc --crt --libunwind
