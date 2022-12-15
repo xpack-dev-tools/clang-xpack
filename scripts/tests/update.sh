@@ -27,10 +27,10 @@ function tests_update_system()
     run_verbose apt-get -qq install --yes g++
   elif [[ ${image_name} == *centos* ]] || [[ ${image_name} == *redhat* ]] || [[ ${image_name} == *fedora* ]]
   then
-    run_verbose yum install --assumeyes --quiet gcc-c++ glibc glibc-common
+    run_verbose yum install --assumeyes --quiet gcc-c++ glibc glibc-common libstdc++
   elif [[ ${image_name} == *suse* ]]
   then
-    run_verbose zypper --quiet --no-gpg-checks install --no-confirm gcc-c++
+    run_verbose zypper --quiet --no-gpg-checks install --no-confirm gcc-c++ glibc
   elif [[ ${image_name} == *manjaro* ]]
   then
     run_verbose pacman -S --quiet --noconfirm --noprogressbar gcc
