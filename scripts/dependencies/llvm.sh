@@ -764,14 +764,15 @@ function test_llvm()
       # For example, on Raspberry Pi OS 32-bit:
       # error: unable to execute command: Segmentation fault (core dumped)
 
-      test_compiler_single "${test_bin_path}"
-      test_compiler_single "${test_bin_path}" --gc
-      test_compiler_single "${test_bin_path}" --lto --lld
-      test_compiler_single "${test_bin_path}" --gc --lto --lld
+      # test_compiler_single "${test_bin_path}"
+      # test_compiler_single "${test_bin_path}" --gc
+      # test_compiler_single "${test_bin_path}" --lto --lld
+      # test_compiler_single "${test_bin_path}" --gc --lto --lld
+
 
       local distro=$(lsb_release -is)
       echo "distro: ${distro}"
-
+exit 1
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
         # RedHat has no static libstdc++.
