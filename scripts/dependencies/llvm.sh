@@ -769,10 +769,10 @@ function test_llvm()
       # test_compiler_single "${test_bin_path}" --lto --lld
       # test_compiler_single "${test_bin_path}" --gc --lto --lld
 
-
       local distro=$(lsb_release -is)
+      echo
       echo "distro: ${distro}"
-exit 1
+set -x
       if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
       then
         # RedHat has no static libstdc++.
@@ -784,7 +784,7 @@ exit 1
         test_compiler_single "${test_bin_path}" --static-lib --lto --lld
         test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld
       fi
-
+exit 1
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
 
