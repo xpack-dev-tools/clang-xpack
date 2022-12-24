@@ -38,6 +38,10 @@ function tests_update_system()
   then
     run_verbose pacman -S --quiet --noconfirm --noprogressbar gcc
   fi
+
+  echo
+  echo "The system C/C++ libraries..."
+  find /usr/lib* /lib -name 'libc.*' -o -name 'libstdc++.*' -o -name 'libgcc_s.*'
 }
 
 # -----------------------------------------------------------------------------
