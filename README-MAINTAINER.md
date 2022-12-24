@@ -101,7 +101,7 @@ Find the latest release that seems stable, usually like X.Y.6.
 ### Increase the version
 
 Determine the version (like `14.0.6`) and update the `scripts/VERSION`
-file; the format is `14.0.6-2`. The fourth number is the xPack release number
+file; the format is `14.0.6-3`. The fourth number is the xPack release number
 of this version. A fifth number will be added when publishing
 the package on the `npm` server.
 
@@ -111,7 +111,7 @@ Check GitHub issues and pull requests:
 
 - <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
-and fix them; assign them to a milestone (like `14.0.6-2`).
+and fix them; assign them to a milestone (like `14.0.6-3`).
 
 ### Check `README.md`
 
@@ -151,7 +151,7 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-14.0.6.patch.diff`
+- rename `llvm-14.0.6.git.patch`
 
 Note: currently the patch is required to fix the CLT library path.
 
@@ -220,7 +220,7 @@ Run the native build:
 caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
-The build takes about 22 minutes.
+The build takes about 1h05.
 
 When functional, push the `xpack-develop` branch to GitHub.
 
@@ -252,8 +252,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
 total 197704
--rw-r--r--  1 ilg  staff  132413536 Aug 20 13:48 xpack-clang-14.0.6-2-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff        105 Aug 20 13:48 xpack-clang-14.0.6-2-darwin-x64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  132413536 Aug 20 13:48 xpack-clang-14.0.6-3-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Aug 20 13:48 xpack-clang-14.0.6-3-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -286,8 +286,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
 total 165464
--rw-r--r--  1 ilg  staff  110761767 Aug 20 12:48 xpack-clang-14.0.6-2-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff        107 Aug 20 12:48 xpack-clang-14.0.6-2-darwin-arm64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  110761767 Aug 20 12:48 xpack-clang-14.0.6-3-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff        107 Aug 20 12:48 xpack-clang-14.0.6-3-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -319,8 +319,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
 total 196820
--rw-rw-rw- 1 ilg ilg 101828916 Aug 20 13:42 xpack-clang-14.0.6-2-linux-x64.tar.gz
--rw-rw-rw- 1 ilg ilg       104 Aug 20 13:42 xpack-clang-14.0.6-2-linux-x64.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 101828916 Aug 20 13:42 xpack-clang-14.0.6-3-linux-x64.tar.gz
+-rw-rw-rw- 1 ilg ilg       104 Aug 20 13:42 xpack-clang-14.0.6-3-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Windows binaries
@@ -340,8 +340,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/win32-x64/deploy
 total 41300
--rw-rw-rw- 1 ilg ilg 297910243 Aug 20 15:32 xpack-clang-14.0.6-2-win32-x64.zip
--rw-rw-rw- 1 ilg ilg       101 Aug 20 15:32 xpack-clang-14.0.6-2-win32-x64.zip.sha
+-rw-rw-rw- 1 ilg ilg 297910243 Aug 20 15:32 xpack-clang-14.0.6-3-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       101 Aug 20 15:32 xpack-clang-14.0.6-3-win32-x64.zip.sha
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -371,8 +371,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
 total 169440
--rw-rw-rw- 1 root root 94181557 Aug 21 05:04 xpack-clang-14.0.6-2-linux-arm64.tar.gz
--rw-rw-rw- 1 root root      106 Aug 21 05:04 xpack-clang-14.0.6-2-linux-arm64.tar.gz.sha
+-rw-rw-rw- 1 root root 94181557 Aug 21 05:04 xpack-clang-14.0.6-3-linux-arm64.tar.gz
+-rw-rw-rw- 1 root root      106 Aug 21 05:04 xpack-clang-14.0.6-3-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -402,8 +402,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm/deploy
 total 154256
--rw-rw-rw- 1 ilg ilg 89795445 Aug 20 20:16 xpack-clang-14.0.6-2-linux-arm.tar.gz
--rw-rw-rw- 1 ilg ilg      104 Aug 20 20:16 xpack-clang-14.0.6-2-linux-arm.tar.gz.sha
+-rw-rw-rw- 1 ilg ilg 89795445 Aug 20 20:16 xpack-clang-14.0.6-3-linux-arm.tar.gz
+-rw-rw-rw- 1 ilg ilg      104 Aug 20 20:16 xpack-clang-14.0.6-3-linux-arm.tar.gz.sha
 ```
 
 ### Files cache
@@ -576,14 +576,14 @@ xattr -dr com.apple.quarantine ${HOME}/Downloads/xpack-*
 On GNU/Linux and macOS systems, use:
 
 ```sh
-.../xpack-clang-14.0.6-2/bin/clang --version
+.../xpack-clang-14.0.6-3/bin/clang --version
 xPack x86_64 clang version 14.0.6
 ```
 
 On Windows use:
 
 ```dos
-...\xpack-clang-14.0.6-2\bin\clang --version
+...\xpack-clang-14.0.6-3\bin\clang --version
 xPack x86_64 clang version 14.0.6
 ```
 
@@ -666,7 +666,7 @@ watching this project.
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes, use a message like
-  _package.json: update urls for 14.0.6-2.1 release_ (without _v_)
+  _package.json: update urls for 14.0.6-3.1 release_ (without _v_)
 
 ## Publish on the npmjs.com server
 
@@ -677,7 +677,7 @@ watching this project.
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
-- `npm version 14.0.6-2.1`; the first 4 numbers are the same as the
+- `npm version 14.0.6-3.1`; the first 4 numbers are the same as the
   GitHub release; the fifth number is the npm specific version
 - the commits and the tag should have been pushed by the `postversion` script;
   if not, push them with `git push origin --tags`
@@ -706,12 +706,12 @@ The tests results are available from the
 When the release is considered stable, promote it as `latest`:
 
 - `npm dist-tag ls @xpack-dev-tools/clang`
-- `npm dist-tag add @xpack-dev-tools/clang@14.0.6-2.1 latest`
+- `npm dist-tag add @xpack-dev-tools/clang@14.0.6-3.1 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
 In case the previous version is not functional and needs to be unpublished:
 
-- `npm unpublish @xpack-dev-tools/clang@14.0.6-2.1`
+- `npm unpublish @xpack-dev-tools/clang@14.0.6-3.1`
 
 ## Update the Web
 

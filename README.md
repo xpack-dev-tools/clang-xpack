@@ -99,8 +99,8 @@ After install, the package should create a structure like this (macOS files;
 only the first two depth levels are shown):
 
 ```console
-$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-2.1/.content/
-/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/14.0.6-2.1/.content/
+$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-3.1/.content/
+/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/14.0.6-3.1/.content/
 ├── README.md
 ├── bin
 │   ├── analyze-build
@@ -201,14 +201,10 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-2.1/.conten
 │   ├── ccc-analyzer
 │   ├── intercept-c++
 │   ├── intercept-cc
-│   ├── libLLVM.dylib
-│   ├── libclang-cpp.dylib
 │   ├── libedit.0.dylib
 │   ├── libffi.8.dylib
 │   ├── libform.6.dylib
-│   ├── libgcc_s.1.dylib
 │   ├── libiconv.2.dylib
-│   ├── liblldb.14.0.6.dylib
 │   ├── liblzma.5.dylib
 │   ├── libncurses.6.dylib
 │   ├── libpanel.6.dylib
@@ -221,7 +217,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/14.0.6-2.1/.conten
     ├── scan-build
     └── scan-view
 
-17 directories, 102 files
+17 directories, 98 files
 ```
 
 No other files are installed in any system folders or other locations.
@@ -261,12 +257,12 @@ The version strings used by the LLVM project are three number strings
 like `14.0.6`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,
-like `14.0.6-2`. When published as a npm package, the version gets
-a fifth number, like `14.0.6-2.1`.
+like `14.0.6-3`. When published as a npm package, the version gets
+a fifth number, like `14.0.6-3.1`.
 
 Since adherence of third party packages to semver is not guaranteed,
 it is recommended to use semver expressions like `^14.0.6` and `~14.0.6`
-with caution, and prefer exact matches, like `14.0.6-2.1`.
+with caution, and prefer exact matches, like `14.0.6-3.1`.
 
 ## Maintainer info
 
