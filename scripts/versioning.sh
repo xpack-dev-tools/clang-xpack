@@ -99,7 +99,7 @@ function clang_build_common()
     # Number
     XBB_MINGW_VERSION_MAJOR=$(echo ${XBB_MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
 
-    # XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.patch.diff"
+    # XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.git.patch"
 
     mingw_download "${XBB_MINGW_VERSION}"
 
@@ -246,7 +246,7 @@ function application_build_versioned_components()
   # https://github.com/llvm/llvm-project/releases/
   # There are bug-fix releases every two weeks until X.0.5 or X.0.6 (if necessary).
   XBB_LLVM_VERSION="$(echo "${XBB_RELEASE_VERSION}" | sed -e 's|-.*||')"
-  XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_LLVM_VERSION}.patch.diff"
+  XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_LLVM_VERSION}.git.patch"
 
   export XBB_BOOTSTRAP_SUFFIX="-bootstrap"
 
@@ -255,7 +255,7 @@ function application_build_versioned_components()
   if [[ "${XBB_RELEASE_VERSION}" =~ 14\.0\.6-[123] ]]
   then
 
-    XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.patch.diff"
+    XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
