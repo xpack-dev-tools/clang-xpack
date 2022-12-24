@@ -9,7 +9,7 @@
 
 # -----------------------------------------------------------------------------
 
-function add_mingw_wrappers()
+function clang_add_mingw_wrappers()
 {
   (
     # Add wrappers for the mingw-w64 binaries.
@@ -46,47 +46,47 @@ function add_mingw_wrappers()
   )
 }
 
-function build_mingw_clang_bootstrap()
+function clang_build_mingw_bootstrap()
 {
   # Build a bootstrap toolchain, that runs on Linux and creates Windows
   # binaries.
   # Inspired from https://github.com/mstorsjo/llvm-mingw.
   (
     # Build libraries refered by LLVM.
-    build_zlib "${XBB_ZLIB_VERSION}"
-    build_ncurses "${XBB_NCURSES_VERSION}"
-    build_libiconv "${XBB_LIBICONV_VERSION}"
-    build_xz "${XBB_XZ_VERSION}"
+    zlib_build "${XBB_ZLIB_VERSION}"
+    ncurses_build "${XBB_NCURSES_VERSION}"
+    libiconv_build "${XBB_LIBICONV_VERSION}"
+    xz_build "${XBB_XZ_VERSION}"
 
     # Build LLVM with the host XBB compiler.
     # Has a reference to /opt/xbb/lib/libncurses.so.
-    build_mingw_llvm_first "${XBB_LLVM_VERSION}"
-    add_mingw_wrappers
+    llvm_mingw_build_first "${XBB_LLVM_VERSION}"
+    clang_add_mingw_wrappers
 
     # Deploy the headers, they are needed by the compiler.
-    build_mingw_headers
+    mingw_build_headers
 
     # Build native widl & gendef.
-    build_mingw_widl # Refers to mingw headers.
+    mingw_build_widl # Refers to mingw headers.
 
-    build_mingw_libmangle # Refered by gendef
-    build_mingw_gendef
+    mingw_build_libmangle # Refered by gendef
+    mingw_build_gendef
 
     xbb_activate_installed_bin
 
     xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
 
-    build_mingw_llvm_compiler_rt
+    llvm_mingw_build_compiler_rt
 
-    build_mingw_crt
-    build_mingw_winpthreads
-    # build_mingw_winstorecompat # Not needed by the bootstrap.
+    mingw_build_crt
+    mingw_build_winpthreads
+    # mingw_build_winstorecompat # Not needed by the bootstrap.
 
-    build_mingw_llvm_libcxx
+    llvm_mingw_build_libcxx
   )
 }
 
-function build_common()
+function clang_build_common()
 {
 
   if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
@@ -101,7 +101,7 @@ function build_common()
 
     # XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.patch.diff"
 
-    download_mingw "${XBB_MINGW_VERSION}"
+    mingw_download "${XBB_MINGW_VERSION}"
 
     # -------------------------------------------------------------------------
     # Build the native dependencies.
@@ -110,7 +110,7 @@ function build_common()
     xbb_reset_env
     xbb_set_target "mingw-w64-native"
 
-    build_mingw_clang_bootstrap
+    clang_build_mingw_bootstrap
 
     # Switch used during development to test bootstrap.
     if [ -z ${XBB_APPLICATION_BOOTSTRAP_ONLY+x} ]
@@ -129,10 +129,10 @@ function build_common()
       # and the results are Windows binaries.
 
       # Build libraries refered by LLVM.
-      build_zlib "${XBB_ZLIB_VERSION}"
-      build_ncurses "${XBB_NCURSES_VERSION}"
-      build_libiconv "${XBB_LIBICONV_VERSION}"
-      build_xz "${XBB_XZ_VERSION}"
+      zlib_build "${XBB_ZLIB_VERSION}"
+      ncurses_build "${XBB_NCURSES_VERSION}"
+      libiconv_build "${XBB_LIBICONV_VERSION}"
+      xz_build "${XBB_XZ_VERSION}"
 
       # -------------------------------------------------------------------------
       # Build the application binaries.
@@ -141,20 +141,20 @@ function build_common()
       xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
       # Build mingw-w64 components.
-      build_mingw_headers
-      build_mingw_widl --program-prefix=
-      build_mingw_libmangle
-      build_mingw_gendef --program-prefix=
+      mingw_build_headers
+      mingw_build_widl --program-prefix=
+      mingw_build_libmangle
+      mingw_build_gendef --program-prefix=
 
-      build_mingw_crt
-      build_mingw_winpthreads
-      build_mingw_winstorecompat
+      mingw_build_crt
+      mingw_build_winpthreads
+      mingw_build_winstorecompat
 
       # Build LLVM clang.
-      build_llvm "${XBB_LLVM_VERSION}"
+      llvm_build "${XBB_LLVM_VERSION}"
 
-      build_mingw_llvm_compiler_rt
-      build_mingw_llvm_libcxx # libunwind, libcxx, libcxxabi
+      llvm_mingw_build_compiler_rt
+      llvm_mingw_build_libcxx # libunwind, libcxx, libcxxabi
 
     fi
 
@@ -166,23 +166,23 @@ function build_common()
     # autoreconf required by libxml2.
 
     # https://ftp.gnu.org/pub/gnu/libiconv/
-    build_libiconv "${XBB_LIBICONV_VERSION}"
+    libiconv_build "${XBB_LIBICONV_VERSION}"
 
     # https://ftp.gnu.org/gnu/autoconf/
     # depends on m4.
-    build_autoconf "2.71"
+    autoconf_build "2.71"
 
     # https://ftp.gnu.org/gnu/automake/
     # depends on autoconf.
-    build_automake "1.16.5"
+    automake_build "1.16.5"
 
     # http://ftpmirror.gnu.org/libtool/
-    build_libtool "2.4.7"
+    libtool_build "2.4.7"
 
     # configure.ac:34: error: Macro PKG_PROG_PKG_CONFIG is not available. It is usually defined in file pkg.m4 provided by package pkg-config.
     # https://pkgconfig.freedesktop.org/releases/
     # depends on libiconv
-    build_pkg_config "0.29.2"
+    pkg_config_build "0.29.2"
 
     # -------------------------------------------------------------------------
     # Build the target dependencies.
@@ -192,21 +192,21 @@ function build_common()
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
-      build_libiconv "${XBB_LIBICONV_VERSION}"
+      libiconv_build "${XBB_LIBICONV_VERSION}"
     else
       # Already built with the native dependencies.
       :
     fi
 
-    build_zlib "${XBB_ZLIB_VERSION}"
-    build_libffi "${XBB_LIBFFI_VERSION}"
+    zlib_build "${XBB_ZLIB_VERSION}"
+    libffi_build "${XBB_LIBFFI_VERSION}"
 
     XBB_NCURSES_DISABLE_WIDEC="y"
-    build_ncurses "${XBB_NCURSES_VERSION}"
+    ncurses_build "${XBB_NCURSES_VERSION}"
 
-    build_xz "${XBB_XZ_VERSION}"
-    build_libxml2 "${XBB_LIBXML2_VERSION}"
-    build_libedit "${XBB_LIBEDIT_VERSION}"
+    xz_build "${XBB_XZ_VERSION}"
+    libxml2_build "${XBB_LIBXML2_VERSION}"
+    libedit_build "${XBB_LIBEDIT_VERSION}"
 
     # -------------------------------------------------------------------------
     # Build the application binaries.
@@ -218,11 +218,11 @@ function build_common()
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "linux" ]
     then
       # Build ld.gold to support LTO.
-      build_binutils_ld_gold "${XBB_BINUTILS_VERSION}"
+      binutils_build_ld_gold "${XBB_BINUTILS_VERSION}"
     fi
 
     # Finally build LLVM clang.
-    build_llvm "${XBB_LLVM_VERSION}"
+    llvm_build "${XBB_LLVM_VERSION}"
 
     # strip_libs
 
@@ -230,7 +230,7 @@ function build_common()
 
 }
 
-function build_application_versioned_components()
+function application_build_versioned_components()
 {
   if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
   then
@@ -279,7 +279,7 @@ function build_application_versioned_components()
     # https://www.thrysoee.dk/editline/
     XBB_LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
 
-    build_common
+    clang_build_common
 
     # -------------------------------------------------------------------------
   elif [[ "${XBB_RELEASE_VERSION}" =~ 13\.0\.1-[1] ]]
@@ -300,7 +300,7 @@ function build_application_versioned_components()
 
     XBB_NCURSES_DISABLE_WIDEC="y"
 
-    build_common
+    clang_build_common
 
     # -------------------------------------------------------------------------
   elif [[ "${XBB_RELEASE_VERSION}" =~ 12\.0\.1-[12] ]]
@@ -321,7 +321,7 @@ function build_application_versioned_components()
 
     XBB_NCURSES_DISABLE_WIDEC="y"
 
-    build_common
+    clang_build_common
 
     # -------------------------------------------------------------------------
   else

@@ -11,7 +11,7 @@
 
 # XBB_LLVM_PATCH_FILE_NAME
 
-function build_llvm()
+function llvm_build()
 {
   # https://llvm.org
   # https://llvm.org/docs/GettingStarted.html
@@ -594,10 +594,10 @@ function build_llvm()
     echo "Component llvm already installed"
   fi
 
-  tests_add "test_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+  tests_add "llvm_test" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
-function test_llvm()
+function llvm_test()
 {
   local test_bin_path="$1"
   shift
@@ -726,36 +726,36 @@ function test_llvm()
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
-      test_compiler_single "${test_bin_path}"
-      test_compiler_single "${test_bin_path}" --gc
-      test_compiler_single "${test_bin_path}" --lto
-      test_compiler_single "${test_bin_path}" --gc --lto
+      compiler-tests-single "${test_bin_path}"
+      compiler-tests-single "${test_bin_path}" --gc
+      compiler-tests-single "${test_bin_path}" --lto
+      compiler-tests-single "${test_bin_path}" --gc --lto
 
-      test_compiler_single "${test_bin_path}" --static-lib
-      test_compiler_single "${test_bin_path}" --static-lib --gc
-      test_compiler_single "${test_bin_path}" --static-lib --lto
-      test_compiler_single "${test_bin_path}" --static-lib --gc --lto
+      compiler-tests-single "${test_bin_path}" --static-lib
+      compiler-tests-single "${test_bin_path}" --static-lib --gc
+      compiler-tests-single "${test_bin_path}" --static-lib --lto
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
 
-      test_compiler_single "${test_bin_path}" --static
-      test_compiler_single "${test_bin_path}" --static --gc
-      test_compiler_single "${test_bin_path}" --static --lto
-      test_compiler_single "${test_bin_path}" --static --gc --lto
+      compiler-tests-single "${test_bin_path}" --static
+      compiler-tests-single "${test_bin_path}" --static --gc
+      compiler-tests-single "${test_bin_path}" --static --lto
+      compiler-tests-single "${test_bin_path}" --static --gc --lto
 
       # Once again with --crt
-      test_compiler_single "${test_bin_path}" --crt
-      test_compiler_single "${test_bin_path}" --gc --crt
-      test_compiler_single "${test_bin_path}" --lto --crt
-      test_compiler_single "${test_bin_path}" --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --crt
+      compiler-tests-single "${test_bin_path}" --gc --crt
+      compiler-tests-single "${test_bin_path}" --lto --crt
+      compiler-tests-single "${test_bin_path}" --gc --lto --crt
 
-      test_compiler_single "${test_bin_path}" --static-lib --crt
-      test_compiler_single "${test_bin_path}" --static-lib --gc --crt
-      test_compiler_single "${test_bin_path}" --static-lib --lto --crt
-      test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
 
-      test_compiler_single "${test_bin_path}" --static --crt
-      test_compiler_single "${test_bin_path}" --static --gc --crt
-      test_compiler_single "${test_bin_path}" --static --lto --crt
-      test_compiler_single "${test_bin_path}" --static --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --static --crt
+      compiler-tests-single "${test_bin_path}" --static --gc --crt
+      compiler-tests-single "${test_bin_path}" --static --lto --crt
+      compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
 
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
@@ -764,10 +764,10 @@ function test_llvm()
       # For example, on Raspberry Pi OS 32-bit:
       # error: unable to execute command: Segmentation fault (core dumped)
 
-      # test_compiler_single "${test_bin_path}"
-      # test_compiler_single "${test_bin_path}" --gc
-      # test_compiler_single "${test_bin_path}" --lto --lld
-      # test_compiler_single "${test_bin_path}" --gc --lto --lld
+      # compiler-tests-single "${test_bin_path}"
+      # compiler-tests-single "${test_bin_path}" --gc
+      # compiler-tests-single "${test_bin_path}" --lto --lld
+      # compiler-tests-single "${test_bin_path}" --gc --lto --lld
 
       local distro=$(lsb_release -is)
       echo
@@ -779,10 +779,10 @@ function test_llvm()
         echo
         echo "Skipping all --static-lib on ${distro}..."
       else
-        test_compiler_single "${test_bin_path}" --static-lib
-        test_compiler_single "${test_bin_path}" --static-lib --gc
-        test_compiler_single "${test_bin_path}" --static-lib --lto --lld
-        test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld
+        compiler-tests-single "${test_bin_path}" --static-lib
+        compiler-tests-single "${test_bin_path}" --static-lib --gc
+        compiler-tests-single "${test_bin_path}" --static-lib --lto --lld
+        compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --lld
       fi
 
       # On Linux static linking is highly discouraged.
@@ -793,10 +793,10 @@ function test_llvm()
         echo
         echo "Skipping all --static on ${distro}..."
       else
-        test_compiler_single "${test_bin_path}" --static
-        test_compiler_single "${test_bin_path}" --static --gc
-        test_compiler_single "${test_bin_path}" --static --lto --lld
-        test_compiler_single "${test_bin_path}" --static --gc --lto --lld
+        compiler-tests-single "${test_bin_path}" --static
+        compiler-tests-single "${test_bin_path}" --static --gc
+        compiler-tests-single "${test_bin_path}" --static --lto --lld
+        compiler-tests-single "${test_bin_path}" --static --gc --lto --lld
       fi
 
       # -----------------------------------------------------------------------
@@ -812,10 +812,10 @@ function test_llvm()
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-          test_compiler_single "${test_bin_path}" --crt --libunwind
-          test_compiler_single "${test_bin_path}" --gc --crt --libunwind
-          test_compiler_single "${test_bin_path}" --lto --lld --crt --libunwind
-          test_compiler_single "${test_bin_path}" --gc --lto --lld --crt --libunwind
+          compiler-tests-single "${test_bin_path}" --crt --libunwind
+          compiler-tests-single "${test_bin_path}" --gc --crt --libunwind
+          compiler-tests-single "${test_bin_path}" --lto --lld --crt --libunwind
+          compiler-tests-single "${test_bin_path}" --gc --lto --lld --crt --libunwind
 
           if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
           then
@@ -824,10 +824,10 @@ function test_llvm()
             echo "Skipping all --static-lib --crt on ${distro}..."
           else
 
-            test_compiler_single "${test_bin_path}" --static-lib --crt --libunwind
-            test_compiler_single "${test_bin_path}" --static-lib --gc --crt --libunwind
-            test_compiler_single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
-            test_compiler_single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --static-lib --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --static-lib --gc --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
 
           fi
         )
@@ -845,28 +845,28 @@ function test_llvm()
         echo
         echo "Skipping all --static on ${distro}..."
       else
-        test_compiler_single "${test_bin_path}" --static --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static --gc --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static --lto --lld --crt --libunwind
-        test_compiler_single "${test_bin_path}" --static --gc --lto --lld --crt --libunwind
+        compiler-tests-single "${test_bin_path}" --static --crt --libunwind
+        compiler-tests-single "${test_bin_path}" --static --gc --crt --libunwind
+        compiler-tests-single "${test_bin_path}" --static --lto --lld --crt --libunwind
+        compiler-tests-single "${test_bin_path}" --static --gc --lto --lld --crt --libunwind
       fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
       # Old macOS linkers do not support LTO, thus use lld.
-      test_compiler_single "${test_bin_path}"
-      test_compiler_single "${test_bin_path}" --gc
-      test_compiler_single "${test_bin_path}" --lto --lld
-      test_compiler_single "${test_bin_path}" --gc --lto --lld
+      compiler-tests-single "${test_bin_path}"
+      compiler-tests-single "${test_bin_path}" --gc
+      compiler-tests-single "${test_bin_path}" --lto --lld
+      compiler-tests-single "${test_bin_path}" --gc --lto --lld
 
       echo "Skipping all --static-lib on macOS..."
       echo "Skipping all --static on macOS..."
 
-      test_compiler_single "${test_bin_path}" --crt
-      test_compiler_single "${test_bin_path}" --gc --crt
-      test_compiler_single "${test_bin_path}" --lto --crt --lld
-      test_compiler_single "${test_bin_path}" --gc --lto --crt --lld
+      compiler-tests-single "${test_bin_path}" --crt
+      compiler-tests-single "${test_bin_path}" --gc --crt
+      compiler-tests-single "${test_bin_path}" --lto --crt --lld
+      compiler-tests-single "${test_bin_path}" --gc --lto --crt --lld
 
     fi
 

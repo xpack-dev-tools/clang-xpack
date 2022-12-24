@@ -14,11 +14,11 @@ function tests_run_all()
   local test_bin_path="$1"
 
   # Call the functions defined in the build code.
-  test_llvm "${test_bin_path}"
+  llvm_test "${test_bin_path}"
 
   if [ "${XBB_HOST_PLATFORM}" == "linux" ]
   then
-    test_binutils_ld_gold "${test_bin_path}"
+    binutils_test_ld_gold "${test_bin_path}"
   fi
 }
 

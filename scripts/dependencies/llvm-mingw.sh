@@ -11,7 +11,7 @@
 
 # XBB_LLVM_PATCH_FILE_NAME
 
-function build_mingw_llvm_first()
+function llvm_mingw_build_first()
 {
   export ACTUAL_LLVM_VERSION="$1"
   shift
@@ -192,7 +192,7 @@ function build_mingw_llvm_first()
 }
 
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
-function build_mingw_llvm_compiler_rt()
+function llvm_mingw_build_compiler_rt()
 {
   local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
   local name_prefix="mingw-w64-"
@@ -336,7 +336,7 @@ function build_mingw_llvm_compiler_rt()
   fi
 }
 
-function build_mingw_llvm_libcxx()
+function llvm_mingw_build_libcxx()
 {
   local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
   local name_prefix="mingw-w64-"
@@ -647,36 +647,36 @@ function test_mingw_llvm()
 
     # -------------------------------------------------------------------------
 
-    test_compiler_single "${test_bin_path}"
-    test_compiler_single "${test_bin_path}" --gc
-    test_compiler_single "${test_bin_path}" --lto
-    test_compiler_single "${test_bin_path}" --gc --lto
+    compiler-tests-single "${test_bin_path}"
+    compiler-tests-single "${test_bin_path}" --gc
+    compiler-tests-single "${test_bin_path}" --lto
+    compiler-tests-single "${test_bin_path}" --gc --lto
 
-    test_compiler_single "${test_bin_path}" --static-lib
-    test_compiler_single "${test_bin_path}" --static-lib --gc
-    test_compiler_single "${test_bin_path}" --static-lib --lto
-    test_compiler_single "${test_bin_path}" --static-lib --gc --lto
+    compiler-tests-single "${test_bin_path}" --static-lib
+    compiler-tests-single "${test_bin_path}" --static-lib --gc
+    compiler-tests-single "${test_bin_path}" --static-lib --lto
+    compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
 
-    test_compiler_single "${test_bin_path}" --static
-    test_compiler_single "${test_bin_path}" --static --gc
-    test_compiler_single "${test_bin_path}" --static --lto
-    test_compiler_single "${test_bin_path}" --static --gc --lto
+    compiler-tests-single "${test_bin_path}" --static
+    compiler-tests-single "${test_bin_path}" --static --gc
+    compiler-tests-single "${test_bin_path}" --static --lto
+    compiler-tests-single "${test_bin_path}" --static --gc --lto
 
     # Once again with --crt
-    test_compiler_single "${test_bin_path}" --crt
-    test_compiler_single "${test_bin_path}" --gc --crt
-    test_compiler_single "${test_bin_path}" --lto --crt
-    test_compiler_single "${test_bin_path}" --gc --lto --crt
+    compiler-tests-single "${test_bin_path}" --crt
+    compiler-tests-single "${test_bin_path}" --gc --crt
+    compiler-tests-single "${test_bin_path}" --lto --crt
+    compiler-tests-single "${test_bin_path}" --gc --lto --crt
 
-    test_compiler_single "${test_bin_path}" --static-lib --crt
-    test_compiler_single "${test_bin_path}" --static-lib --gc --crt
-    test_compiler_single "${test_bin_path}" --static-lib --lto --crt
-    test_compiler_single "${test_bin_path}" --static-lib --gc --lto --crt
+    compiler-tests-single "${test_bin_path}" --static-lib --crt
+    compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
+    compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
+    compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
 
-    test_compiler_single "${test_bin_path}" --static --crt
-    test_compiler_single "${test_bin_path}" --static --gc --crt
-    test_compiler_single "${test_bin_path}" --static --lto --crt
-    test_compiler_single "${test_bin_path}" --static --gc --lto --crt
+    compiler-tests-single "${test_bin_path}" --static --crt
+    compiler-tests-single "${test_bin_path}" --static --gc --crt
+    compiler-tests-single "${test_bin_path}" --static --lto --crt
+    compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
 
     # -------------------------------------------------------------------------
 
