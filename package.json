@@ -140,7 +140,7 @@
       "widl": "./.content/bin/widl"
     },
     "devDependencies": {
-      "@xpack-dev-tools/xbb-helper": "^0.11.28"
+      "@xpack-dev-tools/xbb-helper": "^0.11.39"
     },
     "properties": {
       "appName": "LLVM clang",
@@ -203,7 +203,7 @@
       "trigger-workflow-test-xpm": "bash xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-xpm.sh",
       "trigger-workflow-deep-clean": "bash xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-deep-clean.sh",
       "test-native": "bash {{ properties.dbg }} scripts/test.sh",
-      "test-pre-release": "bash {{ properties.dbg }} scripts/test.sh --base-url pre-release",
+      "test-pre-release": "bash {{ properties.dbg }} scripts/test.sh --base-url pre-release --develop --cache",
       "test-xpm": "bash {{ properties.dbg }} scripts/test.sh --xpm",
       "build-native": "bash {{ properties.dbg }} scripts/build.sh",
       "build-native-develop": "bash {{ properties.dbg }} scripts/build.sh --develop",
@@ -283,7 +283,8 @@
        ],
         "devDependencies": {
           "@xpack-dev-tools/clang": "14.0.6-2.1",
-          "@xpack-dev-tools/realpath": "9.1.0-1.1"
+          "@xpack-dev-tools/realpath": "9.1.0-1.1",
+          "@xpack-dev-tools/sed": "4.9.0-1.1"
         },
         "actions": {
           "build": "caffeinate {{ properties.commandBashBuild }}",
@@ -350,7 +351,10 @@
     }
   },
   "bundleDependencies": [],
+  "$devDependenciesUrls": [
+    "https://www.npmjs.com/package/liquidjs"
+  ],
   "devDependencies": {
-    "liquidjs": "^9.42.0"
+    "liquidjs": "^10.3.3"
   }
 }
