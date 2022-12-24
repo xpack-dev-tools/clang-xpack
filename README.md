@@ -31,9 +31,6 @@ This distribution follows the official
 [LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
 but only the final patch of each version is released (like 14.0.6).
 
-The binaries can be installed automatically as **binary xPacks** or manually as
-**portable archives**.
-
 ## User info
 
 This section is intended as a shortcut for those who plan

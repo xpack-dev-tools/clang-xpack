@@ -4,6 +4,8 @@
 
 # Maintainer info
 
+## Get project sources
+
 The project is hosted on GitHub:
 
 - <https://github.com/xpack-dev-tools/clang-xpack.git>
@@ -28,7 +30,16 @@ git clone \
   ~/Work/clang-xpack.git
 ```
 
-Same for the helper and link it to the central xPacks store:
+Or, if the repo was already cloned:
+
+```sh
+git -C ~/Work/clang-xpack.git pull
+```
+
+## Get helper sources
+
+The project has a dependency to a common **helper**; clone the
+`xpack-develop` branch and link it to the central xPacks store:
 
 ```sh
 rm -rf ~/Work/xbb-helper-xpack.git && \
@@ -40,11 +51,9 @@ git clone \
 xpm link -C ~/Work/xbb-helper-xpack.git
 ```
 
-Or, if the repos were already cloned:
+Or, if the repo was already cloned:
 
 ```sh
-git -C ~/Work/clang-xpack.git pull
-
 git -C ~/Work/xbb-helper-xpack.git pull
 xpm link -C ~/Work/xbb-helper-xpack.git
 ```
@@ -233,7 +242,7 @@ git -C ~/Work/xbb-helper-xpack.git pull && \
 xpm link -C ~/Work/xbb-helper-xpack.git && \
 xpm run link-deps -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git && \
-xpm install --config darwin-x64 -C ~/Work/clang-xpack.git && \
+xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
 caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
@@ -267,7 +276,7 @@ git -C ~/Work/xbb-helper-xpack.git pull && \
 xpm link -C ~/Work/xbb-helper-xpack.git && \
 xpm run link-deps -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config darwin-arm64  -C ~/Work/clang-xpack.git && \
-xpm install --config darwin-arm64 -C ~/Work/clang-xpack.git && \
+xpm install --config darwin-arm64 -C ~/Work/clang-xpack.git
 caffeinate xpm run build-develop --config darwin-arm64 -C ~/Work/clang-xpack.git
 ```
 
@@ -300,7 +309,7 @@ xpm run deep-clean -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config linux-x64 -C ~/Work/clang-xpack.git && \
 xpm run docker-prepare --config linux-x64 -C ~/Work/clang-xpack.git && \
 git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm run docker-link-deps --config linux-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-link-deps --config linux-x64 -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config linux-x64 -C ~/Work/clang-xpack.git
 ```
 
@@ -321,7 +330,7 @@ Clean the build folder and prepare the docker container:
 ```sh
 xpm run deep-clean --config win32-x64 -C ~/Work/clang-xpack.git && \
 xpm run docker-prepare --config win32-x64 -C ~/Work/clang-xpack.git && \
-xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git && \
+xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config win32-x64 -C ~/Work/clang-xpack.git
 ```
 
@@ -352,7 +361,7 @@ xpm run deep-clean -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config linux-arm64 -C ~/Work/clang-xpack.git && \
 xpm run docker-prepare --config linux-arm64 -C ~/Work/clang-xpack.git && \
 git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm run docker-link-deps --config linux-arm64 -C ~/Work/clang-xpack.git && \
+xpm run docker-link-deps --config linux-arm64 -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config linux-arm64 -C ~/Work/clang-xpack.git
 ```
 
@@ -383,7 +392,7 @@ xpm run deep-clean -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config linux-arm -C ~/Work/clang-xpack.git && \
 xpm run docker-prepare --config linux-arm -C ~/Work/clang-xpack.git && \
 git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm run docker-link-deps --config linux-arm -C ~/Work/clang-xpack.git && \
+xpm run docker-link-deps --config linux-arm -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config linux-arm -C ~/Work/clang-xpack.git
 ```
 
