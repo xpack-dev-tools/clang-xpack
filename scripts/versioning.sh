@@ -110,9 +110,6 @@ function clang_build_common()
     xbb_reset_env
     xbb_set_target "mingw-w64-native"
 
-    xbb_set_executables_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-    xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-
     clang_build_mingw_bootstrap
 
     # Switch used during development to test bootstrap.
@@ -127,9 +124,6 @@ function clang_build_common()
       xbb_activate_installed_bin # Before setting the target.
 
       xbb_set_target "requested"
-
-      xbb_set_executables_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-      xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
       xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
 
@@ -171,9 +165,6 @@ function clang_build_common()
     # -------------------------------------------------------------------------
     # Build the native dependencies.
 
-    xbb_set_executables_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-    xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-
     # autoreconf required by libxml2.
 
     # https://ftp.gnu.org/pub/gnu/libiconv/
@@ -201,9 +192,6 @@ function clang_build_common()
 
     xbb_reset_env
     xbb_set_target "requested"
-
-    xbb_set_executables_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
-    xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
