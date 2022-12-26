@@ -9,35 +9,38 @@
 
 # -----------------------------------------------------------------------------
 
+# https://llvm.org
+# https://llvm.org/docs/GettingStarted.html
+# https://llvm.org/docs/CommandGuide/
+# https://github.com/llvm/llvm-project/
+# https://github.com/llvm/llvm-project/releases/
+# https://github.com/llvm/llvm-project/releases/tag/llvmorg-11.1.0/
+# https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-project-11.1.0.src.tar.xz
+
+# https://github.com/archlinux/svntogit-packages/blob/packages/llvm/trunk/PKGBUILD
+# https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
+
+# https://github.com/Homebrew/homebrew-core/blob/master/Formula/llvm.rb
+
+# https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
+# https://llvm.org/docs/BuildingADistribution.html
+
+# 17 Feb 2021, "11.1.0"
+# For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
+# Fixed in 12.x.
+# 14 Apr 2021, "12.0.0"
+# 9 Jul 2021, "12.0.1"
+# 1 Oct 2021, "13.0.0"
+# 2 Feb 2022, "13.0.1"
+# 25 Jun 2022, "14.0.6"
+
+# -----------------------------------------------------------------------------
+
+# Environment variables:
 # XBB_LLVM_PATCH_FILE_NAME
 
 function llvm_build()
 {
-  # https://llvm.org
-  # https://llvm.org/docs/GettingStarted.html
-  # https://llvm.org/docs/CommandGuide/
-  # https://github.com/llvm/llvm-project/
-  # https://github.com/llvm/llvm-project/releases/
-  # https://github.com/llvm/llvm-project/releases/tag/llvmorg-11.1.0/
-  # https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-project-11.1.0.src.tar.xz
-
-  # https://github.com/archlinux/svntogit-packages/blob/packages/llvm/trunk/PKGBUILD
-  # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
-
-  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/llvm.rb
-
-  # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
-  # https://llvm.org/docs/BuildingADistribution.html
-
-  # 17 Feb 2021, "11.1.0"
-  # For GCC 11 it requires a patch to add <limits> to `benchmark_register.h`.
-  # Fixed in 12.x.
-  # 14 Apr 2021, "12.0.0"
-  # 9 Jul 2021, "12.0.1"
-  # 1 Oct 2021, "13.0.0"
-  # 2 Feb 2022, "13.0.1"
-  # 25 Jun 2022, "14.0.6"
-
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
