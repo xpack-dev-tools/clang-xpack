@@ -203,6 +203,7 @@ function llvm_mingw_build_compiler_rt()
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
         name_prefix="${triplet}-"
+        shift
         ;;
 
       * )
@@ -210,7 +211,6 @@ function llvm_mingw_build_compiler_rt()
         exit 1
         ;;
     esac
-    shift
   done
 
   local llvm_compiler_rt_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
@@ -347,6 +347,7 @@ function llvm_mingw_build_libcxx()
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
         name_prefix="${triplet}-"
+        shift
         ;;
 
       * )
@@ -354,7 +355,6 @@ function llvm_mingw_build_libcxx()
         exit 1
         ;;
     esac
-    shift
   done
 
   local llvm_libcxx_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-libcxx"
@@ -518,10 +518,12 @@ function test_mingw_llvm()
     case "$1" in
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
+        shift
         ;;
 
       --bootstrap )
         is_bootstrap="y"
+        shift
         ;;
 
       * )
@@ -529,7 +531,6 @@ function test_mingw_llvm()
         exit 1
         ;;
     esac
-    shift
   done
 
   name_prefix="${triplet}-"
