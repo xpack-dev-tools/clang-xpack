@@ -166,31 +166,13 @@ function clang_build_common()
     # Build the native dependencies.
 
     # autoreconf required by libxml2.
-
-    # https://ftp.gnu.org/pub/gnu/libiconv/
-    libiconv_build "${XBB_LIBICONV_VERSION}"
-
-    # https://ftp.gnu.org/gnu/autoconf/
-    # depends on m4.
-    autoconf_build "2.71"
-
-    # https://ftp.gnu.org/gnu/automake/
-    # depends on autoconf.
-    # requires M4 >1.4
-    automake_build "1.16.5"
-
-    # http://ftpmirror.gnu.org/libtool/
-    libtool_build "2.4.7"
-
-    # configure.ac:34: error: Macro PKG_PROG_PKG_CONFIG is not available. It is usually defined in file pkg.m4 provided by package pkg-config.
-    # https://pkgconfig.freedesktop.org/releases/
-    # depends on libiconv
-    pkg_config_build "0.29.2"
+    autotools_build
 
     # -------------------------------------------------------------------------
     # Build the target dependencies.
 
     xbb_reset_env
+    xbb_activate_installed_bin
     xbb_set_target "requested"
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
