@@ -41,6 +41,9 @@
 
 function llvm_build()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
@@ -928,6 +931,9 @@ __EOF__
 
 function strip_libs()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   if [ "${XBB_WITH_STRIP}" == "y" ]
   then
     (

@@ -11,6 +11,9 @@
 
 function clang_add_mingw_wrappers()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   (
     # Add wrappers for the mingw-w64 binaries.
     cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"

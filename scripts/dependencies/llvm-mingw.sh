@@ -13,6 +13,9 @@
 
 function llvm_mingw_build_first()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
@@ -194,6 +197,9 @@ function llvm_mingw_build_first()
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
 function llvm_mingw_build_compiler_rt()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
   local name_prefix="mingw-w64-"
 
@@ -338,6 +344,9 @@ function llvm_mingw_build_compiler_rt()
 
 function llvm_mingw_build_libcxx()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
   local name_prefix="mingw-w64-"
 
