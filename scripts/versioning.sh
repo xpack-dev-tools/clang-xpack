@@ -100,7 +100,7 @@ function clang_build_common()
     # various weird ways.
 
     # Number
-    XBB_MINGW_VERSION_MAJOR=$(echo ${XBB_MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
+    XBB_MINGW_VERSION_MAJOR=$(echo ${XBB_MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)[.].*|\1|')
 
     # XBB_MINGW_GCC_PATCH_FILE_NAME="gcc-${XBB_GCC_VERSION}-cross.git.patch"
 
@@ -240,7 +240,7 @@ function application_build_versioned_components()
 
   # ---------------------------------------------------------------------------
 
-  if [[ "${XBB_RELEASE_VERSION}" =~ 14\.0\.6-[123] ]]
+  if [[ "${XBB_RELEASE_VERSION}" =~ 14[.]0[.]6-[123] ]]
   then
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
@@ -270,7 +270,7 @@ function application_build_versioned_components()
     clang_build_common
 
     # -------------------------------------------------------------------------
-  elif [[ "${XBB_RELEASE_VERSION}" =~ 13\.0\.1-[1] ]]
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 13[.]0[.]1-[1] ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
@@ -291,7 +291,7 @@ function application_build_versioned_components()
     clang_build_common
 
     # -------------------------------------------------------------------------
-  elif [[ "${XBB_RELEASE_VERSION}" =~ 12\.0\.1-[12] ]]
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 12[.]0[.]1-[12] ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR

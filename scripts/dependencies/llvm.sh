@@ -47,8 +47,8 @@ function llvm_build()
   export ACTUAL_LLVM_VERSION="$1"
   shift
 
-  local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
-  local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
+  local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)[.]\([0-9][0-9]*\)[.].*|\1|')
+  local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)[.]\([0-9][0-9]*\)[.].*|\2|')
 
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
 
