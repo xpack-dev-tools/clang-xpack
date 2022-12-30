@@ -85,6 +85,11 @@ function llvm_mingw_build_first()
       LDFLAGS="${XBB_LDFLAGS_APP}"
       xbb_adjust_ldflags_rpath
 
+      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -ldl"
+      fi
+
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
