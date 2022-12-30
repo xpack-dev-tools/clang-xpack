@@ -501,7 +501,10 @@ function llvm_mingw_build_libcxx()
                 "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
                 "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
 
-        run_verbose "${NM}" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a"
+        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        then
+          run_verbose "${NM}" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a"
+        fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output-$(ndate).txt"
 
