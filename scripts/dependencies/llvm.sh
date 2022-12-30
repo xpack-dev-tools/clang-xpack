@@ -142,6 +142,9 @@ function llvm_build()
         then
           : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
           : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
+        elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -ldl"
         fi
 
       fi
