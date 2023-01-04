@@ -164,6 +164,8 @@ function llvm_build()
           config_options=()
 
           config_options+=("-G" "Ninja")
+          # HomeBrew uses make files, but so far this does not seem necessary.
+          # config_options+=("-G" "Unix Makefiles")
 
           # https://llvm.org/docs/GettingStarted.html
           # https://llvm.org/docs/CMake.html
