@@ -268,6 +268,14 @@ function llvm_build()
 
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
+            # Fails if only CLT is available (SDKs are part of Xcode).
+            # CMake Error at cmake/Modules/CompilerRTDarwinUtils.cmake:73 (message):
+            #   Failed to determine SDK version for "iphonesimulator" SDK
+            # Call Stack (most recent call first):
+            #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
+            #   lib/builtins/CMakeLists.txt:51 (include)
+            config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF")
+
             # This distribution expects the SDK to be in this location.
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
 
