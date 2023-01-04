@@ -4,6 +4,12 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-01-04
 
+* v15.0.6-1 prepared
+* 6745afe versioning.sh: add 15.* definitions
+* 7a38c86 add llvm-15.0.6-1.git.patch
+* 5209844 llvm-mingw.sh: show_host_libs only on non windows
+* f20d79a llvm.sh: show_host_libs only on non windows
+* 6a2a7f2 llvm.sh: cleanup *_STATIC_GCC
 * 512d3d9 package.json: xpm trace & next
 * 22378de package.json: bump deps
 * a85e535 re-generate workflows
