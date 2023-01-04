@@ -334,6 +334,12 @@ function llvm_build()
             config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
 
+            # macOS 10.13 libtool does not support recent format:
+            # /Library/Developer/CommandLineTools/usr/bin/libtool: object: lib/builtins/CMakeFiles/clang_rt.builtins_i386_osx.dir/absvdi2.c.o malformed object (LC_BUILD_VERSION and some LC_VERSION_MIN load command also found)
+
+            llvm_libtool_darwin_file_path="$(which llvm-libtool-darwin || echo llvm-libtool-darwin)"
+            config_options+=("-DCMAKE_LIBTOOL=${llvm_libtool_darwin_file_path}")
+
           elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
           then
 
