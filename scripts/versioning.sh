@@ -124,7 +124,8 @@ function clang_build_common()
 
       # Set the environment to initial values.
       xbb_reset_env
-      xbb_activate_installed_bin # Before setting the target.
+      # Before set target (to possibly update CC & co variables).
+      xbb_activate_installed_bin
 
       xbb_set_target "requested"
 
@@ -175,7 +176,9 @@ function clang_build_common()
     # Build the target dependencies.
 
     xbb_reset_env
+    # Before set target (to possibly update CC & co variables).
     xbb_activate_installed_bin
+
     xbb_set_target "requested"
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
@@ -240,7 +243,37 @@ function application_build_versioned_components()
 
   # ---------------------------------------------------------------------------
 
-  if [[ "${XBB_RELEASE_VERSION}" =~ 14[.]0[.]6-[123] ]]
+  if [[ "${XBB_RELEASE_VERSION}" =~ 15[.]0[.]6-[1] ]]
+  then
+
+    XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
+
+    # Also used in -DLLVM_BINUTILS_INCDIR
+    # https://ftp.gnu.org/gnu/binutils/
+    XBB_BINUTILS_VERSION="2.39" # "2.38"
+
+    # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
+    XBB_MINGW_VERSION="10.0.0"
+
+    # https://zlib.net/fossils/
+    XBB_ZLIB_VERSION="1.2.13" # "1.2.12"
+    # https://github.com/libffi/libffi/releases
+    XBB_LIBFFI_VERSION="3.4.4" # "3.4.2"
+    # https://ftp.gnu.org/gnu/ncurses/
+    XBB_NCURSES_VERSION="6.4" # "6.3"
+    # https://ftp.gnu.org/pub/gnu/libiconv/
+    XBB_LIBICONV_VERSION="1.17"
+    # https://sourceforge.net/projects/lzmautils/files/
+    XBB_XZ_VERSION="5.4.0" # "5.2.6"
+    # https://download.gnome.org/sources/libxml2/
+    XBB_LIBXML2_VERSION="2.10.3" # "2.10.0"
+    # https://www.thrysoee.dk/editline/
+    XBB_LIBEDIT_VERSION="20221030-3.1" # "20210910-3.1"
+
+    clang_build_common
+
+    # -------------------------------------------------------------------------
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 14[.]0[.]6-[123] ]]
   then
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
