@@ -87,7 +87,8 @@ function llvm_mingw_build_first()
 
       if [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
-        LDFLAGS+=" -ldl"
+        # MemoryMapper.cpp:(.text._ZZN4llvm3orc18SharedMemoryMapper7reserveEmNS_15unique_functionIFvNS_8ExpectedINS0_17ExecutorAddrRangeEEEEEEENUlNS_5ErrorENS3_ISt4pairINS0_12ExecutorAddrENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEEE_clES8_SI_+0x110): undefined reference to `shm_open'
+        LDFLAGS+=" -ldl -lrt -lpthread"
       fi
 
       export CPPFLAGS
