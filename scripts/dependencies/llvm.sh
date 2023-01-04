@@ -275,6 +275,7 @@ function llvm_build()
             #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
             #   lib/builtins/CMakeLists.txt:51 (include)
             config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF")
+            config_options+=("-DCOMPILER_RT_ENABLE_MACCATALYST=OFF")
 
             # This distribution expects the SDK to be in this location.
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
