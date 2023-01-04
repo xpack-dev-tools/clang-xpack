@@ -572,12 +572,15 @@ function test_mingw_llvm()
     # For consistency, on Linux it is available in the system.
     local realpath=$(which grealpath || which realpath || echo realpath)
 
-    show_host_libs "${test_bin_path}/clang"
-    show_host_libs "${test_bin_path}/lld"
-    if [ -f "${test_bin_path}/lldb" ]
+    if [ "${XBB_BUILD_PLATFORM}" != "win32" ]
     then
-      # lldb not available on Ubuntu 16 Arm.
-      show_host_libs "${test_bin_path}/lldb"
+      show_host_libs "${test_bin_path}/clang"
+      show_host_libs "${test_bin_path}/lld"
+      if [ -f "${test_bin_path}/lldb" -o -f "${test_bin_path}/lldb${XBB_HOST_DOT_EXE}" ]
+      then
+        # lldb not available on Ubuntu 16 Arm.
+        show_host_libs "${test_bin_path}/lldb"
+      fi
     fi
 
     echo
@@ -586,7 +589,8 @@ function test_mingw_llvm()
     run_host_app_verbose "${CC}" --version
     run_host_app_verbose "${CXX}" --version
 
-    if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
+    if [ -f "${test_bin_path}/clang-format" -o \
+         -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
     then
       run_host_app_verbose "${test_bin_path}/clang-format" --version
     fi
