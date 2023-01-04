@@ -627,12 +627,16 @@ function llvm_test()
     AR="${test_bin_path}/llvm-ar"
     RANLIB="${test_bin_path}/llvm-ranlib"
 
-    show_host_libs "${test_bin_path}/clang"
-    show_host_libs "${test_bin_path}/lld"
-    if [ -f "${test_bin_path}/lldb${XBB_HOST_DOT_EXE}" ]
+    if [ "${XBB_BUILD_PLATFORM}" != "win32" ]
     then
-      # lldb not available on Ubuntu 16 Arm.
-      show_host_libs "${test_bin_path}/lldb"
+      show_host_libs "${test_bin_path}/clang"
+      show_host_libs "${test_bin_path}/lld"
+      if [ -f "${test_bin_path}/lldb" -o \
+          -f "${test_bin_path}/lldb${XBB_HOST_DOT_EXE}" ]
+      then
+        # lldb not available on Ubuntu 16 Arm.
+        show_host_libs "${test_bin_path}/lldb"
+      fi
     fi
 
     echo
