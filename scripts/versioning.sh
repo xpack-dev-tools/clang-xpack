@@ -252,6 +252,8 @@ function application_build_versioned_components()
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
 
+    XBB_DO_REQUIRE_RPATH="n"
+
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.39" # "2.38"
