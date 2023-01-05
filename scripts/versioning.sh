@@ -169,6 +169,8 @@ function clang_build_common()
     # -------------------------------------------------------------------------
     # Build the native dependencies.
 
+    xbb_prepare_clang_env
+
     # autoreconf required by libxml2.
     autotools_build
 
@@ -180,6 +182,8 @@ function clang_build_common()
     xbb_activate_installed_bin
 
     xbb_set_target "requested"
+
+    xbb_prepare_clang_env
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
