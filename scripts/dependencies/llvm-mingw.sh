@@ -167,11 +167,22 @@ function llvm_mingw_build_first()
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          run_verbose cmake --build . --verbose
-          run_verbose cmake --build .  --verbose  --target install/strip
+          run_verbose_timed cmake \
+            --build . \
+            --verbose \
+            --parallel ${XBB_JOBS}
+
+          run_verbose cmake \
+            --build . \
+            --verbose  \
+            --target install/strip
         else
-          run_verbose cmake --build .
-          run_verbose cmake --build . --target install/strip
+          run_verbose cmake \
+            --build .
+
+          run_verbose cmake \
+            --build . \
+            --target install/strip
         fi
 
         # Copy these tools to the install folder, to simplify access
@@ -319,8 +330,25 @@ function llvm_mingw_build_compiler_rt()
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output-$(ndate).txt"
 
       (
-        run_verbose cmake --build . --verbose
-        run_verbose cmake --build . --verbose --target install/strip
+        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        then
+          run_verbose_timed cmake \
+            --build . \
+            --verbose \
+            --parallel ${XBB_JOBS}
+
+          run_verbose cmake \
+            --build . \
+            --verbose \
+            --target install/strip
+        else
+          run_verbose cmake \
+            --build .
+
+          run_verbose cmake \
+            --build . \
+            --target install/strip
+        fi
 
         # if [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         # then
@@ -499,7 +527,10 @@ function llvm_mingw_build_libcxx()
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
 
       (
-        run_verbose cmake --build . --verbose --target install
+        run_verbose cmake \
+          --build . \
+          --verbose \
+          --target install
 
         # Append libunwind to libc++, to simplify things.
         # It hels when there are no shared libc++ and linunwind.
