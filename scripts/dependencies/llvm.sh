@@ -510,7 +510,7 @@ function llvm_build()
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          run_verbose_timed cmake --build . --verbose
+          run_verbose_timed cmake --build . --verbose --parallel ${XBB_JOBS}
           run_verbose cmake --build .  --verbose  --target install/strip
         else
           run_verbose_timed cmake --build .
