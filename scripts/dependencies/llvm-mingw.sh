@@ -106,6 +106,7 @@ function llvm_mingw_build_first()
 
           config_options=()
 
+          config_options+=("-LH") # display help for each variable
           config_options+=("-G" "Ninja")
 
           # https://llvm.org/docs/GettingStarted.html
@@ -255,6 +256,8 @@ function llvm_mingw_build_compiler_rt()
         echo "Running ${name_prefix}llvm-compiler-rt cmake..."
 
         config_options=()
+
+        config_options+=("-LH") # display help for each variable
         config_options+=("-G" "Ninja")
 
         # Traditionally the runtime is in a versioned folder.
@@ -404,6 +407,8 @@ function llvm_mingw_build_libcxx()
         echo "Running ${name_prefix}llvm-libcxx cmake..."
 
         config_options=()
+
+        config_options+=("-LH") # display help for each variable
         config_options+=("-G" "Ninja")
 
         config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
