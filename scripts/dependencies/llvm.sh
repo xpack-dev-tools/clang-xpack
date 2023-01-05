@@ -167,6 +167,8 @@ function llvm_build()
           config_options=()
 
           config_options+=("-G" "Ninja")
+          # HomeBrew uses make files, but so far this does not seem necessary.
+          # config_options+=("-G" "Unix Makefiles")
 
           # https://llvm.org/docs/GettingStarted.html
           # https://llvm.org/docs/CMake.html
@@ -278,6 +280,7 @@ function llvm_build()
             #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
             #   lib/builtins/CMakeLists.txt:51 (include)
             config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF")
+            config_options+=("-DCOMPILER_RT_ENABLE_MACCATALYST=OFF")
 
             # This distribution expects the SDK to be in this location.
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
@@ -336,6 +339,12 @@ function llvm_build()
             # Otherwise it'll generate two -mmacosx-version-min
             config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
             config_options+=("-DMACOSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
+
+            # macOS 10.13 libtool does not support recent format:
+            # /Library/Developer/CommandLineTools/usr/bin/libtool: object: lib/builtins/CMakeFiles/clang_rt.builtins_i386_osx.dir/absvdi2.c.o malformed object (LC_BUILD_VERSION and some LC_VERSION_MIN load command also found)
+
+            llvm_libtool_darwin_file_path="$(which llvm-libtool-darwin || echo llvm-libtool-darwin)"
+            config_options+=("-DCMAKE_LIBTOOL=${llvm_libtool_darwin_file_path}")
 
           elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
           then
