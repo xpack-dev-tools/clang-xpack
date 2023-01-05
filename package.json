@@ -308,7 +308,7 @@
           "common-docker"
         ],
         "devDependencies": {
-          "@xpack-dev-tools/clang": "14.0.6-2.1",
+          "@xpack-dev-tools/gcc": "12.2.0-2.1",
           "@xpack-dev-tools/patchelf": "0.17.0-1.1"
         },
         "properties": {
