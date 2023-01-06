@@ -166,7 +166,10 @@ function llvm_build()
 
           config_options=()
 
-          config_options+=("-LH") # display help for each variable
+          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("-LH") # display help for each variable
+          fi
           config_options+=("-G" "Ninja")
           # HomeBrew uses make files, but so far this does not seem necessary.
           # config_options+=("-G" "Unix Makefiles")
