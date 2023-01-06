@@ -106,7 +106,10 @@ function llvm_mingw_build_first()
 
           config_options=()
 
-          config_options+=("-LH") # display help for each variable
+          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("-LH") # display help for each variable
+          fi
           config_options+=("-G" "Ninja")
 
           # https://llvm.org/docs/GettingStarted.html
@@ -268,7 +271,10 @@ function llvm_mingw_build_compiler_rt()
 
         config_options=()
 
-        config_options+=("-LH") # display help for each variable
+        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        then
+          config_options+=("-LH") # display help for each variable
+        fi
         config_options+=("-G" "Ninja")
 
         # Traditionally the runtime is in a versioned folder.
@@ -436,7 +442,10 @@ function llvm_mingw_build_libcxx()
 
         config_options=()
 
-        config_options+=("-LH") # display help for each variable
+        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        then
+          config_options+=("-LH") # display help for each variable
+        fi
         config_options+=("-G" "Ninja")
 
         config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS

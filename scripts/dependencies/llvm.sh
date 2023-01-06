@@ -166,7 +166,10 @@ function llvm_build()
 
           config_options=()
 
-          config_options+=("-LH") # display help for each variable
+          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("-LH") # display help for each variable
+          fi
           config_options+=("-G" "Ninja")
           # HomeBrew uses make files, but so far this does not seem necessary.
           # config_options+=("-G" "Unix Makefiles")
@@ -398,17 +401,13 @@ function llvm_build()
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
-            # Disabled once XBB moved to Ubuntu 18.
-            if false # [ "${XBB_HOST_ARCH}" == "arm64" -o "${XBB_HOST_ARCH}" == "arm" ]
-            then
-              # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
-              # not available in Ubuntu 16;
-              # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
-              # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
-              config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;polly;compiler-rt;libcxx;libcxxabi;libunwind")
-            else
-              config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
-            fi
+            # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
+            # not available in Ubuntu 16;
+            # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
+            # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
+
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=libcxx;libcxxabi;libunwind")
 
             # TOOLCHAIN_ONLY requires manual install for LLVMgold.so and
             # lots of other files; not worth the effort and risky.
