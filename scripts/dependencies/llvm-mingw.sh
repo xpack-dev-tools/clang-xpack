@@ -576,18 +576,12 @@ function test_mingw_llvm()
   local triplet="x86_64-w64-mingw32"
   local name_prefix=""
   local name_suffix=""
-  local is_bootstrap="n"
 
   while [ $# -gt 0 ]
   do
     case "$1" in
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
-        shift
-        ;;
-
-      --bootstrap )
-        is_bootstrap="y"
         shift
         ;;
 
