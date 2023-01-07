@@ -299,14 +299,15 @@ function llvm_mingw_build_compiler_rt()
         config_options+=("-DCMAKE_AR=${AR}") # MS
         config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
 
-        if [ "${XBB_TARGET_MACHINE}" == "x86_64" ]
+        # Warning: the result is not the mingw triplet, it is the Linux triplet.
+        if [ "${triplet}" == "x86_64-w64-mingw32" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
-        elif [ "${XBB_TARGET_MACHINE}" == "i686" ]
+        elif [ "${triplet}" == "i686-w64-mingw32" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          echo "Unsupported XBB_TARGET_MACHINE=${XBB_TARGET_MACHINE} in ${FUNCNAME[0]}()"
+          echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
           exit 1
         fi
 
@@ -469,14 +470,15 @@ function llvm_mingw_build_libcxx()
         config_options+=("-DCMAKE_AR=${AR}") # MS
         config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
 
-        if [ "${XBB_TARGET_MACHINE}" == "x86_64" ]
+        # Warning: the result is not the mingw triplet, it is the Linux triplet.
+        if [ "${triplet}" == "x86_64-w64-mingw32" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
-        elif [ "${XBB_TARGET_MACHINE}" == "i686" ]
+        elif [ "${triplet}" == "i686-w64-mingw32" ]
         then
           config_options+=("-DCMAKE_C_COMPILER_TARGET=i386-windows-gnu")
         else
-          echo "Unsupported XBB_TARGET_MACHINE=${XBB_TARGET_MACHINE} in ${FUNCNAME[0]}()"
+          echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
           exit 1
         fi
 
