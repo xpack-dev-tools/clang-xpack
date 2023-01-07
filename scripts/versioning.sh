@@ -70,7 +70,7 @@ function clang_build_mingw_bootstrap()
 {
   # Build a bootstrap toolchain, that runs on Linux and creates Windows
   # binaries.
-  # Inspired from https://github.com/mstorsjo/llvm-mingw.
+  # Inspired by https://github.com/mstorsjo/llvm-mingw.
   (
     # Build libraries refered by LLVM.
     zlib_build "${XBB_ZLIB_VERSION}"
