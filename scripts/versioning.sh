@@ -81,28 +81,46 @@ function clang_build_mingw_bootstrap()
     # Build LLVM with the host XBB compiler.
     # Has a reference to /opt/xbb/lib/libncurses.so.
     llvm_mingw_build_first "${XBB_LLVM_VERSION}"
+
+    # Add wrappers to both i686-* and x64_64-* applications.
     clang_add_mingw_wrappers
 
-    # Deploy the headers, they are needed by the compiler.
-    mingw_build_headers
+    for triplet in "${XBB_MINGW_TRIPLETS[@]}"
+    do
+      (
+        xbb_set_extra_target_env "${triplet}"
 
-    # Build native widl & gendef.
-    mingw_build_widl # Refers to mingw headers.
+        # ---------------------------------------------------------------------
+        # Use the native compiler
 
-    mingw_build_libmangle # Refered by gendef
-    mingw_build_gendef
+        # Deploy the headers, they are needed by the compiler.
+        mingw_build_headers --triplet="${triplet}"
 
-    xbb_activate_installed_bin
+        # Build native widl & gendef.
+        mingw_build_widl --triplet="${triplet}" # Refers to mingw headers.
 
-    xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
+        mingw_build_libmangle --triplet="${triplet}" # Refered by gendef
+        mingw_build_gendef --triplet="${triplet}"
 
-    llvm_mingw_build_compiler_rt
+        # ---------------------------------------------------------------------
+        # Use the mingw compiler compied above.
 
-    mingw_build_crt
-    mingw_build_winpthreads
-    # mingw_build_winstorecompat # Not needed by the bootstrap.
+        xbb_activate_installed_bin
 
-    llvm_mingw_build_libcxx
+        # MS uses the gcc names. Stick to them for now.
+        # xbb_prepare_clang_env "${triplet}-"
+        xbb_prepare_gcc_env "${triplet}-"
+
+        mingw_build_crt --triplet="${triplet}"
+
+        llvm_mingw_build_compiler_rt --triplet="${triplet}"
+        llvm_mingw_build_libcxx --triplet="${triplet}"
+
+        # Requires libunwind.
+        mingw_build_winpthreads --triplet="${triplet}"
+        # mingw_build_winstorecompat # Not needed by the bootstrap.
+      )
+    done
   )
 }
 
@@ -257,6 +275,11 @@ function application_build_versioned_components()
   XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_LLVM_VERSION}.git.patch"
 
   export XBB_BOOTSTRAP_SUFFIX="-bootstrap"
+
+  # 32-bit first, since it is more probable to fail.
+  # XBB_MINGW_TRIPLETS=( "i686-w64-mingw32" "x86_64-w64-mingw32" )
+  XBB_MINGW_TRIPLETS=( "x86_64-w64-mingw32" ) # Use it temporarily during tests.
+  # XBB_MINGW_TRIPLETS=( "i686-w64-mingw32" ) # Use it temporarily during tests.
 
   # ---------------------------------------------------------------------------
 
