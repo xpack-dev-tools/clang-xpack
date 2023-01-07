@@ -337,10 +337,10 @@
           "common-actions",
           "common-docker"
         ],
+        "$comment": "no mingw-gcc here!",
         "devDependencies": {
           "@xpack-dev-tools/gcc": "12.2.0-2.1",
-          "@xpack-dev-tools/mingw-w64-gcc": "12.2.0-1.1",
-          "@xpack-dev-tools/wine": "6.17.0-1.1"
+          "@xpack-dev-tools/wine": "7.22.0-1.1"
         },
         "properties": {
           "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.0.0"
