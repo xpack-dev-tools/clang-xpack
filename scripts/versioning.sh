@@ -277,8 +277,8 @@ function application_build_versioned_components()
   export XBB_BOOTSTRAP_SUFFIX="-bootstrap"
 
   # 32-bit first, since it is more probable to fail.
-  # XBB_MINGW_TRIPLETS=( "i686-w64-mingw32" "x86_64-w64-mingw32" )
-  XBB_MINGW_TRIPLETS=( "x86_64-w64-mingw32" ) # Use it temporarily during tests.
+  XBB_MINGW_TRIPLETS=( "i686-w64-mingw32" "x86_64-w64-mingw32" )
+  # XBB_MINGW_TRIPLETS=( "x86_64-w64-mingw32" ) # Use it temporarily during tests.
   # XBB_MINGW_TRIPLETS=( "i686-w64-mingw32" ) # Use it temporarily during tests.
 
   # ---------------------------------------------------------------------------
