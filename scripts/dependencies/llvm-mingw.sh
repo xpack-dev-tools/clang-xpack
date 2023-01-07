@@ -44,9 +44,9 @@ function llvm_mingw_build_first()
       "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
 
     # Disable the use of libxar.
-    run_verbose sed -i.bak \
-      -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
-      "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
+    # run_verbose sed -i.bak \
+    #   -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
+    #   "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
     # if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     # then
@@ -85,10 +85,15 @@ function llvm_mingw_build_first()
       LDFLAGS="${XBB_LDFLAGS_APP}"
       xbb_adjust_ldflags_rpath
 
-      if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+      if false # [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
-        # MemoryMapper.cpp:(.text._ZZN4llvm3orc18SharedMemoryMapper7reserveEmNS_15unique_functionIFvNS_8ExpectedINS0_17ExecutorAddrRangeEEEEEEENUlNS_5ErrorENS3_ISt4pairINS0_12ExecutorAddrENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEEE_clES8_SI_+0x110): undefined reference to `shm_open'
-        LDFLAGS+=" -ldl -lrt -lpthread -lm"
+        # [2333/5156] MemoryMapper.cpp:(.text._ZZN4llvm3orc18SharedMemoryMapper7reserveEmNS_15unique_functionIFvNS_8ExpectedINS0_17ExecutorAddrRangeEEEEEEENUlNS_5ErrorENS3_ISt4pairINS0_12ExecutorAddrENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEEEEE_clES8_SI_+0x110): undefined reference to `shm_open'
+        LDFLAGS+=" -lrt"
+        # warning: libpthread.so.0, needed by /usr/lib/x86_64-linux-gnu/librt.so, not found (try using -rpath or -rpath-link)
+#        LDFLAGS+=" -pthread"
+        # warning: libdl.so.2, needed by lib/libLLVM-15.so, not found (try using -rpath or -rpath-link)
+        # LDFLAGS+=" -ldl"
+        # LDFLAGS+=" -lm"
       fi
 
       export CPPFLAGS
@@ -130,7 +135,7 @@ function llvm_mingw_build_first()
 
           # Please note the trailing space.
           config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
-          config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
+          # config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
           config_options+=("-DLLD_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
           config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
 
