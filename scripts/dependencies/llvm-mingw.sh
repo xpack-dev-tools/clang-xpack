@@ -328,8 +328,8 @@ function llvm_mingw_build_compiler_rt()
         config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
         # No C/C++ options.
-        config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
-        config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+        config_options+=("-DCMAKE_C_FLAGS_INIT=-v") # MS
+        config_options+=("-DCMAKE_CXX_FLAGS_INIT=-v") # MS
 
         run_verbose cmake \
           "${config_options[@]}" \
@@ -475,14 +475,15 @@ function llvm_mingw_build_libcxx()
           exit 1
         fi
 
-        config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
+        # Omit runtimes not necessary for the bootstrap.
+        config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
 
         # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
 
         # For now disable shared libc++ and libunwind, it requires an
         # explicit -lunwind in the link.
         # config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
-        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
+        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
 
         config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
         # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
