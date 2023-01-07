@@ -25,139 +25,6 @@
 #define DEFAULT_TARGET "x86_64-w64-mingw32"
 #endif
 
-#ifdef _WIN32
-static int filter_line = 0, last_char = '\n';
-static void filter_output(char *buf, int n, FILE *dest, int line_start_filter) {
-    // Filter the stderr output from "-v" to rewrite paths from backslash
-    // to forward slash form. libtool parses the output of "-v" and can't
-    // handle the backslash form of paths. A proper upstream solution has
-    // been discussed at https://reviews.llvm.org/D53066 but hasn't been
-    // finished yet.
-    // Similarly, filter the stdout output from --print-search-dirs.
-    int out = 0;
-    int last = last_char;
-    for (int i = 0; i < n; i++) {
-        TCHAR cur = buf[i];
-        if (last == '\n') {
-            // A new line - check whether we want to filter it.
-            if (line_start_filter >= 0) {
-                // Only filter the line if it starts with the line_start_filter
-                // char. (For "-v", this is ' '.)
-                filter_line = cur == line_start_filter;
-            } else {
-                // Else, filter all lines.
-                filter_line = 1;
-            }
-        }
-
-        if (filter_line) {
-            if (cur == '"') {
-                // Do nothing; skip the quotes. This assumes that after
-                // converting backslashes to forward slashes, there's nothing
-                // else (e.g. spaces) that needs quoting. libtool would
-                // probably not handle that anyway, but this would break
-                // a more capable caller which also parses the output of "-v".
-            } else if (cur == '\\') {
-                // Convert backslashes to forward slashes. Quoted backslashes
-                // are doubled, so just output every other one. We don't really
-                // keep track of whether we're in a quoted context though.
-                if (last != '\\') {
-                    buf[out++] = '/';
-                } else {
-                    // Last output char was a backslash converted into a
-                    // forward slash. Ignore this one, but handle the next
-                    // one in case there's more.
-                    cur = ' ';
-                }
-            } else {
-                buf[out++] = cur;
-            }
-        } else {
-            buf[out++] = cur;
-        }
-
-        last = cur;
-    }
-    last_char = last;
-    fwrite(buf, 1, out, dest);
-}
-
-static void filter_v(char *buf, int n) {
-    // For -v, all lines that contain command lines or paths currently start
-    // with a space.
-    filter_output(buf, n, stderr, ' ');
-}
-
-static void filter_all_stdout(char *buf, int n) {
-    // For --print-search-dirs, filter all lines, into stdout.
-    // Here, the paths aren't quoted, and thus only use single backslashes.
-    filter_output(buf, n, stdout, -1);
-}
-
-typedef void (*filter_func)(char *buf, int n);
-
-static int exec_filtered(const TCHAR **argv, filter_func filter, FILE *stream) {
-    for (int i = 0; argv[i]; i++)
-        argv[i] = escape(argv[i]);
-    int len = 1;
-    for (int i = 0; argv[i]; i++)
-        len += _tcslen(argv[i]) + 1;
-    TCHAR *cmdline = malloc(len * sizeof(*cmdline));
-    int pos = 0;
-    for (int i = 0; argv[i]; i++) {
-        _tcscpy(&cmdline[pos], argv[i]);
-        pos += _tcslen(argv[i]);
-        cmdline[pos++] = ' ';
-    }
-    if (pos > 0)
-        pos--;
-    cmdline[pos] = '\0';
-
-    STARTUPINFO si = { 0 };
-    PROCESS_INFORMATION pi = { 0 };
-    HANDLE pipe_read = NULL, pipe_write = NULL;
-    SECURITY_ATTRIBUTES sa = { 0 };
-    sa.nLength = sizeof(sa);
-    sa.bInheritHandle = TRUE;
-    CreatePipe(&pipe_read, &pipe_write, &sa, 0);
-    si.cb = sizeof(si);
-    si.dwFlags = STARTF_USESTDHANDLES;
-    si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-    si.hStdOutput = stream == stdout ? pipe_write : GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError = stream == stderr ? pipe_write : GetStdHandle(STD_ERROR_HANDLE);
-    if (!CreateProcess(NULL, cmdline, NULL, NULL, /* bInheritHandles */ TRUE,
-                      0, NULL, NULL, &si, &pi)) {
-        DWORD err = GetLastError();
-        TCHAR *errbuf;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                      (LPTSTR) &errbuf, 0, NULL);
-        _ftprintf(stderr, _T("Unable to execute: "TS": "TS"\n"), cmdline, errbuf);
-        LocalFree(errbuf);
-        CloseHandle(pipe_read);
-        CloseHandle(pipe_write);
-        free(cmdline);
-        return 1;
-    }
-
-    CloseHandle(pipe_write);
-    char out_buf[8192];
-    DWORD n;
-    while (ReadFile(pipe_read, out_buf, sizeof(out_buf), &n, NULL))
-        filter(out_buf, n);
-    CloseHandle(pipe_read);
-
-    WaitForSingleObject(pi.hProcess, INFINITE);
-    DWORD exit_code = 1;
-    GetExitCodeProcess(pi.hProcess, &exit_code);
-
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    free(cmdline);
-    return exit_code;
-}
-#endif
-
 int _tmain(int argc, TCHAR* argv[]) {
     const TCHAR *dir;
     const TCHAR *target;
@@ -183,23 +50,28 @@ int _tmain(int argc, TCHAR* argv[]) {
         }
     }
 
-    int max_arg = argc + 20;
+    int max_arg = argc + 22;
     const TCHAR **exec_argv = malloc((max_arg + 1) * sizeof(*exec_argv));
     int arg = 0;
     if (getenv("CCACHE"))
         exec_argv[arg++] = _T("ccache");
     exec_argv[arg++] = concat(dir, _T(CLANG));
+    exec_argv[arg++] = _T("--start-no-unused-arguments");
 
     // If changing this wrapper, change clang-target-wrapper.sh accordingly.
     if (!_tcscmp(exe, _T("clang++")) || !_tcscmp(exe, _T("g++")) || !_tcscmp(exe, _T("c++")))
         exec_argv[arg++] = _T("--driver-mode=g++");
+    else if (!_tcscmp(exe, _T("c99")))
+        exec_argv[arg++] = _T("-std=c99");
+    else if (!_tcscmp(exe, _T("c11")))
+        exec_argv[arg++] = _T("-std=c11");
 
     if (!_tcscmp(arch, _T("i686"))) {
         // Dwarf is the default for i686.
     } else if (!_tcscmp(arch, _T("x86_64"))) {
         // SEH is the default for x86_64.
     } else if (!_tcscmp(arch, _T("armv7"))) {
-        // Dwarf is the default for armv7.
+        // SEH is the default for armv7.
     } else if (!_tcscmp(arch, _T("aarch64"))) {
         // SEH is the default for aarch64.
     }
@@ -212,11 +84,6 @@ int _tmain(int argc, TCHAR* argv[]) {
         exec_argv[arg++] = _T("-DWINAPI_FAMILY=WINAPI_FAMILY_APP");
         // the Windows Store API only supports Windows Unicode (some rare ANSI ones are available)
         exec_argv[arg++] = _T("-DUNICODE");
-        // add the minimum runtime to use for UWP targets
-        exec_argv[arg++] = _T("-Wl,-lwindowsapp");
-        // This still requires that the toolchain (in particular, libc++.a) has
-        // been built targeting UCRT originally.
-        exec_argv[arg++] = _T("-Wl,-lucrtapp");
         // force the user of Universal C Runtime
         exec_argv[arg++] = _T("-D_UCRT");
     }
@@ -224,33 +91,32 @@ int _tmain(int argc, TCHAR* argv[]) {
     exec_argv[arg++] = _T("-target");
     exec_argv[arg++] = target;
     exec_argv[arg++] = _T("-rtlib=compiler-rt");
+    exec_argv[arg++] = _T("-unwindlib=libunwind");
     exec_argv[arg++] = _T("-stdlib=libc++");
     exec_argv[arg++] = _T("-fuse-ld=lld");
-    exec_argv[arg++] = _T("-Qunused-arguments");
+    exec_argv[arg++] = _T("--end-no-unused-arguments");
 
     for (int i = 1; i < argc; i++)
         exec_argv[arg++] = argv[i];
 
+    if (target_os && !_tcscmp(target_os, _T("mingw32uwp"))) {
+        // Default linker flags; passed after any user specified -l options,
+        // to let the user specified libraries take precedence over these.
+
+        exec_argv[arg++] = _T("--start-no-unused-arguments");
+        // add the minimum runtime to use for UWP targets
+        exec_argv[arg++] = _T("-Wl,-lwindowsapp");
+        // This still requires that the toolchain (in particular, libc++.a) has
+        // been built targeting UCRT originally.
+        exec_argv[arg++] = _T("-Wl,-lucrtapp");
+        exec_argv[arg++] = _T("--end-no-unused-arguments");
+    }
+
     exec_argv[arg] = NULL;
-    if (arg > max_arg) {
+    if (arg >= max_arg) {
         fprintf(stderr, "Too many options added\n");
         abort();
     }
-
-#ifdef _WIN32
-    // If the command line contains the "-v" argument, filter the stderr
-    // output to rewrite paths from backslash to forward slash form.
-    // libtool parses the output of "-v" and can't handle the backslash
-    // form of paths. A proper upstream solution has been discussed at
-    // https://reviews.llvm.org/D53066 but hasn't been finished yet.
-    for (int i = 1; i < argc; i++) {
-        if (!_tcscmp(argv[i], _T("-v")))
-            return exec_filtered(exec_argv, filter_v, stderr);
-        else if (!_tcscmp(argv[i], _T("-print-search-dirs")) ||
-                 !_tcscmp(argv[i], _T("--print-search-dirs")))
-            return exec_filtered(exec_argv, filter_all_stdout, stdout);
-    }
-#endif
 
     return run_final(exec_argv[0], exec_argv);
 }

@@ -45,9 +45,16 @@ fi
 # If changing this wrapper, change clang-target-wrapper.c accordingly.
 CLANG="$DIR/clang"
 FLAGS=""
+FLAGS="$FLAGS --start-no-unused-arguments"
 case $EXE in
 clang++|g++|c++)
     FLAGS="$FLAGS --driver-mode=g++"
+    ;;
+c99)
+    FLAGS="$FLAGS -std=c99"
+    ;;
+c11)
+    FLAGS="$FLAGS -std=c11"
     ;;
 esac
 case $ARCH in
@@ -58,12 +65,13 @@ x86_64)
     # SEH is the default for x86_64.
     ;;
 armv7)
-    # Dwarf is the default for armv7.
+    # SEH is the default for armv7.
     ;;
 aarch64)
     # SEH is the default for aarch64.
     ;;
 esac
+LINKER_FLAGS=""
 case $TARGET_OS in
 mingw32uwp)
     # the UWP target is for Windows 10
@@ -72,20 +80,27 @@ mingw32uwp)
     FLAGS="$FLAGS -DWINAPI_FAMILY=WINAPI_FAMILY_APP"
     # the Windows Store API only supports Windows Unicode (some rare ANSI ones are available)
     FLAGS="$FLAGS -DUNICODE"
-    # add the minimum runtime to use for UWP targets
-    FLAGS="$FLAGS -Wl,-lwindowsapp"
-    # This still requires that the toolchain (in particular, libc++.a) has
-    # been built targeting UCRT originally.
-    FLAGS="$FLAGS -Wl,-lucrtapp"
     # Force the Universal C Runtime
     FLAGS="$FLAGS -D_UCRT"
+
+    # Default linker flags; passed after any user specified -l options,
+    # to let the user specified libraries take precedence over these.
+
+    # add the minimum runtime to use for UWP targets
+    LINKER_FLAGS="$LINKER_FLAGS --start-no-unused-arguments"
+    LINKER_FLAGS="$LINKER_FLAGS -Wl,-lwindowsapp"
+    # This still requires that the toolchain (in particular, libc++.a) has
+    # been built targeting UCRT originally.
+    LINKER_FLAGS="$LINKER_FLAGS -Wl,-lucrtapp"
+    LINKER_FLAGS="$LINKER_FLAGS --end-no-unused-arguments"
     ;;
 esac
 
 FLAGS="$FLAGS -target $TARGET"
 FLAGS="$FLAGS -rtlib=compiler-rt"
+FLAGS="$FLAGS -unwindlib=libunwind"
 FLAGS="$FLAGS -stdlib=libc++"
 FLAGS="$FLAGS -fuse-ld=lld"
-FLAGS="$FLAGS -Qunused-arguments"
+FLAGS="$FLAGS --end-no-unused-arguments"
 
-$CCACHE "$CLANG" $FLAGS "$@"
+$CCACHE "$CLANG" $FLAGS "$@" $LINKER_FLAGS
