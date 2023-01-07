@@ -219,7 +219,10 @@ function llvm_mingw_build_first()
     echo "Component ${name_prefix}llvm-first already installed"
   fi
 
-  tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+  for triplet in "${XBB_MINGW_TRIPLETS[@]}"
+  do
+    tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin" --triplet="${triplet}"
+  done
 }
 
 # $1="${XBB_BOOTSTRAP_SUFFIX}"
