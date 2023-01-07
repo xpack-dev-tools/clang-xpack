@@ -65,7 +65,7 @@ On RedHat systems, the tests that expected a `libstdc++.a` fail.
 
 ## mstorsjo/llvm-mingw
 
-The build scripts producing Windows binaries are inspired from the project
+The build scripts producing Windows binaries are inspired by the project
 [llvm-mingw](https://github.com/mstorsjo/llvm-mingw),
 maintained by Martin Storsjö.
 
