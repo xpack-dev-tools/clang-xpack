@@ -59,7 +59,7 @@ function clang_add_mingw_wrappers()
     ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${mingw_wrappers_folder_name}/output-$(ndate).txt"
 
     mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
-    touch "${XBB_STAMPS_FOLDER_PATH}/${mingw_wrappers_folder_name}"
+    touch "${mingw_wrappers_stamp_file_path}"
 
   else
     echo "Component llvm-mingw-wrappers already installed"
