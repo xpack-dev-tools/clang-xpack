@@ -14,39 +14,56 @@ function clang_add_mingw_wrappers()
   echo_develop
   echo_develop "[${FUNCNAME[0]} $@]"
 
-  (
-    # Add wrappers for the mingw-w64 binaries.
-    cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+  local mingw_wrappers_folder_name="llvm-mingw-wrappers"
 
-    cp "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
+  mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${mingw_wrappers_folder_name}"
 
-    for exec in clang-target-wrapper dlltool-wrapper windres-wrapper llvm-wrapper
-    do
-      ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -O2 -v -o ${exec}
-    done
+  local mingw_wrappers_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${mingw_wrappers_folder_name}-installed"
+  if [ ! -f "${mingw_wrappers_stamp_file_path}" ]
+  then
 
-    for exec in clang clang++ gcc g++ cc c99 c11 c++ as
-    do
-      ln -sf clang-target-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
-    done
-    for exec in addr2line ar ranlib nm objcopy strings strip
-    do
-      ln -sf llvm-${exec} ${XBB_TARGET_TRIPLET}-${exec}
-    done
-    if [ -f "llvm-windres" ]
-    then
-      # windres can't use llvm-wrapper, as that loses the original
-      # target arch prefix.
-      ln -sf llvm-windres ${XBB_TARGET_TRIPLET}-windres
-    else
-      ln -sf windres-wrapper ${XBB_TARGET_TRIPLET}-windres
-    fi
-    ln -sf dlltool-wrapper ${XBB_TARGET_TRIPLET}-dlltool
-    for exec in ld objdump
-    do
-      ln -sf ${exec}-wrapper.sh ${XBB_TARGET_TRIPLET}-${exec}
-    done
-  )
+    (
+      # Add wrappers for the mingw-w64 binaries.
+      cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+
+      run_verbose cp -pv "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
+      run_verbose chmod +x *-wrapper.sh
+
+      for name in clang-target-wrapper llvm-wrapper
+      do
+        # -s for strip
+        run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${name}.c" -O2 -v -o ${name} -Wl,-s
+      done
+
+      for triplet in "${XBB_MINGW_TRIPLETS[@]}"
+      do
+
+        for name in clang clang++ gcc g++ c++ as
+        do
+          ln -sfv clang-target-wrapper.sh ${triplet}-${name}
+        done
+
+        ln -sfv ld-wrapper.sh ${triplet}-ld
+        ln -sfv objdump-wrapper.sh ${triplet}-objdump
+
+        for name in addr2line ar ranlib nm objcopy readelf strings strip
+        do
+          ln -sfv llvm-${name} ${triplet}-${name}
+        done
+
+        ln -sfv llvm-windres ${triplet}-windres
+        ln -sfv llvm-dlltool ${triplet}-dlltool
+
+
+      done
+    ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${mingw_wrappers_folder_name}/output-$(ndate).txt"
+
+    mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
+    touch "${XBB_STAMPS_FOLDER_PATH}/${mingw_wrappers_folder_name}"
+
+  else
+    echo "Component llvm-mingw-wrappers already installed"
+  fi
 }
 
 function clang_build_mingw_bootstrap()
