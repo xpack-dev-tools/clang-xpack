@@ -152,6 +152,8 @@ function llvm_mingw_build_first()
           # compiler-rt, libunwind, libc++ and libc++-abi are built
           # in separate steps intertwined with mingw.
 
+          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+
           echo
           which ${CC} && ${CC} --version && echo || true
 
@@ -309,7 +311,7 @@ function llvm_mingw_build_compiler_rt()
 
         config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
 
-        config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+        config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
         # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         # then
