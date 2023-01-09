@@ -166,7 +166,7 @@ function llvm_build()
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+  #       config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}") # MS
@@ -196,7 +196,7 @@ function llvm_build()
 
             # Please note the trailing space.
             config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BRANDING} ")
-            config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
+  #         config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
             config_options+=("-DLLD_VENDOR=${XBB_LLVM_BRANDING} ")
             config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BRANDING} ")
 
@@ -215,7 +215,7 @@ function llvm_build()
 
             config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
 
-            config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+  #          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
 
             config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
@@ -225,14 +225,14 @@ function llvm_build()
             config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
 
             config_options+=("-DLLVM_BUILD_DOCS=OFF")
-            config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
+  #          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
             config_options+=("-DLLVM_BUILD_TESTS=OFF")
             config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
-            config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+  #          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
             config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
-            config_options+=("-DLLVM_ENABLE_EH=ON")
-            config_options+=("-DLLVM_ENABLE_LTO=OFF")
-            config_options+=("-DLLVM_ENABLE_RTTI=ON")
+  #          config_options+=("-DLLVM_ENABLE_EH=ON")
+  #          config_options+=("-DLLVM_ENABLE_LTO=OFF")
+  #          config_options+=("-DLLVM_ENABLE_RTTI=ON")
             config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
             config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
             config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
@@ -241,8 +241,6 @@ function llvm_build()
             config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
             # Better not, use the explicit `llvm-*` names.
             config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
-
-          fi
 
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
