@@ -150,7 +150,7 @@ function clang_build_common()
     if [ -z ${XBB_APPLICATION_BOOTSTRAP_ONLY+x} ]
     then
 
-      # -------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Build the target dependencies.
 
       # Set the environment to initial values.
@@ -171,28 +171,48 @@ function clang_build_common()
       libiconv_build "${XBB_LIBICONV_VERSION}"
       xz_build "${XBB_XZ_VERSION}"
 
-      # -------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Build the application binaries.
 
       xbb_set_executables_install_path "${XBB_APPLICATION_INSTALL_FOLDER_PATH}"
       xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
-      # Build mingw-w64 components.
-      mingw_build_headers
-      mingw_build_widl --program-prefix=
-      mingw_build_libmangle
-      mingw_build_gendef --program-prefix=
+      for triplet in "${XBB_MINGW_TRIPLETS[@]}"
+      do
+        (
+          xbb_prepare_gcc_env "${triplet}-"
+          xbb_set_extra_target_env "${triplet}"
 
-      mingw_build_crt
-      mingw_build_winpthreads
-      mingw_build_winstorecompat
+          # Build mingw-w64 components.
+          mingw_build_headers --triplet="${triplet}"
+          mingw_build_widl  --triplet="${triplet}" --program-prefix=
+          mingw_build_libmangle --triplet="${triplet}"
+          mingw_build_gendef --triplet="${triplet}" --program-prefix=
+
+          mingw_build_crt --triplet="${triplet}"
+          mingw_build_winpthreads --triplet="${triplet}"
+          mingw_build_winstorecompat --triplet="${triplet}"
+        )
+      done
+
+      # xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
+      xbb_prepare_gcc_env "${XBB_TARGET_TRIPLET}-"
+
 
       # Build LLVM clang.
       llvm_build "${XBB_LLVM_VERSION}"
 
-      llvm_mingw_build_compiler_rt
-      llvm_mingw_build_libcxx # libunwind, libcxx, libcxxabi
+      for triplet in "${XBB_MINGW_TRIPLETS[@]}"
+      do
+        (
+          xbb_prepare_gcc_env "${triplet}-"
+          xbb_set_extra_target_env "${triplet}"
 
+          llvm_mingw_build_compiler_rt --triplet="${triplet}"
+          # libunwind, libcxx, libcxxabi
+          llvm_mingw_build_libcxx  --triplet="${triplet}"
+        )
+      done
     fi
 
   else # linux or darwin
