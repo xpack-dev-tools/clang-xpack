@@ -70,9 +70,11 @@ function llvm_build()
       "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
 
     # Disable the use of libxar.
-    # run_verbose sed -i.bak \
-    #   -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
-    #   "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
+    # It picks an unwanted system library, and compiling
+    # it is too tedious.
+    run_verbose sed -i.bak \
+      -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
+      "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
 
     if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
