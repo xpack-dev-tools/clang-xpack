@@ -164,7 +164,7 @@ function llvm_build()
           # Distributions should never be built using the
           # BUILD_SHARED_LIBS CMake option.
           # https://llvm.org/docs/BuildingADistribution.html
-          config_options+=("-DBUILD_SHARED_LIBS=OFF")
+  #       config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
   #       config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
