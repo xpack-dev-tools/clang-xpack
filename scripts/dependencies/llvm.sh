@@ -99,55 +99,35 @@ function llvm_build()
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
       cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
 
-      if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+      # Use install/libs/lib & include
+      xbb_activate_dependencies_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      # Non-static will have trouble to find the llvm bootstrap libc++.
+      # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
+      xbb_adjust_ldflags_rpath
+
+      if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
       then
+        LDFLAGS+=" -Wl,-search_paths_first"
 
-        # Use XBB libs in native-llvm
-        # xbb_activate_dev
-
-        # Required to satisfy the reference to /opt/xbb/lib/libncurses.so.
-        # xbb_activate_libs
-
-        xbb_activate_dependencies_dev
-
-        # CPPFLAGS="${XBB_CPPFLAGS} -I${XBB_FOLDER_PATH}/include/ncurses"
-        CPPFLAGS="${XBB_CPPFLAGS}"
-        CFLAGS="${XBB_CFLAGS_NO_W}"
-        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-        LDFLAGS="${XBB_LDFLAGS_APP}"
-
-      else
-
-        # Use install/libs/lib & include
-        xbb_activate_dependencies_dev
-
-        CPPFLAGS="${XBB_CPPFLAGS}"
-        CFLAGS="${XBB_CFLAGS_NO_W}"
-        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-        # Non-static will have trouble to find the llvm bootstrap libc++.
-        # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
-        LDFLAGS="${XBB_LDFLAGS_APP}"
-        xbb_adjust_ldflags_rpath
-
-        if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        then
-          LDFLAGS+=" -Wl,-search_paths_first"
-
-          # clang: error: unsupported option '-static-libgcc'
-          # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
-        elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
-        then
-          : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
-          : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
-        # elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
-        # then
-        #   # /home/ilg/.local/xPacks/@xpack-dev-tools/gcc/12.2.0-2.1/.content/bin/../lib/gcc/x86_64-pc-linux-gnu/12.2.0/../../../../x86_64-pc-linux-gnu/bin/ld: lib/libLLVMOrcTargetProcess.a(ExecutorSharedMemoryMapperService.cpp.o): in function `llvm::orc::rt_bootstrap::ExecutorSharedMemoryMapperService::reserve[abi:cxx11](unsigned long)':
-        #   # ExecutorSharedMemoryMapperService.cpp:(.text._ZN4llvm3orc12rt_bootstrap33ExecutorSharedMemoryMapperService7reserveB5cxx11Em+0x483): undefined reference to `shm_open'
-        #   # collect2: error: ld returned 1 exit status
-        #   LDFLAGS+=" -ldl -lrt -lpthread -lm"
-        fi
+        # clang: error: unsupported option '-static-libgcc'
+        # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
+      elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
+      then
+        : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
+        : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
+      # elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
+      # then
+      #   # /home/ilg/.local/xPacks/@xpack-dev-tools/gcc/12.2.0-2.1/.content/bin/../lib/gcc/x86_64-pc-linux-gnu/12.2.0/../../../../x86_64-pc-linux-gnu/bin/ld: lib/libLLVMOrcTargetProcess.a(ExecutorSharedMemoryMapperService.cpp.o): in function `llvm::orc::rt_bootstrap::ExecutorSharedMemoryMapperService::reserve[abi:cxx11](unsigned long)':
+      #   # ExecutorSharedMemoryMapperService.cpp:(.text._ZN4llvm3orc12rt_bootstrap33ExecutorSharedMemoryMapperService7reserveB5cxx11Em+0x483): undefined reference to `shm_open'
+      #   # collect2: error: ld returned 1 exit status
+      #   LDFLAGS+=" -ldl -lrt -lpthread -lm"
+      fi
 
       export CPPFLAGS
       export CFLAGS
