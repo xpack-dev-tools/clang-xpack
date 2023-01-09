@@ -556,10 +556,10 @@ function llvm_mingw_build_libcxx()
           --target install
 
         # Append libunwind to libc++, to simplify things.
-        # It hels when there are no shared libc++ and linunwind.
-        run_verbose "${AR}" qcsL \
-                "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
-                "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
+        # It helps when there are no shared libc++ and linunwind.
+        # run_verbose "${AR}" qcsL \
+        #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
+        #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
