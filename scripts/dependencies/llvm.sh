@@ -180,67 +180,53 @@ function llvm_build()
 
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
-          if false # [ "${is_bootstrap}" == "y" ] # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
+          # Please note the trailing space.
+          config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BRANDING} ")
+#         config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
+          config_options+=("-DLLD_VENDOR=${XBB_LLVM_BRANDING} ")
+          config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BRANDING} ")
+
+          config_options+=("-DCLANG_EXECUTABLE_VERSION=${llvm_version_major}")
+
+          # Prefer the locally compiled libraries.
+          config_options+=("-DCMAKE_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+          if [ -d "${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib64" ]
           then
-
-            # Please note the trailing space.
-            config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
-            config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
-            config_options+=("-DLLD_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
-            config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BOOTSTRAP_BRANDING} ")
-
-            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF")
-            config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-
+            config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib64;${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
           else
+            config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
+          fi
 
-            # Please note the trailing space.
-            config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BRANDING} ")
-  #         config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
-            config_options+=("-DLLD_VENDOR=${XBB_LLVM_BRANDING} ")
-            config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BRANDING} ")
+          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
 
-            config_options+=("-DCLANG_EXECUTABLE_VERSION=${llvm_version_major}")
+          config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
 
-            # Prefer the locally compiled libraries.
-            config_options+=("-DCMAKE_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
-            if [ -d "${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib64" ]
-            then
-              config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib64;${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
-            else
-              config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
-            fi
+#          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
 
-            config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+          config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
-            config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
+          config_options+=("-DLLDB_ENABLE_LUA=OFF")
+          config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
+          config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
 
-  #          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
-
-            config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
-
-            config_options+=("-DLLDB_ENABLE_LUA=OFF")
-            config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
-            config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-            config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
-
-            config_options+=("-DLLVM_BUILD_DOCS=OFF")
-  #          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
-            config_options+=("-DLLVM_BUILD_TESTS=OFF")
-            config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
-  #          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
-            config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
-  #          config_options+=("-DLLVM_ENABLE_EH=ON")
-  #          config_options+=("-DLLVM_ENABLE_LTO=OFF")
-  #          config_options+=("-DLLVM_ENABLE_RTTI=ON")
-            config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
-            config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
-            config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
-            config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
-            config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
-            config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
-            # Better not, use the explicit `llvm-*` names.
-            config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
+          config_options+=("-DLLVM_BUILD_DOCS=OFF")
+#          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
+          config_options+=("-DLLVM_BUILD_TESTS=OFF")
+          config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
+#          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+          config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
+#          config_options+=("-DLLVM_ENABLE_EH=ON")
+#          config_options+=("-DLLVM_ENABLE_LTO=OFF")
+#          config_options+=("-DLLVM_ENABLE_RTTI=ON")
+          config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
+          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
+          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
+          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
+          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
+          config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
+          # Better not, use the explicit `llvm-*` names.
+          config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
 
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
