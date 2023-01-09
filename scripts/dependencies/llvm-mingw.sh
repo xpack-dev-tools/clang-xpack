@@ -723,6 +723,11 @@ function test_mingw_llvm()
 
     # -------------------------------------------------------------------------
 
+    ls -l ${test_bin_path}/../${triplet}/bin
+
+    export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
+    echo "WINEPATH=${WINEPATH}"
+
     compiler-tests-single "${test_bin_path}"
     compiler-tests-single "${test_bin_path}" --gc
     compiler-tests-single "${test_bin_path}" --lto
