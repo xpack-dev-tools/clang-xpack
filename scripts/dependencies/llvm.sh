@@ -454,37 +454,37 @@ function llvm_build()
             # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf") # MS
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size") # MS
 
-            if true # [ "${is_bootstrap}" != "y" ]
-            then
-              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
-              config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
-              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
-              config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
+            config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
+            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
+            config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
-              # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+            # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
 
-              config_options+=("-DCMAKE_RC_COMPILER=${RC}") # MS
+            config_options+=("-DCMAKE_RC_COMPILER=${RC}") # MS
 
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY") # MS
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER") # MS
-              config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY") # MS
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER") # MS
+            config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
 
-              config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
+            config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
-              config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}") # MS
+            config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}") # MS
 
-              config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen") # MS
-              config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen") # MS
-              config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen") # MS
+            config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen") # MS
+            config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen") # MS
+            config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen") # MS
 
-              # -DCLANG_PSEUDO_GEN=/build/llvm-project/llvm/build/bin/clang-pseudo-gen # MS
-              # -DCLANG_TIDY_CONFUSABLE_CHARS_GEN=/build/llvm-project/llvm/build/bin/clang-tidy-confusable-chars-gen # MS
+            # ninja: error: '/home/ilg/Work/clang-xpack.git/build/win32-x64/x86_64-pc-linux-gnu/install/bin/clang-pseudo-gen', needed by 'tools/clang/tools/extra/pseudo/include/CXXSymbols.inc', missing and no known rule to make it
+            # config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
 
-              config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
+            # ninja: error: '/home/ilg/Work/clang-xpack.git/build/win32-x64/x86_64-pc-linux-gnu/install/bin/clang-tidy-confusable-chars-gen', needed by 'tools/clang/tools/extra/clang-tidy/misc/Confusables.inc', missing and no known rule to make it
+            # config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
 
-              config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}") # MS
-            fi
+            config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
+
+            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}") # MS
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
