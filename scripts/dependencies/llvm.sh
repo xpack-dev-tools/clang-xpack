@@ -141,15 +141,13 @@ function llvm_build()
         then
           : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
           : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
-        elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
-        then
-          # /home/ilg/.local/xPacks/@xpack-dev-tools/gcc/12.2.0-2.1/.content/bin/../lib/gcc/x86_64-pc-linux-gnu/12.2.0/../../../../x86_64-pc-linux-gnu/bin/ld: lib/libLLVMOrcTargetProcess.a(ExecutorSharedMemoryMapperService.cpp.o): in function `llvm::orc::rt_bootstrap::ExecutorSharedMemoryMapperService::reserve[abi:cxx11](unsigned long)':
-          # ExecutorSharedMemoryMapperService.cpp:(.text._ZN4llvm3orc12rt_bootstrap33ExecutorSharedMemoryMapperService7reserveB5cxx11Em+0x483): undefined reference to `shm_open'
-          # collect2: error: ld returned 1 exit status
-          LDFLAGS+=" -ldl -lrt -lpthread -lm"
+        # elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
+        # then
+        #   # /home/ilg/.local/xPacks/@xpack-dev-tools/gcc/12.2.0-2.1/.content/bin/../lib/gcc/x86_64-pc-linux-gnu/12.2.0/../../../../x86_64-pc-linux-gnu/bin/ld: lib/libLLVMOrcTargetProcess.a(ExecutorSharedMemoryMapperService.cpp.o): in function `llvm::orc::rt_bootstrap::ExecutorSharedMemoryMapperService::reserve[abi:cxx11](unsigned long)':
+        #   # ExecutorSharedMemoryMapperService.cpp:(.text._ZN4llvm3orc12rt_bootstrap33ExecutorSharedMemoryMapperService7reserveB5cxx11Em+0x483): undefined reference to `shm_open'
+        #   # collect2: error: ld returned 1 exit status
+        #   LDFLAGS+=" -ldl -lrt -lpthread -lm"
         fi
-
-      fi
 
       export CPPFLAGS
       export CFLAGS
