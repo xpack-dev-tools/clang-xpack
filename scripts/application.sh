@@ -25,9 +25,6 @@ XBB_APPLICATION_DESCRIPTION="${XBB_APPLICATION_DISTRO_NAME} ${XBB_APPLICATION_NA
 declare -a XBB_APPLICATION_DEPENDENCIES=( llvm llvm-mingw )
 declare -a XBB_APPLICATION_COMMON_DEPENDENCIES=( autotools zlib libffi ncurses libiconv xz libxml2 libedit mingw binutils compiler-tests )
 
-XBB_APPLICATION_ADD_ALL_SYS_FOLDERS_TO_RPATH="y"
-# XBB_APPLICATION_ADD_SYS_FOLDER_TO_RPATH="y"
-
 # XBB_APPLICATION_BOOTSTRAP_ONLY="y"
 
 # -----------------------------------------------------------------------------
