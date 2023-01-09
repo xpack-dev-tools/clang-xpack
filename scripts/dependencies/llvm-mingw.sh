@@ -507,8 +507,8 @@ function llvm_mingw_build_libcxx()
         # config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
         # config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
 
-        # config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
-        config_options+=("-DLIBCXX_ENABLE_SHARED=OFF") # MS
+        config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
+        # config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
 
         config_options+=("-DLIBCXX_ENABLE_STATIC=ON") # MS
         # config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
