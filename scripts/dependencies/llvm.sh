@@ -82,18 +82,18 @@ function llvm_build()
         "${llvm_src_folder_name}/clang/lib/Driver/ToolChains/Gnu.cpp"
     fi
 
-    (
-      cd "${llvm_src_folder_name}/llvm/tools"
+    # (
+    #   cd "${llvm_src_folder_name}/llvm/tools"
 
-      # This trick will allow to build the toolchain only and still get clang
-      for p in clang lld lldb
-      do
-        if [ ! -e $p ]
-        then
-            ln -s ../../$p .
-        fi
-      done
-    )
+    #   # This trick will allow to build the toolchain only and still get clang
+    #   for p in clang lld lldb
+    #   do
+    #     if [ ! -e $p ]
+    #     then
+    #         ln -s ../../$p .
+    #     fi
+    #   done
+    # )
 
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
