@@ -493,8 +493,8 @@ function llvm_mingw_build_libcxx()
 
         # For now disable shared libc++ and libunwind, it requires an
         # explicit -lunwind in the link.
-        # config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
-        config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
+        config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
+        # config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
 
         config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
         # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
