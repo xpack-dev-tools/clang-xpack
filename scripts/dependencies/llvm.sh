@@ -161,17 +161,18 @@ function llvm_build()
           # https://llvm.org/docs/CMake.html
 
           # flang fails:
-          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const std::__1::variant<std::__1::reference_wrapper<Fortran::runtime::io::OpenStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::CloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::NoopCloseStatementState>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::InternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalFormattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalListIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Output>>, std::__1::reference_wrapper<Fortran::runtime::io::UnformattedIoStatementState<Direction::Input>>, std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
+          # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const ..., std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
 
           # Colon separated list of directories clang will search for headers.
+          # TODO: check if this may be used instead of the patch.
           # config_options+=("-DC_INCLUDE_DIRS=:")
 
           # Distributions should never be built using the
           # BUILD_SHARED_LIBS CMake option.
           # https://llvm.org/docs/BuildingADistribution.html
-  #       config_options+=("-DBUILD_SHARED_LIBS=OFF")
+          config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-  #       config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}") # MS
@@ -183,11 +184,11 @@ function llvm_build()
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
 
-          config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
+          config_options+=("-DCMAKE_LINKER=ld") # HB
 
           # Please note the trailing space.
           config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BRANDING} ")
-#         config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
+          # config_options+=("-DFLANG_VENDOR=${XBB_LLVM_BRANDING} ")
           config_options+=("-DLLD_VENDOR=${XBB_LLVM_BRANDING} ")
           config_options+=("-DPACKAGE_VENDOR=${XBB_LLVM_BRANDING} ")
 
@@ -202,81 +203,111 @@ function llvm_build()
             config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
           fi
 
-          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
-
-          config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
-
-#          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
 
           config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
-          config_options+=("-DLLDB_ENABLE_LUA=OFF")
-          config_options+=("-DLLDB_ENABLE_PYTHON=OFF")
+          config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
+
+          config_options+=("-DFFI_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+          config_options+=("-DFFI_LIB_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
+
+          config_options+=("-DLLDB_ENABLE_LUA=OFF") # HB
+          config_options+=("-DLLDB_ENABLE_LZMA=ON") # HB
+          config_options+=("-DLLDB_ENABLE_PYTHON=OFF") # HB uses ON
           config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON")
+          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB
+          # config_options+=("-DLLDB_USE_SYSTEM_SIX=ON") # HB (?)
 
           config_options+=("-DLLVM_BUILD_DOCS=OFF")
-#          config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON")
-          config_options+=("-DLLVM_BUILD_TESTS=OFF")
+          config_options+=("-DLLVM_BUILD_TESTS=OFF") # Arch uses ON
           config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
-#          config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
+          # config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
-#          config_options+=("-DLLVM_ENABLE_EH=ON")
-#          config_options+=("-DLLVM_ENABLE_LTO=OFF")
-#          config_options+=("-DLLVM_ENABLE_RTTI=ON")
-          config_options+=("-DLLVM_ENABLE_SPHINX=OFF")
+          config_options+=("-DLLVM_ENABLE_EH=ON") # HB
+
+          # See platform specific
+          # config_options+=("-DLLVM_ENABLE_LTO=OFF")
+
+          config_options+=("-DLLVM_ENABLE_RTTI=ON") # HB, Arch
+          config_options+=("-DLLVM_ENABLE_SPHINX=OFF") # Arch uses ON
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
-          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
-          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs
-          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests
+          # config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
+          config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs, HB
+          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests, HB
           config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
           # Better not, use the explicit `llvm-*` names.
           config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
+
+          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
+
+          # See each platform.
+          # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;mlir;polly")
+          # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+
+          # Links use huge amounts of memory.
+          config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            # The available choices are libgcc, compiler-rt.
+            # HB does not define it.
             # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+
+            config_options+=("-DCLANG_FORCE_MATCHING_LIBCLANG_SOVERSION=OFF") # HB
 
             # To help find the locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
             config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin")
 
-            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
+            # config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
-            # Fails if only CLT is available (SDKs are part of Xcode).
-            # CMake Error at cmake/Modules/CompilerRTDarwinUtils.cmake:73 (message):
-            #   Failed to determine SDK version for "iphonesimulator" SDK
-            # Call Stack (most recent call first):
-            #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
-            #   lib/builtins/CMakeLists.txt:51 (include)
-            config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF")
+              # Fails if only CLT is available (SDKs are part of Xcode).
+              # CMake Error at cmake/Modules/CompilerRTDarwinUtils.cmake:73 (message):
+              #   Failed to determine SDK version for "iphonesimulator" SDK
+              # Call Stack (most recent call first):
+              #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
+              #   lib/builtins/CMakeLists.txt:51 (include)
+            config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF") # HB
             config_options+=("-DCOMPILER_RT_ENABLE_MACCATALYST=OFF")
+            config_options+=("-DCOMPILER_RT_ENABLE_TVOS=OFF") # HB
+            config_options+=("-DCOMPILER_RT_ENABLE_WATCHOS=OFF") # HB
 
             # This distribution expects the SDK to be in this location.
-            config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+            config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk") # HB
 
+            config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON") # HB
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
+            config_options+=("-DLLVM_CREATE_XCODE_TOOLCHAIN=OFF") # HB
+
+            config_options+=("-DLLVM_ENABLE_FFI=ON") # HB
+            config_options+=("-DLLVM_ENABLE_LIBCXX=ON") # HB
+
+            config_options+=("-DLLVM_ENABLE_LTO=Thin") # HB
 
             # The libc++ & Co are not included because the system dynamic
             # libraries are prefered by the linker anyway, and attempts to
             # force the inclusion of the static library failed:
             # ld: warning: linker symbol '$ld$hide$os10.4$__Unwind_Backtrace' hides a non-existent symbol '__Unwind_Backtrace'
 
-            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
 
-            config_options+=("-DLLVM_ENABLE_FFI=ON")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;mlir;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+
+            config_options+=("-DLLVM_ENABLE_Z3_SOLVER=ON") # HB
+
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
-            config_options+=("-DLLVM_INSTALL_UTILS=ON")
-            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
-            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
-            config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
+            config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
+            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # HB
+            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON") # HB
+            config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON") # HB
             # Fails with: Please use architecture with 4 or 8 byte pointers.
             # config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
 
@@ -291,23 +322,12 @@ function llvm_build()
               exit 1
             fi
 
-            # No longer needed if disabled in LLVM_ENABLE_PROJECTS.
-            if false
-            then
-            config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-            config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size")
 
-            config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-            config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-            config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
-
-            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-            config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-            config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-            fi
+            # Prevent CMake from defaulting to `lld` when it's found next to `clang`.
+            # This can be removed after CMake 3.25. See:
+            # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
+            config_options+=("-DLLVM_USE_LINKER=ld") # HB
 
             # Otherwise it'll generate two -mmacosx-version-min
             config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
@@ -345,8 +365,8 @@ function llvm_build()
               exit 1
             fi
 
-            # It is safer to use the system GNU C++ library.
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
+            # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
+            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
             # ld.gold has a problem with --gc-sections and fails
             # several tests on Ubuntu 18
@@ -355,19 +375,19 @@ function llvm_build()
             # when requested with -fuse-ld=lld.
             # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
-            # Fails late in the build!
-            # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
 
             # To help find the just locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
             config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin")
 
-            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
+            # config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
-            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
+            config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
             config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
             # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
@@ -375,53 +395,22 @@ function llvm_build()
             # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
             # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=libcxx;libcxxabi;libunwind")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;mlir;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
-            # TOOLCHAIN_ONLY requires manual install for LLVMgold.so and
-            # lots of other files; not worth the effort and risky.
-            # config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON")
-            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres")
-
-            config_options+=("-DLLVM_ENABLE_FFI=ON")
+            config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
-            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON")
+            config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
             config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
-            # For now keep the default configuration, which creates both
-            # shred and static libs, but they are not directly
-            # usable, since they require complex LD_LIBRARY_PATH and
-            # explicit link options; the crt tests were disabled.
-            if false
-            then
-              config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
-              config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON")
-              config_options+=("-DLIBCXX_USE_COMPILER_RT=ON")
-
-              config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF")
-              config_options+=("-DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON")
-              config_options+=("-DLIBCXXABI_INSTALL_LIBRARY=OFF")
-              config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON")
-              config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON")
-
-              config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-              config_options+=("-DLIBUNWIND_INSTALL_LIBRARY=OFF")
-              config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON")
-            fi
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size")
 
           elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
-
-            # Mind the links in llvm to clang, lld, lldb.
-            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON") # MS
-            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86") # MS (ARM;AArch64;X86)
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra") # MS
-            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf") # MS
-            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size") # MS
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
             config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
@@ -444,16 +433,31 @@ function llvm_build()
             config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen") # MS
             config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen") # MS
             config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen") # MS
-
-            # ninja: error: '/home/ilg/Work/clang-xpack.git/build/win32-x64/x86_64-pc-linux-gnu/install/bin/clang-pseudo-gen', needed by 'tools/clang/tools/extra/pseudo/include/CXXSymbols.inc', missing and no known rule to make it
-            # config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
-
-            # ninja: error: '/home/ilg/Work/clang-xpack.git/build/win32-x64/x86_64-pc-linux-gnu/install/bin/clang-tidy-confusable-chars-gen', needed by 'tools/clang/tools/extra/clang-tidy/misc/Confusables.inc', missing and no known rule to make it
-            # config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
+            config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
+            config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
 
             config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
 
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra") # MS
+
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;mlir;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}") # MS
+
+            # Mind the links in llvm to clang, lld, lldb.
+            config_options+=("-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON") # MS
+
+            # TODO
+            config_options+=("-DLLVM_ENABLE_FFI=ON")
+            config_options+=("-DLLVM_INSTALL_UTILS=ON")
+            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
+            config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
+
+            config_options+=("-DLLVM_TARGETS_TO_BUILD=X86") # MS (ARM;AArch64;X86)
+
+            # config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf") # MS
+            config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size") # MS
 
             # https://llvm.org/docs/BuildingADistribution.html#options-for-reducing-size
             # This option is not available on Windows
@@ -739,6 +743,12 @@ function llvm_test()
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
+      # Defaults:
+      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
+      # config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
+      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
+      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
+
       compiler-tests-single "${test_bin_path}"
       compiler-tests-single "${test_bin_path}" --gc
       compiler-tests-single "${test_bin_path}" --lto
@@ -754,118 +764,40 @@ function llvm_test()
       compiler-tests-single "${test_bin_path}" --static --lto
       compiler-tests-single "${test_bin_path}" --static --gc --lto
 
-      # Once again with --crt
-      compiler-tests-single "${test_bin_path}" --crt
-      compiler-tests-single "${test_bin_path}" --gc --crt
-      compiler-tests-single "${test_bin_path}" --lto --crt
-      compiler-tests-single "${test_bin_path}" --gc --lto --crt
-
-      compiler-tests-single "${test_bin_path}" --static-lib --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
-
-      compiler-tests-single "${test_bin_path}" --static --crt
-      compiler-tests-single "${test_bin_path}" --static --gc --crt
-      compiler-tests-single "${test_bin_path}" --static --lto --crt
-      compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
-
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
+
+      # Defaults:
+      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+
+      export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
+      echo
+      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
       # The Linux system linker may fail with -flto, use the included lld.
       # For example, on Raspberry Pi OS 32-bit:
       # error: unable to execute command: Segmentation fault (core dumped)
 
-      # compiler-tests-single "${test_bin_path}"
-      # compiler-tests-single "${test_bin_path}" --gc
-      # compiler-tests-single "${test_bin_path}" --lto --lld
-      # compiler-tests-single "${test_bin_path}" --gc --lto --lld
-
-      local distro=$(lsb_release -is)
-      echo
-      echo "distro: ${distro}"
-
-      if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
-      then
-        # RedHat has no static libstdc++.
-        echo
-        echo "Skipping all --static-lib on ${distro}..."
-      else
-        compiler-tests-single "${test_bin_path}" --static-lib
-        compiler-tests-single "${test_bin_path}" --static-lib --gc
-        compiler-tests-single "${test_bin_path}" --static-lib --lto --lld
-        compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --lld
-      fi
+      compiler-tests-single "${test_bin_path}"
+      compiler-tests-single "${test_bin_path}" --gc
+      compiler-tests-single "${test_bin_path}" --lto --lld
+      compiler-tests-single "${test_bin_path}" --gc --lto --lld
 
       # On Linux static linking is highly discouraged.
       # On RedHat and derived, the static libraries must be installed explicitly.
+      # The --static-lib is also unreliable, and requires explicit libraries
+      # like -lunwind, -ldl, -lpthread, etc.
 
-      if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]] || [[ ${distro} == openSUSE ]]
-      then
-        echo
-        echo "Skipping all --static on ${distro}..."
-      else
-        compiler-tests-single "${test_bin_path}" --static
-        compiler-tests-single "${test_bin_path}" --static --gc
-        compiler-tests-single "${test_bin_path}" --static --lto --lld
-        compiler-tests-single "${test_bin_path}" --static --gc --lto --lld
-      fi
-
-      # -----------------------------------------------------------------------
-      # Once again with --crt
-
-      if [ "${XBB_HOST_PLATFORM}" == "linux" -a "${XBB_HOST_ARCH}" == "arm" ]
-      then
-        echo
-        echo "Skipping all --crt on Linux Arm..."
-      else
-        (
-          export LD_LIBRARY_PATH="$(${CC} -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||')"
-          echo
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
-
-          compiler-tests-single "${test_bin_path}" --crt --libunwind
-          compiler-tests-single "${test_bin_path}" --gc --crt --libunwind
-          compiler-tests-single "${test_bin_path}" --lto --lld --crt --libunwind
-          compiler-tests-single "${test_bin_path}" --gc --lto --lld --crt --libunwind
-
-          if [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
-          then
-            # RedHat has no static libstdc++.
-            echo
-            echo "Skipping all --static-lib --crt on ${distro}..."
-          else
-
-            compiler-tests-single "${test_bin_path}" --static-lib --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --static-lib --gc --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --static-lib --lto --lld --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --lld --crt --libunwind
-
-          fi
-        )
-      fi
-
-      if true
-      then
-        # There is something wrong in the link line and libunwind is not included.
-        # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: /usr/lib/x86_64-linux-gnu/libc.a(iofclose.o): in function `_IO_new_fclose':
-        # (.text+0x288): undefined reference to `_Unwind_Resume'
-        echo
-        echo "Skipping all --static --crt on Linux..."
-      elif [[ ${distro} == CentOS ]] || [[ ${distro} == RedHat* ]] || [[ ${distro} == Fedora ]]
-      then
-        echo
-        echo "Skipping all --static on ${distro}..."
-      else
-        compiler-tests-single "${test_bin_path}" --static --crt --libunwind
-        compiler-tests-single "${test_bin_path}" --static --gc --crt --libunwind
-        compiler-tests-single "${test_bin_path}" --static --lto --lld --crt --libunwind
-        compiler-tests-single "${test_bin_path}" --static --gc --lto --lld --crt --libunwind
-      fi
+      # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: /usr/lib/x86_64-linux-gnu/libc.a(printf_fp.o): in function `__printf_fp_l':
+      # (.text+0x4a6): undefined reference to `__unordtf2'
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
+
+      # Defaults:
+      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
       # Old macOS linkers do not support LTO, thus use lld.
       compiler-tests-single "${test_bin_path}"
@@ -873,42 +805,14 @@ function llvm_test()
       compiler-tests-single "${test_bin_path}" --lto --lld
       compiler-tests-single "${test_bin_path}" --gc --lto --lld
 
-      echo "Skipping all --static-lib on macOS..."
-      echo "Skipping all --static on macOS..."
-
+      # compiler-rt is not the default, do a separate run.
       compiler-tests-single "${test_bin_path}" --crt
       compiler-tests-single "${test_bin_path}" --gc --crt
       compiler-tests-single "${test_bin_path}" --lto --crt --lld
       compiler-tests-single "${test_bin_path}" --gc --lto --crt --lld
-
     fi
 
-    # (
-    #   if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-    #   then
-    #     # Instruct the linker to add a RPATH pointing to the folder with the
-    #     # compiler shared libraries. Alternatelly -Wl,-rpath=xxx can be used
-    #     # explicitly on each link command.
-    #     export LD_RUN_PATH="$(dirname $(realpath $(${CC} --print-file-name=libgcc_s.so)))"
-    #     echo
-    #     echo "LD_RUN_PATH=${LD_RUN_PATH}"
-    #   elif [ "${XBB_HOST_PLATFORM}" == "win32" ] # -a ! "${name_suffix}" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-    #   then
-    #     # For libwinpthread-1.dll, possibly other.
-    #     if [ "$(uname -o)" == "Msys" ]
-    #     then
-    #       export PATH="${test_bin_path}/../lib;${PATH:-}"
-    #       echo "PATH=${PATH}"
-    #     elif [ "$(uname)" == "Linux" ]
-    #     then
-    #       export WINEPATH="${test_bin_path}/../lib;${WINEPATH:-}"
-    #       echo "WINEPATH=${WINEPATH}"
-    #     fi
-    #   fi
-    # )
-
     # -------------------------------------------------------------------------
-
 
     (
       cd c-cpp
