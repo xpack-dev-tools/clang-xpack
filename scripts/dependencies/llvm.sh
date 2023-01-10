@@ -69,12 +69,15 @@ function llvm_build()
     download_and_extract "${llvm_url}" "${llvm_archive}" \
       "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
 
-    # Disable the use of libxar.
-    # It picks an unwanted system library, and compiling
-    # it is too tedious.
-    run_verbose sed -i.bak \
-      -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
-      "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
+    if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    then
+      # Disable the use of libxar.
+      # It picks an unwanted system library, and compiling
+      # it is too tedious.
+      run_verbose sed -i.bak \
+        -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
+        "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
+    fi
 
     if [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
