@@ -114,7 +114,6 @@ function llvm_build()
       # Non-static will have trouble to find the llvm bootstrap libc++.
       # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       LDFLAGS="${XBB_LDFLAGS_APP}"
-      xbb_adjust_ldflags_rpath
 
       if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
       then
@@ -133,6 +132,8 @@ function llvm_build()
       #   # collect2: error: ld returned 1 exit status
       #   LDFLAGS+=" -ldl -lrt -lpthread -lm"
       fi
+
+      xbb_adjust_ldflags_rpath
 
       export CPPFLAGS
       export CFLAGS
