@@ -290,7 +290,9 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_FFI=ON") # HB
             config_options+=("-DLLVM_ENABLE_LIBCXX=ON") # HB
 
-            config_options+=("-DLLVM_ENABLE_LTO=Thin") # HB
+            # This measn to use -flto during the build;
+            # this fails with system libtool.
+            config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
 
             # The libc++ & Co are not included because the system dynamic
             # libraries are prefered by the linker anyway, and attempts to
