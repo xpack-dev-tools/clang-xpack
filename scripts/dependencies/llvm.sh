@@ -232,7 +232,8 @@ function llvm_build()
           config_options+=("-DLLVM_ENABLE_RTTI=ON") # HB, Arch
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF") # Arch uses ON
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
-          # config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF")
+          config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF") # HB uses ON
+
           config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs, HB
           config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests, HB
           config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
@@ -300,8 +301,6 @@ function llvm_build()
 
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;mlir;polly")
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
-
-            config_options+=("-DLLVM_ENABLE_Z3_SOLVER=ON") # HB
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
