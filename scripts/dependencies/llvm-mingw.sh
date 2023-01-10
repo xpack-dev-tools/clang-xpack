@@ -201,6 +201,7 @@ function llvm_mingw_build_first()
         run_verbose cp -v \
           "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"/bin/*-tblgen* \
           "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"/bin/*-config* \
+          "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"/bin/*-gen \
           "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 
         show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
