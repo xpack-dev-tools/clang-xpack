@@ -121,19 +121,6 @@ function llvm_build()
 
         # For libc++.1.0.dylib to find libc++abi.1.dylib
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
-
-        # clang: error: unsupported option '-static-libgcc'
-        # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
-      elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
-      then
-        : # export CC="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang"
-        : # export CXX="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/${XBB_TARGET_TRIPLET}-clang++"
-      # elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
-      # then
-      #   # /home/ilg/.local/xPacks/@xpack-dev-tools/gcc/12.2.0-2.1/.content/bin/../lib/gcc/x86_64-pc-linux-gnu/12.2.0/../../../../x86_64-pc-linux-gnu/bin/ld: lib/libLLVMOrcTargetProcess.a(ExecutorSharedMemoryMapperService.cpp.o): in function `llvm::orc::rt_bootstrap::ExecutorSharedMemoryMapperService::reserve[abi:cxx11](unsigned long)':
-      #   # ExecutorSharedMemoryMapperService.cpp:(.text._ZN4llvm3orc12rt_bootstrap33ExecutorSharedMemoryMapperService7reserveB5cxx11Em+0x483): undefined reference to `shm_open'
-      #   # collect2: error: ld returned 1 exit status
-      #   LDFLAGS+=" -ldl -lrt -lpthread -lm"
       fi
 
       xbb_adjust_ldflags_rpath
@@ -299,13 +286,6 @@ function llvm_build()
             # This measn to use -flto during the build;
             # this fails with system libtool.
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
-
-            # The libc++ & Co are not included because the system dynamic
-            # libraries are prefered by the linker anyway, and attempts to
-            # force the inclusion of the static library failed:
-            # ld: warning: linker symbol '$ld$hide$os10.4$__Unwind_Backtrace' hides a non-existent symbol '__Unwind_Backtrace'
-
-            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
