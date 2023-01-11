@@ -119,6 +119,9 @@ function llvm_build()
       then
         LDFLAGS+=" -Wl,-search_paths_first"
 
+        # For libc++.1.0.dylib to find libc++abi.1.dylib
+        XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
+
         # clang: error: unsupported option '-static-libgcc'
         # LDFLAGS=$(echo ${LDFLAGS} | sed -e 's|-static-libgcc||')
       elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
