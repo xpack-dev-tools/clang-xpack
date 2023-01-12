@@ -208,7 +208,6 @@ function llvm_build()
           config_options+=("-DLLDB_ENABLE_LUA=OFF") # HB
           config_options+=("-DLLDB_ENABLE_PYTHON=OFF") # HB uses ON
           config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
-          config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB
           # config_options+=("-DLLDB_USE_SYSTEM_SIX=ON") # HB (?)
 
           config_options+=("-DLLVM_BUILD_DOCS=OFF")
@@ -274,6 +273,7 @@ function llvm_build()
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk") # HB
 
             config_options+=("-DLLDB_ENABLE_LZMA=ON") # HB
+            config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB (Darwin only)
 
             config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON") # HB
