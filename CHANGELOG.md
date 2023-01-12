@@ -2,6 +2,100 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-12
+
+* v15.0.7-1 prepared
+* c89db1e llvm.sh: explicit mkdir applications/lib
+
+## 2023-01-11
+
+* 8a883ce llvm.sh: cleanups
+* de46289 llvm.sh: remove mlir, it fails on windows
+* b04cd5d llvm.sh: ENABLE_LZMA=OFF for windows
+* a5d9db3 llvm-mingw.sh: cosmetize xbb_adjust_ldflags_rpath
+* 388b0e0 llvm.sh: explicit application/lib to -rpath
+* 2bc6f2d cosmetize xbb_adjust_ldflags_rpath
+
+## 2023-01-10
+
+* 9067c08 llvm.sh: -DLLVM_ENABLE_LTO=OFF for macOS
+* f405d00 llvm.sh: Z3_SOLVER=OFF
+* 80d5da5 llvm.sh: rework closer to HB & Arch
+* d1d5e94 llvm.sh: comment out implicit -lpthread -ldl
+* 38b98b0 lvm.sh: patch for libxar only on macOS
+* 51c71df llvm-mingw.sh: cleanups (commented out code)
+* dc88354 llvm-mingw.sh: copy *-gen binaries
+
+## 2023-01-09
+
+* 13607c3 llvm.sh: re-enable code to disable libxar
+* 5b97f51 versioning.sh: use XBB_MINGW_TRIPLETS for windows
+* cc2e465 versioning.sh: update clang_add_mingw_wrappers
+* 9efecfc application.sh: cleanups
+* a89df96 llvm-mingw.sh: set WINEPATH for tests
+* 88fee08 llvm-mingw.sh: comment out libunwind merge
+* 3568197 llvm-mingw.sh: -DLIBCXX_ENABLE_SHARED=ON
+* abbe92e llvm-mingw.sh: -DLIBUNWIND_ENABLE_SHARED=ON
+* 17ef5cb llvm.sh: comment out extra internal links
+* e007c81 llvm.sh: cleanup and reformat
+* bacbd8d llvm.sh: comment out -DBUILD_SHARED_LIBS=OFF
+* 9c2fde9 llvm.sh: comment out some benign options
+* f8f1ec1 llvm.sh: add -DZLIB_INCLUDE_DIR
+* 1b8cd17 llvm.sh: cleanup & reformat
+* 438646e llvm.sh: comment out explicit libs
+* 7b22207 llvm.sh: cleanup & reformat
+* 0458444 llvm.sh: comment out libxar patch
+* 3749c93 llvm*.sh: add llvm-size
+
+## 2023-01-07
+
+* 895a0c8 README update
+* 9970f9a versioning.sh: enable i686-w64-mingw32 triplet
+* 4f28b1d versioning.sh: fix typo
+* 50f5b78 llvm-mingw.sh: i686-windows-gnu
+* da913f3 versioning.sh: fix *wrappers_stamp_file_path
+* 15977bc llvm-mingw.sh: iterate test for all triplets
+* 06b3875 llvm-mingw.sh: rework 32-bit triplets
+* b830e28 llvm-mingw.sh: comment out unused definitions
+* 9e74795 llvm-mingw.sh: more comments
+* 0bbd4dd llvm-mingw.sh: cleanup test_mingw_llvm
+* 89eaf1f llvm-mingw.sh: explicit -DZLIB_INCLUDE_DIR
+* 3ff63a8 versioning.sh: rework x64 bootstrap
+* db921b9 versioning.sh: rework clang_add_mingw_wrappers
+* 1473108 application.sh: *_ALL_SYS_FOLDERS_TO_RPATH="y"
+* 2c30cbe README-DEVELOP.md: update from upstream
+* 337932e package.json: remove mingw-gcc dep for windows
+* 77dbc2e wrappers: update from upstream
+
+## 2023-01-06
+
+* 9694dfd llvm.sh: *_RUNTIMES=libcxx;libcxxabi;libunwind
+* 79c3e42 llvm*.sh: cmake -LH only when IS_DEVELOP
+
+## 2023-01-05
+
+* 9846f78 Revert "versioning.sh: prepare_clang_env"
+* 291fcd4 Revert "package.json: use clang for linux"
+* 5e72301 llvm-mingw.sh:  cmake ${XBB_JOBS}
+* cbccfda llvm.sh:  cmake ${XBB_JOBS}
+* 0b3409f llvm*.sh: -LH
+* 678c6ef package.json: use clang for linux
+* 6a6822c versioning.sh: REQUIRE_RPATH="n"
+* d08253b versioning.sh: prepare_clang_env
+* 8931d23 llvm.sh: explict --parallel ${XBB_JOBS}
+
+## 2023-01-04
+
+* 2e64a88 llvm.sh: add homebrew makefiles comment
+* 83f913a llvm.sh: -DCOMPILER_RT_ENABLE_MACCATALYST=OFF
+* c2cb9a7 llvm.sh: use llvm-libtool-darwin
+* cf6d3db llvm.sh: -lrt -lpthread -lm
+* 5ff566e llvm-mingw.sh: add -lm
+* da39d37 llvm.sh: -DCOMPILER_RT_ENABLE_IOS=OFF
+* 6b49b0f llvm-mingw.sh: -lrt -lpthread
+* 52c8246 CHANGELOG update
+* 2a1884c prepare v15.0.6-1
+
 ## 2023-01-04
 
 * v15.0.6-1 prepared

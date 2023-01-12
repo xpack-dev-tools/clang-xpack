@@ -299,7 +299,7 @@ function application_build_versioned_components()
 
   # ---------------------------------------------------------------------------
 
-  if [[ "${XBB_RELEASE_VERSION}" =~ 15[.]0[.]6-[1] ]]
+  if [[ "${XBB_RELEASE_VERSION}" =~ 15[.].*[.].*-.* ]]
   then
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"

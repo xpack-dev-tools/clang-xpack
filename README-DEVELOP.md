@@ -88,7 +88,7 @@ git -C ~/Work/mstorsjo/llvm-mingw.git pull
 find ~/Work/mstorsjo/llvm-mingw.git -name '*.sh' ! -iname '*-wrapper.sh' \
   -exec sed -i.bak -e 's|^#!/bin/sh$|#!/bin/sh -x|' '{}' ';'
 
-sed -i.bak2 -e 's|-15.0.0}|-15.0.6}|' ~/Work/mstorsjo/llvm-mingw.git/build-llvm.sh
+sed -i.bak2 -e 's|-15.0.0}|-15.0.7}|' ~/Work/mstorsjo/llvm-mingw.git/build-llvm.sh
 
 # Build the development docker image.
 cd ~/Work/mstorsjo/llvm-mingw.git
@@ -106,7 +106,7 @@ docker build  -t mstorsjo/llvm-mingw . | tee ../build-output-x-$(date -u +%Y%m%d
 ## 2023-01-06
 
 With 04c623fe8b50d0c0d78e810ef1cefe10fc418a50 from 01 Dec 2022, which
-builds LLVM 15.0.6, the configurations used for the docker images are as below.
+builds LLVM 15.0.7, the configurations used for the docker images are as below.
 
 For `mstorsjo/llvm-mingw:dev` (actualy build-output-x-dev-*.txt):
 
@@ -198,13 +198,13 @@ export PATH=/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sbin:/usr/local/bin:/u
 
 cd llvm-project/compiler-rt/build-i686
 # L18897
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.6 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.7 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
 ninja
 ninja install
 
 cd llvm-project/compiler-rt/build-x86_64
 # L19131
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.6 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.7 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=TRUE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ../lib/builtins
 ninja
 ninja install
 
@@ -299,13 +299,13 @@ export PATH=/opt/llvm-mingw/bin:/opt/llvm-mingw/bin:/opt/cmake/bin:/usr/local/sb
 
 cd llvm-project/compiler-rt/build-i686-sanitizers
 # L29979
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.6 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.7 -DCMAKE_C_COMPILER=i686-w64-mingw32-clang -DCMAKE_CXX_COMPILER=i686-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=i686-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/i686-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
 ninja
 ninja install
 
 cd llvm-project/compiler-rt/build-x86_64-sanitizers
 # L30591
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.6 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm-mingw/lib/clang/15.0.7 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-clang++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_AR=/opt/llvm-mingw/bin/llvm-ar -DCMAKE_RANLIB=/opt/llvm-mingw/bin/llvm-ranlib -DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu -DCOMPILER_RT_DEFAULT_TARGET_ONLY=TRUE -DCOMPILER_RT_USE_BUILTINS_LIBRARY=TRUE -DCOMPILER_RT_BUILD_BUILTINS=FALSE -DLLVM_CONFIG_PATH= -DCMAKE_FIND_ROOT_PATH=/opt/llvm-mingw/x86_64-w64-mingw32 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY -DSANITIZER_CXX_ABI=libc++ -DCMAKE_C_FLAGS_INIT= -DCMAKE_CXX_FLAGS_INIT= ..
 ninja
 ninja install
 
