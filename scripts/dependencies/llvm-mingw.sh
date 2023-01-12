@@ -75,7 +75,7 @@ function llvm_mingw_build_first()
 
           if [ "${XBB_IS_DEVELOP}" == "y" ]
           then
-            config_options+=("-LH") # display help for each variable
+            config_options+=("-LAH") # display help for each variable
           fi
           config_options+=("-G" "Ninja")
 
@@ -247,7 +247,7 @@ function llvm_mingw_build_compiler_rt()
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          config_options+=("-LH") # display help for each variable
+          config_options+=("-LAH") # display help for each variable
         fi
         config_options+=("-G" "Ninja")
 
@@ -419,7 +419,7 @@ function llvm_mingw_build_libcxx()
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          config_options+=("-LH") # display help for each variable
+          config_options+=("-LAH") # display help for each variable
         fi
         config_options+=("-G" "Ninja")
 
