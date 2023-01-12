@@ -518,6 +518,10 @@ function llvm_mingw_build_libcxx()
           --verbose \
           --target install
 
+        run_verbose cp -v \
+          "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/bin"/*.dll \
+          "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib"
+
         # Append libunwind to libc++, to simplify things.
         # It helps when there are no shared libc++ and linunwind.
         # run_verbose "${AR}" qcsL \
@@ -530,7 +534,6 @@ function llvm_mingw_build_libcxx()
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/build-output-$(ndate).txt"
-
     )
 
     mkdir -pv "${XBB_STAMPS_FOLDER_PATH}"
