@@ -185,6 +185,8 @@ function clang_build_common()
 
           # Build mingw-w64 components.
           mingw_build_headers --triplet="${triplet}"
+
+          # widl & gendef actually do not need to be built for all triplets.
           mingw_build_widl  --triplet="${triplet}" --program-prefix=
           mingw_build_libmangle --triplet="${triplet}"
           mingw_build_gendef --triplet="${triplet}" --program-prefix=
@@ -197,7 +199,6 @@ function clang_build_common()
 
       # xbb_prepare_clang_env "${XBB_TARGET_TRIPLET}-"
       xbb_prepare_gcc_env "${XBB_TARGET_TRIPLET}-"
-
 
       # Build LLVM clang.
       llvm_build "${XBB_LLVM_VERSION}"
