@@ -245,14 +245,14 @@ xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
 caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
-About 1h35 later, the output of the build script is a compressed
+About 1h40 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
-total 165248
--rw-r--r--  1 ilg  staff  83698906 Jan 12 01:56 xpack-clang-15.0.7-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Jan 12 01:56 xpack-clang-15.0.7-1-darwin-x64.tar.gz.sha
+total 165184
+-rw-r--r--  1 ilg  staff  83700506 Jan 12 14:37 xpack-clang-15.0.7-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       105 Jan 12 14:37 xpack-clang-15.0.7-1-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -283,9 +283,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
-total 165560
--rw-r--r--  1 ilg  staff  77811339 Jan 12 00:52 xpack-clang-15.0.7-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 12 00:52 xpack-clang-15.0.7-1-darwin-arm64.tar.gz.sha
+total 163992
+-rw-r--r--  1 ilg  staff  77812776 Jan 12 11:17 xpack-clang-15.0.7-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jan 12 11:17 xpack-clang-15.0.7-1-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -317,9 +317,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
-total 119144
--rw-r--r-- 1 ilg ilg 121991910 Jan 11 23:44 xpack-clang-15.0.7-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 11 23:44 xpack-clang-15.0.7-1-linux-x64.tar.gz.sha
+total 119140
+-rw-r--r-- 1 ilg ilg 121991553 Jan 12 09:42 xpack-clang-15.0.7-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 12 09:42 xpack-clang-15.0.7-1-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Windows binaries
