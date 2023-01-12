@@ -699,15 +699,18 @@ function test_mingw_llvm()
     compiler-tests-single "${test_bin_path}" --lto
     compiler-tests-single "${test_bin_path}" --gc --lto
 
-    compiler-tests-single "${test_bin_path}" --static-lib
-    compiler-tests-single "${test_bin_path}" --static-lib --gc
-    compiler-tests-single "${test_bin_path}" --static-lib --lto
-    compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
+    if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
+    then
+      compiler-tests-single "${test_bin_path}" --static-lib
+      compiler-tests-single "${test_bin_path}" --static-lib --gc
+      compiler-tests-single "${test_bin_path}" --static-lib --lto
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
 
-    compiler-tests-single "${test_bin_path}" --static
-    compiler-tests-single "${test_bin_path}" --static --gc
-    compiler-tests-single "${test_bin_path}" --static --lto
-    compiler-tests-single "${test_bin_path}" --static --gc --lto
+      compiler-tests-single "${test_bin_path}" --static
+      compiler-tests-single "${test_bin_path}" --static --gc
+      compiler-tests-single "${test_bin_path}" --static --lto
+      compiler-tests-single "${test_bin_path}" --static --gc --lto
+    fi
 
     # Once again with --crt
     compiler-tests-single "${test_bin_path}" --crt
@@ -715,15 +718,18 @@ function test_mingw_llvm()
     compiler-tests-single "${test_bin_path}" --lto --crt
     compiler-tests-single "${test_bin_path}" --gc --lto --crt
 
-    compiler-tests-single "${test_bin_path}" --static-lib --crt
-    compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
-    compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
-    compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
+    if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
+    then
+      compiler-tests-single "${test_bin_path}" --static-lib --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
+      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
 
-    compiler-tests-single "${test_bin_path}" --static --crt
-    compiler-tests-single "${test_bin_path}" --static --gc --crt
-    compiler-tests-single "${test_bin_path}" --static --lto --crt
-    compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --static --crt
+      compiler-tests-single "${test_bin_path}" --static --gc --crt
+      compiler-tests-single "${test_bin_path}" --static --lto --crt
+      compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
+    fi
 
     # -------------------------------------------------------------------------
 
