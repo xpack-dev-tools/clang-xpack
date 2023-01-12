@@ -738,6 +738,18 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
+      # For libc++.dll & co.
+      # The DLLs are available in the /lib folder.
+      if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
+      then
+        cxx_lib_path=$(dirname $(${CXX} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
+        export PATH="${cxx_lib_path}:${PATH:-}"
+        echo "PATH=${PATH}"
+      else
+        export WINEPATH="${test_bin_path}/../x86_64-w64-mingw32/lib;${WINEPATH:-}"
+        echo "WINEPATH=${WINEPATH}"
+      fi
+
       compiler-tests-single "${test_bin_path}"
       compiler-tests-single "${test_bin_path}" --gc
       compiler-tests-single "${test_bin_path}" --lto
