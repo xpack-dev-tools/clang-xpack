@@ -173,6 +173,17 @@ function llvm_build()
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
           config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
 
+          # Explicit,otherwise cmake picks the wrong ones.
+          config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
+          config_options+=("-DCMAKE_AR=${AR}")
+          config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
+          config_options+=("-DCMAKE_NM=${NM}")
+          config_options+=("-DCMAKE_OBJCOPY=${OBJCOPY}")
+          config_options+=("-DCMAKE_OBJDUMP=${OBJDUMP}")
+          config_options+=("-DCMAKE_RANLIB=${RANLIB}")
+          config_options+=("-DCMAKE_READELF=${READELF}")
+          config_options+=("-DCMAKE_STRIP=${STRIP}")
+
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
