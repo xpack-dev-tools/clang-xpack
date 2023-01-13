@@ -86,27 +86,38 @@ git -C ~/Work/mstorsjo/llvm-mingw.git pull
 
 # Patch the shell scripts to add -x.
 find ~/Work/mstorsjo/llvm-mingw.git -name '*.sh' ! -iname '*-wrapper.sh' \
-  -exec sed -i.bak -e 's|^#!/bin/sh$|#!/bin/sh -x|' '{}' ';'
+  -exec sed -i.bak -e 's|^#!/bin/sh$|#!/bin/sh -x|' -e 's|cmake [\]|cmake -LAH \\|' '{}' ';'
 
-sed -i.bak2 -e 's|-15.0.0}|-15.0.7}|' ~/Work/mstorsjo/llvm-mingw.git/build-llvm.sh
+sed -i.bak2 -e 's|{LLVM_VERSION:=llvmorg-.*}|{LLVM_VERSION:=llvmorg-15.0.7}|' ~/Work/mstorsjo/llvm-mingw.git/build-llvm.sh
+
+# https://github.com/mirror/mingw-w64/tags
+sed -i.bak2 -e 's|{MINGW_W64_VERSION:=.*}|{MINGW_W64_VERSION:=v10.0.0}|' ~/Work/mstorsjo/llvm-mingw.git/build-mingw-w64.sh
+
+sed -i.bak2 -e 's|TOOLCHAIN_ARCHS="i686 x86_64 armv7 aarch64"|TOOLCHAIN_ARCHS="i686 x86_64"|' ~/Work/mstorsjo/llvm-mingw.git/Dockerfile*
+
+docker system prune
 
 # Build the development docker image.
 cd ~/Work/mstorsjo/llvm-mingw.git
-time docker build -f Dockerfile.dev -t mstorsjo/llvm-mingw:dev . | tee ../build-output-x-dev-$(date -u +%Y%m%d-%H%M%S).txt
+time docker build --no-cache -f Dockerfile.dev -t mstorsjo/llvm-mingw:dev . | tee ../build-output-x-dev-$(date -u +%Y%m%d-%H%M%S).txt
 
 # Build the cross binaries.
 cd ~/Work/mstorsjo/llvm-mingw.git
-time docker build -f Dockerfile.cross -t mstorsjo/llvm-mingw:cross . | tee ../build-output-x-cross-$(date -u +%Y%m%d-%H%M%S).txt
+time docker build --no-cache -f Dockerfile.cross -t mstorsjo/llvm-mingw:cross . | tee ../build-output-x-cross-$(date -u +%Y%m%d-%H%M%S).txt
 
 # For completeness, build the regular binaries.
 cd ~/Work/mstorsjo/llvm-mingw.git
 docker build  -t mstorsjo/llvm-mingw . | tee ../build-output-x-$(date -u +%Y%m%d-%H%M%S).txt
 ```
 
+## 2023-01-02
+
+Same configuration, but with LLVM 15.0.7.
+
 ## 2023-01-06
 
 With 04c623fe8b50d0c0d78e810ef1cefe10fc418a50 from 01 Dec 2022, which
-builds LLVM 15.0.7, the configurations used for the docker images are as below.
+builds LLVM 15.0.6, the configurations used for the docker images are as below.
 
 For `mstorsjo/llvm-mingw:dev` (actualy build-output-x-dev-*.txt):
 
