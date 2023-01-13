@@ -751,32 +751,36 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
-      # For libc++.dll & co.
-      # The DLLs are available in the /lib folder.
-      if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
-      then
-        cxx_lib_path=$(dirname $(${CXX} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
-        export PATH="${cxx_lib_path}:${PATH:-}"
-        echo "PATH=${PATH}"
-      else
-        export WINEPATH="${test_bin_path}/../x86_64-w64-mingw32/lib;${WINEPATH:-}"
-        echo "WINEPATH=${WINEPATH}"
-      fi
+      for bits in 32 64
+      do
+        # For libc++.dll & co.
+        # The DLLs are available in the /lib folder.
+        if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
+        then
+          cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
+          export PATH="${cxx_lib_path}:${PATH:-}"
+          echo "PATH=${PATH}"
+        else
+          cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
+          export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
+          echo "WINEPATH=${WINEPATH}"
+        fi
 
-      compiler-tests-single "${test_bin_path}"
-      compiler-tests-single "${test_bin_path}" --gc
-      compiler-tests-single "${test_bin_path}" --lto
-      compiler-tests-single "${test_bin_path}" --gc --lto
+        compiler-tests-single "${test_bin_path}" --${bits}
+        compiler-tests-single "${test_bin_path}" --${bits} --gc
+        compiler-tests-single "${test_bin_path}" --${bits} --lto
+        compiler-tests-single "${test_bin_path}" --${bits} --gc --lto
 
-      compiler-tests-single "${test_bin_path}" --static-lib
-      compiler-tests-single "${test_bin_path}" --static-lib --gc
-      compiler-tests-single "${test_bin_path}" --static-lib --lto
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
+        compiler-tests-single "${test_bin_path}" --${bits} --static-lib
+        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc
+        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto
+        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto
 
-      compiler-tests-single "${test_bin_path}" --static
-      compiler-tests-single "${test_bin_path}" --static --gc
-      compiler-tests-single "${test_bin_path}" --static --lto
-      compiler-tests-single "${test_bin_path}" --static --gc --lto
+        compiler-tests-single "${test_bin_path}" --${bits} --static
+        compiler-tests-single "${test_bin_path}" --${bits} --static --gc
+        compiler-tests-single "${test_bin_path}" --${bits} --static --lto
+        compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto
+      done
 
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
