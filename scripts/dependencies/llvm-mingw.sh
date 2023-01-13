@@ -263,8 +263,13 @@ function llvm_mingw_build_compiler_rt()
         config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
         # config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
-        config_options+=("-DCMAKE_AR=${AR}") # MS
-        config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+          config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
+          config_options+=("-DCMAKE_AR=${AR}") # MS
+          config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
+          config_options+=("-DCMAKE_NM=${NM}")
+          config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+          config_options+=("-DCMAKE_READELF=${READELF}")
+          config_options+=("-DCMAKE_STRIP=${STRIP}")
 
         # Warning: the result is not the mingw triplet, it is the Linux triplet.
         if [ "${triplet}" == "x86_64-w64-mingw32" ]
@@ -434,8 +439,13 @@ function llvm_mingw_build_libcxx()
         config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
         config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON") # MS
 
-        config_options+=("-DCMAKE_AR=${AR}") # MS
-        config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+          config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
+          config_options+=("-DCMAKE_AR=${AR}") # MS
+          config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
+          config_options+=("-DCMAKE_NM=${NM}")
+          config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
+          config_options+=("-DCMAKE_READELF=${READELF}")
+          config_options+=("-DCMAKE_STRIP=${STRIP}")
 
         # Warning: the result is not the mingw triplet, it is the Linux triplet.
         if [ "${triplet}" == "x86_64-w64-mingw32" ]
