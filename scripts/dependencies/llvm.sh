@@ -790,32 +790,62 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
 
-      export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
-      echo
-      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+      if [ "${XBB_HOST_ARCH}" == "x64" ]
+      then
+        (
+          export LD_LIBRARY_PATH="$(xbb_get_libs_path) -m64"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-      # The Linux system linker may fail with -flto, use the included lld.
-      # For example, on Raspberry Pi OS 32-bit:
-      # error: unable to execute command: Segmentation fault (core dumped)
+          compiler-tests-single "${test_bin_path}" --64
+          compiler-tests-single "${test_bin_path}" --64 --gc
+          compiler-tests-single "${test_bin_path}" --64 --lto --lld
+          compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld
+        )
 
-      compiler-tests-single "${test_bin_path}"
-      compiler-tests-single "${test_bin_path}" --gc
-      compiler-tests-single "${test_bin_path}" --lto --lld
-      compiler-tests-single "${test_bin_path}" --gc --lto --lld
+        # Linux 32-bit are not yet available:
+        # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: cannot find /home/ilg/Work/clang-xpack.git/build/linux-x64/application/lib/clang/15.0.7/lib/linux/libclang_rt.builtins-i386.a: No such file or directory
+        if true # [ "${XBB_SKIP_32_BIT_TESTS:-""}" == "y" ]
+        then
+          echo
+          echo "Skipping -m32 tests..."
+        else
+          (
+            export LD_LIBRARY_PATH="$(xbb_get_libs_path) -m32"
+            echo
+            echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-      # On Linux static linking is highly discouraged.
-      # On RedHat and derived, the static libraries must be installed explicitly.
-      # The --static-lib is also unreliable, and requires explicit libraries
-      # like -lunwind, -ldl, -lpthread, etc.
+            compiler-tests-single "${test_bin_path}" --32
+            compiler-tests-single "${test_bin_path}" --32 --gc
+            compiler-tests-single "${test_bin_path}" --32 --lto --lld
+            compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld
+          )
+        fi
+      else
+        (
+          # Arm Linux. No multilib available.
 
-      # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: /usr/lib/x86_64-linux-gnu/libc.a(printf_fp.o): in function `__printf_fp_l':
-      # (.text+0x4a6): undefined reference to `__unordtf2'
+          export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+
+          # The Linux system linker may fail with -flto, use the included lld.
+          # For example, on Raspberry Pi OS 32-bit:
+          # error: unable to execute command: Segmentation fault (core dumped)
+
+          compiler-tests-single "${test_bin_path}"
+          compiler-tests-single "${test_bin_path}" --gc
+          compiler-tests-single "${test_bin_path}" --lto --lld
+          compiler-tests-single "${test_bin_path}" --gc --lto --lld
+        )
+      fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
       # Defaults:
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+      # No i386 libraries available on macOS.
 
       # Old macOS linkers do not support LTO, thus use lld.
       compiler-tests-single "${test_bin_path}"
