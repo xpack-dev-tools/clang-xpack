@@ -99,7 +99,7 @@ function clang_build_mingw_bootstrap()
         mingw_build_gendef --triplet="${triplet}"
 
         # ---------------------------------------------------------------------
-        # Use the mingw compiler compied above.
+        # Use the mingw toolchain compiled above.
 
         xbb_activate_installed_bin
 
@@ -126,9 +126,12 @@ function clang_build_common()
   if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
   then
 
-    # Build a bootstrap toolchain, mainly for the *-tblgen tools, but
-    # also because mixing with mingw-gcc fails the build in
-    # various weird ways.
+    # The Windows build proved particularly difficult to master. The main
+    # issue was cmake picking up unwanted tools. This was solved only with
+    # explicit `CMAKE_*` variables to define the absolute paths to desired
+    # tools. Attempts to simplify things by removing the top mingw-gcc
+    # dependency failed, since some of the toolsa re needed in post
+    # processing step.
 
     # Number
     XBB_MINGW_VERSION_MAJOR=$(echo ${XBB_MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)[.].*|\1|')
@@ -143,6 +146,9 @@ function clang_build_common()
     # Set the environment to initial values.
     xbb_reset_env
     xbb_set_target "mingw-w64-native"
+
+    # Build a bootstrap toolchain, mainly for the *-tblgen tools, but
+    # also because mixing with mingw-gcc may lead to unexpected results.
 
     clang_build_mingw_bootstrap
 
