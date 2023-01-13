@@ -176,7 +176,10 @@ function llvm_build()
           # Explicit,otherwise cmake picks the wrong ones.
           config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
           config_options+=("-DCMAKE_AR=${AR}")
-          config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
+          if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+          then
+            config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
+          fi
           config_options+=("-DCMAKE_NM=${NM}")
           config_options+=("-DCMAKE_OBJCOPY=${OBJCOPY}")
           config_options+=("-DCMAKE_OBJDUMP=${OBJDUMP}")
