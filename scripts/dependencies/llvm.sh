@@ -244,11 +244,6 @@ function llvm_build()
 
           config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
 
-          # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra") # MS
-          # mlir fails on windows, it tries to build the NATIVE folder and fails.
-          config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
-          config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
-
           # Links use huge amounts of memory.
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
@@ -299,6 +294,9 @@ function llvm_build()
             # This measn to use -flto during the build;
             # this fails with system libtool.
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
+
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
@@ -395,6 +393,10 @@ function llvm_build()
             # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
+
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
@@ -450,6 +452,13 @@ function llvm_build()
 
             # TODO
             config_options+=("-DLLVM_ENABLE_FFI=ON")
+
+            # mlir fails on windows, it tries to build the NATIVE folder and fails.
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
+            # Keep the definitions separte for each platform, they are different.
+            # Enabling runtimes on Windows fails the cmake step.
+            # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
