@@ -434,13 +434,6 @@ function llvm_build()
             config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
             config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
 
-            # CMake Error at /home/ilg/Work/clang-xpack.git/build/win32-x64/sources/llvm-project-15.0.6.src/libunwind/src/CMakeLists.txt:109 (message):
-            #   Compiler doesn't support generation of unwind tables if exception support
-            #   is disabled.  Building libunwind DSO with runtime dependency on C++ ABI
-            #   library is not supported.
-
-            config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF")
-
             config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
 
             config_options+=("-DLLDB_ENABLE_LZMA=OFF")
