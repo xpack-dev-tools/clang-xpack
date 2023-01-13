@@ -237,31 +237,33 @@ function llvm_mingw_build_compiler_rt()
       # export CXXFLAGS
       # export LDFLAGS
 
-      (
-        xbb_show_env_develop
+      if [ ! -f "cmake.done" ]
+      then
+        (
+          xbb_show_env_develop
 
-        echo
-        echo "Running ${name_prefix}llvm-compiler-rt cmake..."
+          echo
+          echo "Running ${name_prefix}llvm-compiler-rt cmake..."
 
-        config_options=()
+          config_options=()
 
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
-        then
-          config_options+=("-LAH") # display help for each variable
-        fi
-        config_options+=("-G" "Ninja")
+          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("-LAH") # display help for each variable
+          fi
+          config_options+=("-G" "Ninja")
 
-        # Traditionally the runtime is in a versioned folder.
-        config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
+          # Traditionally the runtime is in a versioned folder.
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
 
-        config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
-        # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
+          config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+          # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+          config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
-        config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
-        # config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
-        config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
-        # config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+          config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
+          # config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+          # config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
 
           config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
           config_options+=("-DCMAKE_AR=${AR}") # MS
@@ -271,49 +273,52 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCMAKE_READELF=${READELF}")
           config_options+=("-DCMAKE_STRIP=${STRIP}")
 
-        # Warning: the result is not the mingw triplet, it is the Linux triplet.
-        if [ "${triplet}" == "x86_64-w64-mingw32" ]
-        then
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
-        elif [ "${triplet}" == "i686-w64-mingw32" ]
-        then
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu")
-        else
-          echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
-          exit 1
-        fi
+          # Warning: the result is not the mingw triplet, it is the Linux triplet.
+          if [ "${triplet}" == "x86_64-w64-mingw32" ]
+          then
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+          elif [ "${triplet}" == "i686-w64-mingw32" ]
+          then
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu")
+          else
+            echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
+            exit 1
+          fi
 
-        config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON") # MS
-        config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
-        config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
+          config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON") # MS
+          config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
+          config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
 
-        config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
+          config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
 
-        config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
+          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
-        # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        # then
-        #   # Otherwise it'll generate two -mmacosx-version-min
-        #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        # fi
+          # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+          # then
+          #   # Otherwise it'll generate two -mmacosx-version-min
+          #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
+          # fi
 
-        config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
-        config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
-        config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
+          config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
+          config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
+          config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
 
-        # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
-        # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
-        config_options+=("-DLLVM_CONFIG_PATH=") # MS
+          # Do not activate it, it fails. And be sure llvm-config is not in the PATH.
+          # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
+          config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
-        # No C/C++ options.
-        config_options+=("-DCMAKE_C_FLAGS_INIT=-v") # MS
-        config_options+=("-DCMAKE_CXX_FLAGS_INIT=-v") # MS
+          # No C/C++ options.
+          config_options+=("-DCMAKE_C_FLAGS_INIT=-v") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS_INIT=-v") # MS
 
-        run_verbose cmake \
-          "${config_options[@]}" \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
+          run_verbose cmake \
+            "${config_options[@]}" \
+            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
 
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output-$(ndate).txt"
+          touch "cmake.done"
+
+        ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/cmake-output-$(ndate).txt"
+      fi
 
       (
         if [ "${XBB_IS_DEVELOP}" == "y" ]
@@ -414,30 +419,32 @@ function llvm_mingw_build_libcxx()
       # export CXXFLAGS
       # export LDFLAGS
 
-      (
-        xbb_show_env_develop
+      if [ ! -f "cmake.done" ]
+      then
+        (
+          xbb_show_env_develop
 
-        echo
-        echo "Running ${name_prefix}llvm-libcxx cmake..."
+          echo
+          echo "Running ${name_prefix}llvm-libcxx cmake..."
 
-        config_options=()
+          config_options=()
 
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
-        then
-          config_options+=("-LAH") # display help for each variable
-        fi
-        config_options+=("-G" "Ninja")
+          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("-LAH") # display help for each variable
+          fi
+          config_options+=("-G" "Ninja")
 
-        config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
 
-        config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
-        # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-        config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
+          config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
+          # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+          config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
-        config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
-        config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
-        config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
-        config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON") # MS
+          config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
+          config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
+          config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
+          config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON") # MS
 
           config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
           config_options+=("-DCMAKE_AR=${AR}") # MS
@@ -447,80 +454,83 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DCMAKE_READELF=${READELF}")
           config_options+=("-DCMAKE_STRIP=${STRIP}")
 
-        # Warning: the result is not the mingw triplet, it is the Linux triplet.
-        if [ "${triplet}" == "x86_64-w64-mingw32" ]
-        then
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
-        elif [ "${triplet}" == "i686-w64-mingw32" ]
-        then
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu")
-        else
-          echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
-          exit 1
-        fi
+          # Warning: the result is not the mingw triplet, it is the Linux triplet.
+          if [ "${triplet}" == "x86_64-w64-mingw32" ]
+          then
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+          elif [ "${triplet}" == "i686-w64-mingw32" ]
+          then
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu")
+          else
+            echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
+            exit 1
+          fi
 
-        # Omit runtimes not necessary for the bootstrap.
-        config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
+          # Omit runtimes not necessary for the bootstrap.
+          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
 
-        # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
+          # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
 
-        # For now disable shared libc++ and libunwind, it requires an
-        # explicit -lunwind in the link.
-        config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
-        # config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
+          # For now disable shared libc++ and libunwind, it requires an
+          # explicit -lunwind in the link.
+          config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
+          # config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
 
-        config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
-        # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
-        config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
+          config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
+          # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
+          config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
 
-        # config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
+          # config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
 
-        # config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
-        # config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
-        # config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
-        # config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
+          # config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
+          # config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
+          # config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
+          # config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
 
-        config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
-        # config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
+          config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
+          # config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
 
-        config_options+=("-DLIBCXX_ENABLE_STATIC=ON") # MS
-        # config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
-        config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON") # MS
-        # config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
-        config_options+=("-DLIBCXX_CXX_ABI=libcxxabi") # MS
-        # config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
-        # config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
-        config_options+=("-DLIBCXX_LIBDIR_SUFFIX=") # MS
-        config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF") # MS
-        config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF") # MS
-        config_options+=("-DLIBCXX_USE_COMPILER_RT=ON") # MS
+          config_options+=("-DLIBCXX_ENABLE_STATIC=ON") # MS
+          # config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
+          config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON") # MS
+          # config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
+          config_options+=("-DLIBCXX_CXX_ABI=libcxxabi") # MS
+          # config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
+          # config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
+          config_options+=("-DLIBCXX_LIBDIR_SUFFIX=") # MS
+          config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF") # MS
+          config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF") # MS
+          config_options+=("-DLIBCXX_USE_COMPILER_RT=ON") # MS
 
-        config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON") # MS
-        config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON") # MS
-        # config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
-        # config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
-        # config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
-        config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF") # MS
-        # config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
-        config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=") # MS
-        # config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
+          config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON") # MS
+          config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON") # MS
+          # config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
+          # config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
+          # config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
+          config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF") # MS
+          # config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
+          config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=") # MS
+          # config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
 
-       config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
-       config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
 
-        config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
+          config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
 
-        # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-        # then
-        #   # Otherwise it'll generate two -mmacosx-version-min
-        #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-        # fi
+          # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+          # then
+          #   # Otherwise it'll generate two -mmacosx-version-min
+          #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
+          # fi
 
-        run_verbose cmake \
-          "${config_options[@]}" \
-          "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/runtimes"
+          run_verbose cmake \
+            "${config_options[@]}" \
+            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/runtimes"
 
-      ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
+          touch "cmake.done"
+
+        ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}/cmake-output-$(ndate).txt"
+      fi
 
       (
         run_verbose cmake \
