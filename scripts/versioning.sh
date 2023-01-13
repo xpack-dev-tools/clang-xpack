@@ -332,7 +332,7 @@ function application_build_versioned_components()
     clang_build_common
 
     # -------------------------------------------------------------------------
-  elif [[ "${XBB_RELEASE_VERSION}" =~ 14[.]0[.]6-[123] ]]
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 14[.].*[.].*-.* ]]
   then
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
@@ -362,7 +362,7 @@ function application_build_versioned_components()
     clang_build_common
 
     # -------------------------------------------------------------------------
-  elif [[ "${XBB_RELEASE_VERSION}" =~ 13[.]0[.]1-[1] ]]
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 13[.].*[.].*-.* ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
@@ -383,7 +383,7 @@ function application_build_versioned_components()
     clang_build_common
 
     # -------------------------------------------------------------------------
-  elif [[ "${XBB_RELEASE_VERSION}" =~ 12[.]0[.]1-[12] ]]
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 12[.].*[.].*-.* ]]
   then
 
     # Also used in -DLLVM_BINUTILS_INCDIR
