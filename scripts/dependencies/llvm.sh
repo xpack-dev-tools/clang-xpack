@@ -410,11 +410,19 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
+
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
-            config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
+
+            if [ "${XBB_HOST_ARCH}" == "x64" ]
+            then
+              config_options+=("-DLLVM_RUNTIME_TARGETS=x86_64-pc-linux-gnu;i385-pc-linux-gnu")
+            else
+              config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
+            fi
+
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
 
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size")
@@ -461,7 +469,8 @@ function llvm_build()
             # mlir fails on windows, it tries to build the NATIVE folder and fails.
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             # Keep the definitions separte for each platform, they are different.
-            # Enabling runtimes on Windows fails the cmake step.
+            # On Windows, the runtimes are built in separate steps, together
+            # with the mingw runtime. Do not enable them here, cmake will fail.
             # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
