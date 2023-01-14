@@ -538,7 +538,7 @@ function llvm_build()
               clang-extdef-mapping clang-include-fixer clang-move clang-query \
               clang-reorder-fields find-all-symbols \
               count dsymutil FileCheck \
-              llc lli lli-child-target llvm-bcanalyzer llvm-c-test \
+              lli-child-target llvm-bcanalyzer llvm-c-test \
               llvm-cat llvm-cfi-verify llvm-cvtres \
               llvm-dwarfdump llvm-dwp \
               llvm-elfabi llvm-jitlink-executor llvm-exegesis llvm-extract llvm-gsymutil \
