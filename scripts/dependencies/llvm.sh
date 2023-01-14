@@ -560,11 +560,11 @@ function llvm_build()
             rm -rfv ld64.lld.exe ld64.lld.darwinnew.exe lld-link.exe wasm-ld.exe
 
             cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/include"
-            run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c polly
+            run_verbose rm -rf clang clang-c clang-tidy lld lldb llvm llvm-c
 
             cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
-            run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a libPolly*.a
-            # rm -rf cmake/lld cmake/llvm cmake/polly
+            run_verbose rm -rfv libclang*.a libClangdXPCLib* libf*.a liblld*.a libLLVM*.a
+
           fi
           cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/share"
           run_verbose rm -rf man
