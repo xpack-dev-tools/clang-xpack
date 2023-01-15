@@ -409,7 +409,6 @@ function llvm_build()
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
-            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
 
             if [ "${XBB_HOST_ARCH}" == "x64" ]
