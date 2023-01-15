@@ -238,12 +238,14 @@ function llvm_build()
           config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
           # config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
+
           config_options+=("-DLLVM_ENABLE_EH=ON") # HB
 
           # See platform specific
           # config_options+=("-DLLVM_ENABLE_LTO=OFF")
 
           config_options+=("-DLLVM_ENABLE_RTTI=ON") # HB, Arch
+
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF") # Arch uses ON
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
           config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF") # HB uses ON
@@ -251,7 +253,8 @@ function llvm_build()
           config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs, HB
           config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests, HB
           config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
-          # Better not, use the explicit `llvm-*` names.
+
+          # Keep the explicit `llvm-*` names.
           config_options+=("-DLLVM_INSTALL_BINUTILS_SYMLINKS=OFF")
 
           config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
@@ -276,12 +279,6 @@ function llvm_build()
 
             # config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
-              # Fails if only CLT is available (SDKs are part of Xcode).
-              # CMake Error at cmake/Modules/CompilerRTDarwinUtils.cmake:73 (message):
-              #   Failed to determine SDK version for "iphonesimulator" SDK
-              # Call Stack (most recent call first):
-              #   cmake/builtin-config-ix.cmake:128 (find_darwin_sdk_version)
-              #   lib/builtins/CMakeLists.txt:51 (include)
             config_options+=("-DCOMPILER_RT_ENABLE_IOS=OFF") # HB
             config_options+=("-DCOMPILER_RT_ENABLE_MACCATALYST=OFF")
             config_options+=("-DCOMPILER_RT_ENABLE_TVOS=OFF") # HB
@@ -349,12 +346,6 @@ function llvm_build()
           elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
           then
 
-            # LLVMgold.so
-            # https://llvm.org/docs/GoldPlugin.html#how-to-build-it
-            # /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/ld.gold: error: /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/../lib/LLVMgold.so: could not load plugin library: /Host/home/ilg/Work/clang-11.1.0-1/linux-ia32/install/clang/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
-            # Then either gold was not configured with plugins enabled, or clang
-            # was not built with `-DLLVM_BINUTILS_INCDIR` set properly.
-
             if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
@@ -372,7 +363,6 @@ function llvm_build()
               exit 1
             fi
 
-            # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
             # ld.gold has a problem with --gc-sections and fails
@@ -396,11 +386,6 @@ function llvm_build()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
-
-            # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
-            # not available in Ubuntu 16;
-            # llvm/tools/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_arm64.cpp:1140:42: error: ‘SVE_PT_FPSIMD_OFFSET’ was not declared in this scope
-            # Enable lldb when an Ubuntu 18 Docker XBB image will be available.
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
 
@@ -606,16 +591,8 @@ function llvm_build()
           done
         fi
 
-        if false # [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        then
-          show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang"
-          show_native_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm"
-        else
-          local realpath=$(which grealpath || which realpath || echo realpath)
-
-          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang${XBB_HOST_DOT_EXE}"
-          show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm${XBB_HOST_DOT_EXE}"
-        fi
+        show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/clang${XBB_HOST_DOT_EXE}"
+        show_host_libs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin/llvm-nm${XBB_HOST_DOT_EXE}"
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}/build-output-$(ndate).txt"
 
