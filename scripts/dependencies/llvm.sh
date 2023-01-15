@@ -395,7 +395,6 @@ function llvm_build()
             config_options+=("-DLLDB_ENABLE_LZMA=ON")
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
             config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
