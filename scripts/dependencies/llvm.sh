@@ -407,7 +407,6 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
-            config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
