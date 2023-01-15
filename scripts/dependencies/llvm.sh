@@ -812,10 +812,12 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
 
-      if [ "${XBB_HOST_ARCH}" == "x64" ]
+      if [ "${XBB_HOST_BITS}" == "64" ]
       then
         (
-          export LD_LIBRARY_PATH="$(xbb_get_libs_path) -m64"
+          # x64 & aarch64, both with multilib.
+
+          export LD_LIBRARY_PATH="$(xbb_get_libs_path -m64)"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
@@ -825,15 +827,13 @@ function llvm_test()
           compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld
         )
 
-        # Linux 32-bit are not yet available:
-        # /home/ilg/Work/clang-xpack.git/build/linux-x64/xpacks/.bin/ld: cannot find /home/ilg/Work/clang-xpack.git/build/linux-x64/application/lib/clang/15.0.7/lib/linux/libclang_rt.builtins-i386.a: No such file or directory
-        if true # [ "${XBB_SKIP_32_BIT_TESTS:-""}" == "y" ]
+        if [ "${XBB_SKIP_32_BIT_TESTS:-""}" == "y" ]
         then
           echo
           echo "Skipping -m32 tests..."
         else
           (
-            export LD_LIBRARY_PATH="$(xbb_get_libs_path) -m32"
+            export LD_LIBRARY_PATH="$(xbb_get_libs_path -m32)"
             echo
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
@@ -845,7 +845,7 @@ function llvm_test()
         fi
       else
         (
-          # Arm Linux. No multilib available.
+          # arm (32-bit).
 
           export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
           echo
