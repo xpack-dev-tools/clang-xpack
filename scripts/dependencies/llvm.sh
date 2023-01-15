@@ -426,8 +426,6 @@ function llvm_build()
               exit 1
             fi
 
-            config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
-
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size")
 
           elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
