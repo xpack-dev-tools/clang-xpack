@@ -308,8 +308,8 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
           # No C/C++ options.
-          config_options+=("-DCMAKE_C_FLAGS_INIT=-v") # MS
-          config_options+=("-DCMAKE_CXX_FLAGS_INIT=-v") # MS
+          config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
 
           run_verbose cmake \
             "${config_options[@]}" \
