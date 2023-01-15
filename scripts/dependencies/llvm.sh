@@ -396,7 +396,6 @@ function llvm_build()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
-            config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
 
             # lldb requires some ptrace definitions like SVE_PT_FPSIMD_OFFSET:
             # not available in Ubuntu 16;
@@ -408,18 +407,27 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
 
-            config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
-
             config_options+=("-DLLVM_INSTALL_UTILS=ON")
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
+
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON")
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON")
 
             if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
-              config_options+=("-DLLVM_RUNTIME_TARGETS=x86_64-pc-linux-gnu;i385-pc-linux-gnu")
+              # Warning: i386-pc-linux-gnu;x86_64-pc-linux-gnu DO NOT work!
+              config_options+=("-DLLVM_RUNTIME_TARGETS=i386-unknown-linux-gnu;x86_64-unknown-linux-gnu")
+            elif [ "${XBB_HOST_ARCH}" == "arm64" ]
+            then
+              # TODO
+              config_options+=("-DLLVM_RUNTIME_TARGETS=arm-linux-gnueabihf;aarch64-linux-gnu")
+            elif [ "${XBB_HOST_ARCH}" == "arm" ]
+            then
+              # TODO
+              config_options+=("-DLLVM_RUNTIME_TARGETS=arm-linux-gnueabihf")
             else
-              config_options+=("-DLLVM_RUNTIME_TARGETS=${XBB_TARGET_TRIPLET}")
+              echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}() "
+              exit 1
             fi
 
             config_options+=("-DLLVM_TOOL_GOLD_BUILD=ON")
