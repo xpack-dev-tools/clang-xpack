@@ -354,7 +354,7 @@ function llvm_build()
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
-              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64;ARM")
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
@@ -400,12 +400,10 @@ function llvm_build()
               config_options+=("-DLLVM_RUNTIME_TARGETS=i386-unknown-linux-gnu;x86_64-unknown-linux-gnu")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
-              # TODO
-              config_options+=("-DLLVM_RUNTIME_TARGETS=arm-linux-gnueabihf;aarch64-linux-gnu")
+              config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf;aarch64-unknown-linux-gnu")
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
-              # TODO
-              config_options+=("-DLLVM_RUNTIME_TARGETS=arm-linux-gnueabihf")
+              config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
             else
               echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}() "
               exit 1
