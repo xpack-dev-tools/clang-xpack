@@ -244,6 +244,8 @@ function llvm_build()
           # See platform specific
           # config_options+=("-DLLVM_ENABLE_LTO=OFF")
 
+          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON")
+
           config_options+=("-DLLVM_ENABLE_RTTI=ON") # HB, Arch
 
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF") # Arch uses ON
