@@ -389,8 +389,13 @@ function llvm_build()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF") # HB
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
+
+            config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
+            config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON") # HB
+            config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON") # HB
 
             # FAILED: CMakeFiles/clang_rt.builtins-arm.dir/arm/fp_mode.c.o
             # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
