@@ -392,8 +392,11 @@ function llvm_build()
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+            # FAILED: CMakeFiles/clang_rt.builtins-arm.dir/arm/fp_mode.c.o
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
+            # config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx;compiler-rt")
+
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
