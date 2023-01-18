@@ -809,7 +809,9 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
 
-      if [ "${XBB_HOST_BITS}" == "64" ]
+      # aarch64 multilib not yet available
+      # if [ "${XBB_HOST_BITS}" == "64" ]
+      if [ "${XBB_HOST_ARCH}" == "x64" ]
       then
         (
           # x64 & aarch64, both with multilib.
