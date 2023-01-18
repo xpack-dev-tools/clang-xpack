@@ -2,8 +2,72 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-18
+
+* e46cf28 llvm.sh: comment out triplet for aarch64
+* d853c41 llvm.sh: keep only aarch64, remove arm
+* 6fda26d llvm.sh: comment out triplet for armv7
+
+## 2023-01-17
+
+* 2832ef8 llvm.sh: LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON
+* 4f4b979 README updates
+
+## 2023-01-16
+
+* 96310fa llvm.sh: update triplets for arm
+
+## 2023-01-15
+
+* 76e97fc package.json: revert linux to gcc
+* 42ded2b package.json: add llc, lli to bin
+* 3231313 llvm-mingw.sh: remove -v from flags
+* 7191043 versioning.sh: revert to *prepare_gcc_env
+* 3e46727 llvm.sh: cleanups
+* b83564e llvm.sh: fix 32-bit tests
+* 0b0a016 llvm.sh: remove -DLLVM_TOOL_GOLD_BUILD=ON
+* fadeb91 llvm.sh: remove -DLLVM_POLLY_LINK_INTO_TOOLS=ON
+* 4bc5193 llvm.sh: remove -DLLVM_OPTIMIZED_TABLEGEN=ON
+* ac6040b llvm.sh: remove -DLLVM_INSTALL_UTILS=ON
+* 847490b llvm.sh: fix x64 multilib targets
+* 2e13162 llvm.sh: remove -DLLVM_BUILD_LLVM_C_DYLIB=OFF
+
+## 2023-01-14
+
+* 796673d llvm.sh: add i386 to LLVM_RUNTIME_TARGETS on linux
+* 8e032a6 llvm.sh: do not remove poly
+* 55075e4 llvm.sh: do not remove llc lli
+* f0dd658 versioning.sh: *_prepare_clang_env
+* ec28fd2 package.json: switch linux to use clang
+* 438cc8f Revert "llvm.sh: do not use ENABLE_RUNTIMES on linux"
+* e6dfe3a llvm.sh: do not use ENABLE_RUNTIMES on linux
+
+## 2023-01-13
+
+* 6de4649 llvm.sh: define -DCMAKE_* only when available
+* 9ffd54c llvm.sh: define -DCMAKE_DLLTOOL only on windows
+* 1281475 README-DEVELOP updates
+* d0e7a86 llvm.sh: prepare but not enable 32-bit linux tests
+* f78bd04 llvm.sh: add 32-bit tests for windows
+* b242910 llvm.sh: remove -DLIBUNWIND_ENABLE_SHARED=OFF
+* d6b31d0 llvm.sh: no _RUNTIMES for windows
+* 3471530 versioning.sh: explain windows difficulties
+* 8d597cb versioning.sh: generic regexp for past releases
+* b9fef2c llvm.sh: explicit CMAKE_* variables
+* 24a955d llvm-mingw.sh: use cmake.done in rt & libcxx
+* b209295 llvm-mingw.sh: define all binutils CMAKE_*
+* ad3c280 package.sjon: add mingw-gcc back for windows
+* 846f966 versioning.sh: add widl comment
+* 770d9bf llvm.sh: move _DEBUGSERVER=ON to macOS only
+* 33a963b llvm.sh: add WINEPATH & PATH
+* cd82f04 llvm-mingw.sh: conditional tests
+* 8533242 llvm-mingw.sh: copy bin/*.dll to lib
+* 32c3d03 package.json: update xpack.bin
+
 ## 2023-01-12
 
+* 69fe041 cmake -LAH
+* 838f7ca README updates
 * v15.0.7-1 prepared
 * c89db1e llvm.sh: explicit mkdir applications/lib
 
