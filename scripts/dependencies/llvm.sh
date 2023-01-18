@@ -366,17 +366,22 @@ function llvm_build()
               exit 1
             fi
 
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+            # Workaround to make 14.x build.
+            if false
+            then
+              # This actually worked, but better keep the Arch settings.
+              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
-            # ld.gold has a problem with --gc-sections and fails
-            # several tests on Ubuntu 18
-            # https://sourceware.org/bugzilla/show_bug.cgi?id=23880
-            # Better keep the system GNU linker (ld), and use lld only
-            # when requested with -fuse-ld=lld.
-            # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
+              # ld.gold has a problem with --gc-sections and fails
+              # several tests on Ubuntu 18
+              # https://sourceware.org/bugzilla/show_bug.cgi?id=23880
+              # Better keep the system GNU linker (ld), and use lld only
+              # when requested with -fuse-ld=lld.
+              # config_options+=("-DCLANG_DEFAULT_LINKER=gold")
 
-            config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-            config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+              config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+            fi
 
             # To help find the just locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
