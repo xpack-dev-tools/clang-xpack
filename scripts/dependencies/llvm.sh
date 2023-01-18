@@ -267,10 +267,14 @@ function llvm_build()
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
 
-            config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-            # The available choices are libgcc, compiler-rt.
-            # HB does not define it.
-            # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            # Better stick to HB config.
+            if false
+            then
+              config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+              # The available choices are libgcc, compiler-rt.
+              # HB does not define it.
+              # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+            fi
 
             config_options+=("-DCLANG_FORCE_MATCHING_LIBCLANG_SOVERSION=OFF") # HB
 
