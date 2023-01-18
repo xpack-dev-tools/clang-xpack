@@ -403,7 +403,8 @@ function llvm_build()
               config_options+=("-DLLVM_RUNTIME_TARGETS=i386-unknown-linux-gnu;x86_64-unknown-linux-gnu")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
-              config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf;aarch64-unknown-linux-gnu")
+              # config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf;aarch64-unknown-linux-gnu")
+              :
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
               # config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
