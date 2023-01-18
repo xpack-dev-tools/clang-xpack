@@ -356,7 +356,8 @@ function llvm_build()
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
-              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64;ARM")
+              # config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64;ARM")
+              config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=ARM")
