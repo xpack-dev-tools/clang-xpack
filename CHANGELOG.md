@@ -4,6 +4,12 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-01-18
 
+* v14.0.6-3 prepared
+* 831789b llvm.sh: disable macOS CLANG_DEFAULT_CXX_STDLIB
+* b6dfa9b llvm.sh: disable CLANG_DEFAULTs for linux
+* 744dad2 llvm.sh: consistent LLVM_* from 14.x
+* b484b44 llvm.sh: temporary use only -DLLVM_ENABLE_PROJECTS
+* 805537d CHANGELOG update
 * e46cf28 llvm.sh: comment out triplet for aarch64
 * d853c41 llvm.sh: keep only aarch64, remove arm
 * 6fda26d llvm.sh: comment out triplet for armv7
