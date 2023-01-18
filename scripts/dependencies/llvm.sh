@@ -864,9 +864,9 @@ function llvm_test()
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
-    # Defaults:
-    # Same as HB, the LLVM defaults (no libc++, no compiler-rt, etc)
-    # No i386 libraries available on macOS.
+      # Defaults:
+      # Same as HB, the LLVM defaults (no libc++, no compiler-rt, etc)
+      # No i386 libraries available on macOS.
 
       compiler-tests-single "${test_bin_path}"
       compiler-tests-single "${test_bin_path}" --gc
