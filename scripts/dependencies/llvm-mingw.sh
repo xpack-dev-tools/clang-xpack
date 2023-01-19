@@ -291,22 +291,16 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCMAKE_READELF=${READELF}")
           config_options+=("-DCMAKE_STRIP=${STRIP}")
 
-          local llvm_target_triplet
           if [ "${triplet}" == "x86_64-w64-mingw32" ]
           then
-            llvm_target_triplet="x86_64-w64-windows-gnu" # MS
-            # config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
           elif [ "${triplet}" == "i686-w64-mingw32" ]
           then
-            llvm_target_triplet="i686-w64-windows-gnu"
-            # config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu") # MS
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu") # MS
           else
             echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
             exit 1
           fi
-
-          # MS uses i686-windows-gnu/x86_64-windows-gnu in the 15.x build.
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=${llvm_target_triplet}")
 
           # No C/C++ options.
           config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
@@ -332,9 +326,9 @@ function llvm_mingw_build_compiler_rt()
           # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
           config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
-          config_options+=("-DLLVM_DEFAULT_TARGET_TRIPLE=${llvm_target_triplet}")
 
           config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
+
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
           config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
@@ -486,22 +480,16 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DCMAKE_STRIP=${STRIP}")
 
           # Warning: the result is not the mingw triplet, it is the Linux triplet.
-          local llvm_target_triplet
           if [ "${triplet}" == "x86_64-w64-mingw32" ]
           then
-            llvm_target_triplet="x86_64-w64-windows-gnu" # MS
-            # config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+            config_options+=("-DCMAKE_CXX_COMPILER_TARGET=x86_64-w64-windows-gnu") # MS
           elif [ "${triplet}" == "i686-w64-mingw32" ]
           then
-            llvm_target_triplet="i686-w64-windows-gnu"
-            # config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu") # MS
+            config_options+=("-DCMAKE_CXX_COMPILER_TARGET=i686-w64-windows-gnu") # MS
           else
             echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
             exit 1
           fi
-
-          # MS uses i686-windows-gnu/x86_64-windows-gnu in the 15.x build.
-          config_options+=("-DCMAKE_C_COMPILER_TARGET=${llvm_target_triplet}")
 
           config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
           config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
@@ -554,8 +542,6 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
           # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
           config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
-
-          config_options+=("-DLLVM_DEFAULT_TARGET_TRIPLE=${llvm_target_triplet}")
 
           config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
           config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
