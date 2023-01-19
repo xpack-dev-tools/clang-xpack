@@ -273,7 +273,7 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
-          # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+          config_options+=("-DCMAKE_CROSSCOMPILING=ON")
           config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
           config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
@@ -462,7 +462,7 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
-          # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+          config_options+=("-DCMAKE_CROSSCOMPILING=ON") # MS
 
           config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
           config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
