@@ -2,6 +2,33 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-20
+
+* v15.0.7-1 prepared
+* 3c64431 add llvm-15.0.7-1.git.patch
+* 9e8017c llvm.sh: RUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF
+* dfa1cf2 llvm-mingw.sh: cleanup PER_TARGET_RUNTIME_DIR=OFF
+* d930c70 llvm-mingw.sh: -DCMAKE_CROSSCOMPILING=ON
+* eec3541 llvm-mingw.sh: revert to MS inconsistent targets
+* 5b0088a llvm-mingw.sh: add CMAKE_SHARED_LINKER_FLAGS
+
+## 2023-01-19
+
+* e4a85a9 README updates
+* 10801d5 llvm.sh: fix bash syntax
+* df1b2c8 llvm-mingw.sh: reorder options
+* 86edf5a llvm-mingw.sh: -DLLVM_ENABLE_WARNINGS=OFF
+* 0b3e517 llvm-mingw.sh: rework triplets
+* 2ef0212 llvm-mingw.sh: define CMAKE_OBJCOPY/OBJDUMP
+* f60ab9d llvm-mingw.sh: conditional copy of clang-*-gen
+* 99e9b11 llvm.sh: add CMAKE_SHARED_LINKER_FLAGS
+* 0edcc56 llvm.sh: conditional configure CLANG_*_GEN
+* cb0b6a7 llvm.sh: cosmetics
+* d0a8171 llvm.sh: do not use lld at all for macOS
+* 0bbe27a Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
+* eef775a llvm.sh: do not use lld on new macOS
+2023-01-18 * 858c604 llvm.sh: multilib tests only on x64
+
 ## 2023-01-18
 
 * v14.0.6-3 prepared
