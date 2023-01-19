@@ -199,6 +199,7 @@ function llvm_build()
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}")
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}")
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
+          config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=${LDFLAGS}")
 
           config_options+=("-DCMAKE_LINKER=ld") # HB
 
