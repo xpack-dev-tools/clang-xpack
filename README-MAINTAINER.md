@@ -250,9 +250,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
-total 198336
--rw-r--r--  1 ilg  staff  96636713 Jan 15 23:48 xpack-clang-14.0.6-3-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Jan 15 23:48 xpack-clang-14.0.6-3-darwin-x64.tar.gz.sha
+total 197792
+-rw-r--r--  1 ilg  staff  86806952 Jan 19 13:21 xpack-clang-14.0.6-3-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       105 Jan 19 13:22 xpack-clang-14.0.6-3-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -283,9 +283,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
-total 198088
--rw-r--r--  1 ilg  staff  86086463 Jan 15 23:06 xpack-clang-14.0.6-3-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 15 23:06 xpack-clang-14.0.6-3-darwin-arm64.tar.gz.sha
+total 165440
+-rw-r--r--  1 ilg  staff  77013462 Jan 19 12:40 xpack-clang-14.0.6-3-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jan 19 12:40 xpack-clang-14.0.6-3-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -317,9 +317,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
-total 129984
--rw-r--r-- 1 ilg ilg 133096872 Jan 15 21:25 xpack-clang-14.0.6-3-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 15 21:25 xpack-clang-14.0.6-3-linux-x64.tar.gz.sha
+total 170412
+-rw-r--r-- 1 ilg ilg 174495593 Jan 18 22:31 xpack-clang-14.0.6-3-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 18 22:31 xpack-clang-14.0.6-3-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Windows binaries
@@ -374,9 +374,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
-total 169440
--rw-rw-rw- 1 root root 94181557 Aug 21 05:04 xpack-clang-14.0.6-3-linux-arm64.tar.gz
--rw-rw-rw- 1 root root      106 Aug 21 05:04 xpack-clang-14.0.6-3-linux-arm64.tar.gz.sha
+total 132628
+-rw-r--r-- 1 ilg ilg 135803409 Jan 19 07:40 xpack-clang-14.0.6-3-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jan 19 07:40 xpack-clang-14.0.6-3-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -406,9 +406,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm/deploy
-total 154256
--rw-rw-rw- 1 ilg ilg 89795445 Aug 20 20:16 xpack-clang-14.0.6-3-linux-arm.tar.gz
--rw-rw-rw- 1 ilg ilg      104 Aug 20 20:16 xpack-clang-14.0.6-3-linux-arm.tar.gz.sha
+total 114184
+-rw-r--r-- 1 ilg ilg 116919777 Jan 19 05:38 xpack-clang-14.0.6-3-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 19 05:38 xpack-clang-14.0.6-3-linux-arm.tar.gz.sha
 ```
 
 ### Files cache
