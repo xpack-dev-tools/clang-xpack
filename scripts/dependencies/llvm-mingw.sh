@@ -105,6 +105,8 @@ function llvm_mingw_build_first()
           # Keep tests, to be sure all dependencies are built.
           # config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
 
+          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
+
           config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # MS
 
           # Mind the links in llvm to clang, lld, lldb.
@@ -536,6 +538,8 @@ function llvm_mingw_build_libcxx()
           # config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
 
           config_options+=("-DLLVM_DEFAULT_TARGET_TRIPLE=${llvm_target_triplet}")
+
+          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
           config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
 
