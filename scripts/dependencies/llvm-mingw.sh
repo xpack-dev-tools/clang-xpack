@@ -282,6 +282,8 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCMAKE_AR=${AR}") # MS
           config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
           config_options+=("-DCMAKE_NM=${NM}")
+          config_options+=("-DCMAKE_OBJCOPY=${OBJCOPY}")
+          config_options+=("-DCMAKE_OBJDUMP=${OBJDUMP}")
           config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
           config_options+=("-DCMAKE_READELF=${READELF}")
           config_options+=("-DCMAKE_STRIP=${STRIP}")
@@ -463,6 +465,8 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DCMAKE_AR=${AR}") # MS
           config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
           config_options+=("-DCMAKE_NM=${NM}")
+          config_options+=("-DCMAKE_OBJCOPY=${OBJCOPY}")
+          config_options+=("-DCMAKE_OBJDUMP=${OBJDUMP}")
           config_options+=("-DCMAKE_RANLIB=${RANLIB}") # MS
           config_options+=("-DCMAKE_READELF=${READELF}")
           config_options+=("-DCMAKE_STRIP=${STRIP}")
