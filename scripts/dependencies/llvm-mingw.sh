@@ -326,9 +326,6 @@ function llvm_mingw_build_compiler_rt()
           # config_options+=("-DLLVM_CONFIG_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}${XBB_BOOTSTRAP_SUFFIX}/bin/llvm-config")
           config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
-
-          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
-
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
           config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
@@ -543,7 +540,6 @@ function llvm_mingw_build_libcxx()
           # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
           config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
 
-          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
           config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
 
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
