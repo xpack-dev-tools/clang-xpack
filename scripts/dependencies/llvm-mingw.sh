@@ -91,6 +91,7 @@ function llvm_mingw_build_first()
           config_options+=("-DCMAKE_C_FLAGS=${CPPFLAGS} ${CFLAGS}") # MS
           config_options+=("-DCMAKE_CXX_FLAGS=${CPPFLAGS} ${CXXFLAGS}") # MS
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}") # MS
+          config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=${LDFLAGS}")
 
           # To avoid running out of memory.
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
@@ -310,6 +311,8 @@ function llvm_mingw_build_compiler_rt()
           # No C/C++ options.
           config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
           config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=-v")
+          config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-v")
 
           config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON") # MS
           config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
