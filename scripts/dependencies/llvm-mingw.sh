@@ -307,13 +307,13 @@ function llvm_mingw_build_compiler_rt()
           # MS uses i686-windows-gnu/x86_64-windows-gnu in the 15.x build.
           config_options+=("-DCMAKE_C_COMPILER_TARGET=${llvm_target_triplet}")
 
+          # No C/C++ options.
+          config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+
           config_options+=("-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON") # MS
           config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
           config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
-
-          config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
-
-          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
           # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           # then
@@ -330,6 +330,13 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DLLVM_CONFIG_PATH=") # MS
 
           config_options+=("-DLLVM_DEFAULT_TARGET_TRIPLE=${llvm_target_triplet}")
+
+          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
+          config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
+
+          config_options+=("-DSANITIZER_CXX_ABI=libc++") # MS
+
+          config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
           run_verbose cmake \
             "${config_options[@]}" \
@@ -459,7 +466,6 @@ function llvm_mingw_build_libcxx()
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
           # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
-          config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
           config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
           config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
@@ -494,18 +500,12 @@ function llvm_mingw_build_libcxx()
           # MS uses i686-windows-gnu/x86_64-windows-gnu in the 15.x build.
           config_options+=("-DCMAKE_C_COMPILER_TARGET=${llvm_target_triplet}")
 
-          # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
+          config_options+=("-DCMAKE_C_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_CXX_FLAGS_INIT=") # MS
+          config_options+=("-DCMAKE_EXE_LINKER_FLAGS=-v")
+          config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-v")
 
-          # For now disable shared libc++ and libunwind, it requires an
-          # explicit -lunwind in the link.
-          config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
-          # config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
-
-          config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
-          # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
-          config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
-
-          # config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=-lunwind")
+          config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
           # config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
           # config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
@@ -515,16 +515,20 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
           # config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
 
+          config_options+=("-DLIBCXX_CXX_ABI=libcxxabi") # MS
+
+          # config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
+          # config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
+
+          config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF") # MS
+
           config_options+=("-DLIBCXX_ENABLE_STATIC=ON") # MS
           # config_options+=("-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF")
           config_options+=("-DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON") # MS
           # config_options+=("-DLIBCXX_ENABLE_NEW_DELETE_DEFINITIONS=OFF")
-          config_options+=("-DLIBCXX_CXX_ABI=libcxxabi") # MS
-          # config_options+=("-DLIBCXX_CXX_ABI_INCLUDE_PATHS=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/libcxxabi/include")
-          # config_options+=("-DLIBCXX_CXX_ABI_LIBRARY_PATH=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxxabi_folder_name}/lib")
+
           config_options+=("-DLIBCXX_LIBDIR_SUFFIX=") # MS
           config_options+=("-DLIBCXX_INCLUDE_TESTS=OFF") # MS
-          config_options+=("-DLIBCXX_ENABLE_ABI_LINKER_SCRIPT=OFF") # MS
           config_options+=("-DLIBCXX_USE_COMPILER_RT=ON") # MS
 
           config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON") # MS
@@ -537,7 +541,21 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLIBCXXABI_LIBDIR_SUFFIX=") # MS
           # config_options+=("-DLIBCXXABI_ENABLE_NEW_DELETE_DEFINITIONS=ON")
 
+          # config_options+=("-DLIBUNWIND_ENABLE_THREADS=ON")
+
+          # For now disable shared libc++ and libunwind, it requires an
+          # explicit -lunwind in the link.
+          config_options+=("-DLIBUNWIND_ENABLE_SHARED=ON") # MS
+          # config_options+=("-DLIBUNWIND_ENABLE_SHARED=OFF") # Different
+
+          config_options+=("-DLIBUNWIND_ENABLE_STATIC=ON") # MS
+          # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
+          config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
+
           config_options+=("-DLLVM_DEFAULT_TARGET_TRIPLE=${llvm_target_triplet}")
+
+          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF")
+          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
 
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
