@@ -911,7 +911,6 @@ function llvm_test()
       # clang-14: error: unable to execute command: Abort trap: 6
       # clang-14: error: linker command failed due to signal (use -v to see invocation)
 
-      fi
     fi
 
     # -------------------------------------------------------------------------
