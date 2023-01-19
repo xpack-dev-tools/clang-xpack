@@ -457,8 +457,14 @@ function llvm_build()
             config_options+=("-DCLANG_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tblgen") # MS
             config_options+=("-DLLDB_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/lldb-tblgen") # MS
             config_options+=("-DLLVM_TABLEGEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-tblgen") # MS
-            config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
-            config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
+            if [ -f "${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen" ]
+            then
+              config_options+=("-DCLANG_PSEUDO_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-pseudo-gen") # MS
+            fi
+            if [ -f "${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen" ]
+            then
+              config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
+            fi
 
             config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
 
