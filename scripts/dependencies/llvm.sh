@@ -265,6 +265,9 @@ function llvm_build()
           # Links use huge amounts of memory.
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
 
+          # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1397024105
+          config_options+=("-DRUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF")
+
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
 
