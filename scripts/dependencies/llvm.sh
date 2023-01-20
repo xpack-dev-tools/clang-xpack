@@ -271,13 +271,15 @@ function llvm_build()
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
 
-            # Better stick to HB config.
-            if false
+            # HB/Arch do not define it, but windows does.
+            if true
             then
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+
               # The available choices are libgcc, compiler-rt.
-              # HB does not define it.
-              # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+              config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+
+              config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
             fi
 
             config_options+=("-DCLANG_FORCE_MATCHING_LIBCLANG_SOVERSION=OFF") # HB
