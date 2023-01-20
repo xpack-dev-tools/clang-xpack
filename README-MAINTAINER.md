@@ -317,9 +317,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
-total 170412
--rw-r--r-- 1 ilg ilg 174495593 Jan 18 22:31 xpack-clang-15.0.7-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 18 22:31 xpack-clang-15.0.7-1-linux-x64.tar.gz.sha
+total 182596
+-rw-r--r-- 1 ilg ilg 186973037 Jan 20 09:00 xpack-clang-15.0.7-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 20 09:00 xpack-clang-15.0.7-1-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Windows binaries
@@ -337,14 +337,14 @@ xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config win32-x64 -C ~/Work/clang-xpack.git
 ```
 
-About 1h50 later, the output of the build script is a compressed
+About 1h later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/win32-x64/deploy
-total 375632
--rw-r--r-- 1 ilg ilg 384637549 Jan 15 23:26 xpack-clang-15.0.7-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Jan 15 23:26 xpack-clang-15.0.7-1-win32-x64.zip.sha
+total 375636
+-rw-rw-rw- 1 ilg ilg 384639709 Jan 19 22:03 xpack-clang-15.0.7-1-win32-x64.zip
+-rw-rw-rw- 1 ilg ilg       101 Jan 19 22:03 xpack-clang-15.0.7-1-win32-x64.zip.sha
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -374,9 +374,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
-total 132628
--rw-r--r-- 1 ilg ilg 135803409 Jan 19 07:40 xpack-clang-15.0.7-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jan 19 07:40 xpack-clang-15.0.7-1-linux-arm64.tar.gz.sha
+total 145960
+-rw-r--r-- 1 ilg ilg 149451526 Jan 20 08:59 xpack-clang-15.0.7-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jan 20 08:59 xpack-clang-15.0.7-1-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
