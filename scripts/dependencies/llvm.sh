@@ -314,8 +314,8 @@ function llvm_build()
             # this fails with system libtool.
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libcxx;libcxxabi;libunwind")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;compiler-rt")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
@@ -410,11 +410,9 @@ function llvm_build()
             config_options+=("-DLLVM_OPTIMIZED_TABLEGEN=ON") # HB
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON") # HB
 
-            # FAILED: CMakeFiles/clang_rt.builtins-arm.dir/arm/fp_mode.c.o
-            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
-            # config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx;compiler-rt")
-
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra;lld;lldb;polly;compiler-rt;libcxx;libcxxabi;libunwind")
+            # Starting with 15, the runtimes must be specified separately.
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;compiler-rt")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
