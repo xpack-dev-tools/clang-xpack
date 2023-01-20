@@ -429,8 +429,8 @@ function llvm_build()
               :
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
-              # config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
-              :
+              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398288811
+              config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
             else
               echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}() "
               exit 1
