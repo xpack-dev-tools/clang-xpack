@@ -245,8 +245,6 @@ function llvm_build()
           # See platform specific
           # config_options+=("-DLLVM_ENABLE_LTO=OFF")
 
-          config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON")
-
           config_options+=("-DLLVM_ENABLE_RTTI=ON") # HB, Arch
 
           config_options+=("-DLLVM_ENABLE_SPHINX=OFF") # Arch uses ON
@@ -419,6 +417,9 @@ function llvm_build()
 
             if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
+              # Do not use this for ARM targets, since the resulting triples
+              # are not valid.
+              config_options+=("-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON")
               # Warning: i386-pc-linux-gnu;x86_64-pc-linux-gnu DO NOT work!
               config_options+=("-DLLVM_RUNTIME_TARGETS=i386-unknown-linux-gnu;x86_64-unknown-linux-gnu")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
