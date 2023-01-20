@@ -376,10 +376,9 @@ function llvm_build()
               exit 1
             fi
 
-            # Workaround to make 14.x build.
-            if false
+            # Arch/HB do not define them, but windows does.
+            if true
             then
-              # This actually worked, but better keep the Arch settings.
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
               # ld.gold has a problem with --gc-sections and fails
