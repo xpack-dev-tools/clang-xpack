@@ -157,7 +157,8 @@ function llvm_build()
           # .../flang/runtime/io-stmt.h:65:17: error: 'visit<(lambda at /Users/ilg/Work/clang-11.1.0-1/darwin-x64/sources/llvm-project-11.1.0.src/flang/runtime/io-stmt.h:66:9), const ..., std::__1::reference_wrapper<Fortran::runtime::io::ExternalMiscIoStatementState>> &>' is unavailable: introduced in macOS 10.13
 
           # Colon separated list of directories clang will search for headers.
-          # TODO: check if this may be used instead of the patch.
+          # It cannot be used instead of the patch, since it applies to C,
+          # not C++.
           # config_options+=("-DC_INCLUDE_DIRS=:")
 
           # Distributions should never be built using the
