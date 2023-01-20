@@ -123,6 +123,11 @@ function llvm_build()
         # For libc++.1.0.dylib to find libc++abi.1.dylib
         run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
+      elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
+      then
+        # For libc++abi to find libnunwind.so
+        LDFLAGS+=" -L${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
+        XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
       fi
 
       xbb_adjust_ldflags_rpath
@@ -263,9 +268,6 @@ function llvm_build()
 
           # Links use huge amounts of memory.
           config_options+=("-DLLVM_PARALLEL_LINK_JOBS=1")
-
-          # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1397024105
-          config_options+=("-DRUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF")
 
           if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
           then
@@ -431,6 +433,13 @@ function llvm_build()
             then
               # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398288811
               config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
+
+              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398640255
+              # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_DEFAULT_TARGET_ONLY=ON")
+
+              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1397024105
+              # config_options+=("-DRUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF")
+              # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_BUILD_GWP_ASAN=OFF")
             else
               echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}() "
               exit 1
