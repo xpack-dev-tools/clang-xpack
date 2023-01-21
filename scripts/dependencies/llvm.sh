@@ -122,7 +122,6 @@ function llvm_build()
 
         # For libc++.1.0.dylib to find libc++abi.1.dylib
         run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
-        XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
       elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         # For libc++abi to find libnunwind.so
