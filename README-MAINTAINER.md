@@ -495,13 +495,13 @@ page.
 
 This command uses the `xpack-develop` branch of this repo.
 
-The builds take almost 10 hours to complete:
+The builds take about 10 hours to complete:
 
-- `xbbmi`: 1h40 (vm)
+- `xbbmi`: 1h50 (vm)
 - `xbbma`: 30m
-- `xbbli`: 2h30 (50m Linux, 1h40 Windows)
-- `xbbla64`: 9h35 (!)
-- `xbbla32`: 8h05
+- `xbbli`: 2h40 (1h40 Linux, 2h40 Windows)
+- `xbbla64`: 10h10
+- `xbbla32`: 8h20
 
 The workflow result and logs are available from the
 [Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
