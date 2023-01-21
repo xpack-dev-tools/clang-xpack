@@ -239,7 +239,7 @@ function clang_build_common()
 
     xbb_set_target "requested"
 
-    xbb_prepare_gcc_env
+    # xbb_prepare_gcc_env
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
