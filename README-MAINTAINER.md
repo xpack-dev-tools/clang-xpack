@@ -245,14 +245,14 @@ xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
 caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
-About 1h15 later, the output of the build script is a compressed
+About 1h10 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
-total 197792
--rw-r--r--  1 ilg  staff  86806952 Jan 19 13:21 xpack-clang-15.0.7-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Jan 19 13:22 xpack-clang-15.0.7-1-darwin-x64.tar.gz.sha
+total 198256
+-rw-r--r--  1 ilg  staff  96214029 Jan 21 01:18 xpack-clang-15.0.7-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       105 Jan 21 01:18 xpack-clang-15.0.7-1-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -283,9 +283,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
-total 165440
--rw-r--r--  1 ilg  staff  77013462 Jan 19 12:40 xpack-clang-15.0.7-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 19 12:40 xpack-clang-15.0.7-1-darwin-arm64.tar.gz.sha
+total 198088
+-rw-r--r--  1 ilg  staff  85477178 Jan 21 00:37 xpack-clang-15.0.7-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jan 21 00:37 xpack-clang-15.0.7-1-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -337,14 +337,14 @@ xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git
 xpm run docker-build-develop --config win32-x64 -C ~/Work/clang-xpack.git
 ```
 
-About 1h later, the output of the build script is a compressed
+About 1h50 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/win32-x64/deploy
-total 375636
--rw-rw-rw- 1 ilg ilg 384639709 Jan 19 22:03 xpack-clang-15.0.7-1-win32-x64.zip
--rw-rw-rw- 1 ilg ilg       101 Jan 19 22:03 xpack-clang-15.0.7-1-win32-x64.zip.sha
+total 375640
+-rw-r--r-- 1 ilg ilg 384645944 Jan 21 01:35 xpack-clang-15.0.7-1-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Jan 21 01:35 xpack-clang-15.0.7-1-win32-x64.zip.sha
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -374,9 +374,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
-total 145960
--rw-r--r-- 1 ilg ilg 149451526 Jan 20 08:59 xpack-clang-15.0.7-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jan 20 08:59 xpack-clang-15.0.7-1-linux-arm64.tar.gz.sha
+total 143972
+-rw-r--r-- 1 ilg ilg 147419140 Jan 21 08:14 xpack-clang-15.0.7-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jan 21 08:14 xpack-clang-15.0.7-1-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -406,9 +406,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/linux-arm/deploy
-total 114184
--rw-r--r-- 1 ilg ilg 116919777 Jan 19 05:38 xpack-clang-15.0.7-1-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 19 05:38 xpack-clang-15.0.7-1-linux-arm.tar.gz.sha
+total 124300
+-rw-r--r-- 1 ilg ilg 127272460 Jan 21 06:20 xpack-clang-15.0.7-1-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 21 06:20 xpack-clang-15.0.7-1-linux-arm.tar.gz.sha
 ```
 
 ### Files cache
