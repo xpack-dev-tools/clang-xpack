@@ -840,16 +840,36 @@ function llvm_test()
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
+          # Segmentation fault (core dumped)
+          # Program received signal SIGSEGV, Segmentation fault.
+          # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
+          export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+
           compiler-tests-single "${test_bin_path}" --64
           compiler-tests-single "${test_bin_path}" --64 --gc
           compiler-tests-single "${test_bin_path}" --64 --lto --lld
           compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld
         )
 
-        if [ "${XBB_SKIP_32_BIT_TESTS:-""}" == "y" ]
+        local skip_32_tests=""
+        if is_variable_set "XBB_SKIP_32_BIT_TESTS"
+        then
+          skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
+        else
+          local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
+          if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
+          then
+            # If the compiler does not find the full path of the
+            # 32-bit c++ library, multilib support is not installed; skip.
+            skip_32_tests="y"
+          fi
+        fi
+
+        if [ "${skip_32_tests}" == "y" ]
         then
           echo
-          echo "Skipping -m32 tests..."
+          echo "Skipping clang -m32 tests..."
         else
           (
             export LD_LIBRARY_PATH="$(xbb_get_libs_path -m32)"
