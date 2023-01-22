@@ -564,7 +564,7 @@ To download the pre-released archive for the specific platform
 and run the tests, use:
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
+git -C ~/Work/clang-xpack.git pull
 xpm run install -C ~/Work/clang-xpack.git
 xpm run test-pre-release -C ~/Work/clang-xpack.git
 ```

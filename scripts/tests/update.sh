@@ -34,14 +34,14 @@ function tests_update_system()
     run_verbose yum install --assumeyes --quiet gcc-c++ glibc glibc-common libstdc++
     if [ "$(uname -m)" == "x86_64" ]
     then
-      run_verbose yum install --assumeyes --quiet libgcc*i686 libstdc++*i686 glibc*i686 # libgfortran*i686
+      run_verbose yum install --assumeyes --quiet libgcc*i686 libstdc++*i686 glibc*i686 libatomic*i686 # libgfortran*i686
     fi
   elif [[ ${image_name} == *suse* ]]
   then
     run_verbose zypper --quiet --no-gpg-checks install --no-confirm gcc-c++ glibc
     if [ "$(uname -m)" == "x86_64" ]
     then
-      run_verbose zypper --quiet --no-gpg-checks install --no-confirm compat-32bit gcc-32bit
+      run_verbose zypper --quiet --no-gpg-checks install --no-confirm gcc-32bit
     fi
   elif [[ ${image_name} == *manjaro* ]]
   then
