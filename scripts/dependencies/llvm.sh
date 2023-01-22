@@ -771,16 +771,6 @@ function llvm_test()
 
     # -------------------------------------------------------------------------
 
-    # `-fuse-ld=lld` fails on macOS:
-    # ld64.lld: warning: ignoring unknown argument: -no_deduplicate
-    # ld64.lld: warning: -sdk_version is required when emitting min version load command.  Setting sdk version to match provided min version
-    # For now use the system linker /usr/bin/ld.
-
-    # -static-libstdc++ not available on macOS:
-    # clang-11: warning: argument unused during compilation: '-static-libstdc++'
-
-    # -------------------------------------------------------------------------
-
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
@@ -789,6 +779,31 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
+
+      # LTO weak C++ tests fail with 15.0.7-1.
+      # ld.lld: error: duplicate symbol: world()
+      # >>> defined at hello-weak-cpp.cpp
+      # >>>            lto-hello-weak-cpp-32.cpp.o
+      # >>> defined at hello-f-weak-cpp.cpp
+      # >>>            lto-hello-f-weak-cpp-32.cpp.o
+      # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_32="y"
+      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_32="y"
+
+      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_32="y"
+      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_32="y"
+
+      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_32="y"
+      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_32="y"
+
+      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_64="y"
+      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_64="y"
+
+      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_64="y"
+      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_64="y"
+
+      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_64="y"
+      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_64="y"
 
       for bits in 32 64
       do
@@ -840,6 +855,7 @@ function llvm_test()
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
+          # LTO global-terminate test fails on 15.0.7-1.
           # Segmentation fault (core dumped)
           # Program received signal SIGSEGV, Segmentation fault.
           # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
@@ -908,6 +924,14 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+
+      # `-fuse-ld=lld` fails on macOS:
+      # ld64.lld: warning: ignoring unknown argument: -no_deduplicate
+      # ld64.lld: warning: -sdk_version is required when emitting min version load command.  Setting sdk version to match provided min version
+      # For now use the system linker /usr/bin/ld.
+
+      # -static-libstdc++ not available on macOS:
+      # clang-11: warning: argument unused during compilation: '-static-libstdc++'
 
       if [ "${XBB_TARGET_ARCH}" == "x64" ] &&
          [[ "$(sw_vers -productVersion)" =~ 10[.]13[.].* ]]
