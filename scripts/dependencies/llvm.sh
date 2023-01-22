@@ -900,7 +900,7 @@ function llvm_test()
         fi
       else
         (
-          # arm (32-bit).
+          # arm & aarch64.
 
           export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
           echo
@@ -999,31 +999,6 @@ function llvm_test()
         compiler-tests-single "${test_bin_path}" --lto --crt
         compiler-tests-single "${test_bin_path}" --gc --lto --crt
       fi
-
-      # LLD fails:
-      #  "/Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/bin/ld64.lld" -demangle -object_path_lto /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/cc-f49d3d.o -no_deduplicate -dynamic -arch arm64 -platform_version macos 11.0.0 11.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o lto-simple-hello-c-one /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/simple-hello-d9bb3a.o -lSystem /Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/lib/clang/14.0.6/lib/darwin/libclang_rt.osx.a
-      # ld64.lld: error: cannot create /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/cc-f49d3d.o/0.arm64.lto.o: Not a directory
-      # LLVM ERROR: IO failure on output stream: Bad file descriptor
-      # PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace.
-      # Stack dump:
-      # 0.	Program arguments: /Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/bin/ld64.lld -demangle -object_path_lto /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/cc-f49d3d.o -no_deduplicate -dynamic -arch arm64 -platform_version macos 11.0.0 11.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o lto-simple-hello-c-one /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/simple-hello-d9bb3a.o -lSystem /Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/lib/clang/14.0.6/lib/darwin/libclang_rt.osx.a
-      # Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
-      # 0  libLLVM.dylib            0x00000001011f6d84 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) + 56
-      # 1  libLLVM.dylib            0x00000001011f5cbc llvm::sys::RunSignalHandlers() + 128
-      # 2  libLLVM.dylib            0x00000001011f73d8 llvm::sys::PrintStackTraceOnErrorSignal(llvm::StringRef, bool) + 708
-      # 3  libsystem_platform.dylib 0x000000019a8a2c44 _sigtramp + 56
-      # 4  libsystem_pthread.dylib  0x000000019a85743c pthread_kill + 292
-      # 5  libsystem_c.dylib        0x000000019a79f454 abort + 124
-      # 6  libLLVM.dylib            0x0000000101131374 llvm::report_fatal_error(llvm::Twine const&, bool) + 276
-      # 7  libLLVM.dylib            0x00000001011dc1a4 llvm::raw_fd_ostream::~raw_fd_ostream() + 220
-      # 8  ld64.lld                 0x0000000100ae4140
-      # 9  ld64.lld                 0x0000000100d4c4a8 void lld::macho::ObjFile::parse<lld::macho::LP64>() + 84460
-      # 10 ld64.lld                 0x0000000100d22f8c void lld::elf::writeResult<llvm::object::ELFType<(llvm::support::endianness)0, true> >() + 187860
-      # 11 ld64.lld                 0x0000000100ad1cd4
-      # 12 ld64.lld                 0x0000000100ad1550
-      # 13 libdyld.dylib            0x000000019a875430 start + 4
-      # clang-14: error: unable to execute command: Abort trap: 6
-      # clang-14: error: linker command failed due to signal (use -v to see invocation)
 
     fi
 
