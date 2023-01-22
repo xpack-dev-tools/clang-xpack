@@ -1032,8 +1032,7 @@ function llvm_test()
     (
       cd c-cpp
 
-      # On Windows there is no clangd.exe. (Why?)
-      if [ "${XBB_HOST_PLATFORM}" == "win32" ]
+      if true
       then
         run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
 
