@@ -904,20 +904,24 @@ function llvm_test()
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
-      # Defaults:
-      # Same as HB, the LLVM defaults (no libc++, no compiler-rt, etc)
-      # No i386 libraries available on macOS.
+      # Defaults: (different from HB)
+      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
 
       compiler-tests-single "${test_bin_path}"
       compiler-tests-single "${test_bin_path}" --gc
       compiler-tests-single "${test_bin_path}" --lto
       compiler-tests-single "${test_bin_path}" --gc --lto
 
-      # compiler-rt is not the default, do a separate run.
-      compiler-tests-single "${test_bin_path}" --crt
-      compiler-tests-single "${test_bin_path}" --gc --crt
-      compiler-tests-single "${test_bin_path}" --lto --crt
-      compiler-tests-single "${test_bin_path}" --gc --lto --crt
+      if false
+      then
+        # Since 15.x compiler-rt is the default, no need for a separate run.
+        compiler-tests-single "${test_bin_path}" --crt
+        compiler-tests-single "${test_bin_path}" --gc --crt
+        compiler-tests-single "${test_bin_path}" --lto --crt
+        compiler-tests-single "${test_bin_path}" --gc --lto --crt
+      fi
 
       # LLD fails:
       #  "/Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/bin/ld64.lld" -demangle -object_path_lto /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/cc-f49d3d.o -no_deduplicate -dynamic -arch arm64 -platform_version macos 11.0.0 11.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o lto-simple-hello-c-one /var/folders/yh/0t15pypj507678kdzl_ld2gr0000gp/T/simple-hello-d9bb3a.o -lSystem /Users/ilg/Work/clang-xpack.git/build/darwin-arm64/application/lib/clang/14.0.6/lib/darwin/libclang_rt.osx.a
