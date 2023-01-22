@@ -9,8 +9,8 @@ the latest upstream master."
 summary: "Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
 version: "{{ XBB_RELEASE_VERSION }}"
-clang_version: "14.0.6"
-clang_date: "25 Jun 2022"
+clang_version: "15.0.7"
+clang_date: "12 Jan 2023"
 npm_subversion: 1
 download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ XBB_RELEASE_VERSION }}/
 
@@ -121,6 +121,10 @@ The xPack LLVM clang generally follows the official
 The current version is based on:
 
 - LLVM clang version [{% raw %}{{ page.clang_version }}{% endraw %}](https://releases.llvm.org/download.html#{% raw %}{{ page.clang_version }}{% endraw %}), from {% raw %}{{ page.clang_date }}{% endraw %}.
+
+The defaults are set to `libc++` and `compiler-rt`.
+
+For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
 
 ## Changes
 
