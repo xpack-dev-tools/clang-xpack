@@ -617,6 +617,7 @@ with all binaries attached.
 ## Prepare a new blog post
 
 - check and possibly update the `templates/body-jekyll-release-*-liquid.md`
+ (for the release dates use <https://github.com/llvm/llvm-project/releases/>)
 - run the xPack action `generate-jekyll-post`; this will leave a file
 on the Desktop.
 

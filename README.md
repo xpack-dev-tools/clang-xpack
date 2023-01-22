@@ -103,10 +103,11 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 /Users/ilg/Library/xPacks/@xpack-dev-tools/clang/15.0.7-1.1/.content/
 ├── README.md
 ├── bin
+│   ├── UnicodeNameMappingGenerator
 │   ├── analyze-build
-│   ├── clang -> clang-14
+│   ├── clang -> clang-15
 │   ├── clang++ -> clang
-│   ├── clang-14
+│   ├── clang-15
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
@@ -115,7 +116,9 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 │   ├── clang-linker-wrapper
 │   ├── clang-nvlink-wrapper
 │   ├── clang-offload-bundler
+│   ├── clang-offload-packager
 │   ├── clang-offload-wrapper
+│   ├── clang-pseudo
 │   ├── clang-refactor
 │   ├── clang-rename
 │   ├── clang-repl
@@ -146,10 +149,12 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 │   ├── llvm-cxxdump
 │   ├── llvm-cxxfilt
 │   ├── llvm-cxxmap
+│   ├── llvm-debuginfod
 │   ├── llvm-debuginfod-find
 │   ├── llvm-diff
 │   ├── llvm-dis
 │   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-dwarfutil
 │   ├── llvm-lib -> llvm-ar
 │   ├── llvm-libtool-darwin
 │   ├── llvm-nm
@@ -161,6 +166,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 │   ├── llvm-rc
 │   ├── llvm-readelf -> llvm-readobj
 │   ├── llvm-readobj
+│   ├── llvm-remark-size-diff
 │   ├── llvm-sim
 │   ├── llvm-size
 │   ├── llvm-strings
@@ -191,8 +197,8 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 │   ├── libclang-cpp.dylib
 │   ├── libclang.dylib
 │   ├── libear
-│   ├── liblldb.15.0.7.dylib
-│   ├── liblldb.dylib -> liblldb.15.0.7.dylib
+│   ├── liblldb.15.0.6.dylib
+│   ├── liblldb.dylib -> liblldb.15.0.6.dylib
 │   └── libscanbuild
 ├── libexec
 │   ├── analyze-c++
@@ -209,15 +215,15 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/15.0.7-1.1/.conten
 │   ├── libncurses.6.dylib
 │   ├── libpanel.6.dylib
 │   ├── libxml2.2.dylib
-│   ├── libz.1.2.12.dylib
-│   └── libz.1.dylib -> libz.1.2.12.dylib
+│   ├── libz.1.2.13.dylib
+│   └── libz.1.dylib -> libz.1.2.13.dylib
 └── share
     ├── clang
     ├── opt-viewer
     ├── scan-build
     └── scan-view
 
-17 directories, 98 files
+17 directories, 104 files
 ```
 
 No other files are installed in any system folders or other locations.
