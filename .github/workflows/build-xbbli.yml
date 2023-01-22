@@ -56,7 +56,7 @@ on:
 jobs:
 
   linux-x64-x:
-    name: 'Linux Intel X - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Intel X - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:
@@ -124,7 +124,7 @@ jobs:
         run: mv -v build build-$(date -u +%Y%m%d-%H%M%S)
 
   linux-x64-w:
-    name: 'Linux Intel W - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Intel W - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:

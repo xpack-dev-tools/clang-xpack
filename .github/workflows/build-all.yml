@@ -56,7 +56,7 @@ on:
 jobs:
 
   linux-x64-x:
-    name: 'Linux Intel X - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Intel X - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:
@@ -125,7 +125,7 @@ jobs:
 
 
   linux-x64-w:
-    name: 'Linux Intel W - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Intel W - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:
@@ -194,7 +194,7 @@ jobs:
 
 
   linux-arm:
-    name: 'Linux Arm 32 - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Arm 32 - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, linux, arm, xbbla32]
     container:
@@ -262,7 +262,7 @@ jobs:
         run: mv -v build build-$(date -u +%Y%m%d-%H%M%S)
 
   linux-arm64:
-    name: 'Linux Arm 64 - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'Linux Arm 64 - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, linux, arm64, xbbla64]
     container:
@@ -330,7 +330,7 @@ jobs:
         run: mv -v build build-$(date -u +%Y%m%d-%H%M%S)
 
   macos-x64:
-    name: 'macOS Intel - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'macOS Intel - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 2880 # 2 days
 
     runs-on: [self-hosted, macos, intel]
@@ -395,7 +395,7 @@ jobs:
         run: mv -v build build-$(date -u +%Y%m%d-%H%M%S)
 
   macos-arm64:
-    name: 'macOS Arm - LLVM clang ${{ github.event.inputs.version }} build'
+    name: 'macOS Arm - clang ${{ github.event.inputs.version }} build'
     timeout-minutes: 2880 # 2 days
 
     runs-on: [self-hosted, macos, apple]
