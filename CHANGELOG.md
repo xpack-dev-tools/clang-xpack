@@ -4,6 +4,13 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-01-22
 
+* v15.0.7-1.1 published on npmjs.com
+* 7c2d6fd package.json: update urls for 15.0.7-1.1 release
+* c7a1288 READMEs updates
+* 36a69ec templates/body-jekyll update
+* e955f14 CHANGELOG update
+* c2aed60 README update
+* 3a20bb7 tests/update.sh: fix redhat & suse 32-bit
 * v15.0.7-1 released
 * c2aed60 README update
 * f4fd8c7 tests/update.sh: install 32-bit libs
