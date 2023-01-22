@@ -2,8 +2,41 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-22
+
+* v15.0.7-1 released
+* c2aed60 README update
+* f4fd8c7 tests/update.sh: install 32-bit libs
+* 696960b llvm.sh: skip tests that fail on windows
+* 2d8a4ee llvm.sh: skip throwcatch-main refinements
+* 2ffb87d llvm.sh: add XBB_SKIP_TEST* for macOS
+* a0b54d7 llvm.sh: skip --crt tests on macOS
+* c9e483b README update
+* 5c18d35 package.json: bump deps
+* 685a612 llvm.sh: automate multilib detection
+
+## 2023-01-21
+
+* 66df7cb README update
+* fc13eda README update
+* 58e176b Revert "llvm.sh: do not use XBB_LIBRARY_PATH on macOS"
+* 7079a42 llvm.sh: do not use XBB_LIBRARY_PATH on macOS
+* 51cf67b versioning.sh: comment out prepare_gcc
+* 7810c34 package.json: bump deps
+
 ## 2023-01-20
 
+* ebd39a6 llvm.sh: explicit aarch64 target
+* 313a2c7 llvm.sh: cleanup arm config
+* 76a1e60 llvm.sh: explicit LLVM_RUNTIME_TARGETS=armv7l
+* bbefb72 llvm.sh: move ENABLE_PER_TARGET_RUNTIME to x64
+* 02321bb update the 15.0.7-1 patch with CLT
+* 1a26060 llvm.sh: explain why C_INCLUDE_DIR is not useful
+* 15abb23 README update
+* 565abed llvm.sh: enable defaults for linux
+* a622654 llvm.sh: update macOS defaults
+* c6babdf llvm.sh: remove include/polly
+* 54f5da1 llvm.sh: split PROJECTS & RUNTIMES as per warning
 * v15.0.7-1 prepared
 * 3c64431 add llvm-15.0.7-1.git.patch
 * 9e8017c llvm.sh: RUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF
