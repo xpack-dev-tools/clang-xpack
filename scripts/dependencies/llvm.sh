@@ -927,9 +927,35 @@ function llvm_test()
         export XBB_SKIP_TEST_GC_CRT_CRT_TEST="y"
         export XBB_SKIP_TEST_LTO_CRT_CRT_TEST="y"
         export XBB_SKIP_TEST_GC_LTO_CRT_CRT_TEST="y"
+      fi
 
-        # -flto fails at run.
-        # "got errors"
+      if [ "${XBB_TARGET_ARCH}" == "x64" ]
+      then
+        # -flto fails at run on Intel.
+        # Does not identify the custom exceptions:
+        # [./lto-throwcatch-main ]
+        # not throwing
+        # throwing FirstException
+        # caught std::exception <--
+        # caught unexpected exception 3!
+        # throwing SecondException
+        # caught std::exception <--
+        # caught unexpected exception 3!
+        # throwing std::exception
+        # caught std::exception
+        # got errors
+
+        # Expected behaviour:
+        # [./throwcatch-main ]
+        # not throwing
+        # throwing FirstException
+        # caught FirstException
+        # throwing SecondException
+        # caught SecondException
+        # throwing std::exception
+        # caught std::exception
+        # all ok <--
+
         export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
         export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
         export XBB_SKIP_RUN_TEST_LTO_CRT_THROWCATCH_MAIN="y"
