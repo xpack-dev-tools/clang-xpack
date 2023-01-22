@@ -126,6 +126,35 @@ The defaults are set to `libc++` and `compiler-rt`.
 
 For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
 
+## LLVM libraries
+
+The compiler defaults are set to  use the LLVM libraries
+(`libc++` and `compiler-rt`).
+
+## `-m32` / `-m64`
+
+For Intel Linux and Windows, multilib libraries are provided
+and can be selected using the `-m32` / `-m64` options.
+
+## `-print-search-dirs`
+
+Since the toolchain can be installed in any location, and the binaries
+compiled with it need to access the libraries, it is necessary to
+get the actual path and pass it via `LD_LIBRARY_PATH` and/or
+set the `-rpath`.
+
+This can be achieved by querying the compiler
+for `-print-search-dirs` and processing the output.
+
+For example, for the 32-bit libraries:
+
+```sh
+${CXX} -m32 -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||'
+```
+
+On Windows this might be slightly more complicated, to get rid of the
+letter part of the paths.
+
 ## Changes
 
 Compared to the upstream, there are no functional changes.
