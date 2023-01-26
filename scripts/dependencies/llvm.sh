@@ -304,7 +304,7 @@ function llvm_build()
             config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB (Darwin only)
 
             config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON") # HB
+            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON") # HB (Darwin only)
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
             # config_options+=("-DLLVM_BUILTIN_TARGETS=${XBB_TARGET_TRIPLET}")
@@ -404,7 +404,6 @@ function llvm_build()
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
-            config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=OFF") # HB
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
 
