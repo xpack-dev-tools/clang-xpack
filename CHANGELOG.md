@@ -2,8 +2,24 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-26
+
+* 1bd7e25 llvm.sh: check for libclang_rt.profile_osx.a
+* b251f05 llvm.sh: cosmetics
+* 4beb2a0 package.json: bump deps
+
+## 2023-01-24
+
+* 329f416 README updates
+
 ## 2023-01-22
 
+* 9f916f9 package.json: bump deps
+* de63159 llvm.sh: cleanups
+* 23d40fe llvm.sh: enable clangd test for all platforms
+* 01d1d41 templates/body-jekyll update
+* e78c4f5 templates/body-jekyll update
+* 6123f46 re-generate workflows
 * v15.0.7-1.1 published on npmjs.com
 * 7c2d6fd package.json: update urls for 15.0.7-1.1 release
 * c7a1288 READMEs updates
