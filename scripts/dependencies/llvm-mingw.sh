@@ -21,8 +21,8 @@ function llvm_mingw_build_first()
 
   local name_prefix="mingw-w64-"
 
-  local llvm_version_major=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)[.]\([0-9][0-9]*\)[.].*|\1|')
-  local llvm_version_minor=$(echo ${ACTUAL_LLVM_VERSION} | sed -e 's|\([0-9][0-9]*\)[.]\([0-9][0-9]*\)[.].*|\2|')
+  local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
+  local llvm_version_minor=$(xbb_get_version_minor "${ACTUAL_LLVM_VERSION}")
 
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
 
