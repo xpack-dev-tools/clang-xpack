@@ -119,9 +119,9 @@ function llvm_build()
       if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
       then
         # missing libclang_rt.profile_osx.a
-        CFLAGS="$(echo "${CFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
-        CXXFLAGS="$(echo "${CXXFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
-        LDFLAGS="$(echo "${LDFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
+        CFLAGS="$(xbb_strip_macosx_version_min "${CFLAGS}")"
+        CXXFLAGS="$(xbb_strip_macosx_version_min "${CXXFLAGS}")"
+        LDFLAGS="$(xbb_strip_macosx_version_min "${LDFLAGS}")"
 
         # TODO: check if still needed.
         LDFLAGS+=" -Wl,-search_paths_first"
