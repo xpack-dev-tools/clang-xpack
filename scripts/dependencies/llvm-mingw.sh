@@ -312,12 +312,6 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
           config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
 
-          # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-          # then
-          #   # Otherwise it'll generate two -mmacosx-version-min
-          #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-          # fi
-
           config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
           config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
           config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
@@ -545,12 +539,6 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
           config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
-
-          # if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-          # then
-          #   # Otherwise it'll generate two -mmacosx-version-min
-          #   config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${XBB_MACOSX_DEPLOYMENT_TARGET}")
-          # fi
 
           run_verbose cmake \
             "${config_options[@]}" \
