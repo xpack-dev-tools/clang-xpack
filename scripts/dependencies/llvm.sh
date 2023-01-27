@@ -1022,8 +1022,23 @@ function llvm_test()
 
       if true
       then
+
+        # Note: __EOF__ is NOT quoted to allow substitutions here.
+        cat <<__EOF__ > "compile_commands.json"
+[
+  {
+    "directory": "$(pwd)",
+    "command": "${CXX} -c hello-cpp.cpp",
+    "file": "hello-cpp.cpp"
+  }
+]
+__EOF__
+
+cat "compile_commands.json"
+
         run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
 
+        # Note: __EOF__ is quoted to prevent substitutions here.
         cat <<'__EOF__' > "unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
 #include <exception>
@@ -1033,6 +1048,20 @@ int main() {
     return 0;
 }
 __EOF__
+
+        # Note: __EOF__ is NOT quoted to allow substitutions here.
+        cat <<__EOF__ > "compile_commands.json"
+[
+  {
+    "directory": "$(pwd)",
+    "command": "${CXX} -c unchecked-exception.cpp",
+    "file": "unchecked-exception.cpp"
+  }
+]
+__EOF__
+
+cat "compile_commands.json"
+
         run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
       fi
     )
