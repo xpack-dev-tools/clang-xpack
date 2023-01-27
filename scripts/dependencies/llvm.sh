@@ -118,6 +118,12 @@ function llvm_build()
 
       if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
       then
+        # missing libclang_rt.profile_osx.a
+        CFLAGS="$(echo "${CFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
+        CXXFLAGS="$(echo "${CXXFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
+        LDFLAGS="$(echo "${LDFLAGS}" | sed -e 's|-mmacosx-version-min=[0-9]*[.][0-9]*||')"
+
+        # TODO: check if still needed.
         LDFLAGS+=" -Wl,-search_paths_first"
 
         # For libc++.1.0.dylib to find libc++abi.1.dylib
