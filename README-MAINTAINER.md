@@ -151,7 +151,7 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-15.0.7.git.patch`
+- rename `llvm-15.0.7-2.git.patch`
 
 Note: currently the patch is required to fix the CLT library path.
 
@@ -283,9 +283,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
-total 198088
--rw-r--r--  1 ilg  staff  85477178 Jan 21 00:37 xpack-clang-15.0.7-2-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 21 00:37 xpack-clang-15.0.7-2-darwin-arm64.tar.gz.sha
+total 165320
+-rw-r--r--  1 ilg  staff  84138150 Jan 27 03:56 xpack-clang-15.0.7-2-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jan 27 03:56 xpack-clang-15.0.7-2-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
