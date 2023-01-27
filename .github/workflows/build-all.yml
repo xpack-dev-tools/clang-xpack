@@ -34,7 +34,7 @@ on:
         description: 'The version of xpm to install'
         required: false
         type: string
-        default: 'latest'
+        default: 'next'
       xpm_install_loglevel:
         description: 'Optional loglevel for xpm install'
         required: false
@@ -87,7 +87,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
@@ -156,7 +158,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
@@ -225,7 +229,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
@@ -293,7 +299,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
@@ -357,7 +365,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
@@ -422,7 +432,9 @@ jobs:
 
       - name: 'Install xpm'
         timeout-minutes: 1440
-        run: npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+        run: |
+          npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
+          xpm --version
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
