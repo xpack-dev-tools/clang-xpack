@@ -2,8 +2,18 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-27
+
+* v15.0.7-2 prepared
+* 637fbaa llvm-mingw.sh: cleanups
+* f5b2397 package.json: bump deps
+* 7d73ed9 package.json: reorder scripts
+* 7f29c4f llvm.sh: filter out -mmacosx-version-min=
+* 849fa98 llvm.sh: use MACOSX_DEPLOYMENT_TARGET
+
 ## 2023-01-26
 
+* f189fb4 prepare v15.0.7-2
 * 1bd7e25 llvm.sh: check for libclang_rt.profile_osx.a
 * b251f05 llvm.sh: cosmetics
 * 4beb2a0 package.json: bump deps
