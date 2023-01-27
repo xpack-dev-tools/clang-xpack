@@ -728,6 +728,33 @@ function test_mingw_llvm()
 
     ls -l ${test_bin_path}/../${triplet}/bin
 
+    # LTO weak C++ tests fail with 15.0.7-1.
+    # ld.lld: error: duplicate symbol: world()
+    # >>> defined at hello-weak-cpp.cpp
+    # >>>            lto-hello-weak-cpp-32.cpp.o
+    # >>> defined at hello-f-weak-cpp.cpp
+    # >>>            lto-hello-f-weak-cpp-32.cpp.o
+    # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+
+    # Skip the same tests for both triplets.
+    export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+
+    export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+
+    export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+
+    export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+
+    export XBB_SKIP_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+
+    export XBB_SKIP_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
+    export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+
     export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
     echo "WINEPATH=${WINEPATH}"
 
