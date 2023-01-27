@@ -4,6 +4,17 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-01-27
 
+* f0e47bd llvm*.sh: rework clangd test
+* 5157bfa llvm.sh: use xbb_strip_macosx_version_min
+* 539f211 use versioning functions
+* ebfe33b README update
+* 342db2c add llvm-15.0.7-2.git.patch
+* 6ed6094 CHANGELOG update
+* 637fbaa llvm-mingw.sh: cleanups
+* f5b2397 package.json: bump deps
+* 7d73ed9 package.json: reorder scripts
+* 7f29c4f llvm.sh: filter out -mmacosx-version-min=
+* 849fa98 llvm.sh: use MACOSX_DEPLOYMENT_TARGET
 * v15.0.7-2 prepared
 * 637fbaa llvm-mingw.sh: cleanups
 * f5b2397 package.json: bump deps
