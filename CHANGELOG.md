@@ -2,6 +2,13 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-01-28
+
+* v15.0.7-2 released
+* 518c68e re-generate workflows
+* ead1a25 package.json: bump deps
+* 3ad9b1c CHANGELOG update
+
 ## 2023-01-27
 
 * f0e47bd llvm*.sh: rework clangd test
