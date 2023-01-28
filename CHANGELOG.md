@@ -4,6 +4,12 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-01-28
 
+* v15.0.7-2.1 published on npmjs.com
+* 857c492 package.json: update urls for 15.0.7-2.1 release
+* c9dbb55 body-jekyll update
+* 10762e0 templates updates
+* 5514716 CHANGELOG update
+* 72a2829 llvm-mingw.sh: skip lto hello-weak.cpp
 * v15.0.7-2 released
 * 518c68e re-generate workflows
 * ead1a25 package.json: bump deps
