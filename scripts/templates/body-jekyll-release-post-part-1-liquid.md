@@ -3,7 +3,7 @@ title:  xPack LLVM clang v{{ XBB_RELEASE_VERSION }} released
 
 TODO: select one summary
 
-summary: "Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fixes..."
+summary: "Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fixes... ."
 
 summary: "Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
