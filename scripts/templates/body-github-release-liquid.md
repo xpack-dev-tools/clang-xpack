@@ -1,6 +1,6 @@
 ![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v{{ XBB_RELEASE_VERSION }}/total.svg)
 
-Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release of the **xPack LLVM clang** package; it updates to the latest upstream master.
+Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release of the **xPack LLVM clang** package; it fixes...
 
 Or (TODO: edit!):
 
