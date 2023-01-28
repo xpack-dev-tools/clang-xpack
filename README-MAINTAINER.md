@@ -217,7 +217,7 @@ xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
 Run the native build:
 
 ```sh
-caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
 The build takes about 1h05.
@@ -242,7 +242,7 @@ xpm link -C ~/Work/xbb-helper-xpack.git && \
 xpm run link-deps -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git && \
 xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
-caffeinate xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
 ```
 
 About 1h10 later, the output of the build script is a compressed
@@ -275,7 +275,7 @@ xpm link -C ~/Work/xbb-helper-xpack.git && \
 xpm run link-deps -C ~/Work/clang-xpack.git && \
 xpm run deep-clean --config darwin-arm64  -C ~/Work/clang-xpack.git && \
 xpm install --config darwin-arm64 -C ~/Work/clang-xpack.git
-caffeinate xpm run build-develop --config darwin-arm64 -C ~/Work/clang-xpack.git
+xpm run build-develop --config darwin-arm64 -C ~/Work/clang-xpack.git
 ```
 
 About 30 minutes later, the output of the build script is a compressed
