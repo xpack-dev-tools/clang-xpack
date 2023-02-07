@@ -14,26 +14,26 @@ To clone the stable branch (`xpack`), run the following commands in a
 terminal (on Windows use the _Git Bash_ console):
 
 ```sh
-rm -rf ~/Work/clang-xpack.git && \
+rm -rf ~/Work/xpacks/clang-xpack.git && \
 git clone https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Work/clang-xpack.git
+  ~/Work/xpacks/clang-xpack.git
 ```
 
 For development purposes, clone the `xpack-develop` branch:
 
 ```sh
-rm -rf ~/Work/clang-xpack.git && \
-mkdir -p ~/Work && \
+rm -rf ~/Work/xpacks/clang-xpack.git && \
+mkdir -p ~/Work/xpacks && \
 git clone \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/clang-xpack.git \
-  ~/Work/clang-xpack.git
+  ~/Work/xpacks/clang-xpack.git
 ```
 
 Or, if the repo was already cloned:
 
 ```sh
-git -C ~/Work/clang-xpack.git pull
+git -C ~/Work/xpacks/clang-xpack.git pull
 ```
 
 ## Get helper sources
@@ -42,20 +42,20 @@ The project has a dependency to a common **helper**; clone the
 `xpack-develop` branch and link it to the central xPacks store:
 
 ```sh
-rm -rf ~/Work/xbb-helper-xpack.git && \
-mkdir -p ~/Work && \
+rm -rf ~/Work/xpacks/xbb-helper-xpack.git && \
+mkdir -p ~/Work/xpacks && \
 git clone \
   --branch xpack-develop \
   https://github.com/xpack-dev-tools/xbb-helper-xpack.git \
-  ~/Work/xbb-helper-xpack.git && \
-xpm link -C ~/Work/xbb-helper-xpack.git
+  ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git
 ```
 
 Or, if the repo was already cloned:
 
 ```sh
-git -C ~/Work/xbb-helper-xpack.git pull
-xpm link -C ~/Work/xbb-helper-xpack.git
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git
 ```
 
 ## Prerequisites
@@ -178,46 +178,46 @@ For Intel macOS, first run the build on the development machine
 Update the build scripts (or clone them at the first use):
 
 ```sh
-git -C ~/Work/clang-xpack.git pull
+git -C ~/Work/xpacks/clang-xpack.git pull
 
-xpm run deep-clean -C ~/Work/clang-xpack.git
+xpm run deep-clean -C ~/Work/xpacks/clang-xpack.git
 ```
 
 If the helper is also under development and needs changes,
 update it too:
 
 ```sh
-git -C ~/Work/xbb-helper-xpack.git pull
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull
 ```
 
 Install project dependencies:
 
 ```sh
-xpm run install -C ~/Work/clang-xpack.git
+xpm run install -C ~/Work/xpacks/clang-xpack.git
 ```
 
 If the writable helper is used,
 link it in the place of the read-only package:
 
 ```sh
-xpm link -C ~/Work/xbb-helper-xpack.git
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git
 
-xpm run link-deps -C ~/Work/clang-xpack.git
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git
 ```
 
 For repeated builds, clean the build folder and install de
 build configuration dependencies:
 
 ```sh
-xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git
+xpm run deep-clean --config darwin-x64  -C ~/Work/xpacks/clang-xpack.git
 
-xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
+xpm install --config darwin-x64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 Run the native build:
 
 ```sh
-xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+xpm run build-develop --config darwin-x64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 The build takes about 1h05.
@@ -235,21 +235,21 @@ caffeinate ssh xbbmi
 Repeat the same steps as before.
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config darwin-x64  -C ~/Work/clang-xpack.git && \
-xpm install --config darwin-x64 -C ~/Work/clang-xpack.git
-xpm run build-develop --config darwin-x64 -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config darwin-x64  -C ~/Work/xpacks/clang-xpack.git && \
+xpm install --config darwin-x64 -C ~/Work/xpacks/clang-xpack.git
+xpm run build-develop --config darwin-x64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 1h10 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/darwin-x64/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/darwin-x64/deploy
 total 198256
 -rw-r--r--  1 ilg  staff  96214029 Jan 21 01:18 xpack-clang-15.0.7-2-darwin-x64.tar.gz
 -rw-r--r--  1 ilg  staff       105 Jan 21 01:18 xpack-clang-15.0.7-2-darwin-x64.tar.gz.sha
@@ -268,21 +268,21 @@ caffeinate ssh xbbma
 Update the build scripts (or clone them at the first use):
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config darwin-arm64  -C ~/Work/clang-xpack.git && \
-xpm install --config darwin-arm64 -C ~/Work/clang-xpack.git
-xpm run build-develop --config darwin-arm64 -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config darwin-arm64  -C ~/Work/xpacks/clang-xpack.git && \
+xpm install --config darwin-arm64 -C ~/Work/xpacks/clang-xpack.git
+xpm run build-develop --config darwin-arm64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 30 minutes later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/darwin-arm64/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/darwin-arm64/deploy
 total 165320
 -rw-r--r--  1 ilg  staff  84138150 Jan 27 03:56 xpack-clang-15.0.7-2-darwin-arm64.tar.gz
 -rw-r--r--  1 ilg  staff       107 Jan 27 03:56 xpack-clang-15.0.7-2-darwin-arm64.tar.gz.sha
@@ -302,22 +302,22 @@ caffeinate ssh xbbli
 Update the build scripts (or clone them at the first use):
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config linux-x64 -C ~/Work/clang-xpack.git && \
-xpm run docker-prepare --config linux-x64 -C ~/Work/clang-xpack.git && \
-xpm run docker-link-deps --config linux-x64 -C ~/Work/clang-xpack.git
-xpm run docker-build-develop --config linux-x64 -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config linux-x64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-prepare --config linux-x64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-link-deps --config linux-x64 -C ~/Work/xpacks/clang-xpack.git
+xpm run docker-build-develop --config linux-x64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 50 minutes later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/linux-x64/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/linux-x64/deploy
 total 182596
 -rw-r--r-- 1 ilg ilg 186973037 Jan 20 09:00 xpack-clang-15.0.7-2-linux-x64.tar.gz
 -rw-r--r-- 1 ilg ilg       104 Jan 20 09:00 xpack-clang-15.0.7-2-linux-x64.tar.gz.sha
@@ -328,22 +328,22 @@ total 182596
 Clean the build folder and prepare the docker container:
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config win32-x64 -C ~/Work/clang-xpack.git && \
-xpm run docker-prepare --config win32-x64 -C ~/Work/clang-xpack.git && \
-xpm run docker-link-deps --config win32-x64 -C ~/Work/clang-xpack.git
-xpm run docker-build-develop --config win32-x64 -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config win32-x64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-prepare --config win32-x64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-link-deps --config win32-x64 -C ~/Work/xpacks/clang-xpack.git
+xpm run docker-build-develop --config win32-x64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 1h50 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/win32-x64/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/win32-x64/deploy
 total 375640
 -rw-r--r-- 1 ilg ilg 384645944 Jan 21 01:35 xpack-clang-15.0.7-2-win32-x64.zip
 -rw-r--r-- 1 ilg ilg       101 Jan 21 01:35 xpack-clang-15.0.7-2-win32-x64.zip.sha
@@ -361,22 +361,22 @@ caffeinate ssh xbbla64
 Update the build scripts (or clone them at the first use):
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config linux-arm64 -C ~/Work/clang-xpack.git && \
-xpm run docker-prepare --config linux-arm64 -C ~/Work/clang-xpack.git && \
-xpm run docker-link-deps --config linux-arm64 -C ~/Work/clang-xpack.git
-xpm run docker-build-develop --config linux-arm64 -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config linux-arm64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-prepare --config linux-arm64 -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpacks/clang-xpack.git
+xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 10h later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/linux-arm64/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/linux-arm64/deploy
 total 143972
 -rw-r--r-- 1 ilg ilg 147419140 Jan 21 08:14 xpack-clang-15.0.7-2-linux-arm64.tar.gz
 -rw-r--r-- 1 ilg ilg       106 Jan 21 08:14 xpack-clang-15.0.7-2-linux-arm64.tar.gz.sha
@@ -394,22 +394,22 @@ caffeinate ssh xbbla32
 Update the build scripts (or clone them at the first use):
 
 ```sh
-git -C ~/Work/clang-xpack.git pull && \
-xpm run install -C ~/Work/clang-xpack.git && \
-git -C ~/Work/xbb-helper-xpack.git pull && \
-xpm link -C ~/Work/xbb-helper-xpack.git && \
-xpm run link-deps -C ~/Work/clang-xpack.git && \
-xpm run deep-clean --config linux-arm -C ~/Work/clang-xpack.git && \
-xpm run docker-prepare --config linux-arm -C ~/Work/clang-xpack.git && \
-xpm run docker-link-deps --config linux-arm -C ~/Work/clang-xpack.git
-xpm run docker-build-develop --config linux-arm -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull && \
+xpm run install -C ~/Work/xpacks/clang-xpack.git && \
+git -C ~/Work/xpacks/xbb-helper-xpack.git pull && \
+xpm link -C ~/Work/xpacks/xbb-helper-xpack.git && \
+xpm run link-deps -C ~/Work/xpacks/clang-xpack.git && \
+xpm run deep-clean --config linux-arm -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-prepare --config linux-arm -C ~/Work/xpacks/clang-xpack.git && \
+xpm run docker-link-deps --config linux-arm -C ~/Work/xpacks/clang-xpack.git
+xpm run docker-build-develop --config linux-arm -C ~/Work/xpacks/clang-xpack.git
 ```
 
 About 8h later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
-$ ls -l ~/Work/clang-xpack.git/build/linux-arm/deploy
+$ ls -l ~/Work/xpacks/clang-xpack.git/build/linux-arm/deploy
 total 124300
 -rw-r--r-- 1 ilg ilg 127272460 Jan 21 06:20 xpack-clang-15.0.7-2-linux-arm.tar.gz
 -rw-r--r-- 1 ilg ilg       104 Jan 21 06:20 xpack-clang-15.0.7-2-linux-arm.tar.gz.sha
@@ -428,23 +428,18 @@ location (like
 <https://github.com/xpack-dev-tools/files-cache/tree/master/libs>),
 place them in the XBB cache (`Work/cache`) and restart the build.
 
-## Push the build scripts
-
-In this Git repo:
-
-- push the `xpack-develop` branch to GitHub
-- possibly push the helper project too
-
-From here it'll be later cloned on the production machines.
-
 ## Run the CI build
 
 The automation is provided by GitHub Actions and three self-hosted runners.
 
+### Generate the GitHub workflows
+
 Run the `generate-workflows` to re-generate the
 GitHub workflow files; commit and push if necessary.
 
-- on a permanently running machine (`berry`) open ssh sessions to the build
+### Start the self-hosted runners
+
+- on the development machine (`wksi`) open ssh sessions to the build
 machines (`xbbma`, `xbbli`, `xbbla64` and `xbbla32`):
 
 ```sh
@@ -471,7 +466,19 @@ For `xbbli` & `xbbla64` start two runners:
 ~/actions-runners/xpack-dev-tools/2/run.sh &
 ```
 
-Check that the project is pushed to GitHub.
+### Push the build scripts
+
+- push the `xpack-develop` branch to GitHub
+- possibly push the helper project too
+
+From here it'll be cloned on the production machines.
+
+### Check for disk space
+
+Check if the build machines have enough free space and eventually
+do some cleanups.
+
+### Manually trigger the build GitHub Actions
 
 To trigger the GitHub Actions build, use the xPack action:
 
@@ -484,11 +491,11 @@ To trigger the GitHub Actions build, use the xPack action:
 This is equivalent to:
 
 ```sh
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbli
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla64
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla32
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbmi
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbma
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbli
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla64
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla32
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbmi
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbma
 ```
 
 These scripts require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
@@ -497,7 +504,9 @@ Settings → Action →
 [Secrets](https://github.com/xpack-dev-tools/clang-xpack/settings/secrets/actions)
 page.
 
-This command uses the `xpack-develop` branch of this repo.
+These commands use the `xpack-develop` branch of this repo.
+
+## Durations & results
 
 The builds take about 10 hours to complete:
 
@@ -528,9 +537,9 @@ To trigger the GitHub Actions tests, use the xPack actions:
 These are equivalent to:
 
 ```sh
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-prime.sh
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-docker-linux-intel.sh
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-docker-linux-arm.sh
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-prime.sh
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-docker-linux-intel.sh
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-workflow-test-docker-linux-arm.sh
 ```
 
 These scripts require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
@@ -553,7 +562,7 @@ To trigger the Travis test, use the xPack action:
 This is equivalent to:
 
 ```sh
-bash ~/Work/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-travis-macos.sh
+bash ~/Work/xpacks/clang-xpack.git/xpacks/xpack-dev-tools-xbb-helper/github-actions/trigger-travis-macos.sh
 ```
 
 This script requires the `TRAVIS_COM_TOKEN` variable to be present
@@ -568,9 +577,9 @@ To download the pre-released archive for the specific platform
 and run the tests, use:
 
 ```sh
-git -C ~/Work/clang-xpack.git pull
-xpm run install -C ~/Work/clang-xpack.git
-xpm run test-pre-release -C ~/Work/clang-xpack.git
+git -C ~/Work/xpacks/clang-xpack.git pull
+xpm run install -C ~/Work/xpacks/clang-xpack.git
+xpm run test-pre-release -C ~/Work/xpacks/clang-xpack.git
 ```
 
 For even more tests, on each platform (MacOS, GNU/Linux, Windows),
