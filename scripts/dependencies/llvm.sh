@@ -136,6 +136,8 @@ function llvm_build()
         XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
       fi
 
+      CMAKE=$(which cmake)
+
       xbb_adjust_ldflags_rpath
 
       export CPPFLAGS
@@ -530,7 +532,7 @@ function llvm_build()
           echo
           which ${CC} && ${CC} --version && echo || true
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             "${config_options[@]}" \
             "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm"
 
@@ -545,20 +547,20 @@ function llvm_build()
 
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          run_verbose_timed cmake \
+          run_verbose_timed "${CMAKE}" \
             --build . \
             --verbose \
             --parallel ${XBB_JOBS}
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --verbose \
             --target install/strip
         else
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build .
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --target install/strip
         fi

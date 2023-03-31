@@ -56,6 +56,8 @@ function llvm_mingw_build_first()
 
       LDFLAGS="${XBB_LDFLAGS_APP}"
 
+      CMAKE=$(which cmake)
+
       xbb_adjust_ldflags_rpath
 
       export CPPFLAGS
@@ -148,15 +150,15 @@ function llvm_mingw_build_first()
             --verbose \
             --parallel ${XBB_JOBS}
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --verbose  \
             --target install/strip
         else
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build .
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --target install/strip
         fi
@@ -253,6 +255,8 @@ function llvm_mingw_build_compiler_rt()
       # export CXXFLAGS
       # export LDFLAGS
 
+      CMAKE=$(which cmake)
+
       if [ ! -f "cmake.done" ]
       then
         (
@@ -326,7 +330,7 @@ function llvm_mingw_build_compiler_rt()
 
           config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             "${config_options[@]}" \
             "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
 
@@ -338,20 +342,20 @@ function llvm_mingw_build_compiler_rt()
       (
         if [ "${XBB_IS_DEVELOP}" == "y" ]
         then
-          run_verbose_timed cmake \
+          run_verbose_timed "${CMAKE}" \
             --build . \
             --verbose \
             --parallel ${XBB_JOBS}
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --verbose \
             --target install/strip
         else
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build .
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             --build . \
             --target install/strip
         fi
@@ -433,6 +437,8 @@ function llvm_mingw_build_libcxx()
       # export CFLAGS
       # export CXXFLAGS
       # export LDFLAGS
+
+      CMAKE=$(which cmake)
 
       if [ ! -f "cmake.done" ]
       then
@@ -540,7 +546,7 @@ function llvm_mingw_build_libcxx()
 
           config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
 
-          run_verbose cmake \
+          run_verbose "${CMAKE}" \
             "${config_options[@]}" \
             "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/runtimes"
 
@@ -550,7 +556,7 @@ function llvm_mingw_build_libcxx()
       fi
 
       (
-        run_verbose cmake \
+        run_verbose "${CMAKE}" \
           --build . \
           --verbose \
           --target install
