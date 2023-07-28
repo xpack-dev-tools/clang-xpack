@@ -145,7 +145,7 @@
       "widl": "./.content/bin/widl"
     },
     "devDependencies": {
-      "@xpack-dev-tools/xbb-helper": "^1.4.14"
+      "@xpack-dev-tools/xbb-helper": "^1.4.15"
     },
     "properties": {
       "appName": "LLVM clang",
