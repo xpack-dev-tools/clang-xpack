@@ -117,6 +117,11 @@ In the `xpack-dev-tools/clang-xpack` Git repo:
 
 No need to add a tag here, it'll be added when the release is created.
 
+### Update helper & other dependencies
+
+Check the latest versions at <https://github.com/xpack-dev-tools/> and
+update the dependencies in `package.json`.
+
 ### Check the latest upstream release
 
 Check the LLVM GitHub [Releases](https://github.com/llvm/llvm-project/releases)
