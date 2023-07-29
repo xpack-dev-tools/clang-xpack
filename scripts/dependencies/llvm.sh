@@ -384,7 +384,9 @@ function llvm_build()
             fi
 
             # Arch/HB do not define them, but windows does.
-            if true
+            # meson requires the default compiler to work properly
+            # with the defaults (libstdc++ & libgcc).
+            if false
             then
               config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
 
