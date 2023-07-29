@@ -207,48 +207,20 @@ triggered via the VS Code graphical interface, using the
 For Intel macOS, first run the build on the development machine
 (`wksi`, a recent macOS):
 
-Update the build scripts (or clone them at the first use):
-
 ```sh
+# Update the build scripts.
 git -C ~/Work/xpack-dev-tools/clang-xpack.git pull
 
-xpm run deep-clean -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
-
-If the helper is also under development and needs changes,
-update it too:
-
-```sh
-git -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git pull
-```
-
-Install project dependencies:
-
-```sh
 xpm run install -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
 
-If the writable helper is used,
-link it in the place of the read-only package:
-
-```sh
 xpm link -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git
-
 xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
 
-For repeated builds, clean the build folder and install de
-build configuration dependencies:
-
-```sh
-xpm run deep-clean --config darwin-x64  -C ~/Work/xpack-dev-tools/clang-xpack.git
+# For backup overhead reasons, on the development machine
+# the builds happen on a separate Work folder.
+rm -rf ~/Work/xpack-dev-tools-build/clang-[0-9]*-*
 
 xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
-
-Run the native build:
-
-```sh
 xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
