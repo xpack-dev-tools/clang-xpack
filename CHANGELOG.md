@@ -2,9 +2,76 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-07-29
+
+* v15.0.7-3 prepared
+* 5c226b3 README update
+* fc747ec README update
+* dfff0ce add llvm-16.0.6-1.git.patch
+* 12d1b41 llvm.sh: disable compiler-rt on linux
+* e22874c versioning.sh: add 16.*
+* 51d93ff package-lock.json: update
+* b2aef00 llvm.sh: remove XBB_SKIP_TEST_* for macOS 10.13
+
+## 2023-07-28
+
+* 90927b2 READMEs update
+* 86762e9 READMEs update
+* fcbea02 package.json: bump deps
+* 2906240 package.json: liquidjs --context --template
+* a25df25 scripts cosmetics
+* 5538c58 re-generate workflows
+* 6b33d7b READMEs update
+* bded1a4 package.json: minXpm 0.16.3 & @xpack-dev-tools/xbb-helper
+* a85e3ea READMEs update
+* 2204b93 package.json: bump deps
+
+## 2023-07-26
+
+* 27a5e8d package.json: move scripts to actions
+* b03c429 package.json: update xpack-dev-tools path
+* 8810dc9 READMEs update xpack-dev-tools path
+* cc58b05 body-jekyll update
+* 2c30c15 READMEs update
+
+## 2023-07-17
+
+* 87d6eb1 package.json: bump deps
+
+## 2023-03-31
+
+* 7a2ea68 dependencies CMAKE=$(which cmake)
+
+## 2023-03-25
+
+* fb716dd READMEs update
+* 1f7c1f0 READMEs update prerequisites
+* 29bba41 package.json: mkdir -pv cache
+
+## 2023-02-22
+
+* 08ca79b READMEs update
+
+## 2023-02-14
+
+* f403243 body-jekyll update
+
+## 2023-02-10
+
+* 185e9f6 package.json: update Work/xpacks
+* 2e05444 READMEs update
+
+## 2023-02-07
+
+* e91e4af READMEs update
+* aaa5602 body-jekyll update
+* a5838ed body-github update
+
 ## 2023-01-28
 
-* v15.0.7-2.1 published on npmjs.com
+* d1b4e08 README-MAINTAINER remove caffeinate xpm
+* 682e14d 15.0.7-2.1
+* 0b2e318 CHANGELOG: publish npm v15.0.7-2.1
 * 857c492 package.json: update urls for 15.0.7-2.1 release
 * c9dbb55 body-jekyll update
 * 10762e0 templates updates
@@ -115,7 +182,6 @@ Entries in this file are in reverse chronological order.
 * 0edcc56 llvm.sh: conditional configure CLANG_*_GEN
 * cb0b6a7 llvm.sh: cosmetics
 * d0a8171 llvm.sh: do not use lld at all for macOS
-* 0bbe27a Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
 * eef775a llvm.sh: do not use lld on new macOS
 2023-01-18 * 858c604 llvm.sh: multilib tests only on x64
 
