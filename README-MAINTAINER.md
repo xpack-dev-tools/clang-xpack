@@ -93,6 +93,8 @@ xpm link -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git
 This distribution follows the official
 [LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
 but only the final patch of each version is released (like 15.0.7).
+The rule is to wait for the new upstream release (like x.0.0), and
+release the previous one (x-1.0.[567])
 
 ## How to make new releases
 
