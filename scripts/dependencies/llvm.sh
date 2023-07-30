@@ -947,6 +947,12 @@ function llvm_test()
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
+      # It is mandatory that the compiler runs properly without any
+      # explicit libraries or other options, otherwise tools used
+      # during configuration (like meson) will fail probing for
+      # capabilities.
+      compiler-tests-single "${test_bin_path}"
+
       # Defaults: (different from HB)
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
@@ -993,14 +999,15 @@ function llvm_test()
         export XBB_SKIP_RUN_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
       fi
 
-      compiler-tests-single "${test_bin_path}"
+      # Done before.
+      # compiler-tests-single "${test_bin_path}"
       compiler-tests-single "${test_bin_path}" --gc
       compiler-tests-single "${test_bin_path}" --lto
       compiler-tests-single "${test_bin_path}" --gc --lto
 
+      # Redundant, the current default is compiler-rt anyway.
       if false
       then
-        # Since 15.x compiler-rt is the default, no need for a separate run.
         compiler-tests-single "${test_bin_path}" --crt
         compiler-tests-single "${test_bin_path}" --gc --crt
         compiler-tests-single "${test_bin_path}" --lto --crt
