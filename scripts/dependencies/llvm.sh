@@ -862,9 +862,14 @@ function llvm_test()
     then
 
       # Defaults:
-      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
+      # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
+
+      # It is mandatory that the compiler runs properly without any
+      # explicit libraries or other options, otherwise tools used
+      # during configuration (like meson) will fail probing for
+      # capabilities.
+      compiler-tests-single "${test_bin_path}"
 
       # aarch64 multilib not yet available
       # if [ "${XBB_HOST_BITS}" == "64" ]
