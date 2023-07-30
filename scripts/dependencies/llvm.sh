@@ -747,6 +747,11 @@ function llvm_test()
     echo
     echo "Testing the ${name_prefix}clang configuration..."
 
+    # Show the selected GCC & multilib.
+    # There must be a g++ with that version installed,
+    # otherwise the tests will not find the C++ headers and/or libraries.
+    run_host_app_verbose "${test_bin_path}/clang" -v
+
     run_host_app_verbose "${test_bin_path}/clang" -print-target-triple
     run_host_app_verbose "${test_bin_path}/clang" -print-targets
     run_host_app_verbose "${test_bin_path}/clang" -print-supported-cpus
