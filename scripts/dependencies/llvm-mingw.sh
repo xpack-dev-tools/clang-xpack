@@ -283,9 +283,9 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCMAKE_SYSTEM_NAME=Windows") # MS
 
           config_options+=("-DCMAKE_C_COMPILER=${CC}") # MS
-          # config_options+=("-DCMAKE_C_COMPILER_WORKS=ON")
+          config_options+=("-DCMAKE_C_COMPILER_WORKS=ON") # MS
           config_options+=("-DCMAKE_CXX_COMPILER=${CXX}") # MS
-          # config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON")
+          config_options+=("-DCMAKE_CXX_COMPILER_WORKS=ON") # MS
 
           config_options+=("-DCMAKE_ADDR2LINE=${ADDR2LINE}")
           config_options+=("-DCMAKE_AR=${AR}") # MS
