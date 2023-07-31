@@ -24,7 +24,7 @@ function clang_add_mingw_wrappers()
 
     (
       # Add wrappers for the mingw-w64 binaries.
-      cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
+      run_verbose cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 
       run_verbose cp -pv "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
       run_verbose chmod +x *-wrapper.sh

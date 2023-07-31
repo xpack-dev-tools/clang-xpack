@@ -38,14 +38,14 @@ function llvm_mingw_build_first()
   then
 
     mkdir -pv "${XBB_SOURCES_FOLDER_PATH}"
-    cd "${XBB_SOURCES_FOLDER_PATH}"
+    run_verbose_develop cd "${XBB_SOURCES_FOLDER_PATH}"
 
     download_and_extract "${llvm_url}" "${llvm_archive}" \
       "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
 
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
+      run_verbose_develop cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
 
       # Use install/libs/lib & include
       xbb_activate_dependencies_dev
@@ -241,7 +241,7 @@ function llvm_mingw_build_compiler_rt()
   then
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
+      run_verbose_develop cd "${XBB_BUILD_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
       # Actually not used.
       # CPPFLAGS="${XBB_CPPFLAGS}"
@@ -422,7 +422,7 @@ function llvm_mingw_build_libcxx()
   then
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
-      cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
+      run_verbose_develop cd "${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 
       # Actually not used
       # CPPFLAGS="${XBB_CPPFLAGS}"
@@ -695,7 +695,7 @@ function test_mingw_llvm()
 
     rm -rf "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
     mkdir -pv "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
-    cd "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
+    run_verbose_develop cd "${XBB_TESTS_FOLDER_PATH}/${name_prefix}clang${name_suffix}"
 
     echo
     echo "pwd: $(pwd)"
