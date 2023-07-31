@@ -9,6 +9,11 @@
 
 # -----------------------------------------------------------------------------
 
+# The configuration is based on:
+# https://github.com/mstorsjo/llvm-mingw
+
+# -----------------------------------------------------------------------------
+
 # XBB_LLVM_PATCH_FILE_NAME
 
 function llvm_mingw_build_first()
