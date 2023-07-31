@@ -625,6 +625,18 @@ function test_mingw_llvm()
 
   name_prefix="${triplet}-"
 
+  local bits
+  if [ "${triplet}" == "x86_64-w64-mingw32" ]
+  then
+    bits="64"
+  elif [ "${triplet}" == "i686-w64-mingw32" ]
+  then
+    bits="32"
+  else
+    echo "Unsupported triplet ${triplet}"
+    exit 1
+  fi
+
   echo
   echo "Testing the ${name_prefix}llvm binaries..."
 
@@ -774,41 +786,41 @@ function test_mingw_llvm()
     export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
     echo "WINEPATH=${WINEPATH}"
 
-    compiler-tests-single "${test_bin_path}"
-    compiler-tests-single "${test_bin_path}" --gc
-    compiler-tests-single "${test_bin_path}" --lto
-    compiler-tests-single "${test_bin_path}" --gc --lto
+    compiler-tests-single "${test_bin_path}" --${bits}
+    compiler-tests-single "${test_bin_path}" --${bits} --gc
+    compiler-tests-single "${test_bin_path}" --${bits} --lto
+    compiler-tests-single "${test_bin_path}" --${bits} --gc --lto
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      compiler-tests-single "${test_bin_path}" --static-lib
-      compiler-tests-single "${test_bin_path}" --static-lib --gc
-      compiler-tests-single "${test_bin_path}" --static-lib --lto
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto
 
-      compiler-tests-single "${test_bin_path}" --static
-      compiler-tests-single "${test_bin_path}" --static --gc
-      compiler-tests-single "${test_bin_path}" --static --lto
-      compiler-tests-single "${test_bin_path}" --static --gc --lto
+      compiler-tests-single "${test_bin_path}" --${bits} --static
+      compiler-tests-single "${test_bin_path}" --${bits} --static --gc
+      compiler-tests-single "${test_bin_path}" --${bits} --static --lto
+      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto
     fi
 
     # Once again with --crt
-    compiler-tests-single "${test_bin_path}" --crt
-    compiler-tests-single "${test_bin_path}" --gc --crt
-    compiler-tests-single "${test_bin_path}" --lto --crt
-    compiler-tests-single "${test_bin_path}" --gc --lto --crt
+    compiler-tests-single "${test_bin_path}" --${bits} --crt
+    compiler-tests-single "${test_bin_path}" --${bits} --gc --crt
+    compiler-tests-single "${test_bin_path}" --${bits} --lto --crt
+    compiler-tests-single "${test_bin_path}" --${bits} --gc --lto --crt
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      compiler-tests-single "${test_bin_path}" --static-lib --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --lto --crt
-      compiler-tests-single "${test_bin_path}" --static-lib --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto --crt
 
-      compiler-tests-single "${test_bin_path}" --static --crt
-      compiler-tests-single "${test_bin_path}" --static --gc --crt
-      compiler-tests-single "${test_bin_path}" --static --lto --crt
-      compiler-tests-single "${test_bin_path}" --static --gc --lto --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static --lto --crt
+      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto --crt
     fi
 
     # -------------------------------------------------------------------------
