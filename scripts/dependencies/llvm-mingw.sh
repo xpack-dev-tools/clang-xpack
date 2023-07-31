@@ -333,6 +333,9 @@ function llvm_mingw_build_compiler_rt()
 
           config_options+=("-DZLIB_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include") # Extra
 
+          # -DCMAKE_C_FLAGS_INIT=-mguard=cf MS
+          # -DCMAKE_CXX_FLAGS_INIT=-mguard=cf
+
           run_verbose "${CMAKE}" \
             "${config_options[@]}" \
             "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
@@ -549,6 +552,9 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
           config_options+=("-DLLVM_PATH=${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/llvm") # MS
+
+          # -DCMAKE_C_FLAGS_INIT=-mguard=cf MS
+          # -DCMAKE_CXX_FLAGS_INIT=-mguard=cf MS
 
           run_verbose "${CMAKE}" \
             "${config_options[@]}" \
