@@ -300,10 +300,10 @@ function llvm_mingw_build_compiler_rt()
 
           if [ "${triplet}" == "x86_64-w64-mingw32" ]
           then
-            config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-windows-gnu") # MS
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=x86_64-w64-windows-gnu") # MS
           elif [ "${triplet}" == "i686-w64-mingw32" ]
           then
-            config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-windows-gnu") # MS
+            config_options+=("-DCMAKE_C_COMPILER_TARGET=i686-w64-windows-gnu") # MS
           else
             echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
             exit 1
