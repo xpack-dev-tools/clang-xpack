@@ -76,6 +76,7 @@ function clang_build_mingw_bootstrap()
 
     # Build LLVM with the host XBB compiler.
     # Has a reference to /opt/xbb/lib/libncurses.so.
+    # The result is installed in x86_64-pc-linux-gnu/install
     llvm_mingw_build_first "${XBB_LLVM_VERSION}"
 
     # Add wrappers to both i686-* and x64_64-* applications.
@@ -103,13 +104,20 @@ function clang_build_mingw_bootstrap()
 
         xbb_activate_installed_bin
 
-        # MS uses the gcc names. Stick to them for now.
+        # MS uses the clang names.
         # xbb_prepare_clang_env "${triplet}-"
+        # For consistency with GCC, prefer them.
         xbb_prepare_gcc_env "${triplet}-"
 
+        # The Windows object files (like CRT_glob.o) and libraries
+        # like libmsvcrt70.a) are installed in
+        # x86_64-pc-linux-gnu/install/i686-w64-mingw32
         mingw_build_crt --triplet="${triplet}"
 
+        # The library is installed in
+        # x86_64-pc-linux-gnu/install/lib/clang/16.0.6/lib/windows/libclang_rt.builtins-i386.a
         llvm_mingw_build_compiler_rt --triplet="${triplet}"
+
         llvm_mingw_build_libcxx --triplet="${triplet}"
 
         # Requires libunwind.
@@ -130,7 +138,7 @@ function clang_build_common()
     # issue was cmake picking up unwanted tools. This was solved only with
     # explicit `CMAKE_*` variables to define the absolute paths to desired
     # tools. Attempts to simplify things by removing the top mingw-gcc
-    # dependency failed, since some of the toolsa re needed in post
+    # dependency failed, since some of the tools are needed in the post
     # processing step.
 
     # Number
