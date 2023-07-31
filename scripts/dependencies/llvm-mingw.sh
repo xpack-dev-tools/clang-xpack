@@ -756,6 +756,11 @@ function test_mingw_llvm()
 
     ls -l ${test_bin_path}/../${triplet}/bin
 
+    local llvm_version=$(run_host_app "${CC}" -dumpversion)
+    echo "clang: ${llvm_version}"
+
+    local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
+
     # LTO weak C++ tests fail with 15.0.7-1.
     # ld.lld: error: duplicate symbol: world()
     # >>> defined at hello-weak-cpp.cpp
