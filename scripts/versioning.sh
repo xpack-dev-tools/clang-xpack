@@ -43,13 +43,13 @@ function clang_add_mingw_wrappers()
           ln -sfv clang-target-wrapper.sh ${triplet}-${name}
         done
 
-        ln -sfv ld-wrapper.sh ${triplet}-ld
-        ln -sfv objdump-wrapper.sh ${triplet}-objdump
-
-        for name in addr2line dlltool ar nm objcopy ranlib readelf size strings strip windres
+        for name in addr2line ar ranlib nm objcopy readelf size strings strip windres dlltool
         do
           ln -sfv llvm-${name} ${triplet}-${name}
         done
+
+        ln -sfv ld-wrapper.sh ${triplet}-ld
+        ln -sfv objdump-wrapper.sh ${triplet}-objdump
 
       done
     ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${mingw_wrappers_folder_name}/output-$(ndate).txt"
