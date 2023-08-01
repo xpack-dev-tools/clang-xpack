@@ -93,8 +93,15 @@ xpm link -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git
 This distribution follows the official
 [LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
 but only the final patch of each version is released (like 15.0.7).
-The rule is to wait for the new upstream release (like x.0.0), and
-release the previous one (x-1.0.[567])
+The rule is to wait for the new upstream release (like X.0.0), and
+release the previous one (X-1.0.[567])
+
+However, in order to spot possible issues, it is recommended to run
+builds as soon as new versions are available (like X.0.1),
+without making releases.
+
+For Windows builds, wait for
+[llvm-mingw releases](https://github.com/mstorsjo/llvm-mingw/releases).
 
 ## How to make new releases
 
@@ -186,6 +193,40 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - rename `llvm-15.0.7-3.git.patch`
 
 Note: currently the patch is required to fix the CLT library path.
+
+### Update Windows specifics
+
+Identify the release and the tag at:
+
+- <https://github.com/mstorsjo/llvm-mingw/releases>
+
+```sh
+rm -rf ~/Work/mstorsjo/llvm-mingw.git
+mkdir -pv ~/Work/mstorsjo
+git clone https://github.com/mstorsjo/llvm-mingw ~/Work/mstorsjo/llvm-mingw.git
+
+git -C ~/Work/mstorsjo/llvm-mingw.git checkout 20230614
+```
+
+Compare with the previous release. If the differences are small, possibly
+make the necessary adjustments and proceed.
+
+If the changes are major, run the llvm-mingw build as documented in the
+[README-DEVELOP-MSTORSJO](README-DEVELOP-MSTORSJO.md) to understand the
+extend of the changes.
+
+Check if there are changes in the tests, and update.
+
+Check if there are changes in the wrappers, and update.
+
+The first step is to build and test only the bootstrap,
+for this, un-comment a line in `application.sh`:
+
+```sh
+XBB_APPLICATION_BOOTSTRAP_ONLY="y"
+```
+
+After the bootstrap passes the tests, comment out this line and proceed.
 
 ## Build
 
