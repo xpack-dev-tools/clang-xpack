@@ -242,7 +242,7 @@ function llvm_mingw_build_compiler_rt()
 
   local llvm_compiler_rt_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
 
-  local clang_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
+  local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
@@ -284,7 +284,14 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-G" "Ninja")
 
           # Traditionally the runtime is in a versioned folder.
-          config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${clang_version_major}") # MS
+          if [ ${llvm_version_major} -ge 16 ]
+          then
+            # Starting with clang 16, only the major is used.
+            config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}") # MS
+          else
+            # Up to clang 15, the full version number was used.
+            config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
+          fi
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
           config_options+=("-DCMAKE_CROSSCOMPILING=ON")
