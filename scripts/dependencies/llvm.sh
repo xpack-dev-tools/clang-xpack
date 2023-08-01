@@ -487,6 +487,8 @@ function llvm_build()
               config_options+=("-DCLANG_TIDY_CONFUSABLE_CHARS_GEN=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/clang-tidy-confusable-chars-gen") # MS
             fi
 
+            config_options+=("-DLLD_DEFAULT_LD_LLD_IS_MINGW=ON") # MS
+
             config_options+=("-DLLVM_CONFIG_PATH=${XBB_NATIVE_DEPENDENCIES_INSTALL_FOLDER_PATH}/bin/llvm-config") # MS
 
             config_options+=("-DLLDB_ENABLE_LZMA=OFF")
