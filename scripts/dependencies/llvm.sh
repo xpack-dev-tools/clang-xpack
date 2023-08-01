@@ -800,6 +800,11 @@ function llvm_test()
 
     # -------------------------------------------------------------------------
 
+    local llvm_version=$(run_host_app "${CC}" -dumpversion)
+    echo "clang: ${llvm_version}"
+
+    local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
+
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
