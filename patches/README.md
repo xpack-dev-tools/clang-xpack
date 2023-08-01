@@ -1,5 +1,19 @@
 # Patches
 
+## llvm-16.0.6
+
+A patch from HomeBrew, apparently for meson.
+
+<https://github.com/Homebrew/homebrew-core/blob/58bcd53f0cc021afaf6aaa7fbfd72c43fd51c911/Formula/llvm.rb>
+
+## llvm-15.0.7
+
+No patches in HomeBrew:
+
+<https://github.com/Homebrew/homebrew-core/blob/207de704c332ada38c835c0ae1b275058c7dff82/Formula/llvm.rb>
+
+Patch for 32-bit Arm.
+
 ## llvm-14.0.6-2
 
 In addition, patch the clangd bug
