@@ -21,6 +21,7 @@
 # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
 
 # https://github.com/Homebrew/homebrew-core/blob/master/Formula/llvm.rb
+# https://github.com/Homebrew/homebrew-core/commits/master/Formula/llvm.rb
 
 # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
 # https://llvm.org/docs/BuildingADistribution.html
@@ -195,9 +196,6 @@ function llvm_build()
             config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
           fi
 
-          # config_options+=("-DCMAKE_LINKER=ld") # HB
-          config_options+=("-DCMAKE_LINKER=${LD}")
-
           config_options+=("-DCMAKE_NM=${NM}")
           if [ ! -z "${OBJCOPY:-}" ]
           then
@@ -295,6 +293,9 @@ function llvm_build()
             fi
 
             config_options+=("-DCLANG_FORCE_MATCHING_LIBCLANG_SOVERSION=OFF") # HB
+
+            # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
+            config_options+=("-DCMAKE_LINKER=ld") # HB
 
             # To help find the locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
@@ -404,6 +405,8 @@ function llvm_build()
               config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
             fi
 
+            config_options+=("-DCMAKE_LINKER=${LD}")
+
             # To help find the just locally compiled `ld.gold`.
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
@@ -466,6 +469,8 @@ function llvm_build()
             config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
             # config_options+=("-DCMAKE_CROSSCOMPILING=ON")
+
+            config_options+=("-DCMAKE_LINKER=${LD}")
 
             config_options+=("-DCMAKE_RC_COMPILER=${RC}") # MS
 
