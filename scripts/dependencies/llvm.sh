@@ -898,8 +898,9 @@ function llvm_test()
           # Segmentation fault (core dumped)
           # Program received signal SIGSEGV, Segmentation fault.
           # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
-          export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+
+          # export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
+          # export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
 
           compiler-tests-single "${test_bin_path}" --64
           compiler-tests-single "${test_bin_path}" --64 --gc
