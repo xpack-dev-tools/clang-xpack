@@ -505,6 +505,8 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_FFI=ON")
 
             # mlir fails on windows, it tries to build the NATIVE folder and fails.
+            # MS does not include polly
+            # config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra")
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             # Keep the definitions separte for each platform, they are different.
             # On Windows, the runtimes are built in separate steps, together
