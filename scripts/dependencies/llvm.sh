@@ -576,11 +576,23 @@ function llvm_build()
 
         if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
         then
-          if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/darwin/libclang_rt.profile_osx.a" ]
+          if [ ${llvm_version_major} -ge 16 ]
           then
-            echo
-            echo "Missing libclang_rt.profile_osx.a"
-            exit 1
+            # Starting with clang 16, only the major is used.
+            if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/darwin/libclang_rt.profile_osx.a" ]
+            then
+              echo
+              echo "Missing libclang_rt.profile_osx.a"
+              exit 1
+            fi
+          else
+            # Up to clang 15, the full version number was used.
+            if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/darwin/libclang_rt.profile_osx.a" ]
+            then
+              echo
+              echo "Missing libclang_rt.profile_osx.a"
+              exit 1
+            fi
           fi
         fi
 
