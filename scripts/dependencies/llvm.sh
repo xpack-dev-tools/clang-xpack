@@ -1007,10 +1007,13 @@ function llvm_test()
         # caught std::exception
         # all ok <--
 
-        export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_LTO_CRT_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
+        if [ ${llvm_version_major} -eq 16 ]
+        then
+          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          # export XBB_SKIP_RUN_TEST_LTO_CRT_THROWCATCH_MAIN="y"
+          # export XBB_SKIP_RUN_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
+        fi
       fi
 
       # Done before.
