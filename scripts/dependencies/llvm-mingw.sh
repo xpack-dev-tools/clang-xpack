@@ -374,24 +374,6 @@ function llvm_mingw_build_compiler_rt()
             --target install/strip
         fi
 
-        # if [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
-        # then
-        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows"
-        #   for i in lib/windows/libclang_rt.*.a
-        #   do
-        #       run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows/$(basename $i)"
-        #   done
-
-        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
-        #   for i in lib/windows/libclang_rt.*.dll
-        #   do
-        #       if [ -f $i ]
-        #       then
-        #           run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
-        #       fi
-        #   done
-        # fi
-
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output-$(ndate).txt"
     )
 
