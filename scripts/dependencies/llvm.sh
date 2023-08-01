@@ -821,23 +821,24 @@ function llvm_test()
       # >>> defined at hello-f-weak-cpp.cpp
       # >>>            lto-hello-f-weak-cpp-32.cpp.o
       # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
-      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_32="y"
-      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_32="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_32="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_32="y"
+      # export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_32="y"
+      # export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_32="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_32="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_32="y"
+      # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_32="y"
+      # export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_32="y"
 
-      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_64="y"
-      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_32="y"
+      # export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_32="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_64="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_64="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_64="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_64="y"
+
+      # export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_64="y"
+      # export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_64="y"
 
       for bits in 32 64
       do
