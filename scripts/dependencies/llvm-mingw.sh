@@ -376,10 +376,10 @@ function llvm_mingw_build_compiler_rt()
 
         # if [ "" == "${XBB_BOOTSTRAP_SUFFIX}" ]
         # then
-        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows"
+        #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows"
         #   for i in lib/windows/libclang_rt.*.a
         #   do
-        #       run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/windows/$(basename $i)"
+        #       run_verbose cp -v $i "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows/$(basename $i)"
         #   done
 
         #   mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${XBB_TARGET_TRIPLET}/bin"
