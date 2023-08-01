@@ -12,6 +12,9 @@
 # The configuration is based on:
 # https://github.com/mstorsjo/llvm-mingw
 
+# 16.0.6 - https://github.com/mstorsjo/llvm-mingw/releases/tag/20230614
+# 15.0.0 - https://github.com/mstorsjo/llvm-mingw/releases/tag/20220906
+
 # -----------------------------------------------------------------------------
 
 # XBB_LLVM_PATCH_FILE_NAME
