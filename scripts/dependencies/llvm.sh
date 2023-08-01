@@ -194,6 +194,10 @@ function llvm_build()
           then
             config_options+=("-DCMAKE_DLLTOOL=${DLLTOOL}")
           fi
+
+          # config_options+=("-DCMAKE_LINKER=ld") # HB
+          config_options+=("-DCMAKE_LINKER=${LD}")
+
           config_options+=("-DCMAKE_NM=${NM}")
           if [ ! -z "${OBJCOPY:-}" ]
           then
@@ -215,7 +219,6 @@ function llvm_build()
           config_options+=("-DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS}")
           config_options+=("-DCMAKE_SHARED_LINKER_FLAGS=${LDFLAGS}")
 
-          config_options+=("-DCMAKE_LINKER=ld") # HB
 
           # Please note the trailing space.
           config_options+=("-DCLANG_VENDOR=${XBB_LLVM_BRANDING} ")
