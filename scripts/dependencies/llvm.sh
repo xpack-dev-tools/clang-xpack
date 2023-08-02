@@ -924,6 +924,20 @@ function llvm_test()
           compiler-tests-single "${test_bin_path}" --64 --gc
           compiler-tests-single "${test_bin_path}" --64 --lto --lld
           compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld
+
+          if true
+          then
+            compiler-tests-single "${test_bin_path}" --64 --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --lto --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --lto --crt --libunwind
+
+            compiler-tests-single "${test_bin_path}" --64 --libc++ --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --lto --libc++ --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind
+          fi
+
         )
 
         local skip_32_tests=""
@@ -954,6 +968,19 @@ function llvm_test()
             compiler-tests-single "${test_bin_path}" --32 --gc
             compiler-tests-single "${test_bin_path}" --32 --lto --lld
             compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld
+
+            if true
+            then
+              compiler-tests-single "${test_bin_path}" --32 --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --lto --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --lto --crt --libunwind
+
+              compiler-tests-single "${test_bin_path}" --32 --libc++ --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --lto --libc++ --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind
+            fi
           )
         fi
       else
