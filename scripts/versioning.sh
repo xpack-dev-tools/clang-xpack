@@ -280,9 +280,9 @@ function clang_build_common()
       binutils_build_ld_gold "${XBB_BINUTILS_VERSION}"
     fi
 
-    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "darwin" ] \
-    && [ "${XBB_HOST_ARCH}" == "x64" ] \
-    && [ "${XBB_RELEASE_VERSION}" == "15.0.7-3" ] \
+    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "darwin" ] && \
+       [ "${XBB_HOST_ARCH}" == "x64" ] && \
+       [ "${XBB_RELEASE_VERSION}" == "15.0.7-3" ]
     then
       # This hack is used to build clang 15 on macOS 10.13, since
       # the previous xPack clangs fail, due to the patch adding
