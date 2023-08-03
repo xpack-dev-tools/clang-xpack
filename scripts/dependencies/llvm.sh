@@ -324,7 +324,11 @@ function llvm_build()
             config_options+=("-DLLDB_ENABLE_LZMA=ON") # HB
             config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB (Darwin only)
 
-            config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
+            # DO NOT!
+            # compiler-rt is not built and later components fail with missing headers!
+
+            # config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
+
             config_options+=("-DLLVM_BUILD_LLVM_C_DYLIB=ON") # HB (Darwin only)
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON")
             # Fails with: LLVM_BUILTIN_TARGETS isn't implemented for Darwin platform!
