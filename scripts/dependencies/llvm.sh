@@ -79,15 +79,6 @@ function llvm_build()
       run_verbose sed -i.bak \
         -e 's|^check_library_exists(xar xar_open |# check_library_exists(xar xar_open |' \
         "${llvm_src_folder_name}/llvm/cmake/config-ix.cmake"
-
-      if [ "${ACTUAL_LLVM_VERSION}" == "15.0.7" ]
-      then
-        # /Users/ilg/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/sources/llvm-project-15.0.7.src/compiler-rt/lib/xray/xray_buffer_queue.h:21:10: fatal error: 'cstddef' file not found
-        # #include <cstddef>
-        run_verbose sed -i.bak \
-          -e 's|option(COMPILER_RT_BUILD_XRAY "Build xray" ON)|option(COMPILER_RT_BUILD_XRAY "Build xray" OFF)|' \
-          "${llvm_src_folder_name}/compiler-rt/CMakeLists.txt"
-      fi
     fi
 
     # if [ "${XBB_HOST_PLATFORM}" == "linux" ]
