@@ -2,6 +2,70 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-08-03
+
+* v15.0.7-3 prepared
+* c39c94d VERSION 16.0.6-1
+* 4cdfd69 versioning.sh: temporarily all use apple_clang_env
+* 206fb18 llvm.sh: remove patch to disable XRAY
+* 98c2fd4 llvm.sh: add DARWIN_osx_*
+* 48de38e llvm.sh: EXTERNAL_COMPILER_RT=OFF
+
+## 2023-08-02
+
+* f3fb95e VERSION 15.0.7-3
+* 9e99ccf llvm.sh: disable XRAY for macOS
+* 036993e .git/.npm ignore build*/
+* 67711f3 llvm-15.0.7-3.patch: remove CLT c++/v1 path
+* ef80a68 versioning.sh: # XBB_DO_REQUIRE_RPATH="n"
+* 45d7402 versioning.sh: fix condition for apple_clang_env
+* db8347f versioning.sh: apple_clang_env only x64 15.0.7-3
+* ef2bd0d llvm.sh:  skip LTO_THROWCATCH_MAIN for clang 15
+* 010efc9 llvm.sh: add --libc++ --crt tests for linux x64
+* ed78823 llvm.sh: platform specific linker definitions
+* dd8dd76 16.0.6-1 patch from homebrew
+
+## 2023-08-01
+
+* 12a47df remove 16.0.6-1 patch
+* f2eaf25 llvm.sh: ${llvm_version_major} -ge 16
+* 5c8e1ce llvm-mingw.sh: ${llvm_version_major} -ge 16
+* c57a659 llvm-mingw.sh: cleanups
+* 2008ab8 llvm.sh: adjust SKIP_RUN_TEST for clang 16
+* 0bc2178 llvm*.sh: fix clang/${llvm_version_major} path
+* 74a7f80 llvm-mingw.sh: list llvm-mingw releases
+* 8213aa4 llvm.sh: comment out SKIP_TEST for windows
+* fcd3126 llvm.sh: comment out SKIP_RUN_TEST for linux
+* 3e5d92d llvm.sh: compute llvm_version_major
+* 213c643 README update
+* 5d56958 split README-DEVELOP-MSTORSJO
+* 23327cb llvm.sh: cosmetics in comments
+* 1f6f085 llvm.sh: -DCMAKE_LINKER=${LD}
+* 9920f8d llvm.sh: -DLLD_DEFAULT_LD_LLD_IS_MINGW=ON win32
+* b6f842c versioning.sh: comments
+* 8555615 versioning.sh: reorder mingw_wrappers
+* e6588ec llvm-mingw.sh: cosmetics
+* bfe56e5 llvm-mingw.sh: refer to mstorsjo/llvm-mingw
+* cb7205c llvm-mingw.sh: comment out tests skips, 16 all ok
+* fe571a2 llvm-mingw.sh: compute llvm_version_major
+* 87fc073 llvm-mingw.sh:  explicit --${bits} in tests
+* 33fb772 llvm-mingw.sh: commented -mguard=cf
+* cacbd5a llvm-mingw.sh: COMPILER_TARGET -w64-
+* 7ad2d2e llvm-mingw.sh: explicit -DCMAKE_LINKER
+* 4046a7f llvm-mingw.sh: explicit C/CXX_COMPILER_WORKS
+* ab5d817 llvm-mingw.sh: /lib/clang/${clang_version_major}
+* b768cef run_verbose_develop cd
+* 619b632 wrappers: update from MS 20230614
+
+## 2023-07-30
+
+* d5fef62 VERSION temporarily 16.0.6-1
+* 1032747 llvm.sh: add simple test with defaults for macOS
+* 2323f4a llvm.sh: add simple test with defaults
+* bfb126c llvm.sh: add clang -v to show selected gcc
+* 1648240 add llvm-15.0.7-3.git.patch
+* 7bca49b prepare v15.0.7-3
+
 ## 2023-07-29
 
 * v15.0.7-3 prepared
