@@ -14,6 +14,8 @@ No patches in HomeBrew:
 
 Patch for 32-bit Arm.
 
+- <https://github.com/llvm/llvm-project/issues/60115>
+
 ## llvm-14.0.6-2
 
 In addition, patch the clangd bug
