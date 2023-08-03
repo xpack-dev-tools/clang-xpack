@@ -839,31 +839,28 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
-      # LTO weak C++ tests fail with 15.0.7-1.
-      # ld.lld: error: duplicate symbol: world()
-      # >>> defined at hello-weak-cpp.cpp
-      # >>>            lto-hello-weak-cpp-32.cpp.o
-      # >>> defined at hello-f-weak-cpp.cpp
-      # >>>            lto-hello-f-weak-cpp-32.cpp.o
-      # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+      if [ ${llvm_version_major} -eq 15 ]
+      then
 
-      # export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_32="y"
-      # export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_32="y"
+        # LTO weak C++ tests fail with 15.0.7-1.
+        # ld.lld: error: duplicate symbol: world()
+        # >>> defined at hello-weak-cpp.cpp
+        # >>>            lto-hello-weak-cpp-32.cpp.o
+        # >>> defined at hello-f-weak-cpp.cpp
+        # >>>            lto-hello-f-weak-cpp-32.cpp.o
+        # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
 
-      # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_32="y"
-      # export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_32="y"
+        # Skip the same tests for both triplets.
+        export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
+        export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
 
-      # export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_32="y"
-      # export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+        export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
 
-      # export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP_64="y"
-      # export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP_64="y"
+        export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
 
-      # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP_64="y"
-      # export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP_64="y"
-
-      # export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP_64="y"
-      # export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP_64="y"
+      fi
 
       for bits in 32 64
       do
