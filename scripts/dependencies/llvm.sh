@@ -356,9 +356,13 @@ function llvm_build()
             if [ "${XBB_HOST_ARCH}" == "x64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=X86")
+              config_options+=("-DDARWIN_osx_ARCHS=x86_64")
+              config_options+=("-DDARWIN_osx_BUILTIN_ARCHS=i386;x86_64")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
               config_options+=("-DLLVM_TARGETS_TO_BUILD=AArch64")
+              config_options+=("-DDARWIN_osx_ARCHS=arm64")
+              config_options+=("-DDARWIN_osx_BUILTIN_ARCHS=arm64")
             else
               echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}()"
               exit 1
