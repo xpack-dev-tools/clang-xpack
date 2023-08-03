@@ -282,7 +282,11 @@ function clang_build_common()
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "darwin" ]
     then
-	    xbb_prepare_apple_clang_env
+      # Use it temporarily, to avoid bugs in previous binary packages.
+      if [ "${XBB_RELEASE_VERSION}" == "15.0.7-3" ]
+      then
+	      xbb_prepare_apple_clang_env
+      fi
     fi
 
     # Finally build LLVM clang.
