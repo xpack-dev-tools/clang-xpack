@@ -868,7 +868,9 @@ function llvm_test()
       for bits in 32 64
       do
         # For libc++.dll & co.
-        # The DLLs are available in the /lib folder.
+        # The DLLs are usually in bin, but for consistency within GCC, they are
+        # also copied to lib; it is recommended to ast the compiler for the
+        # actual path.
         if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
         then
           cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
