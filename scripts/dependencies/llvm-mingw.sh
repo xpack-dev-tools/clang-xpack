@@ -785,7 +785,11 @@ function test_mingw_llvm()
     # export XBB_SKIP_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
     # export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
 
-    export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
+    # The DLLs are usually in bin, but for consistency within GCC, they are
+    # also copied to lib; it is recommended to ast the compiler for the
+    # actual path.
+    # export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
+    export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
     echo "WINEPATH=${WINEPATH}"
 
     compiler-tests-single "${test_bin_path}" --${bits}
