@@ -92,7 +92,7 @@ To install this specific version, use:
 xpm install @xpack-dev-tools/clang@{% raw %}{{ page.version }}.{{ page.npm_subversion }}{% endraw %} --verbose
 ```
 
-It is also possible to install Meson Build globally, in the user home folder,
+It is also possible to install LLVM clang globally, in the user home folder,
 but this requires xPack aware tools to automatically identify them and
 manage paths.
 
