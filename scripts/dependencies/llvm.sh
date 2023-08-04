@@ -936,13 +936,13 @@ function llvm_test()
           then
             compiler-tests-single "${test_bin_path}" --64 --crt --libunwind
             compiler-tests-single "${test_bin_path}" --64 --gc --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --lto --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --lto --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --lto --lld --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld --crt --libunwind
 
             compiler-tests-single "${test_bin_path}" --64 --libc++ --crt --libunwind
             compiler-tests-single "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --lto --libc++ --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind
+            compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind
           fi
 
         )
@@ -980,13 +980,13 @@ function llvm_test()
             then
               compiler-tests-single "${test_bin_path}" --32 --crt --libunwind
               compiler-tests-single "${test_bin_path}" --32 --gc --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --lto --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --lto --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --lto --lld --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld --crt --libunwind
 
               compiler-tests-single "${test_bin_path}" --32 --libc++ --crt --libunwind
               compiler-tests-single "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --lto --libc++ --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
+              compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
             fi
           )
         fi
