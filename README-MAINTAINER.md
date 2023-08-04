@@ -92,7 +92,7 @@ xpm link -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git
 
 This distribution follows the official
 [LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
-but only the final patch of each version is released (like 16.0.6).
+but only the final patch of each version is released (like 15.0.7).
 The rule is to wait for the new upstream release (like X.0.0), and
 release the previous one (X-1.0.[567])
 
@@ -139,8 +139,8 @@ Find the latest release that seems stable, usually like X.0.6, sometimes X.0.7.
 
 ### Increase the version
 
-Determine the version (like `16.0.6`) and update the `scripts/VERSION`
-file; the format is `16.0.6-1`. The fourth number is the xPack release number
+Determine the version (like `15.0.7`) and update the `scripts/VERSION`
+file; the format is `15.0.7-4`. The fourth number is the xPack release number
 of this version. A fifth number will be added when publishing
 the package on the `npm` server.
 
@@ -150,7 +150,7 @@ Check GitHub issues and pull requests:
 
 - <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
-and fix them; assign them to a milestone (like `16.0.6-1`).
+and fix them; assign them to a milestone (like `15.0.7-4`).
 
 ### Check `README.md`
 
@@ -181,7 +181,7 @@ To keep the development repository fork in sync with the upstream LLVM
 repository, in the `xpack-dev-tools/llvm-project` Git repo:
 
 - fetch `upstream`
-- checkout the `llvmorg-16.0.6` tag in detached state HEAD
+- checkout the `llvmorg-15.0.7` tag in detached state HEAD
 - create a branch like `v16.0.6-xpack`
 - cherry pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
   enable commit immediately
@@ -190,7 +190,7 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-16.0.6-1.git.patch`
+- rename `llvm-15.0.7-4.git.patch`
 
 Note: currently the patch is required to fix the CLT library path.
 
@@ -296,8 +296,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
 total 198256
--rw-r--r--  1 ilg  staff  96214029 Jan 21 01:18 xpack-clang-16.0.6-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Jan 21 01:18 xpack-clang-16.0.6-1-darwin-x64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  96214029 Jan 21 01:18 xpack-clang-15.0.7-4-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       105 Jan 21 01:18 xpack-clang-15.0.7-4-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -329,8 +329,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
 total 165320
--rw-r--r--  1 ilg  staff  84138150 Jan 27 03:56 xpack-clang-16.0.6-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 27 03:56 xpack-clang-16.0.6-1-darwin-arm64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  84138150 Jan 27 03:56 xpack-clang-15.0.7-4-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jan 27 03:56 xpack-clang-15.0.7-4-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -364,8 +364,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
 total 182596
--rw-r--r-- 1 ilg ilg 186973037 Jan 20 09:00 xpack-clang-16.0.6-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 20 09:00 xpack-clang-16.0.6-1-linux-x64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 186973037 Jan 20 09:00 xpack-clang-15.0.7-4-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 20 09:00 xpack-clang-15.0.7-4-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Windows binaries
@@ -391,8 +391,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
 total 375640
--rw-r--r-- 1 ilg ilg 384645944 Jan 21 01:35 xpack-clang-16.0.6-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Jan 21 01:35 xpack-clang-16.0.6-1-win32-x64.zip.sha
+-rw-r--r-- 1 ilg ilg 384645944 Jan 21 01:35 xpack-clang-15.0.7-4-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Jan 21 01:35 xpack-clang-15.0.7-4-win32-x64.zip.sha
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -424,8 +424,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
 total 143972
--rw-r--r-- 1 ilg ilg 147419140 Jan 21 08:14 xpack-clang-16.0.6-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jan 21 08:14 xpack-clang-16.0.6-1-linux-arm64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 147419140 Jan 21 08:14 xpack-clang-15.0.7-4-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jan 21 08:14 xpack-clang-15.0.7-4-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -457,9 +457,19 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
 total 124300
--rw-r--r-- 1 ilg ilg 127272460 Jan 21 06:20 xpack-clang-16.0.6-1-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 21 06:20 xpack-clang-16.0.6-1-linux-arm.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 127272460 Jan 21 06:20 xpack-clang-15.0.7-4-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jan 21 06:20 xpack-clang-15.0.7-4-linux-arm.tar.gz.sha
 ```
+
+### Build a debug version
+
+In some cases it is necessary to run a debug session in the binaries,
+or even in the libraries functions.
+
+For these cases, the build script accepts the `--debug` options.
+
+There are also xPack actions that use this option (`build-develop-debug`
+and `docker-build-develop-debug`).
 
 ### Files cache
 
@@ -646,15 +656,15 @@ xattr -cr ${HOME}/Downloads/xpack-*
 On GNU/Linux and macOS systems, use:
 
 ```sh
-.../xpack-clang-16.0.6-1/bin/clang --version
-xPack x86_64 clang version 16.0.6
+.../xpack-clang-15.0.7-4/bin/clang --version
+xPack x86_64 clang version 15.0.7
 ```
 
 On Windows use:
 
 ```dos
-...\xpack-clang-16.0.6-1\bin\clang --version
-xPack x86_64 clang version 16.0.6
+...\xpack-clang-15.0.7-4\bin\clang --version
+xPack x86_64 clang version 15.0.7
 ```
 
 ## Create a new GitHub pre-release draft
@@ -737,7 +747,7 @@ watching this project.
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes, use a message like
-  _package.json: update urls for 16.0.6-1.1 release_ (without _v_)
+  _package.json: update urls for 15.0.7-4.1 release_ (without _v_)
 
 ## Publish on the npmjs.com server
 
@@ -748,7 +758,7 @@ watching this project.
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
-- `npm version 16.0.6-1.1`; the first 4 numbers are the same as the
+- `npm version 15.0.7-4.1`; the first 4 numbers are the same as the
   GitHub release; the fifth number is the npm specific version
 - the commits and the tag should have been pushed by the `postversion` script;
   if not, push them with `git push origin --tags`
@@ -777,12 +787,12 @@ The tests results are available from the
 When the release is considered stable, promote it as `latest`:
 
 - `npm dist-tag ls @xpack-dev-tools/clang`
-- `npm dist-tag add @xpack-dev-tools/clang@16.0.6-1.1 latest`
+- `npm dist-tag add @xpack-dev-tools/clang@15.0.7-4.1 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
 In case the previous version is not functional and needs to be unpublished:
 
-- `npm unpublish @xpack-dev-tools/clang@16.0.6-1.1`
+- `npm unpublish @xpack-dev-tools/clang@15.0.7-4.1`
 
 ## Update the Web
 
