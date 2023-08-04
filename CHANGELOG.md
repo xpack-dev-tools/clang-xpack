@@ -4,6 +4,7 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-04
 
+* v16.0.6-1 prepared
 * v15.0.7-3.1 published on npmjs.com
 * a6fd6bb package.json: update urls for 15.0.7-3.1 release
 * 22387bd templates/jekyll update
