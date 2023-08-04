@@ -31,7 +31,7 @@ function tests_update_system()
     run_verbose apt-get -qq install --yes g++
   elif [[ ${image_name} == *centos* ]] || [[ ${image_name} == *redhat* ]] || [[ ${image_name} == *fedora* ]]
   then
-    run_verbose yum install --assumeyes --quiet gcc-c++ glibc glibc-common libstdc++
+    run_verbose yum install --assumeyes --quiet gcc-c++ glibc glibc-common libstdc++ libatomic
     if [ "$(uname -m)" == "x86_64" ]
     then
       run_verbose yum install --assumeyes --quiet libgcc*i686 libstdc++*i686 glibc*i686 libatomic*i686 # libgfortran*i686
