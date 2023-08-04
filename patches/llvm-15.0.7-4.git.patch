@@ -1,11 +1,167 @@
+From 0e124fd1db8e47311fcfb7b6d0b92dee348e7d4c Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Sun, 11 Jul 2021 11:43:48 +0300
+Subject: [PATCH] clang: add /Library/... to headers search path
+
+Recent macOS releases also use:
+/Library/Developer/CommandLineTools/usr/include/c++/v1
+---
+ clang/lib/Driver/ToolChains/Darwin.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/clang/lib/Driver/ToolChains/Darwin.cpp b/clang/lib/Driver/ToolChains/Darwin.cpp
+index bada811daadf..e6414a834432 100644
+--- a/clang/lib/Driver/ToolChains/Darwin.cpp
++++ b/clang/lib/Driver/ToolChains/Darwin.cpp
+@@ -2367,6 +2367,7 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+     // On Darwin, libc++ can be installed in one of the following two places:
+     // 1. Alongside the compiler in         <install>/include/c++/v1
+     // 2. In a SDK (or a custom sysroot) in <sysroot>/usr/include/c++/v1
++    // 3. In /Library/Developer/CommandLineTools/usr/include/c++/v1
+     //
+     // The precendence of paths is as listed above, i.e. we take the first path
+     // that exists. Also note that we never include libc++ twice -- we take the
+@@ -2399,6 +2400,17 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+                    << "\"\n";
+     }
+ 
++    // Otherwise, check for (3)
++    llvm::SmallString<128> CLT = 
++      StringRef("/Library/Developer/CommandLineTools/usr/include/c++/v1");
++    if (getVFS().exists(CLT)) {
++      addSystemInclude(DriverArgs, CC1Args, CLT);
++      return;
++    } else if (DriverArgs.hasArg(options::OPT_v)) {
++      llvm::errs() << "ignoring nonexistent directory \"" << CLT
++                   << "\"\n";
++    }
++
+     // Otherwise, don't add any path.
+     break;
+   }
+-- 
+2.37.1 (Apple Git-137.1)
+
+From 619490f8e06874b78e384c14f005d679697945f3 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Fri, 4 Aug 2023 22:02:55 +0300
+Subject: [PATCH] driver.cpp: get absolute path in SetInstallDir()
+
+---
+ clang/tools/driver/driver.cpp | 64 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 63 insertions(+), 1 deletion(-)
+
+diff --git a/clang/tools/driver/driver.cpp b/clang/tools/driver/driver.cpp
+index 34335a599a00..e9c4d47d05d7 100644
+--- a/clang/tools/driver/driver.cpp
++++ b/clang/tools/driver/driver.cpp
+@@ -54,6 +54,15 @@ using namespace clang;
+ using namespace clang::driver;
+ using namespace llvm::opt;
+ 
++#if defined(__linux__)
++#include <unistd.h>
++#elif defined(__APPLE__)
++#include <libproc.h>
++#include <unistd.h>
++#elif defined(__MINGW32__)
++#include <windows.h>
++#endif
++
+ std::string GetExecutablePath(const char *Argv0, bool CanonicalPrefixes) {
+   if (!CanonicalPrefixes) {
+     SmallString<128> ExecutablePath(Argv0);
+@@ -285,6 +294,56 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
+   // path being a symlink.
+   SmallString<128> InstalledPath(argv[0]);
+ 
++#if defined(__linux__)
++
++  char ProcessAbsolutePath[PATH_MAX];
++
++  int len = readlink("/proc/self/exe", ProcessAbsolutePath,
++                     sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: readlink(\"/proc/self/exe\") failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#elif defined(__APPLE__)
++
++  // The size must be at least PROC_PIDPATHINFO_SIZE, otherwise the call
++  // fails with ENOMEM (12).
++  // https://opensource.apple.com/source/Libc/Libc-498/darwin/libproc.c
++  char ProcessAbsolutePath[PROC_PIDPATHINFO_SIZE];
++
++  int len = proc_pidpath(getpid(), ProcessAbsolutePath,
++                         sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: proc_pidpath() failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#elif defined(__MINGW32__)
++
++  char ProcessAbsolutePath[PATH_MAX];
++
++  len = GetModuleFileName(NULL, ProcessAbsolutePath,
++                          sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: GetModuleFileName() failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#else
++
+   // Do a PATH lookup, if there are no directory components.
+   if (llvm::sys::path::filename(InstalledPath) == InstalledPath)
+     if (llvm::ErrorOr<std::string> Tmp = llvm::sys::findProgramByName(
+@@ -295,9 +354,12 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
+   if (CanonicalPrefixes)
+     llvm::sys::fs::make_absolute(InstalledPath);
+ 
++#endif
++
+   StringRef InstalledPathParent(llvm::sys::path::parent_path(InstalledPath));
+-  if (llvm::sys::fs::exists(InstalledPathParent))
++  if (llvm::sys::fs::exists(InstalledPathParent)) {
+     TheDriver.setInstalledDir(InstalledPathParent);
++  }
+ }
+ 
+ static int ExecuteCC1Tool(SmallVectorImpl<const char *> &ArgV) {
+-- 
+2.37.1 (Apple Git-137.1)
+
+From a2a131cdc0a119c67445be821b096d03d3009ee8 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Sat, 29 Jul 2023 23:33:20 +0300
+Subject: [PATCH] ENABLE_PER_TARGET_RUNTIME
+
+---
+ llvm/runtimes/CMakeLists.txt | 66 ++++++++++++++++++++++++------------
+ 1 file changed, 45 insertions(+), 21 deletions(-)
 
 diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
+index 701d35c0a2c9..a770dbf20339 100644
 --- a/llvm/runtimes/CMakeLists.txt
 +++ b/llvm/runtimes/CMakeLists.txt
-@@ -60,14 +60,22 @@
+@@ -70,14 +70,22 @@ ${error} Set RUNTIMES_BUILD_ALLOW_DARWIN to allow a single darwin triple.")
    endforeach()
  endfunction()
-
+ 
 +macro(set_enable_per_target_runtime_dir)
 +  # May have been set by llvm/CMakeLists.txt.
 +  if (NOT DEFINED LLVM_ENABLE_PER_TARGET_RUNTIME_DIR)
@@ -20,17 +176,17 @@ diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
 +
  function(builtin_default_target compiler_rt_path)
    cmake_parse_arguments(ARG "" "" "DEPENDS" ${ARGN})
-
+ 
 -  set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default ON)
 -  # AIX should fold 32-bit & 64-bit arch libraries into a single archive.
 -  if (LLVM_TARGET_TRIPLE MATCHES "aix")
 -    set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default OFF)
 -  endif()
 +  set_enable_per_target_runtime_dir()
-
+ 
    llvm_ExternalProject_Add(builtins
                             ${compiler_rt_path}/lib/builtins
-@@ -75,7 +83,7 @@
+@@ -85,7 +93,7 @@ function(builtin_default_target compiler_rt_path)
                             CMAKE_ARGS -DLLVM_LIBRARY_OUTPUT_INTDIR=${LLVM_LIBRARY_DIR}
                                        -DLLVM_RUNTIME_OUTPUT_INTDIR=${LLVM_TOOLS_BINARY_DIR}
                                        -DLLVM_DEFAULT_TARGET_TRIPLE=${LLVM_TARGET_TRIPLE}
@@ -39,55 +195,10 @@ diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
                                        -DCMAKE_C_COMPILER_WORKS=ON
                                        -DCMAKE_ASM_COMPILER_WORKS=ON
                                        ${COMMON_CMAKE_ARGS}
-@@ -217,11 +225,7 @@
-     list(APPEND test_targets runtimes-test-depends check-runtimes)
-   endif()
-
--  set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default ON)
--  # AIX should fold 32-bit & 64-bit arch libraries into a single archive.
--  if (LLVM_TARGET_TRIPLE MATCHES "aix")
--    set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default OFF)
--  endif()
-+  set_enable_per_target_runtime_dir()
-
-   llvm_ExternalProject_Add(runtimes
-                            ${CMAKE_CURRENT_SOURCE_DIR}/../../runtimes
-@@ -231,7 +235,7 @@
-                                       -DLLVM_INCLUDE_TESTS=${LLVM_INCLUDE_TESTS}
-                                       -DLLVM_DEFAULT_TARGET_TRIPLE=${LLVM_TARGET_TRIPLE}
-                                       -DLLVM_ENABLE_PROJECTS_USED=${LLVM_ENABLE_PROJECTS_USED}
--                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default}
-+                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR}
-                                       -DLLVM_BUILD_TOOLS=${LLVM_BUILD_TOOLS}
-                                       -DCMAKE_C_COMPILER_WORKS=ON
-                                       -DCMAKE_CXX_COMPILER_WORKS=ON
-@@ -348,6 +352,8 @@
-     list(APPEND ${name}_extra_args -DLLVM_USE_LINKER=${LLVM_USE_LINKER})
-   endif()
-
-+  set_enable_per_target_runtime_dir()
-+
-   llvm_ExternalProject_Add(runtimes-${name}
-                            ${CMAKE_CURRENT_SOURCE_DIR}/../../runtimes
-                            DEPENDS ${${name}_deps}
-@@ -356,7 +362,7 @@
-                                       -DLLVM_INCLUDE_TESTS=${LLVM_INCLUDE_TESTS}
-                                       -DLLVM_DEFAULT_TARGET_TRIPLE=${target}
-                                       -DLLVM_ENABLE_PROJECTS_USED=${LLVM_ENABLE_PROJECTS_USED}
--                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON
-+                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR}
-                                       -DCMAKE_C_COMPILER_WORKS=ON
-                                       -DCMAKE_CXX_COMPILER_WORKS=ON
-                                       -DCMAKE_ASM_COMPILER_WORKS=ON
-
-
-diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
---- a/llvm/runtimes/CMakeLists.txt
-+++ b/llvm/runtimes/CMakeLists.txt
-@@ -96,20 +96,35 @@
+@@ -98,20 +106,35 @@ function(builtin_default_target compiler_rt_path)
                             ${EXTRA_ARGS})
  endfunction()
-
+ 
 -function(builtin_register_target compiler_rt_path target)
 -  cmake_parse_arguments(ARG "" "" "DEPENDS" ${ARGN})
 -
@@ -124,28 +235,42 @@ diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
 +  check_apple_target(${target} builtin)
 +
 +  get_extra_cmake_args("BUILTINS" ${target})
-
+ 
    llvm_ExternalProject_Add(builtins-${target}
                             ${compiler_rt_path}/lib/builtins
-@@ -199,7 +214,7 @@
+@@ -197,7 +220,7 @@ foreach(entry ${runtimes})
  endforeach()
-
+ 
  function(runtime_default_target)
 -  cmake_parse_arguments(ARG "" "" "DEPENDS;PREFIXES" ${ARGN})
 +  cmake_parse_arguments(ARG "" "" "DEPENDS;PREFIXES;CMAKE_ARGS" ${ARGN})
-
+ 
    include(${LLVM_BINARY_DIR}/runtimes/Components.cmake OPTIONAL)
    set(SUB_CHECK_TARGETS ${SUB_CHECK_TARGETS} PARENT_SCOPE)
-@@ -225,6 +240,8 @@
+@@ -223,11 +246,9 @@ function(runtime_default_target)
      list(APPEND test_targets runtimes-test-depends check-runtimes)
    endif()
-
+ 
+-  set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default ON)
+-  # AIX should fold 32-bit & 64-bit arch libraries into a single archive.
+-  if (LLVM_TARGET_TRIPLE MATCHES "aix")
+-    set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default OFF)
+-  endif()
 +  get_extra_cmake_args("RUNTIMES" ${LLVM_TARGET_TRIPLE})
 +
-   set_enable_per_target_runtime_dir()
-
++  set_enable_per_target_runtime_dir()
+ 
    llvm_ExternalProject_Add(runtimes
-@@ -242,6 +259,7 @@
+                            ${CMAKE_CURRENT_SOURCE_DIR}/../../runtimes
+@@ -237,13 +258,14 @@ function(runtime_default_target)
+                                       -DLLVM_INCLUDE_TESTS=${LLVM_INCLUDE_TESTS}
+                                       -DLLVM_DEFAULT_TARGET_TRIPLE=${LLVM_TARGET_TRIPLE}
+                                       -DLLVM_ENABLE_PROJECTS_USED=${LLVM_ENABLE_PROJECTS_USED}
+-                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR_default}
++                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR}
+                                       -DLLVM_BUILD_TOOLS=${LLVM_BUILD_TOOLS}
+                                       -DCMAKE_C_COMPILER_WORKS=ON
+                                       -DCMAKE_CXX_COMPILER_WORKS=ON
                                        -DCMAKE_ASM_COMPILER_WORKS=ON
                                        ${COMMON_CMAKE_ARGS}
                                        ${RUNTIMES_CMAKE_ARGS}
@@ -153,5 +278,24 @@ diff --git a/llvm/runtimes/CMakeLists.txt b/llvm/runtimes/CMakeLists.txt
                             PASSTHROUGH_PREFIXES LLVM_ENABLE_RUNTIMES
                                                  LLVM_USE_LINKER
                                                  ${ARG_PREFIXES}
-
+@@ -334,6 +356,8 @@ function(runtime_register_target name target)
+     list(APPEND ${name}_extra_args -DLLVM_ENABLE_RUNTIMES=${LLVM_ENABLE_RUNTIMES_PASSTHROUGH})
+   endif()
+ 
++  set_enable_per_target_runtime_dir()
++
+   llvm_ExternalProject_Add(runtimes-${name}
+                            ${CMAKE_CURRENT_SOURCE_DIR}/../../runtimes
+                            DEPENDS ${${name}_deps}
+@@ -342,7 +366,7 @@ function(runtime_register_target name target)
+                                       -DLLVM_INCLUDE_TESTS=${LLVM_INCLUDE_TESTS}
+                                       -DLLVM_DEFAULT_TARGET_TRIPLE=${target}
+                                       -DLLVM_ENABLE_PROJECTS_USED=${LLVM_ENABLE_PROJECTS_USED}
+-                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON
++                                      -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=${LLVM_ENABLE_PER_TARGET_RUNTIME_DIR}
+                                       -DCMAKE_C_COMPILER_WORKS=ON
+                                       -DCMAKE_CXX_COMPILER_WORKS=ON
+                                       -DCMAKE_ASM_COMPILER_WORKS=ON
+-- 
+2.37.1 (Apple Git-137.1)
 
