@@ -265,6 +265,12 @@ xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
+For a debug build:
+
+```sh
+xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+```
+
 The build takes about 1h05.
 
 When functional, push the `xpack-develop` branch to GitHub.
