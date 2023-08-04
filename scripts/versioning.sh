@@ -283,7 +283,7 @@ function clang_build_common()
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "darwin" ]
     then
       # Use it temporarily, to avoid bugs in previous binary packages.
-      if [ "${XBB_RELEASE_VERSION}" == "15.0.7-3" ]
+      if [[ "${XBB_RELEASE_VERSION}" =~ 15[.]0[.]7[-][34] ]]
       then
 	      xbb_prepare_apple_clang_env
       fi

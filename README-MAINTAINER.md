@@ -167,8 +167,8 @@ but in the web release files.
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
-- add a new entry like _* v16.0.6-1 prepared_
-- commit with a message like _prepare v16.0.6-1_
+- add a new entry like _* v15.0.7-4 prepared_
+- commit with a message like _prepare v15.0.7-4_
 
 ### Update the version specific code
 
@@ -182,11 +182,11 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 
 - fetch `upstream`
 - checkout the `llvmorg-15.0.7` tag in detached state HEAD
-- create a branch like `v16.0.6-xpack`
+- create a branch like `v15.0.7-xpack`
 - cherry pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
   enable commit immediately
 - push branch to `origin`
-- add a `v16.0.6-1-xpack` tag; enable push to origin
+- add a `v15.0.7-4-xpack` tag; enable push to origin
 - select the commit with the patch
 - save as patch
 - move to `patches`
@@ -669,7 +669,7 @@ xPack x86_64 clang version 15.0.7
 
 ## Create a new GitHub pre-release draft
 
-- in `CHANGELOG.md`, add the release date and a message like _* v16.0.6-1 released_
+- in `CHANGELOG.md`, add the release date and a message like _* v15.0.7-4 released_
 - commit with _CHANGELOG update_
 - check and possibly update the `templates/body-github-release-liquid.md`
 - push the `xpack-develop` branch
@@ -680,8 +680,8 @@ The workflow result and logs are available from the
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-tagged like **v16.0.6-1** (mind the dash in the middle!) and
-named like **xPack LLVM clang v16.0.6-1** (mind the dash),
+tagged like **v15.0.7-4** (mind the dash in the middle!) and
+named like **xPack LLVM clang v15.0.7-4** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
@@ -705,7 +705,7 @@ If any, refer to closed
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like _xPack LLVM clang v16.0.6-1 released_
+  use a message like _xPack LLVM clang v15.0.7-4 released_
 - push to GitHub
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
@@ -753,8 +753,8 @@ watching this project.
 
 - select the `xpack-develop` branch
 - check the latest commits `npm run git-log`
-- update `CHANGELOG.md`, add a line like _* v16.0.6-1.1 published on npmjs.com_
-- commit with a message like _CHANGELOG: publish npm v16.0.6-1.1_
+- update `CHANGELOG.md`, add a line like _* v15.0.7-4.1 published on npmjs.com_
+- commit with a message like _CHANGELOG: publish npm v15.0.7-4.1_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
@@ -814,7 +814,7 @@ In case the previous version is not functional and needs to be unpublished:
 
 - in a separate browser windows, open [TweetDeck](https://tweetdeck.twitter.com/)
 - using the `@xpack_project` account
-- paste the release name like **xPack LLVM clang v16.0.6-1 released**
+- paste the release name like **xPack LLVM clang v15.0.7-4 released**
 - paste the link to the Web page
   [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button

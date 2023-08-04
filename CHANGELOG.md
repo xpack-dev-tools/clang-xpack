@@ -4,7 +4,14 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-04
 
-* v16.0.6-1 prepared
+* v15.0.7-4 prepared
+* f660dac READMEs update
+* eada3a8 package.json: add build-develop-debug
+* a1c526b package.json: version 16.0.6-1.1.pre
+* 6dd4d22 package.json: bump clang 15.0.7-3.1
+* a482ea8 prepare v16.0.6-1
+* 965e207 15.0.7-3.1
+* 2338d8e CHANGELOG: publish npm v15.0.7-3.1
 * v15.0.7-3.1 published on npmjs.com
 * a6fd6bb package.json: update urls for 15.0.7-3.1 release
 * 22387bd templates/jekyll update
