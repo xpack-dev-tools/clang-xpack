@@ -2,9 +2,27 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-08-04
+
+* v15.0.7-3 released
+* 5634e96 llvm.sh: --lto --lld for linux x64 tests
+* 9f0d8b1 update.sh: add libatomic for redhat/fedora
+* 042c330 READMEs update
+
 ## 2023-08-03
 
-* v15.0.7-3 prepared
+* 9b1ff65 package.json: reorder build actions
+* 32fb061 .vscode/settings.json: ignoreWords
+* 54f2cb5 READMEs update
+* 8086620 package.json: bump helper 1.5.0
+* 4529607 re-generate workflows
+* 00bc9ba llvm.sh: skip weak.cpp -flto
+* 6b3b740 llvm-mingw.sh: skip weak.cpp -flot
+* 4ebac02 llvm.sh: document -print-file-name
+* ade55b8 llvm-mingw.sh: WINEPATH -print-file-name
+* de34e1d README update
+* 9f57a4d versioning.sh: use apple_clang only for 15.0.7-3
+* aaae5a5 prepare v15.0.7-3 (again)
 * c39c94d VERSION 16.0.6-1
 * 4cdfd69 versioning.sh: temporarily all use apple_clang_env
 * 206fb18 llvm.sh: remove patch to disable XRAY
