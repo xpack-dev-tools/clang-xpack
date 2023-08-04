@@ -42,6 +42,109 @@ index bada811daadf..e6414a834432 100644
 -- 
 2.37.1 (Apple Git-137.1)
 
+From 566e1007ccbd6f0dfc3b68ba8bdda21e9268416e Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Fri, 4 Aug 2023 22:56:22 +0300
+Subject: [PATCH] driver.cpp: get absolute path in SetInstallDir()
+
+---
+ clang/tools/driver/driver.cpp | 64 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 63 insertions(+), 1 deletion(-)
+
+diff --git a/clang/tools/driver/driver.cpp b/clang/tools/driver/driver.cpp
+index 34335a599a00..d85bbaad39a4 100644
+--- a/clang/tools/driver/driver.cpp
++++ b/clang/tools/driver/driver.cpp
+@@ -54,6 +54,15 @@ using namespace clang;
+ using namespace clang::driver;
+ using namespace llvm::opt;
+ 
++#if defined(__linux__)
++#include <unistd.h>
++#elif defined(__APPLE__)
++#include <libproc.h>
++#include <unistd.h>
++#elif defined(__MINGW32__)
++#include <windows.h>
++#endif
++
+ std::string GetExecutablePath(const char *Argv0, bool CanonicalPrefixes) {
+   if (!CanonicalPrefixes) {
+     SmallString<128> ExecutablePath(Argv0);
+@@ -285,6 +294,56 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
+   // path being a symlink.
+   SmallString<128> InstalledPath(argv[0]);
+ 
++#if defined(__linux__)
++
++  char ProcessAbsolutePath[PATH_MAX];
++
++  int len = readlink("/proc/self/exe", ProcessAbsolutePath,
++                     sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: readlink(\"/proc/self/exe\") failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#elif defined(__APPLE__)
++
++  // The size must be higher than PROC_PIDPATHINFO_SIZE, otherwise the call
++  // fails with ENOMEM (12) - Cannot allocate memory.
++  // https://opensource.apple.com/source/Libc/Libc-498/darwin/libproc.c
++  char ProcessAbsolutePath[PROC_PIDPATHINFO_SIZE+1];
++
++  int len = proc_pidpath(getpid(), ProcessAbsolutePath,
++                         sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: proc_pidpath() failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#elif defined(__MINGW32__)
++
++  char ProcessAbsolutePath[PATH_MAX];
++
++  len = GetModuleFileName(NULL, ProcessAbsolutePath,
++                          sizeof(ProcessAbsolutePath) - 1);
++  if ( len <= 0 ) {
++    llvm::errs() << "Internal error: GetModuleFileName() failed with "
++                 << strerror(errno) << "\n";
++    exit(1);
++  }
++
++  ProcessAbsolutePath[len] = 0;
++  InstalledPath = ProcessAbsolutePath;
++
++#else
++
+   // Do a PATH lookup, if there are no directory components.
+   if (llvm::sys::path::filename(InstalledPath) == InstalledPath)
+     if (llvm::ErrorOr<std::string> Tmp = llvm::sys::findProgramByName(
+@@ -295,9 +354,12 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
+   if (CanonicalPrefixes)
+     llvm::sys::fs::make_absolute(InstalledPath);
+ 
++#endif
++
+   StringRef InstalledPathParent(llvm::sys::path::parent_path(InstalledPath));
+-  if (llvm::sys::fs::exists(InstalledPathParent))
++  if (llvm::sys::fs::exists(InstalledPathParent)) {
+     TheDriver.setInstalledDir(InstalledPathParent);
++  }
+ }
+ 
+ static int ExecuteCC1Tool(SmallVectorImpl<const char *> &ArgV) {
+-- 
+2.37.1 (Apple Git-137.1)
+
 From a2a131cdc0a119c67445be821b096d03d3009ee8 Mon Sep 17 00:00:00 2001
 From: Liviu Ionescu <ilg@livius.net>
 Date: Sat, 29 Jul 2023 23:33:20 +0300
@@ -193,109 +296,6 @@ index 701d35c0a2c9..a770dbf20339 100644
                                        -DCMAKE_C_COMPILER_WORKS=ON
                                        -DCMAKE_CXX_COMPILER_WORKS=ON
                                        -DCMAKE_ASM_COMPILER_WORKS=ON
--- 
-2.37.1 (Apple Git-137.1)
-
-From dc041562434e384a8a86a34795b767a045e92ddc Mon Sep 17 00:00:00 2001
-From: Liviu Ionescu <ilg@livius.net>
-Date: Fri, 4 Aug 2023 22:38:22 +0300
-Subject: [PATCH] driver.cpp: get absolute path in SetInstallDir()
-
----
- clang/tools/driver/driver.cpp | 64 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 63 insertions(+), 1 deletion(-)
-
-diff --git a/clang/tools/driver/driver.cpp b/clang/tools/driver/driver.cpp
-index 34335a599a00..e9c4d47d05d7 100644
---- a/clang/tools/driver/driver.cpp
-+++ b/clang/tools/driver/driver.cpp
-@@ -54,6 +54,15 @@ using namespace clang;
- using namespace clang::driver;
- using namespace llvm::opt;
- 
-+#if defined(__linux__)
-+#include <unistd.h>
-+#elif defined(__APPLE__)
-+#include <libproc.h>
-+#include <unistd.h>
-+#elif defined(__MINGW32__)
-+#include <windows.h>
-+#endif
-+
- std::string GetExecutablePath(const char *Argv0, bool CanonicalPrefixes) {
-   if (!CanonicalPrefixes) {
-     SmallString<128> ExecutablePath(Argv0);
-@@ -285,6 +294,56 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
-   // path being a symlink.
-   SmallString<128> InstalledPath(argv[0]);
- 
-+#if defined(__linux__)
-+
-+  char ProcessAbsolutePath[PATH_MAX];
-+
-+  int len = readlink("/proc/self/exe", ProcessAbsolutePath,
-+                     sizeof(ProcessAbsolutePath) - 1);
-+  if ( len <= 0 ) {
-+    llvm::errs() << "Internal error: readlink(\"/proc/self/exe\") failed with "
-+                 << strerror(errno) << "\n";
-+    exit(1);
-+  }
-+
-+  ProcessAbsolutePath[len] = 0;
-+  InstalledPath = ProcessAbsolutePath;
-+
-+#elif defined(__APPLE__)
-+
-+  // The size must be at least PROC_PIDPATHINFO_SIZE, otherwise the call
-+  // fails with ENOMEM (12).
-+  // https://opensource.apple.com/source/Libc/Libc-498/darwin/libproc.c
-+  char ProcessAbsolutePath[PROC_PIDPATHINFO_SIZE];
-+
-+  int len = proc_pidpath(getpid(), ProcessAbsolutePath,
-+                         sizeof(ProcessAbsolutePath) - 1);
-+  if ( len <= 0 ) {
-+    llvm::errs() << "Internal error: proc_pidpath() failed with "
-+                 << strerror(errno) << "\n";
-+    exit(1);
-+  }
-+
-+  ProcessAbsolutePath[len] = 0;
-+  InstalledPath = ProcessAbsolutePath;
-+
-+#elif defined(__MINGW32__)
-+
-+  char ProcessAbsolutePath[PATH_MAX];
-+
-+  len = GetModuleFileName(NULL, ProcessAbsolutePath,
-+                          sizeof(ProcessAbsolutePath) - 1);
-+  if ( len <= 0 ) {
-+    llvm::errs() << "Internal error: GetModuleFileName() failed with "
-+                 << strerror(errno) << "\n";
-+    exit(1);
-+  }
-+
-+  ProcessAbsolutePath[len] = 0;
-+  InstalledPath = ProcessAbsolutePath;
-+
-+#else
-+
-   // Do a PATH lookup, if there are no directory components.
-   if (llvm::sys::path::filename(InstalledPath) == InstalledPath)
-     if (llvm::ErrorOr<std::string> Tmp = llvm::sys::findProgramByName(
-@@ -295,9 +354,12 @@ static void SetInstallDir(SmallVectorImpl<const char *> &argv,
-   if (CanonicalPrefixes)
-     llvm::sys::fs::make_absolute(InstalledPath);
- 
-+#endif
-+
-   StringRef InstalledPathParent(llvm::sys::path::parent_path(InstalledPath));
--  if (llvm::sys::fs::exists(InstalledPathParent))
-+  if (llvm::sys::fs::exists(InstalledPathParent)) {
-     TheDriver.setInstalledDir(InstalledPathParent);
-+  }
- }
- 
- static int ExecuteCC1Tool(SmallVectorImpl<const char *> &ArgV) {
 -- 
 2.37.1 (Apple Git-137.1)
 
