@@ -4,6 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-04
 
+* v15.0.7-3.1 published on npmjs.com
+* a6fd6bb package.json: update urls for 15.0.7-3.1 release
+* 22387bd templates/jekyll update
+* 8b04236 CHANGELOG update
 * v15.0.7-3 released
 * 5634e96 llvm.sh: --lto --lld for linux x64 tests
 * 9f0d8b1 update.sh: add libatomic for redhat/fedora
