@@ -4,7 +4,12 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-04
 
-* v15.0.7-4 prepared
+* d048d53 llvm-15.0.7-4.git.patch PROC_PIDPATHINFO_SIZE+1
+* a057b14 llvm-15.0.7-4.git.patch clang-format
+* 777220f llvm-15.0.7-4.git.patch update
+* 537280f READMEs update
+* b8dd94d package.json: version 15.0.7-4.1.pre
+* 8da2604 prepare v15.0.7-4
 * f660dac READMEs update
 * eada3a8 package.json: add build-develop-debug
 * a1c526b package.json: version 16.0.6-1.1.pre
