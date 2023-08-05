@@ -4,7 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-05
 
-* v16.0.6-1 prepared (again)
+* f30423c llvm.sh: skip InstalledDir for windows
+* a27571c llvm.sh: test InstalledDir
+* 0b903db READMEs update
+* dc93119 prepare v16.0.6-1
 * 982586a llvm-16.0.6-1.git.patch update
 * 1a879ea package.json: bump clang 15.0.7-4.1
 * 674edac 15.0.7-4.1
