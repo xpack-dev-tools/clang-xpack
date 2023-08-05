@@ -22,10 +22,10 @@ The compiler on macOS 10.10 seems a bit too old (LLVM 3.6.0)
 and the build fails with:
 
 ```console
-/Users/ilg/Work/clang-15.0.7-4/darwin-x64/sources/llvm-project-15.0.7.src/llvm/utils/TableGen/GlobalISelEmitter.cpp:4298:7: error: no matching function for call to 'makeArrayRef'
+/Users/ilg/Work/clang-16.0.6-1/darwin-x64/sources/llvm-project-16.0.6.src/llvm/utils/TableGen/GlobalISelEmitter.cpp:4298:7: error: no matching function for call to 'makeArrayRef'
       makeArrayRef({&BuildVector, &BuildVectorTrunc}));
       ^~~~~~~~~~~~
-/Users/ilg/Work/clang-15.0.7-4/darwin-x64/sources/llvm-project-15.0.7.src/llvm/include/llvm/ADT/ArrayRef.h:458:15: note: candidate template ignored: couldn't infer template argument 'T'
+/Users/ilg/Work/clang-16.0.6-1/darwin-x64/sources/llvm-project-16.0.6.src/llvm/include/llvm/ADT/ArrayRef.h:458:15: note: candidate template ignored: couldn't infer template argument 'T'
   ArrayRef<T> makeArrayRef(const T &OneElt) {
               ^
 ```
@@ -44,7 +44,7 @@ be macOS 10.13.
 Tests fail on ubuntu-latest, in crt-simple-exception, with:
 
 ```console
-[/home/runner/Work/linux-x64/tests/xpack-clang-15.0.7-4/bin/clang++ simple-exception.cpp -o crt-simple-exception -rtlib=compiler-rt -stdlib=libc++ -fuse-ld=lld]
+[/home/runner/Work/linux-x64/tests/xpack-clang-16.0.6-1/bin/clang++ simple-exception.cpp -o crt-simple-exception -rtlib=compiler-rt -stdlib=libc++ -fuse-ld=lld]
 ld.lld: error: undefined symbol: _Unwind_Resume
 >>> referenced by simple-exception.cpp
 >>>               /tmp/simple-exception-16524d.o:(main)
