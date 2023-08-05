@@ -4,7 +4,9 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-05
 
-* v15.0.7-4 released
+* v15.0.7-4.1 published on npmjs.com
+* 0a6565a package.json: update urls for 15.0.7-4.1 release
+* b5f98b2 CHANGELOG update
 * 99b29c0 llvm-15.0.7-4.git.patch fix int len for mingw
 * 2110354 CHANGELOG update
 
