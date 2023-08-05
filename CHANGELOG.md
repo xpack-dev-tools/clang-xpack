@@ -2,6 +2,12 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-08-05
+
+* v15.0.7-4 released
+* 99b29c0 llvm-15.0.7-4.git.patch fix int len for mingw
+* 2110354 CHANGELOG update
+
 ## 2023-08-04
 
 * d048d53 llvm-15.0.7-4.git.patch PROC_PIDPATHINFO_SIZE+1
