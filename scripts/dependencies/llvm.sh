@@ -830,6 +830,20 @@ function llvm_test()
 
     local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
 
+    # Check if InstalledDir is correct when invoked via a
+    # link from a differnet folder.
+    local install_dir_line_cc="$(run_host_app ${CC} -v 2>&1 | grep 'InstalledDir:')"
+    ln -s "${CC}" cc_link
+    local install_dir_line_cc_link="$(run_host_app ./cc_link -v 2>&1 | grep 'InstalledDir:')"
+
+    if [ "${install_dir_line_cc}" == "${install_dir_line_cc_link}" ]
+    then
+      echo "${install_dir_line_cc_link} - passed"
+    else
+      echo "${install_dir_line_cc_link} - failed"
+      exit 1
+    fi
+
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
