@@ -42,9 +42,9 @@ index bada811daadf..e6414a834432 100644
 -- 
 2.37.1 (Apple Git-137.1)
 
-From 566e1007ccbd6f0dfc3b68ba8bdda21e9268416e Mon Sep 17 00:00:00 2001
+From 330a741fb87baf36f66c5f26778efcb4852a24c4 Mon Sep 17 00:00:00 2001
 From: Liviu Ionescu <ilg@livius.net>
-Date: Fri, 4 Aug 2023 22:56:22 +0300
+Date: Sat, 5 Aug 2023 10:03:07 +0300
 Subject: [PATCH] driver.cpp: get absolute path in SetInstallDir()
 
 ---
@@ -52,7 +52,7 @@ Subject: [PATCH] driver.cpp: get absolute path in SetInstallDir()
  1 file changed, 63 insertions(+), 1 deletion(-)
 
 diff --git a/clang/tools/driver/driver.cpp b/clang/tools/driver/driver.cpp
-index 34335a599a00..d85bbaad39a4 100644
+index 34335a599a00..c04de4d13300 100644
 --- a/clang/tools/driver/driver.cpp
 +++ b/clang/tools/driver/driver.cpp
 @@ -54,6 +54,15 @@ using namespace clang;
@@ -112,8 +112,8 @@ index 34335a599a00..d85bbaad39a4 100644
 +
 +  char ProcessAbsolutePath[PATH_MAX];
 +
-+  len = GetModuleFileName(NULL, ProcessAbsolutePath,
-+                          sizeof(ProcessAbsolutePath) - 1);
++  int len = GetModuleFileName(NULL, ProcessAbsolutePath,
++                              sizeof(ProcessAbsolutePath) - 1);
 +  if ( len <= 0 ) {
 +    llvm::errs() << "Internal error: GetModuleFileName() failed with "
 +                 << strerror(errno) << "\n";
