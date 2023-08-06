@@ -109,25 +109,26 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 ├── README.md
 ├── bin
 │   ├── UnicodeNameMappingGenerator
+│   ├── amdgpu-arch
 │   ├── analyze-build
-│   ├── clang -> clang-15
+│   ├── clang -> clang-16
 │   ├── clang++ -> clang
-│   ├── clang-15
+│   ├── clang-16
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
 │   ├── clang-doc
 │   ├── clang-format
+│   ├── clang-include-cleaner
 │   ├── clang-linker-wrapper
-│   ├── clang-nvlink-wrapper
 │   ├── clang-offload-bundler
 │   ├── clang-offload-packager
-│   ├── clang-offload-wrapper
 │   ├── clang-pseudo
 │   ├── clang-refactor
 │   ├── clang-rename
 │   ├── clang-repl
 │   ├── clang-scan-deps
+│   ├── clang-tblgen
 │   ├── clang-tidy
 │   ├── clangd
 │   ├── clangd-xpc-test-client
@@ -138,6 +139,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── intercept-build
 │   ├── ld.lld -> lld
 │   ├── ld64.lld -> lld
+│   ├── llc
 │   ├── lld
 │   ├── lld-link -> lld
 │   ├── lldb
@@ -145,6 +147,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── lldb-instr
 │   ├── lldb-server
 │   ├── lldb-vscode
+│   ├── lli
 │   ├── llvm-addr2line -> llvm-symbolizer
 │   ├── llvm-ar
 │   ├── llvm-as
@@ -154,6 +157,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── llvm-cxxdump
 │   ├── llvm-cxxfilt
 │   ├── llvm-cxxmap
+│   ├── llvm-debuginfo-analyzer
 │   ├── llvm-debuginfod
 │   ├── llvm-debuginfod-find
 │   ├── llvm-diff
@@ -172,6 +176,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── llvm-readelf -> llvm-readobj
 │   ├── llvm-readobj
 │   ├── llvm-remark-size-diff
+│   ├── llvm-remarkutil
 │   ├── llvm-sim
 │   ├── llvm-size
 │   ├── llvm-strings
@@ -181,6 +186,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── llvm-tblgen
 │   ├── llvm-tli-checker
 │   ├── llvm-windres -> llvm-rc
+│   ├── nvptx-arch
 │   ├── run-clang-tidy
 │   ├── scan-build-py
 │   ├── set-xcode-analyzer
@@ -192,19 +198,43 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
 │   ├── patches
 │   └── scripts
 ├── include
+│   ├── __libunwind_config.h
+│   ├── c++
+│   ├── libunwind.h
+│   ├── libunwind.modulemap
+│   ├── mach-o
+│   ├── unwind.h
+│   ├── unwind_arm_ehabi.h
+│   └── unwind_itanium.h
 ├── lib
 │   ├── LLVMPolly.so
 │   ├── clang
 │   ├── cmake
+│   ├── libLLVM-C.dylib
 │   ├── libLLVM.dylib
 │   ├── libLTO.dylib
+│   ├── libPolly.a
+│   ├── libPollyISL.a
 │   ├── libRemarks.dylib
+│   ├── libc++.1.0.dylib
+│   ├── libc++.1.dylib -> libc++.1.0.dylib
+│   ├── libc++.a
+│   ├── libc++.dylib -> libc++.1.dylib
+│   ├── libc++abi.1.0.dylib
+│   ├── libc++abi.1.dylib -> libc++abi.1.0.dylib
+│   ├── libc++abi.a
+│   ├── libc++abi.dylib -> libc++abi.1.dylib
+│   ├── libc++experimental.a
 │   ├── libclang-cpp.dylib
 │   ├── libclang.dylib
 │   ├── libear
-│   ├── liblldb.15.0.6.dylib
-│   ├── liblldb.dylib -> liblldb.15.0.6.dylib
-│   └── libscanbuild
+│   ├── liblldb.16.0.6.dylib
+│   ├── liblldb.dylib -> liblldb.16.0.6.dylib
+│   ├── libscanbuild
+│   ├── libunwind.1.0.dylib
+│   ├── libunwind.1.dylib -> libunwind.1.0.dylib
+│   ├── libunwind.a
+│   └── libunwind.dylib -> libunwind.1.dylib
 ├── libexec
 │   ├── analyze-c++
 │   ├── analyze-cc
@@ -228,7 +258,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/16.0.6-1.1/.conten
     ├── scan-build
     └── scan-view
 
-17 directories, 104 files
+20 directories, 132 files
 ```
 
 No other files are installed in any system folders or other locations.
