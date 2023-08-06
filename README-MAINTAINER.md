@@ -578,7 +578,7 @@ These commands use the `xpack-develop` branch of this repo.
 
 ## Durations & results
 
-The builds take about 10 hours to complete:
+The builds take more than 11 hours to complete:
 
 - `xbbmi`: 2h12 (vm)
 - `xbbma`: 34m
