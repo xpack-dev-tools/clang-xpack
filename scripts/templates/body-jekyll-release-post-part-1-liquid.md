@@ -7,8 +7,8 @@ summary: "Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fix
 
 summary: "Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release."
 
-clang_version: "15.0.7"
-clang_date: "12 Jan 2023"
+clang_version: "16.0.6"
+clang_date: "14 June 2023"
 
 version: "{{ XBB_RELEASE_VERSION }}"
 npm_subversion: "1"
@@ -155,12 +155,23 @@ For example, for the 32-bit libraries:
 ${CXX} -m32 -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||'
 ```
 
-On Windows this might be slightly more complicated, to get rid of the
-letter part of the paths.
+On Windows the DLLs are usually in bin, but for consistency within GCC, they are
+also copied to lib; it is recommended to ask the compiler for the
+actual path.
+
+For example, for the 32-bit libraries:
+
+```sh
+${CXX} -m32 -print-file-name=libc++.dll
+```
 
 ## Changes
 
-Compared to the upstream, there are no functional changes.
+Compared to the upstream, there are no major functional changes.
+
+Since 15.0.7-4, there is a small patch in Driver.cpp that fixes the
+function that computes
+`InstalledDir` when clang is invoked via a link from a different folder.
 
 ## Bug fixes
 
@@ -172,7 +183,7 @@ Compared to the upstream, there are no functional changes.
 
 ## Known problems
 
-- in certain conditions, the binaries compiled with `-flto` fail.
+- none
 
 ## Shared libraries
 
