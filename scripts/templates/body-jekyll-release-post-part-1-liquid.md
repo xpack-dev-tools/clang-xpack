@@ -125,14 +125,27 @@ The current version is based on:
 
 - LLVM clang version [{% raw %}{{ page.clang_version }}{% endraw %}](https://releases.llvm.org/download.html#{% raw %}{{ page.clang_version }}{% endraw %}), from {% raw %}{{ page.clang_date }}{% endraw %}.
 
-The defaults are set to `libc++` and `compiler-rt`.
-
 For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
 
 ## LLVM libraries
 
-The compiler defaults are set to  use the LLVM libraries
+On macOS and Windows the compiler defaults are set to the LLVM libraries
 (`libc++` and `compiler-rt`).
+
+For historical reasons, on GNU/Linux, the defaults are set to the host
+system (`libstdc++` and `glibc`).
+
+To use the LLVM libraries, add the following options:
+
+```sh
+-stdlib=libc++ -rtlib=compiler-rt -lunwind
+```
+
+For LTO builds, also use LLD:
+
+```sh
+-flto -fuse-ld=lld
+```
 
 ## `-m32` / `-m64`
 
@@ -155,9 +168,9 @@ For example, for the 32-bit libraries:
 ${CXX} -m32 -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||'
 ```
 
-On Windows the DLLs are usually in bin, but for consistency within GCC, they are
-also copied to lib; it is recommended to ask the compiler for the
-actual path.
+On Windows the DLLs are usually in `bin`, but for consistency within GCC,
+they are also copied to `lib`; it is recommended to ask the compiler for
+the actual path.
 
 For example, for the 32-bit libraries:
 
