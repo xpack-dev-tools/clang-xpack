@@ -4,7 +4,9 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-06
 
-* v16.0.6-1.1 published on npmjs.com
+* 023b563 16.0.6-1.1
+* d89cff8 .npmignore wrappers
+* 75fd2c2 CHANGELOG: publish npm v16.0.6-1.1
 * 86ea389 package.json: update urls for 16.0.6-1.1 release
 * cbb2414 package.json: update bins
 * 6142b84 README: update tree -L 2
