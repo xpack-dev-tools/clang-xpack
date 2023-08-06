@@ -2,6 +2,14 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-08-06
+
+* ccf3180 templates/jekyll: update
+* 177d568 llvm*.sh: fix typo in comments
+* cc300ae README update
+* c26de86 README-MAINTENANCE update durations
+* c4edcc2 CHANGELOG update
+
 ## 2023-08-05
 
 * f30423c llvm.sh: skip InstalledDir for windows
