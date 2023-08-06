@@ -885,7 +885,7 @@ function llvm_test()
       do
         # For libc++.dll & co.
         # The DLLs are usually in bin, but for consistency within GCC, they are
-        # also copied to lib; it is recommended to ast the compiler for the
+        # also copied to lib; it is recommended to ask the compiler for the
         # actual path.
         if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
         then

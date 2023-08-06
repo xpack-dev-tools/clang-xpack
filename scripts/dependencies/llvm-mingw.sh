@@ -791,7 +791,7 @@ function test_mingw_llvm()
     fi
 
     # The DLLs are usually in bin, but for consistency within GCC, they are
-    # also copied to lib; it is recommended to ast the compiler for the
+    # also copied to lib; it is recommended to ask the compiler for the
     # actual path.
     # export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
     export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
