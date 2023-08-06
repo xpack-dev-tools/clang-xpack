@@ -4,6 +4,12 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-08-06
 
+* v16.0.6-1.1 published on npmjs.com
+* 86ea389 package.json: update urls for 16.0.6-1.1 release
+* cbb2414 package.json: update bins
+* 6142b84 README: update tree -L 2
+* 8133ee6 templates/jekyll update
+* 9e20f36 CHANGELOG update
 * ccf3180 templates/jekyll: update
 * 177d568 llvm*.sh: fix typo in comments
 * cc300ae README update
