@@ -787,6 +787,8 @@ will install the package via `xpm install` on all supported platforms.
 The tests results are available from the
 [Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
 
+The Windows tests take more than 20 minutes to complete.
+
 ## Update the repo
 
 - merge `xpack-develop` into `xpack`
