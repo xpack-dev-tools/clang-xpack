@@ -235,8 +235,11 @@ function clang_build_common()
     # -------------------------------------------------------------------------
     # Build the native dependencies.
 
-    # autoreconf required by libxml2.
-    autotools_build
+    if false
+    then
+      # autoreconf required by libxml2.
+      autotools_build
+    fi
 
     # -------------------------------------------------------------------------
     # Build the target dependencies.
