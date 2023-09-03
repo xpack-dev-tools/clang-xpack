@@ -23,7 +23,7 @@ XBB_APPLICATION_DISTRO_TOP_FOLDER=${XBB_APPLICATION_DISTRO_TOP_FOLDER:-"xPacks"}
 XBB_APPLICATION_DESCRIPTION="${XBB_APPLICATION_DISTRO_NAME} ${XBB_APPLICATION_NAME}"
 
 declare -a XBB_APPLICATION_DEPENDENCIES=( llvm llvm-mingw )
-declare -a XBB_APPLICATION_COMMON_DEPENDENCIES=( autotools zlib libffi ncurses libiconv xz libxml2 libedit mingw binutils compiler-tests )
+declare -a XBB_APPLICATION_COMMON_DEPENDENCIES=( zlib libffi ncurses libiconv xz libxml2 libedit mingw binutils compiler-tests )
 
 # XBB_APPLICATION_BOOTSTRAP_ONLY="y"
 
