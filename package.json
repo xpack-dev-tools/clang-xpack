@@ -147,7 +147,7 @@
       "widl": "./.content/bin/widl"
     },
     "devDependencies": {
-      "@xpack-dev-tools/xbb-helper": "^1.10.8"
+      "@xpack-dev-tools/xbb-helper": "^1.11.1"
     },
     "properties": {
       "appName": "LLVM clang",
@@ -229,7 +229,7 @@
       "common-dependencies": {
         "hidden": true,
         "devDependencies": {
-          "@xpack-dev-tools/cmake": "3.23.5-1.1",
+          "@xpack-dev-tools/cmake": "3.26.5-1.1",
           "@xpack-dev-tools/m4": "1.4.19-2.1",
           "@xpack-dev-tools/ninja-build": "1.11.1-2.1",
           "@xpack-dev-tools/pkg-config": "0.29.2-2.1"
@@ -332,7 +332,7 @@
           "@xpack-dev-tools/patchelf": "0.17.2-1.1"
         },
         "properties": {
-          "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.0.0"
+          "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.1.0"
         }
       },
       "linux-arm64": {
@@ -340,7 +340,7 @@
           "linux-x64"
         ],
         "properties": {
-          "dockerImage": "ilegeul/ubuntu:arm64v8-18.04-xbb-v5.0.0"
+          "dockerImage": "ilegeul/ubuntu:arm64v8-18.04-xbb-v5.1.0"
         }
       },
       "linux-arm": {
@@ -348,7 +348,7 @@
           "linux-x64"
         ],
         "properties": {
-          "dockerImage": "ilegeul/ubuntu:arm32v7-18.04-xbb-v5.0.0"
+          "dockerImage": "ilegeul/ubuntu:arm32v7-18.04-xbb-v5.1.0"
         }
       },
       "win32-x64": {
@@ -361,10 +361,10 @@
         "devDependencies": {
           "@xpack-dev-tools/gcc": "13.2.0-1.1",
           "@xpack-dev-tools/mingw-w64-gcc": "13.2.0-1.1",
-          "@xpack-dev-tools/wine": "7.22.0-1.1"
+          "@xpack-dev-tools/wine": "8.0.2-1.1"
         },
         "properties": {
-          "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.0.0"
+          "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.1.0"
         },
         "actions": {
           "build": "{{ properties.commandBashBuild }} --windows",
@@ -380,6 +380,6 @@
     "https://www.npmjs.com/package/liquidjs"
   ],
   "devDependencies": {
-    "liquidjs": "^10.8.4"
+    "liquidjs": "^10.9.2"
   }
 }
