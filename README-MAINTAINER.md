@@ -143,7 +143,7 @@ but in the web release files.
 
 ### Update version in `package.json` to a pre-release
 
-Use a new version, suffixed by `.pre`.
+Use the new version, suffixed by `pre`, like `16.0.6-1.pre`.
 
 ### Update `CHANGELOG.md`
 
