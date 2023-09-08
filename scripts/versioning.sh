@@ -252,7 +252,7 @@ function clang_build_common()
 
     # xbb_prepare_gcc_env
 
-    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
+    if true # [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
     then
       libiconv_build "${XBB_LIBICONV_VERSION}"
     else
