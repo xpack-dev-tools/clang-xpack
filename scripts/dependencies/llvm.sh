@@ -936,7 +936,7 @@ function llvm_test()
         (
           # x64 & aarch64, both with multilib.
 
-          export LD_LIBRARY_PATH="$(xbb_get_libs_path -m64)"
+          export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}" -m64)"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
@@ -988,7 +988,7 @@ function llvm_test()
           echo "Skipping clang -m32 tests..."
         else
           (
-            export LD_LIBRARY_PATH="$(xbb_get_libs_path -m32)"
+            export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}" -m32)"
             echo
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
@@ -1015,7 +1015,7 @@ function llvm_test()
         (
           # arm & aarch64.
 
-          export LD_LIBRARY_PATH="$(xbb_get_libs_path)"
+          export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}")"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
