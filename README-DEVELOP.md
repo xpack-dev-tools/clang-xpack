@@ -62,3 +62,9 @@ The same test on a plain Ubuntu 20 passes.
 ## -static-libstdc++
 
 On RedHat systems, the tests that expected a `libstdc++.a` fail.
+
+## Bug reports
+
+### Bug in getInstalledDir() prevents picking up the correct headers when clang is started via a link
+
+- https://github.com/llvm/llvm-project/issues/66704
