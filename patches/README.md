@@ -1,5 +1,8 @@
 # Patches
 
+For macOS, check [HomeBrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm.rb).
+For Windows, check [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases).
+
 ## llvm-16.0.6
 
 A patch from HomeBrew, apparently for meson.
