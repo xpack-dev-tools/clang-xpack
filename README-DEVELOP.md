@@ -68,3 +68,11 @@ On RedHat systems, the tests that expected a `libstdc++.a` fail.
 ### Bug in getInstalledDir() prevents picking up the correct headers when clang is started via a link
 
 - https://github.com/llvm/llvm-project/issues/66704
+
+### Catching custom exceptions thrown from shared libraries fail when using -flto
+
+- https://github.com/llvm/llvm-project/issues/64471
+
+### Building 16|17 fails on macOS 10.13 due to incompatible 'optional' header
+
+- https://github.com/llvm/llvm-project/issues/64472
