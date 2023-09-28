@@ -2,6 +2,98 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-09-28
+
+* v17.0.1-1 prepared
+
+## 2023-09-25
+
+* a7914c2 README update
+* be4c98a body-jekyll update
+
+## 2023-09-20
+
+* 3164a57 package.json: bump deps
+
+## 2023-09-19
+
+* 0e1bd5e README-DEVELOP: add link to bug
+
+## 2023-09-16
+
+* 63e1f63 package.json: add linux32
+* c447a8f body-jekyll update
+
+## 2023-09-11
+
+* 915caee package.json: bump deps
+
+## 2023-09-08
+
+* 18772f6 package.json: bump deps
+* e075fde clang.sh: cleanups
+* 855bdca llvm.sh: xbb_get_libs_path "${CXX}"
+* 11bb34d re-enable libiconv_build
+
+## 2023-09-07
+
+* 5785339 README update
+
+## 2023-09-06
+
+* 86c491d README update
+* c575586 package.json: bump deps
+* c18a463 READMEs update
+* dec756d body-jekyll update
+
+## 2023-09-05
+
+* 11c3418 llvm.sh: run_verbose diff
+* 1558e58 dot.*ignore update
+* 626c5d9 re-generate workflows
+* 726accd READMEs update
+* 4892e62 package.json: bump deps
+
+## 2023-09-03
+
+* 34169cd package.json: bump deps
+* b123b64 application.sh: remove autotools
+* b3e4af2 versioning.sh: disable autotools
+
+## 2023-08-28
+
+* 4ecd182 READMEs update
+
+## 2023-08-25
+
+* 6343788 package.json: rm xpack-dev-tools-build/*
+* 8dbfe2b remove tests/update.sh
+* 3631e02 package.json: bump deps
+
+## 2023-08-21
+
+* e018e5c READMEs update
+* 646bd37 package.json: bump deps
+
+## 2023-08-19
+
+* 0da0e2d READMEs update
+* 8503fab package.json: bump deps
+
+## 2023-08-15
+
+* f4911c8 re-generate workflows
+* 80916c4 README-MAINTAINER rename xbbla
+* c2c68d1 package.json: rename xbbla
+* 74caa21 package.json: bump deps
+* b674116 READMEs update
+* 242e3c3 README update
+
+## 2023-08-14
+
+* 8182d40 add 16.0.6-2 patch
+* 80f7c49 16.0.6-2.1.pre
+
 ## 2023-08-06
 
 * 023b563 16.0.6-1.1
