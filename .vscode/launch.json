@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "clang -v",
+      // "program": "${workspaceFolder}/<executable file>",
+      "program": "/Users/ilg/Work/xpack-dev-tools-build/clang-17.0.1-1/darwin-x64/application/bin/clang-17",
+      "args": [
+        "-v"
+      ],
+      "symbolSearchPath": "/Users/ilg/Work/xpack-dev-tools-build/clang-17.0.1-1/darwin-x64/sources/llvm-project-17.0.1.src/clang",
+      "stopAtEntry": true,
+      "filterStderr": true,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "clang -v link",
+      // "program": "${workspaceFolder}/<executable file>",
+      "program": "/Users/ilg/tmp/clang-link",
+      "args": [
+        "-v"
+      ],
+      // "symbolSearchPath": "/Users/ilg/Work/xpack-dev-tools-build/clang-17.0.1-1/darwin-x64/sources/llvm-project-17.0.1.src/clang",
+      "stopAtEntry": true,
+      "filterStderr": true,
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
