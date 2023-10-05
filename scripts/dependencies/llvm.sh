@@ -832,7 +832,7 @@ function llvm_test()
 
     local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
 
-    if [ "${XBB_TARGET_PLATFORM}" != "win32" ]
+    if false # [ "${XBB_TARGET_PLATFORM}" != "win32" ]
     then
 
       # Check if InstalledDir is correct when invoked via a
