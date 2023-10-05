@@ -554,8 +554,14 @@ function llvm_build()
             exit 1
           fi
 
-          if [ "${llvm_enable_tests}" != "y" ]
+          if [ "${llvm_enable_tests}" == "y" ]
           then
+            config_options+=("-DCLANG_INCLUDE_TESTS=ON")
+            config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=ON")
+            config_options+=("-DLLDB_INCLUDE_TESTS=ON")
+            config_options+=("-DLLVM_BUILD_TESTS=ON")
+            config_options+=("-DLLVM_INCLUDE_TESTS=ON")
+          else
             config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
             config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
             config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
