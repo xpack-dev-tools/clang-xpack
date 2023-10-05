@@ -131,6 +131,12 @@ function llvm_build()
         # TODO: check if still needed.
         LDFLAGS+=" -Wl,-search_paths_first"
 
+        # FAILED: tools/lldb/unittests/Editline/EditlineTests
+        # Undefined symbols for architecture x86_64:
+        #   "_setupterm", referenced from:
+        #       lldb_private::Editline::Editline(char const*, __sFILE*, __sFILE*, __sFILE*, std::__1::recursive_mutex&, bool) in liblldbHost.a(Editline.cpp.o)
+        LDFLAGS+=" -lncurses"
+
         # For libc++.1.0.dylib to find libc++abi.1.dylib
         run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
