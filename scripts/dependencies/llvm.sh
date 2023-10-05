@@ -52,6 +52,8 @@ function llvm_build()
   local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
   local llvm_version_minor=$(xbb_get_version_minor "${ACTUAL_LLVM_VERSION}")
 
+  local llvm_enable_tests="${XBB_APPLICATION_LLVM_ENABLE_TESTS:-""}"
+
   export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
@@ -182,8 +184,6 @@ function llvm_build()
           # https://llvm.org/docs/BuildingADistribution.html
           config_options+=("-DBUILD_SHARED_LIBS=OFF")
 
-          config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
-
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
           config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}") # MS
 
@@ -237,8 +237,6 @@ function llvm_build()
             config_options+=("-DCMAKE_LIBRARY_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
           fi
 
-          config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
-
           config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
           config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
@@ -248,11 +246,9 @@ function llvm_build()
 
           config_options+=("-DLLDB_ENABLE_LUA=OFF") # HB
           config_options+=("-DLLDB_ENABLE_PYTHON=OFF") # HB uses ON
-          config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
           # config_options+=("-DLLDB_USE_SYSTEM_SIX=ON") # HB (?)
 
           config_options+=("-DLLVM_BUILD_DOCS=OFF")
-          config_options+=("-DLLVM_BUILD_TESTS=OFF") # Arch uses ON
           config_options+=("-DLLVM_ENABLE_ASSERTIONS=OFF") # MS
           # config_options+=("-DLLVM_ENABLE_BACKTRACES=OFF")
           config_options+=("-DLLVM_ENABLE_DOXYGEN=OFF")
@@ -269,7 +265,6 @@ function llvm_build()
           config_options+=("-DLLVM_ENABLE_Z3_SOLVER=OFF") # HB uses ON
 
           config_options+=("-DLLVM_INCLUDE_DOCS=OFF") # No docs, HB
-          config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests, HB
           config_options+=("-DLLVM_INCLUDE_EXAMPLES=OFF") # No examples
 
           # Keep the explicit `llvm-*` names.
@@ -553,6 +548,15 @@ function llvm_build()
             exit 1
           fi
 
+          if [ "${llvm_enable_tests}" != "y" ]
+          then
+            config_options+=("-DCLANG_INCLUDE_TESTS=OFF")
+            config_options+=("-DCOMPILER_RT_INCLUDE_TESTS=OFF")
+            config_options+=("-DLLDB_INCLUDE_TESTS=OFF")
+            config_options+=("-DLLVM_BUILD_TESTS=OFF") # Arch uses ON
+            config_options+=("-DLLVM_INCLUDE_TESTS=OFF") # No tests, HB
+          fi
+
           echo
           which ${CC} && ${CC} --version && echo || true
 
@@ -580,6 +584,20 @@ function llvm_build()
             --build . \
             --verbose \
             --target install
+
+          if [ "${llvm_enable_tests}" == "y" ]
+          then
+            # FAILED: tools/lldb/unittests/Editline/EditlineTests
+            # Undefined symbols for architecture x86_64:
+            #   "_setupterm", referenced from:
+            #       lldb_private::Editline::Editline(char const*, __sFILE*, __sFILE*, __sFILE*, std::__1::recursive_mutex&, bool) in liblldbHost.a(Editline.cpp.o)
+
+            run_verbose "${CMAKE}" \
+              --build . \
+              --verbose \
+              --target check-clang-driver # || true
+          fi
+
         else
           run_verbose "${CMAKE}" \
             --build .

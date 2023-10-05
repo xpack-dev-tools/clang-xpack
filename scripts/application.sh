@@ -27,6 +27,8 @@ declare -a XBB_APPLICATION_COMMON_DEPENDENCIES=( zlib libffi ncurses libiconv xz
 
 # XBB_APPLICATION_BOOTSTRAP_ONLY="y"
 
+# XBB_APPLICATION_LLVM_ENABLE_TESTS="y"
+
 # -----------------------------------------------------------------------------
 
 XBB_GITHUB_ORG="${XBB_GITHUB_ORG:-"xpack-dev-tools"}"
