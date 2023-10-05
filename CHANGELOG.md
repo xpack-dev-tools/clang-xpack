@@ -2,9 +2,19 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-10-05
+
+* v17.0.2-1 prepared
+* ed91025 llvm.sh: add llvm_enable_tests
+* de6c91c llvm.sh: use XBB_WITH_STRIP on non develop
+* ba3a0f6 llvm.sh: disable InstalledDir test
+
 ## 2023-09-28
 
-* v17.0.1-1 prepared
+* 269454d README update
+* f0ccf0a llvm.sh: skip some LTO tests on macOS
+* c16b374 README update
+* a87c1cd prepare v17.0.1-1
 
 ## 2023-09-25
 
