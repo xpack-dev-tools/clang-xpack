@@ -579,14 +579,21 @@ function llvm_build()
           run_verbose "${CMAKE}" \
             --build . \
             --verbose \
-            --target install/strip
+            --target install
         else
           run_verbose "${CMAKE}" \
             --build .
 
-          run_verbose "${CMAKE}" \
-            --build . \
-            --target install/strip
+          if [ "${XBB_WITH_STRIP}" == "y" ]
+          then
+            run_verbose "${CMAKE}" \
+              --build . \
+              --target install/strip
+          else
+            run_verbose "${CMAKE}" \
+              --build . \
+              --target install
+          fi
         fi
 
         if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
