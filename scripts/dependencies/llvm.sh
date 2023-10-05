@@ -598,10 +598,11 @@ function llvm_build()
             #   "_setupterm", referenced from:
             #       lldb_private::Editline::Editline(char const*, __sFILE*, __sFILE*, __sFILE*, std::__1::recursive_mutex&, bool) in liblldbHost.a(Editline.cpp.o)
 
+            # Please note that a full check takes a lot of time.
             run_verbose "${CMAKE}" \
               --build . \
               --verbose \
-              --target check-clang-driver # || true
+              --target check # check-clang-driver # || true
           fi
 
         else
