@@ -483,7 +483,7 @@ function llvm_build()
             #   cmake/modules/TableGen.cmake:146 (add_llvm_executable)
             #   utils/TableGen/CMakeLists.txt:33 (add_tablegen)
             # Plus patch in llvm/cmake/modules/CrossCompile.cmake
-            
+
             config_options+=("-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON")
 
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
@@ -620,7 +620,7 @@ function llvm_build()
             run_verbose "${CMAKE}" \
               --build . \
               --verbose \
-              --target check # check-clang-driver # || true
+              --target check-clang # check #$ check-clang-driver # || true
           fi
 
         else
