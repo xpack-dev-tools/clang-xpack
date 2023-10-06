@@ -474,6 +474,18 @@ function llvm_build()
           elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
           then
 
+            # CMake Error at cmake/modules/AddLLVM.cmake:967 (add_executable):
+            #   The install of the llvm-tblgen target requires changing an RPATH from the
+            #   build tree, but this is not supported with the Ninja generator unless on an
+            #   ELF-based or XCOFF-based platform.  The CMAKE_BUILD_WITH_INSTALL_RPATH
+            #   variable may be set to avoid this relinking step.
+            # Call Stack (most recent call first):
+            #   cmake/modules/TableGen.cmake:146 (add_llvm_executable)
+            #   utils/TableGen/CMakeLists.txt:33 (add_tablegen)
+            # Plus patch in llvm/cmake/modules/CrossCompile.cmake
+            
+            config_options+=("-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON")
+
             config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
             config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
             config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
