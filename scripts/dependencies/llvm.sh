@@ -608,10 +608,18 @@ function llvm_build()
             --verbose \
             --parallel ${XBB_JOBS}
 
-          run_verbose "${CMAKE}" \
-            --build . \
-            --verbose \
-            --target install
+          if [ "${XBB_WITH_STRIP}" == "y" ]
+          then
+            run_verbose "${CMAKE}" \
+              --build . \
+              --verbose \
+              --target install/strip
+          else
+            run_verbose "${CMAKE}" \
+              --build . \
+              --verbose \
+              --target install
+          fi
 
           if [ "${llvm_enable_tests}" == "y" ]
           then
