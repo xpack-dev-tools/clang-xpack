@@ -333,10 +333,10 @@ function application_build_versioned_components()
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
-    XBB_BINUTILS_VERSION="2.40" # "2.39"
+    XBB_BINUTILS_VERSION="2.41" # "2.40" # "2.39"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
-    XBB_MINGW_VERSION="11.0.0" # "10.0.0"
+    XBB_MINGW_VERSION="11.0.1" # "11.0.0" # "10.0.0"
 
     # https://zlib.net/fossils/
     XBB_ZLIB_VERSION="1.2.13"
@@ -347,11 +347,11 @@ function application_build_versioned_components()
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
     # https://sourceforge.net/projects/lzmautils/files/
-    XBB_XZ_VERSION="5.4.3" # "5.4.0"
+    XBB_XZ_VERSION="5.4.4" # "5.4.3" # "5.4.0"
     # https://download.gnome.org/sources/libxml2/
-    XBB_LIBXML2_VERSION="2.11.4" # "2.10.3"
+    XBB_LIBXML2_VERSION="2.11.5" # "2.11.4" # "2.10.3"
     # https://www.thrysoee.dk/editline/
-    XBB_LIBEDIT_VERSION="20221030-3.1"
+    XBB_LIBEDIT_VERSION="20230828-3.1" # "20221030-3.1"
 
     clang_build_common
 
