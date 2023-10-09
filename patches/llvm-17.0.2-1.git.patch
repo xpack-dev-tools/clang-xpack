@@ -33,28 +33,3 @@ index 65bd6c6a7eb3..323f8788699c 100644
      llvm::sys::path::append(SysrootUsr, "usr", "include", "c++", "v1");
 -- 
 2.37.1 (Apple Git-137.1)
-
-From ee0b12eaed9adb713793c9e286bbb2d9016ecd9f Mon Sep 17 00:00:00 2001
-From: Liviu Ionescu <ilg@livius.net>
-Date: Fri, 6 Oct 2023 15:46:21 +0300
-Subject: [PATCH] CrossCompile.cmake: propagate CMAKE_BUILD_WITH_INSTALL_RPATH
-
----
- llvm/cmake/modules/CrossCompile.cmake | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/llvm/cmake/modules/CrossCompile.cmake b/llvm/cmake/modules/CrossCompile.cmake
-index 6af47b51d4c6..9c607f1a7590 100644
---- a/llvm/cmake/modules/CrossCompile.cmake
-+++ b/llvm/cmake/modules/CrossCompile.cmake
-@@ -74,6 +74,7 @@ function(llvm_create_cross_target project_name target_name toolchain buildtype)
-         -DCMAKE_CXX_COMPILER_LAUNCHER="${CMAKE_CXX_COMPILER_LAUNCHER}"
-         ${CROSS_TOOLCHAIN_FLAGS_${target_name}} ${CMAKE_CURRENT_SOURCE_DIR}
-         ${CROSS_TOOLCHAIN_FLAGS_${project_name}_${target_name}}
-+        -DCMAKE_BUILD_WITH_INSTALL_RPATH="${CMAKE_BUILD_WITH_INSTALL_RPATH}"
-         -DLLVM_TARGET_IS_CROSSCOMPILE_HOST=TRUE
-         -DLLVM_TARGETS_TO_BUILD="${targets_to_build_arg}"
-         -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${experimental_targets_to_build_arg}"
--- 
-2.37.1 (Apple Git-137.1)
-
