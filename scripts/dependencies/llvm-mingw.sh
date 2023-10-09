@@ -161,7 +161,7 @@ function llvm_mingw_build_first()
           run_verbose "${CMAKE}" \
             --build . \
             --verbose  \
-            --target install/strip
+            --target install
         else
           run_verbose "${CMAKE}" \
             --build .
