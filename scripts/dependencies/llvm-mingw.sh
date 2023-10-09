@@ -166,9 +166,16 @@ function llvm_mingw_build_first()
           run_verbose "${CMAKE}" \
             --build .
 
-          run_verbose "${CMAKE}" \
-            --build . \
-            --target install/strip
+          if [ "${XBB_WITH_STRIP}" == "y" ]
+          then
+            run_verbose "${CMAKE}" \
+              --build . \
+              --target install/strip
+          else
+            run_verbose "${CMAKE}" \
+              --build . \
+              --target install
+          fi
         fi
 
         # Copy these tools to the install folder, to simplify access
