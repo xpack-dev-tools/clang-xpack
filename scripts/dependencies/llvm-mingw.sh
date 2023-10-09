@@ -508,8 +508,8 @@ function llvm_mingw_build_libcxx()
 
           # config_options+=("-DLIBCXX_INSTALL_HEADERS=ON")
           # config_options+=("-DLIBCXX_ENABLE_EXCEPTIONS=ON")
-          # config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
-          # config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
+          config_options+=("-DLIBCXX_ENABLE_THREADS=ON")
+          config_options+=("-DLIBCXX_HAS_WIN32_THREAD_API=ON")
 
           config_options+=("-DLIBCXX_ENABLE_SHARED=ON") # MS
           # config_options+=("-DLIBCXX_ENABLE_SHARED=OFF")
@@ -533,7 +533,8 @@ function llvm_mingw_build_libcxx()
           config_options+=("-DLIBCXXABI_USE_COMPILER_RT=ON") # MS
           config_options+=("-DLIBCXXABI_USE_LLVM_UNWINDER=ON") # MS
           # config_options+=("-DLIBCXXABI_ENABLE_EXCEPTIONS=ON")
-          # config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
+          config_options+=("-DLIBCXXABI_ENABLE_THREADS=ON")
+          config_options+=("-DLIBCXXABI_HAS_WIN32_THREAD_API=ON")
           # config_options+=("-DLIBCXXABI_TARGET_TRIPLE=${XBB_TARGET_TRIPLET}")
           config_options+=("-DLIBCXXABI_ENABLE_SHARED=OFF") # MS
           # config_options+=("-DLIBCXXABI_LIBCXX_INCLUDES=${XBB_BUILD_FOLDER_PATH}/${llvm_libcxx_folder_name}/include/c++/v1")
