@@ -366,7 +366,7 @@ function llvm_build()
             # Prevent CMake from defaulting to `lld` when it's found next to `clang`.
             # This can be removed after CMake 3.25. See:
             # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
-            config_options+=("-DLLVM_USE_LINKER=ld") # HB
+            # config_options+=("-DLLVM_USE_LINKER=ld") # HB
 
             config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
 
