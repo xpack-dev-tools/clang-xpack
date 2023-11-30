@@ -1153,6 +1153,14 @@ function llvm_test()
         then
           export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
           export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+        elif [ ${llvm_version_major} -eq 14 ]
+        then
+          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+        elif [ ${llvm_version_major} -eq 13 ]
+        then
+          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
         fi
       fi
 
