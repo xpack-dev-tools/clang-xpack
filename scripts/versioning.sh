@@ -453,6 +453,11 @@ function application_build_versioned_components()
   elif [[ "${XBB_RELEASE_VERSION}" =~ 13[.].*[.].*-.* ]]
   then
 
+    if [[ "${XBB_RELEASE_VERSION}" =~ 13[.].*[.].*-[2] ]]
+    then
+      XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
+    fi
+    
     # Also used in -DLLVM_BINUTILS_INCDIR
     XBB_BINUTILS_VERSION="2.38"
 
