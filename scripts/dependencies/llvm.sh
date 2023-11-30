@@ -1196,7 +1196,7 @@ __EOF__
 
         run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
 
-        if [ ${llvm_version_major} -eq 13 ] && [ "${XBB_HOST_PLATFORM}" == "linux" ]
+        if [ ${llvm_version_major} -eq 13 ]
         then
 
           # Segmentation fault (core dumped)
