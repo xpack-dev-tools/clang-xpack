@@ -63,6 +63,25 @@ The same test on a plain Ubuntu 20 passes.
 
 On RedHat systems, the tests that expected a `libstdc++.a` fail.
 
+## Oracle ampere tests
+
+17.0.5-1, ampere 4 core, 24 GB RAM, 200 GB disk
+
+- 64-bit: 2h14, 2h17, 2h18 (average 2h16, 136min, 1.1147)
+- 32-bit: 2h02, 2h02, 2h02 (average 2h02, 122min)
+- in parallel 64-bit: 4h21, 32-bit: 4h06
+
+Berry 32
+
+- 32-bit: 9h36 (576min), 9h29 (569min), 9h29 (569min)
+
+Berry 64
+
+- 64-bit: 11h47 (707min) 1.3092;
+- 32-bit: 9h00 (540min); 9h16
+
+- <https://forums.raspberrypi.com/viewtopic.php?p=2158073#p2158073>
+
 ## Bug reports
 
 ### Bug in getInstalledDir() prevents picking up the correct headers when clang is started via a link
