@@ -1,0 +1,114 @@
+From 5160eef83af330b77e2c1e13192033f2b815978a Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Thu, 30 Nov 2023 21:23:40 +0200
+Subject: [PATCH] Linux.cpp: move D.Dir + "/../lib" earlier
+
+---
+ clang/lib/Driver/ToolChains/Linux.cpp | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/clang/lib/Driver/ToolChains/Linux.cpp b/clang/lib/Driver/ToolChains/Linux.cpp
+index 83cb41159de7..63aebc8077a7 100644
+--- a/clang/lib/Driver/ToolChains/Linux.cpp
++++ b/clang/lib/Driver/ToolChains/Linux.cpp
+@@ -261,6 +261,14 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+   const std::string OSLibDir = std::string(getOSLibDir(Triple, Args));
+   const std::string MultiarchTriple = getMultiarchTriple(D, Triple, SysRoot);
+ 
++  // Similar to the logic for GCC above, if we are currently running Clang
++  // inside of the requested system root, add its parent library path to those
++  // searched.
++  // FIXME: It's not clear whether we should use the driver's installed
++  // directory ('Dir' below) or the ResourceDir.
++  if (StringRef(D.Dir).startswith(SysRoot))
++    addPathIfExists(D, D.Dir + "/../lib", Paths);
++
+   // mips32: Debian multilib, we use /libo32, while in other case, /lib is
+   // used. We need add both libo32 and /lib.
+   if (Arch == llvm::Triple::mips || Arch == llvm::Triple::mipsel) {
+@@ -301,13 +309,6 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
+ 
+   Generic_GCC::AddMultiarchPaths(D, SysRoot, OSLibDir, Paths);
+ 
+-  // The deprecated -DLLVM_ENABLE_PROJECTS=libcxx configuration installs
+-  // libc++.so in D.Dir+"/../lib/". Detect this path.
+-  // TODO Remove once LLVM_ENABLE_PROJECTS=libcxx is unsupported.
+-  if (StringRef(D.Dir).startswith(SysRoot) &&
+-      D.getVFS().exists(D.Dir + "/../lib/libc++.so"))
+-    addPathIfExists(D, D.Dir + "/../lib", Paths);
+-
+   addPathIfExists(D, SysRoot + "/lib", Paths);
+   addPathIfExists(D, SysRoot + "/usr/lib", Paths);
+ }
+-- 
+2.39.3 (Apple Git-145)
+
+From cb0600a7642e161ae864dc0f9bee575161fc2485 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Thu, 30 Nov 2023 21:19:43 +0200
+Subject: [PATCH] Darwin.cpp: apply patch from clang 17
+
+---
+ clang/lib/Driver/ToolChains/Darwin.cpp | 37 +++++++++++++++++---------
+ 1 file changed, 25 insertions(+), 12 deletions(-)
+
+diff --git a/clang/lib/Driver/ToolChains/Darwin.cpp b/clang/lib/Driver/ToolChains/Darwin.cpp
+index f7da3f187814..62832bc2bc62 100644
+--- a/clang/lib/Driver/ToolChains/Darwin.cpp
++++ b/clang/lib/Driver/ToolChains/Darwin.cpp
+@@ -2237,19 +2237,19 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+ 
+   switch (GetCXXStdlibType(DriverArgs)) {
+   case ToolChain::CST_Libcxx: {
+-    // On Darwin, libc++ can be installed in one of the following two places:
+-    // 1. Alongside the compiler in         <install>/include/c++/v1
+-    // 2. In a SDK (or a custom sysroot) in <sysroot>/usr/include/c++/v1
++    // On Darwin, libc++ can be installed in one of the following places:
++    // 1. Alongside the compiler in <install>/include/c++/v1
++    // 2. Alongside the compiler in <clang-executable-folder>/../include/c++/v1
++    // 3. In a SDK (or a custom sysroot) in <sysroot>/usr/include/c++/v1
+     //
+-    // The precendence of paths is as listed above, i.e. we take the first path
+-    // that exists. Also note that we never include libc++ twice -- we take the
+-    // first path that exists and don't send the other paths to CC1 (otherwise
++    // The precedence of paths is as listed above, i.e. we take the first path
++    // that exists. Note that we never include libc++ twice -- we take the first
++    // path that exists and don't send the other paths to CC1 (otherwise
+     // include_next could break).
+-
+-    // Check for (1)
+-    // Get from '<install>/bin' to '<install>/include/c++/v1'.
+-    // Note that InstallBin can be relative, so we use '..' instead of
+-    // parent_path.
++    //
++    // Also note that in most cases, (1) and (2) are exactly the same path.
++    // Those two paths will differ only when the `clang` program being run
++    // is actually a symlink to the real executable.
+     llvm::SmallString<128> InstallBin =
+         llvm::StringRef(getDriver().getInstalledDir()); // <install>/bin
+     llvm::sys::path::append(InstallBin, "..", "include", "c++", "v1");
+@@ -2261,7 +2261,20 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
+                    << "\"\n";
+     }
+ 
+-    // Otherwise, check for (2)
++    // (2) Check for the folder where the executable is located, if different.
++    if (getDriver().getInstalledDir() != getDriver().Dir) {
++      InstallBin = llvm::StringRef(getDriver().Dir);
++      llvm::sys::path::append(InstallBin, "..", "include", "c++", "v1");
++      if (getVFS().exists(InstallBin)) {
++        addSystemInclude(DriverArgs, CC1Args, InstallBin);
++        return;
++      } else if (DriverArgs.hasArg(options::OPT_v)) {
++        llvm::errs() << "ignoring nonexistent directory \"" << InstallBin
++                     << "\"\n";
++      }
++    }
++
++    // Otherwise, check for (3)
+     llvm::SmallString<128> SysrootUsr = Sysroot;
+     llvm::sys::path::append(SysrootUsr, "usr", "include", "c++", "v1");
+     if (getVFS().exists(SysrootUsr)) {
+-- 
+2.39.3 (Apple Git-145)
+
