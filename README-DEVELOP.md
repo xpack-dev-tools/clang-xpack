@@ -63,6 +63,14 @@ The same test on a plain Ubuntu 20 passes.
 
 On RedHat systems, the tests that expected a `libstdc++.a` fail.
 
+## 13.0.1-2
+
+Fails the build for Windows and for macOS Sonoma.
+
+## 14.0.6-3
+
+Fails on macOS Sonoma with errors while building the sanitizer.
+
 ## Oracle ampere tests
 
 17.0.5-1, ampere 4 core, 24 GB RAM, 200 GB disk
