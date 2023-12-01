@@ -187,7 +187,7 @@ rm -rf ~/Work/mstorsjo/llvm-mingw.git
 mkdir -pv ~/Work/mstorsjo
 git clone https://github.com/mstorsjo/llvm-mingw ~/Work/mstorsjo/llvm-mingw.git
 
-git -C ~/Work/mstorsjo/llvm-mingw.git checkout 20230614
+git -C ~/Work/mstorsjo/llvm-mingw.git checkout 20231128
 ```
 
 Compare with the previous release. If the differences are small, possibly
