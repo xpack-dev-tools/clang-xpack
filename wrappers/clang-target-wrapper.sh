@@ -55,7 +55,7 @@ fi
 # If changing this wrapper, change clang-target-wrapper.c accordingly.
 CLANG="$DIR/clang"
 FLAGS=""
-## FLAGS="$FLAGS --start-no-unused-arguments"
+FLAGS="$FLAGS --start-no-unused-arguments"
 case $EXE in
 clang++|g++|c++)
     FLAGS="$FLAGS --driver-mode=g++"
@@ -97,12 +97,12 @@ mingw32uwp)
     # to let the user specified libraries take precedence over these.
 
     # add the minimum runtime to use for UWP targets
-##     LINKER_FLAGS="$LINKER_FLAGS --start-no-unused-arguments"
+    LINKER_FLAGS="$LINKER_FLAGS --start-no-unused-arguments"
     LINKER_FLAGS="$LINKER_FLAGS -Wl,-lwindowsapp"
     # This still requires that the toolchain (in particular, libc++.a) has
     # been built targeting UCRT originally.
     LINKER_FLAGS="$LINKER_FLAGS -Wl,-lucrtapp"
-##    LINKER_FLAGS="$LINKER_FLAGS --end-no-unused-arguments"
+    LINKER_FLAGS="$LINKER_FLAGS --end-no-unused-arguments"
     ;;
 esac
 
@@ -111,6 +111,6 @@ FLAGS="$FLAGS -rtlib=compiler-rt"
 FLAGS="$FLAGS -unwindlib=libunwind"
 FLAGS="$FLAGS -stdlib=libc++"
 FLAGS="$FLAGS -fuse-ld=lld"
-## FLAGS="$FLAGS --end-no-unused-arguments"
+FLAGS="$FLAGS --end-no-unused-arguments"
 
 $CCACHE "$CLANG" $FLAGS "$@" $LINKER_FLAGS
