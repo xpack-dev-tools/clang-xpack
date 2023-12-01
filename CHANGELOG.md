@@ -2,9 +2,72 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-12-01
+
+* v17.0.6-1 prepared
+* 62d6611 README update
+* 79ab3e3 Revert "wrappers: temporarily disable *-no-unused-arguments"
+* f7b54e8 llvm-mingw.sh: disable HELLO_WEAK_CPP for 14
+* cbdc459 llvm.sh: disable HELLO_WEAK_CPP for 14
+* e8f8714 README update
+* e5e4f26 llvm.sh: disable throwcatch for 14, 13
+* ce7429d llvm.sh: disable clangd unchecked-exception for 14 too
+
+## 2023-11-30
+
+* 7c8f109 VERSION 14.0.6-3
+* 58a292e add llvm-14.0.6-3.git.patch
+* 5ca48fd wrappers: temporarily disable *-no-unused-arguments
+* c139563 llvm.sh: skip clangd on all platforms
+* 8a41095 llvm.sh: skip clangd unchecked-exception on 13
+* a4fd752 add 13.0.1-2
+* cb5def4 README update
+
+## 2023-11-14
+
+* c3a705f 17.0.5-1
+* 26a6229 17.0.5-1
+
+## 2023-11-13
+
+* 982a0b9 llvm.sh: no LLVM_USE_LINKER=ld for macOS
+
+## 2023-11-12
+
+* c6b0833 package.json: bump deps
+
+## 2023-10-31
+
+* 26c149d 17.0.4-1
+
+## 2023-10-10
+
+* 759dfbe llvm-*.sh: use XBB_WITH_STRIP to strip
+* ce62f08 README update
+* fb08fe1 llvm-17.0.2-1.git.patch remove CMAKE_BUILD_WITH_INSTALL_RPATH
+
+## 2023-10-09
+
+* 65ff9d2 llvm.sh: use LLVM_NATIVE_TOOL_DIR for windows
+* e7f351b llvm-mingw.sh: explicit HAS_WIN32_THREAD
+* db03b10 llvm-mingw.sh: use XBB_WITH_STRIP for non DEVELOP
+* 9e61d97 llvm-mingw.sh: do not strip in DEVELOP
+* 348487a versioning.sh: bump deps
+
+## 2023-10-06
+
+* 46bae30 llvm.sh: use check-clang
+* 625a164 llvm.sh: CMAKE_BUILD_WITH_INSTALL_RPATH=ON for windows
+* a168fb9 llvm-17.0.2-1.git.patch update
+
 ## 2023-10-05
 
-* v17.0.2-1 prepared
+* 724702e add .vscode/launch.json
+* 7163f00 llvm.sh: explicit ON to enable tests
+* 6e2dc65 llvm.sh: full check
+* bfa0834 llvm.sh: add -lncurses for macOS
+* dbd406b prepare v17.0.2-1
+* c133469 add llvm-17.0.2-1 patch
 * ed91025 llvm.sh: add llvm_enable_tests
 * de6c91c llvm.sh: use XBB_WITH_STRIP on non develop
 * ba3a0f6 llvm.sh: disable InstalledDir test

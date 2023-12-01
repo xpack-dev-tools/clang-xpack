@@ -1,6 +1,6 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "17.0.2-1.1.pre",
+  "version": "17.0.6-1.1.pre",
   "description": "A binary xPack with the LLVM clang executables",
   "main": "",
   "scripts": {
