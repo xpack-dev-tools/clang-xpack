@@ -682,11 +682,17 @@ function llvm_build()
 
             # Remove less used LLVM libraries and leave only the toolchain.
             cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
-            for f in bugpoint c-index-test \
+            for f in \
+              amdgpu-arch \
+              bugpoint c-index-test \
               clang-apply-replacements clang-change-namespace \
-              clang-extdef-mapping clang-include-fixer clang-move clang-query \
+              clang-extdef-mapping clang-include-fixer clang-move \
+              clang-offload-bundler clang-offload-packager clang-pseudo \
+              clang-query \
               clang-reorder-fields find-all-symbols \
+              clangd-xpc-test-client \
               count dsymutil FileCheck \
+              intercept-build \
               lli-child-target llvm-bcanalyzer llvm-c-test \
               llvm-cat llvm-cfi-verify llvm-cvtres \
               llvm-dwarfdump llvm-dwp \
@@ -697,9 +703,11 @@ function llvm_build()
               llvm-profgen \
               llvm-PerfectShuffle llvm-reduce llvm-rtdyld llvm-split \
               llvm-stress llvm-undname llvm-xray \
-              modularize not obj2yaml opt pp-trace sancov sanstats \
+              modularize not nvptx-arch \
+              obj2yaml opt pp-trace sancov sanstats \
               scan-build scan-build.bat scan-view \
-              verify-uselistorder yaml-bench yaml2obj
+              verify-uselistorder yaml-bench yaml2obj \
+              UnicodeNameMappingGenerator
             do
               rm -rfv $f $f${XBB_HOST_DOT_EXE}
             done
