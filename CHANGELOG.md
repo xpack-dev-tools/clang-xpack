@@ -4,7 +4,13 @@ Entries in this file are in reverse chronological order.
 
 ## 2023-12-01
 
-* v17.0.6-1 prepared
+* 6390f72 package.json: update bins
+* e56f686 package-lock.json update
+* 0ee8e14 README update
+* bd0e812 versioning.sh: bump deps
+* 0f7c3b4 llvm.sh: edit less used files
+* 0a2499a llvm*.sh: add llvm-cxxfilt
+* 3cf68aa prepare v17.0.6-1
 * 62d6611 README update
 * 79ab3e3 Revert "wrappers: temporarily disable *-no-unused-arguments"
 * f7b54e8 llvm-mingw.sh: disable HELLO_WEAK_CPP for 14
