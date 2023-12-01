@@ -252,7 +252,7 @@ For a debug build:
 xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-The build takes about 1h05.
+The build takes about 1h10.
 
 When functional, push the `xpack-develop` branch to GitHub.
 
@@ -278,14 +278,14 @@ xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 1h10 later, the output of the build script is a compressed
+About 1h25 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
-total 198256
--rw-r--r--  1 ilg  staff  96214029 Jan 21 01:18 xpack-clang-17.0.6-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Jan 21 01:18 xpack-clang-17.0.6-1-darwin-x64.tar.gz.sha
+total 196864
+-rw-r--r--  1 ilg  staff  98706276 Dec  1 12:09 xpack-clang-17.0.6-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff       105 Dec  1 12:09 xpack-clang-17.0.6-1-darwin-x64.tar.gz.sha
 ```
 
 #### Apple Silicon macOS
@@ -312,14 +312,14 @@ xpm install --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 30 minutes later, the output of the build script is a compressed
+About 35 minutes later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
-total 165320
--rw-r--r--  1 ilg  staff  84138150 Jan 27 03:56 xpack-clang-17.0.6-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jan 27 03:56 xpack-clang-17.0.6-1-darwin-arm64.tar.gz.sha
+total 197968
+-rw-r--r--  1 ilg  staff  92348638 Dec  1 11:19 xpack-clang-17.0.6-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Dec  1 11:19 xpack-clang-17.0.6-1-darwin-arm64.tar.gz.sha
 ```
 
 #### Intel GNU/Linux
@@ -348,14 +348,14 @@ xpm run docker-link-deps --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 50 minutes later, the output of the build script is a compressed
+About 1h45 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
-total 182596
--rw-r--r-- 1 ilg ilg 186973037 Jan 20 09:00 xpack-clang-17.0.6-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 20 09:00 xpack-clang-17.0.6-1-linux-x64.tar.gz.sha
+total 189896
+-rw-r--r-- 1 ilg ilg 194441986 Dec  1 10:26 xpack-clang-17.0.6-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Dec  1 10:26 xpack-clang-17.0.6-1-linux-x64.tar.gz.sha
 ```
 
 ##### Build the Intel Windows binaries
@@ -375,14 +375,14 @@ xpm run docker-link-deps --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 1h50 later, the output of the build script is a compressed
+About 2h45 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
-total 375640
--rw-r--r-- 1 ilg ilg 384645944 Jan 21 01:35 xpack-clang-17.0.6-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Jan 21 01:35 xpack-clang-17.0.6-1-win32-x64.zip.sha
+total 403680
+-rw-r--r-- 1 ilg ilg 413357866 Dec  1 11:16 xpack-clang-17.0.6-1-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Dec  1 11:16 xpack-clang-17.0.6-1-win32-x64.zip.sha
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -409,14 +409,14 @@ xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xp
 xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 10h later, the output of the build script is a compressed
+About 10h later (2h20 on ampere), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
-total 143972
--rw-r--r-- 1 ilg ilg 147419140 Jan 21 08:14 xpack-clang-17.0.6-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jan 21 08:14 xpack-clang-17.0.6-1-linux-arm64.tar.gz.sha
+total 150200
+-rw-r--r-- 1 ilg ilg 153794430 Dec  1 11:05 xpack-clang-17.0.6-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Dec  1 11:05 xpack-clang-17.0.6-1-linux-arm64.tar.gz.sha
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -443,14 +443,14 @@ xpm run docker-link-deps --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 8h later, the output of the build script is a compressed
+About 9h later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
-total 124300
--rw-r--r-- 1 ilg ilg 127272460 Jan 21 06:20 xpack-clang-17.0.6-1-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jan 21 06:20 xpack-clang-17.0.6-1-linux-arm.tar.gz.sha
+total 192108
+-rw-r--r-- 1 ilg ilg 196710058 Dec  1 11:00 xpack-clang-17.0.6-1-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Dec  1 11:00 xpack-clang-17.0.6-1-linux-arm.tar.gz.sha
 ```
 
 ### Update README-MAINTAINER listing output
