@@ -347,9 +347,9 @@ function application_build_versioned_components()
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
     # https://sourceforge.net/projects/lzmautils/files/
-    XBB_XZ_VERSION="5.4.4" # "5.4.3" # "5.4.0"
+    XBB_XZ_VERSION="5.4.5" # "5.4.4"
     # https://download.gnome.org/sources/libxml2/
-    XBB_LIBXML2_VERSION="2.11.5" # "2.11.4" # "2.10.3"
+    XBB_LIBXML2_VERSION="2.12.1" # "2.11.5"
     # https://www.thrysoee.dk/editline/
     XBB_LIBEDIT_VERSION="20230828-3.1" # "20221030-3.1"
 
@@ -457,7 +457,7 @@ function application_build_versioned_components()
     then
       XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
     fi
-    
+
     # Also used in -DLLVM_BINUTILS_INCDIR
     XBB_BINUTILS_VERSION="2.38"
 
