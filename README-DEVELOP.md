@@ -71,6 +71,14 @@ Fails the build for Windows and for macOS Sonoma.
 
 Fails on macOS Sonoma with errors while building the sanitizer.
 
+Fails on Windows to compile static
+
+```
+[wine64 /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/application/bin/clang++.exe simple-hello.cpp -o static-lib-simple-hello-cpp-one-32.exe -static-libgcc -static-libstdc++ -m32 -v -v]
+ld.lld: error: undefined symbol: __declspec(dllimport) std::__1::cout
+>>> referenced by C:/users/ilg/Temp/simple-hello-cfc904.o:(_main)
+```
+
 ## Oracle ampere tests
 
 17.0.5-1, ampere 4 core, 24 GB RAM, 200 GB disk
