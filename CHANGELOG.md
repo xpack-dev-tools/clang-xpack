@@ -2,9 +2,15 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-12-04
+
+* v17.0.6-1.1 published on npmjs.com
+* c97636e package.json: update urls for 17.0.6-1.1 release
+* db0ea9a README update
+* cc16ad7 CHANGELOG update
+
 ## 2023-12-03
 
-* v17.0.6-1 released
 * 1a16300 package.json: bump deps
 * 5d69434 re-generate workflows
 * 833d4c9 body-jekyll update
