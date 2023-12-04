@@ -2,8 +2,18 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2023-12-03
+
+* v17.0.6-1 released
+* 1a16300 package.json: bump deps
+* 5d69434 re-generate workflows
+* 833d4c9 body-jekyll update
+* 6e01873 README update
+
 ## 2023-12-01
 
+* 38f9c3d README update
+* 9b36a75 CHANGELOG update
 * 6390f72 package.json: update bins
 * e56f686 package-lock.json update
 * 0ee8e14 README update
