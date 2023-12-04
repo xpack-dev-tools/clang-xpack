@@ -588,8 +588,8 @@ The builds take more than 11 hours to complete:
 - `xbbmi`: 1h32 (nuc)
 - `xbbma`: 0h35
 - `xbbli`: 1h43 Linux, 2h44 Windows
-- `xbbla`: 11h54
-- `xbbla32`: 9h32
+- `xbbla`: 11h56
+- `xbbla32`: 9h39
 
 The workflow result and logs are available from the
 [Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
