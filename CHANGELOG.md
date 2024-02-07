@@ -2,9 +2,15 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-02-07
+
+* v18.1.0-1 prepared
+* 3e6e338 READMEs update
+* 5cdb88c package.json: bump deps
+
 ## 2023-12-04
 
-* v17.0.6-1.1 published on npmjs.com
+* aa6e3ca 17.0.6-1.1
 * c97636e package.json: update urls for 17.0.6-1.1 release
 * db0ea9a README update
 * cc16ad7 CHANGELOG update
