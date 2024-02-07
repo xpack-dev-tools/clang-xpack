@@ -324,7 +324,44 @@ function application_build_versioned_components()
 
   # ---------------------------------------------------------------------------
 
-  if [[ "${XBB_RELEASE_VERSION}" =~ 17[.].*[.].*-.* ]]
+  if [[ "${XBB_RELEASE_VERSION}" =~ 18[.].*[.].*-.* ]]
+  then
+
+    # Used only during initial testing.
+    XBB_LLVM_VERSION="18.1.0rc2"
+    XBB_LLVM_SRC_FOLDER_NAME="llvm-project-18.1.0rc2.src"
+    XBB_LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.0-rc2/llvm-project-18.1.0rc2.src.tar.xz"
+
+    XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
+
+    # XBB_DO_REQUIRE_RPATH="n"
+
+    # Also used in -DLLVM_BINUTILS_INCDIR
+    # https://ftp.gnu.org/gnu/binutils/
+    XBB_BINUTILS_VERSION="2.41" # "2.40" # "2.39"
+
+    # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
+    XBB_MINGW_VERSION="11.0.1" # "11.0.0" # "10.0.0"
+
+    # https://zlib.net/fossils/
+    XBB_ZLIB_VERSION="1.2.13"
+    # https://github.com/libffi/libffi/releases
+    XBB_LIBFFI_VERSION="3.4.4"
+    # https://ftp.gnu.org/gnu/ncurses/
+    XBB_NCURSES_VERSION="6.4"
+    # https://ftp.gnu.org/pub/gnu/libiconv/
+    XBB_LIBICONV_VERSION="1.17"
+    # https://sourceforge.net/projects/lzmautils/files/
+    XBB_XZ_VERSION="5.4.5" # "5.4.4"
+    # https://download.gnome.org/sources/libxml2/
+    XBB_LIBXML2_VERSION="2.12.1" # "2.11.5"
+    # https://www.thrysoee.dk/editline/
+    XBB_LIBEDIT_VERSION="20230828-3.1" # "20221030-3.1"
+
+    clang_build_common
+
+    # -------------------------------------------------------------------------
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 17[.].*[.].*-.* ]]
   then
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
