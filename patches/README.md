@@ -3,6 +3,14 @@
 For macOS, check [HomeBrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm.rb).
 For Windows, check [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases).
 
+## llvm-17.*
+
+A patch to set the search path to the executable location.
+
+Accepted upstream for 18.x as:
+
+- https://github.com/llvm/llvm-project/pull/70817
+
 ## llvm-16.0.6
 
 A patch from HomeBrew, apparently for meson.
