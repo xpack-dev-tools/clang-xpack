@@ -54,10 +54,12 @@ function llvm_build()
 
   local llvm_enable_tests="${XBB_APPLICATION_LLVM_ENABLE_TESTS:-""}"
 
-  export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
+  local llvm_src_folder_name_default="llvm-project-${ACTUAL_LLVM_VERSION}.src"
+  export llvm_src_folder_name="${XBB_LLVM_SRC_FOLDER_NAME:-${llvm_src_folder_name_default}}"
 
   local llvm_archive="${llvm_src_folder_name}.tar.xz"
-  local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
+  local llvm_url_default="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
+  local llvm_url="${XBB_LLVM_URL:-${llvm_url_default}}"
 
   local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}"
 
@@ -922,6 +924,18 @@ function llvm_test()
 
     fi
 
+    if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    then
+      touch sdk-check.cpp
+
+      local first_path="$(run_host_app ${CXX} -v sdk-check.cpp -c 2>&1| grep -E '^ ' | grep  -E '^ /' | sed -e '2,$d')"
+      if echo ${first_path} | grep MacOSX.sdk
+      then
+        echo "MacOSX.sdk test failed"
+        exit 1
+      fi
+    fi
+
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
 
@@ -1171,7 +1185,11 @@ function llvm_test()
         # caught std::exception
         # all ok <--
 
-        if [ ${llvm_version_major} -eq 17 ]
+        if [ ${llvm_version_major} -eq 18 ]
+        then
+          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+        elif [ ${llvm_version_major} -eq 17 ]
         then
           export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
           export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
