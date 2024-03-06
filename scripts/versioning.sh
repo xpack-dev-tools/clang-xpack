@@ -328,9 +328,9 @@ function application_build_versioned_components()
   then
 
     # Used only during initial testing.
-    XBB_LLVM_VERSION="18.1.0rc2"
-    XBB_LLVM_SRC_FOLDER_NAME="llvm-project-18.1.0rc2.src"
-    XBB_LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.0-rc2/llvm-project-18.1.0rc2.src.tar.xz"
+    # XBB_LLVM_VERSION="18.1.0rc2"
+    # XBB_LLVM_SRC_FOLDER_NAME="llvm-project-18.1.0rc2.src"
+    # XBB_LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.0-rc2/llvm-project-18.1.0rc2.src.tar.xz"
 
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
 
