@@ -11,6 +11,17 @@ Accepted upstream for 18.x as:
 
 - https://github.com/llvm/llvm-project/pull/70817
 
+In Homebrew:
+
+```
+  # Fix arm64 misoptimisation in some cases.
+  # https://github.com/Homebrew/homebrew-core/issues/158957
+  # Remove with LLVM 18.
+  patch do
+    url "https://raw.githubusercontent.com/Homebrew/formula-patches/23704400c86976aaa4f421f56928484a270ac79c/llvm/17.x-arm64-opt.patch"
+  ...
+```
+
 ## llvm-16.0.6
 
 A patch from HomeBrew, apparently for meson.
