@@ -18,9 +18,10 @@
 # https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-project-11.1.0.src.tar.xz
 
 # https://github.com/archlinux/svntogit-packages/blob/packages/llvm/trunk/PKGBUILD
+# https://gitlab.archlinux.org/archlinux/packaging/packages/clang/-/blob/main/PKGBUILD?ref_type=heads
 # https://archlinuxarm.org/packages/aarch64/llvm/files/PKGBUILD
 
-# https://github.com/Homebrew/homebrew-core/blob/master/Formula/llvm.rb
+# https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm.rb
 # https://github.com/Homebrew/homebrew-core/commits/master/Formula/llvm.rb
 
 # https://llvm.org/docs/GoldPlugin.html#lto-how-to-build
@@ -337,8 +338,9 @@ function llvm_build()
             # this fails with system libtool.
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;compiler-rt")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
+            # HB
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
@@ -438,8 +440,8 @@ function llvm_build()
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON") # HB
 
             # Starting with 15, the runtimes must be specified separately.
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;compiler-rt")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
