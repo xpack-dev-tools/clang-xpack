@@ -140,6 +140,9 @@ function llvm_build()
         #       lldb_private::Editline::Editline(char const*, __sFILE*, __sFILE*, __sFILE*, std::__1::recursive_mutex&, bool) in liblldbHost.a(Editline.cpp.o)
         LDFLAGS+=" -lncurses"
 
+        # To find libclang-cpp.dylib during compile-rt build
+        XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
+
         # For libc++.1.0.dylib to find libc++abi.1.dylib
         run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
@@ -339,7 +342,7 @@ function llvm_build()
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
 
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
-            # HB
+            # HB builds the compiler-rt as RUNTIMES
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
