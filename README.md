@@ -104,16 +104,14 @@ After install, the package should create a structure like this (macOS files;
 only the first two depth levels are shown):
 
 ```console
-$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.content/
-/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/18.1.0-1.1/.content/
+$ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/17.0.6-2.1/.content/
+/Users/ilg/Library/xPacks/@xpack-dev-tools/clang/17.0.6-2.1/.content/
 ├── README.md
 ├── bin
-│   ├── UnicodeNameMappingGenerator
-│   ├── amdgpu-arch
 │   ├── analyze-build
 │   ├── clang -> clang-17
 │   ├── clang++ -> clang
-│   ├── clang-16
+│   ├── clang-17
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
@@ -121,9 +119,6 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.conten
 │   ├── clang-format
 │   ├── clang-include-cleaner
 │   ├── clang-linker-wrapper
-│   ├── clang-offload-bundler
-│   ├── clang-offload-packager
-│   ├── clang-pseudo
 │   ├── clang-refactor
 │   ├── clang-rename
 │   ├── clang-repl
@@ -131,12 +126,10 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.conten
 │   ├── clang-tblgen
 │   ├── clang-tidy
 │   ├── clangd
-│   ├── clangd-xpc-test-client
 │   ├── darwin-debug
 │   ├── diagtool
 │   ├── git-clang-format
 │   ├── hmaptool
-│   ├── intercept-build
 │   ├── ld.lld -> lld
 │   ├── ld64.lld -> lld
 │   ├── llc
@@ -186,17 +179,13 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.conten
 │   ├── llvm-tblgen
 │   ├── llvm-tli-checker
 │   ├── llvm-windres -> llvm-rc
-│   ├── nvptx-arch
 │   ├── run-clang-tidy
 │   ├── scan-build-py
 │   ├── set-xcode-analyzer
 │   ├── split-file
 │   └── wasm-ld -> lld
 ├── distro-info
-│   ├── CHANGELOG.md
-│   ├── licenses
-│   ├── patches
-│   └── scripts
+│   └── licenses
 ├── include
 │   ├── __libunwind_config.h
 │   ├── c++
@@ -228,8 +217,8 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.conten
 │   ├── libclang-cpp.dylib
 │   ├── libclang.dylib
 │   ├── libear
-│   ├── liblldb.18.1.0.dylib
-│   ├── liblldb.dylib -> liblldb.18.1.0.dylib
+│   ├── liblldb.17.0.6.dylib
+│   ├── liblldb.dylib -> liblldb.17.0.6.dylib
 │   ├── libscanbuild
 │   ├── libunwind.1.0.dylib
 │   ├── libunwind.1.dylib -> libunwind.1.0.dylib
@@ -258,7 +247,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.0-1.1/.conten
     ├── scan-build
     └── scan-view
 
-20 directories, 132 files
+18 directories, 123 files
 ```
 
 No other files are installed in any system folders or other locations.
@@ -295,15 +284,15 @@ For more details please read the
 ### Versioning
 
 The version strings used by the LLVM project are three number strings
-like `18.1.0`; to this string the xPack distribution adds a four number,
+like `17.0.6`; to this string the xPack distribution adds a four number,
 but since semver allows only three numbers, all additional ones can
 be added only as pre-release strings, separated by a dash,
-like `18.1.0-1`. When published as a npm package, the version gets
-a fifth number, like `18.1.0-1.1`.
+like `17.0.6-2`. When published as a npm package, the version gets
+a fifth number, like `17.0.6-2.1`.
 
 Since adherence of third party packages to semver is not guaranteed,
-it is recommended to use semver expressions like `^18.1.0` and `~18.1.0`
-with caution, and prefer exact matches, like `18.1.0-1.1`.
+it is recommended to use semver expressions like `^17.0.6` and `~17.0.6`
+with caution, and prefer exact matches, like `17.0.6-2.1`.
 
 ## Maintainer info
 
