@@ -352,6 +352,7 @@ function application_build_versioned_components()
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
     # https://sourceforge.net/projects/lzmautils/files/
+    # Avoid 5.6.[01]!
     XBB_XZ_VERSION="5.4.5" # "5.4.4"
     # https://download.gnome.org/sources/libxml2/
     XBB_LIBXML2_VERSION="2.12.1" # "2.11.5"
