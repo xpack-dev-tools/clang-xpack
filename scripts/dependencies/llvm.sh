@@ -1013,20 +1013,20 @@ function llvm_test()
           echo "WINEPATH=${WINEPATH}"
         fi
 
-        compiler-tests-single "${test_bin_path}" --${bits}
-        compiler-tests-single "${test_bin_path}" --${bits} --gc
-        compiler-tests-single "${test_bin_path}" --${bits} --lto
-        compiler-tests-single "${test_bin_path}" --${bits} --gc --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits}
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
 
-        compiler-tests-single "${test_bin_path}" --${bits} --static-lib
-        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc
-        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto
-        compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc --lto
 
-        compiler-tests-single "${test_bin_path}" --${bits} --static
-        compiler-tests-single "${test_bin_path}" --${bits} --static --gc
-        compiler-tests-single "${test_bin_path}" --${bits} --static --lto
-        compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --lto
+        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto
       done
 
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
@@ -1040,7 +1040,7 @@ function llvm_test()
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) will fail probing for
       # capabilities.
-      compiler-tests-single "${test_bin_path}"
+      test_compiler_c_cpp "${test_bin_path}"
 
       # aarch64 multilib not yet available
       # if [ "${XBB_HOST_BITS}" == "64" ]
@@ -1061,22 +1061,22 @@ function llvm_test()
           # export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
           # export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
 
-          compiler-tests-single "${test_bin_path}" --64
-          compiler-tests-single "${test_bin_path}" --64 --gc
-          compiler-tests-single "${test_bin_path}" --64 --lto --lld
-          compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld
+          test_compiler_c_cpp "${test_bin_path}" --64
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
 
           if true
           then
-            compiler-tests-single "${test_bin_path}" --64 --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --lto --lld --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --crt --libunwind
 
-            compiler-tests-single "${test_bin_path}" --64 --libc++ --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind
-            compiler-tests-single "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind
           fi
 
         )
@@ -1105,22 +1105,22 @@ function llvm_test()
             echo
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-            compiler-tests-single "${test_bin_path}" --32
-            compiler-tests-single "${test_bin_path}" --32 --gc
-            compiler-tests-single "${test_bin_path}" --32 --lto --lld
-            compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld
+            test_compiler_c_cpp "${test_bin_path}" --32
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
 
             if true
             then
-              compiler-tests-single "${test_bin_path}" --32 --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --lto --lld --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --crt --libunwind
 
-              compiler-tests-single "${test_bin_path}" --32 --libc++ --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
-              compiler-tests-single "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
+              test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
             fi
           )
         fi
@@ -1136,10 +1136,10 @@ function llvm_test()
           # For example, on Raspberry Pi OS 32-bit:
           # error: unable to execute command: Segmentation fault (core dumped)
 
-          compiler-tests-single "${test_bin_path}"
-          compiler-tests-single "${test_bin_path}" --gc
-          compiler-tests-single "${test_bin_path}" --lto --lld
-          compiler-tests-single "${test_bin_path}" --gc --lto --lld
+          test_compiler_c_cpp "${test_bin_path}"
+          test_compiler_c_cpp "${test_bin_path}" --gc
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
         )
       fi
 
@@ -1150,7 +1150,7 @@ function llvm_test()
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) will fail probing for
       # capabilities.
-      compiler-tests-single "${test_bin_path}"
+      test_compiler_c_cpp "${test_bin_path}"
 
       # Defaults: (different from HB)
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
@@ -1220,18 +1220,18 @@ function llvm_test()
       fi
 
       # Done before.
-      # compiler-tests-single "${test_bin_path}"
-      compiler-tests-single "${test_bin_path}" --gc
-      compiler-tests-single "${test_bin_path}" --lto
-      compiler-tests-single "${test_bin_path}" --gc --lto
+      # test_compiler_c_cpp "${test_bin_path}"
+      test_compiler_c_cpp "${test_bin_path}" --gc
+      test_compiler_c_cpp "${test_bin_path}" --lto
+      test_compiler_c_cpp "${test_bin_path}" --gc --lto
 
       # Redundant, the current default is compiler-rt anyway.
       if false
       then
-        compiler-tests-single "${test_bin_path}" --crt
-        compiler-tests-single "${test_bin_path}" --gc --crt
-        compiler-tests-single "${test_bin_path}" --lto --crt
-        compiler-tests-single "${test_bin_path}" --gc --lto --crt
+        test_compiler_c_cpp "${test_bin_path}" --crt
+        test_compiler_c_cpp "${test_bin_path}" --gc --crt
+        test_compiler_c_cpp "${test_bin_path}" --lto --crt
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt
       fi
 
     fi

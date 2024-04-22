@@ -845,41 +845,41 @@ function test_mingw_llvm()
     export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
     echo "WINEPATH=${WINEPATH}"
 
-    compiler-tests-single "${test_bin_path}" --${bits}
-    compiler-tests-single "${test_bin_path}" --${bits} --gc
-    compiler-tests-single "${test_bin_path}" --${bits} --lto
-    compiler-tests-single "${test_bin_path}" --${bits} --gc --lto
+    test_compiler_c_cpp "${test_bin_path}" --${bits}
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc --lto
 
-      compiler-tests-single "${test_bin_path}" --${bits} --static
-      compiler-tests-single "${test_bin_path}" --${bits} --static --gc
-      compiler-tests-single "${test_bin_path}" --${bits} --static --lto
-      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --lto
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto
     fi
 
     # Once again with --crt
-    compiler-tests-single "${test_bin_path}" --${bits} --crt
-    compiler-tests-single "${test_bin_path}" --${bits} --gc --crt
-    compiler-tests-single "${test_bin_path}" --${bits} --lto --crt
-    compiler-tests-single "${test_bin_path}" --${bits} --gc --lto --crt
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --crt
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --crt
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --lto --crt
+    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto --crt
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --lto --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static-lib --gc --lto --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc --lto --crt
 
-      compiler-tests-single "${test_bin_path}" --${bits} --static --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static --lto --crt
-      compiler-tests-single "${test_bin_path}" --${bits} --static --gc --lto --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --lto --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto --crt
     fi
 
     # -------------------------------------------------------------------------
