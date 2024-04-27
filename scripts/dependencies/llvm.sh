@@ -377,7 +377,10 @@ function llvm_build()
             # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
             # config_options+=("-DLLVM_USE_LINKER=ld") # HB
 
-            config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+            if [ ! -z "${MACOSX_DEPLOYMENT_TARGET:-""}" ]
+            then
+              config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+            fi
 
             # macOS 10.13 libtool does not support recent format:
             # /Library/Developer/CommandLineTools/usr/bin/libtool: object: lib/builtins/CMakeFiles/clang_rt.builtins_i386_osx.dir/absvdi2.c.o malformed object (LC_BUILD_VERSION and some LC_VERSION_MIN load command also found)
