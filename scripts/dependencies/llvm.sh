@@ -887,11 +887,13 @@ function llvm_test()
 
     # -------------------------------------------------------------------------
 
+    source "${helper_folder_path}/tests/c-cpp/test-compiler.sh"
     run_verbose cp -Rv "${helper_folder_path}/tests/c-cpp" .
-    chmod -R a+w c-cpp
+
     run_verbose cp -Rv "${helper_folder_path}/tests/wine"/* c-cpp
     chmod -R a+w c-cpp
 
+    # source "${helper_folder_path}/tests/fortran/test-compiler.sh"
     # run_verbose cp -Rv "${helper_folder_path}/tests/fortran" .
     # chmod -R a+w fortran
 
@@ -1146,12 +1148,6 @@ function llvm_test()
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
 
-      # It is mandatory that the compiler runs properly without any
-      # explicit libraries or other options, otherwise tools used
-      # during configuration (like meson) will fail probing for
-      # capabilities.
-      test_compiler_c_cpp "${test_bin_path}"
-
       # Defaults: (different from HB)
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
@@ -1192,35 +1188,41 @@ function llvm_test()
         # caught std::exception
         # all ok <--
 
-        if [ ${llvm_version_major} -eq 18 ]
+        if [ ${llvm_version_major} -eq 13 ] || \
+           [ ${llvm_version_major} -eq 14 ] || \
+           [ ${llvm_version_major} -eq 15 ] || \
+           [ ${llvm_version_major} -eq 16 ] || \
+           [ ${llvm_version_major} -eq 17 ] || \
+           [ ${llvm_version_major} -eq 18 ]
         then
           export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
           export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        elif [ ${llvm_version_major} -eq 17 ]
-        then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        elif [ ${llvm_version_major} -eq 16 ]
-        then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        elif [ ${llvm_version_major} -eq 15 ]
-        then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        elif [ ${llvm_version_major} -eq 14 ]
-        then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
-        elif [ ${llvm_version_major} -eq 13 ]
-        then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+          export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+          # Most likely an Apple linker issue. Passes on static.
+          # Undefined symbols for architecture x86_64:
+          #   "_func", referenced from:
+          export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+          export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+          export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
         fi
       fi
 
-      # Done before.
-      # test_compiler_c_cpp "${test_bin_path}"
+      # It is mandatory that the compiler runs properly without any
+      # explicit libraries or other options, otherwise tools used
+      # during configuration (like meson) will fail probing for
+      # capabilities.
+      test_compiler_c_cpp "${test_bin_path}"
+
+      # Again, with various options.
       test_compiler_c_cpp "${test_bin_path}" --gc
       test_compiler_c_cpp "${test_bin_path}" --lto
       test_compiler_c_cpp "${test_bin_path}" --gc --lto
@@ -1233,6 +1235,21 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --crt
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt
       fi
+
+      # Again with lld.
+      test_compiler_c_cpp "${test_bin_path}" --lld
+      test_compiler_c_cpp "${test_bin_path}" --gc --lld
+      test_compiler_c_cpp "${test_bin_path}" --lto --lld
+      test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
+
+      # ld: library not found for -lcrt0.o
+      # test_compiler_c_cpp "${test_bin_path}" --static
+
+      # ld64.lld: warning: Option `-static' is not yet implemented. Stay tuned...
+      # ld64.lld: error: library not found for -lcrt0.o
+      # ld64.lld: error: undefined symbol: printf
+
+      # test_compiler_c_cpp "${test_bin_path}" --static --lld
 
     fi
 
