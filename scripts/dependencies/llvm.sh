@@ -141,17 +141,17 @@ function llvm_build()
         LDFLAGS+=" -lncurses"
 
         # To find libclang-cpp.dylib during compile-rt build
-        run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
+        # run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
         XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
 
         # For libc++.1.0.dylib to find libc++abi.1.dylib
-        run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
+        # run_verbose mkdir -pv "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib"
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
       elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
         # For libc++abi to find libnunwind.so
         LDFLAGS+=" -L${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
-        run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
+        # run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
         XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
       fi
 
