@@ -1045,6 +1045,88 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
 
+      if [ ${llvm_version_major} -eq 15 ]
+      then
+        # LTO global-terminate test fails on 15.0.7-1.
+        # Segmentation fault (core dumped)
+        # Program received signal SIGSEGV, Segmentation fault.
+        # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
+
+        export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
+        export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+      elif [ ${llvm_version_major} -eq 17 ]
+      then
+        # Weird, -static crashes the threads.
+        # 201486 Segmentation fault      (core dumped)
+        export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
+
+        # -------------------------------------------------------------------
+        # -static and lld seem to have a problem with C++.
+
+        # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
+        # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
+        # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
+        # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+        export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_HELLO_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_CPP_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_CRT_TEST_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_CRT_TEST_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_CRT_TEST_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CRT_TEST_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_WEAK_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_WEAK_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK_CPP_32="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+
+      fi
+
       # It is mandatory for the compiler to run properly without any
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) will fail probing for
@@ -1056,86 +1138,6 @@ function llvm_test()
       if [ "${XBB_HOST_ARCH}" == "x64" ]
       then
         # x64 & aarch64, both with multilib.
-        if [ ${llvm_version_major} -eq 15 ]
-        then
-          # LTO global-terminate test fails on 15.0.7-1.
-          # Segmentation fault (core dumped)
-          # Program received signal SIGSEGV, Segmentation fault.
-          # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
-
-          export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
-        elif [ ${llvm_version_major} -eq 17 ]
-        then
-          #  201486 Segmentation fault      (core dumped)
-          export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
-
-          # -------------------------------------------------------------------
-          # -static and lld seem to have a problem with C++.
-
-          # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
-          # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
-          # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
-          # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
-          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_HELLO_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_CPP_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CRT_TEST_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK_CPP_32="y"
-
-          export XBB_SKIP_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-
-        fi
 
         test_compiler_c_cpp "${test_bin_path}" --64
         test_compiler_c_cpp "${test_bin_path}" --64 --gc
