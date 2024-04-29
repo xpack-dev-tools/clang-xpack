@@ -1025,7 +1025,7 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
         )
 
-        # All static variants should need not special paths to DLLs.
+        # All static variants should need no special paths to DLLs.
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto
