@@ -977,9 +977,7 @@ function llvm_test()
 
         export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-      fi
-
-      if [ ${llvm_version_major} -eq 17 ]
+      elif [ ${llvm_version_major} -eq 17 ]
       then
         # weak-undef
         # Surprisingly, the non LTO variant is functional.
