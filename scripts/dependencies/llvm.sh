@@ -1045,7 +1045,7 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
 
-      # It is mandatory that the compiler runs properly without any
+      # It is mandatory for the compiler to run properly without any
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) will fail probing for
       # capabilities.
@@ -1055,40 +1055,155 @@ function llvm_test()
       # if [ "${XBB_HOST_BITS}" == "64" ]
       if [ "${XBB_HOST_ARCH}" == "x64" ]
       then
-        (
-          # x64 & aarch64, both with multilib.
-
+        # x64 & aarch64, both with multilib.
+        if [ ${llvm_version_major} -eq 15 ]
+        then
           # LTO global-terminate test fails on 15.0.7-1.
           # Segmentation fault (core dumped)
           # Program received signal SIGSEGV, Segmentation fault.
           # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
 
-          # export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
-          # export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+          export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+        elif [ ${llvm_version_major} -eq 17 ]
+        then
+          #  201486 Segmentation fault      (core dumped)
+          export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
 
-          test_compiler_c_cpp "${test_bin_path}" --64
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
+          export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
 
+          # -------------------------------------------------------------------
+          # -static and lld seem to have a problem with C++.
+
+          # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
+          # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
+          # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
+          # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_HELLO_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_CPP_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_CRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_CRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_CRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CRT_TEST_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_WEAK_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_WEAK_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK_CPP_32="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+
+        fi
+
+        test_compiler_c_cpp "${test_bin_path}" --64
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --64 --lld
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
+
+        (
           export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-          if true
-          then
-            test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --crt --libunwind
+          # With compiler-rt.
+          test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --crt --libunwind
 
-            test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind
-          fi
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --crt --libunwind --lld
 
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld
         )
+
+        # -------------------------------------------------------------------
+
+        # WARNING: check if they run on RH!
+        # -static-libgcc -static-libgcc.
+        test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
+
+        # -static.
+        test_compiler_c_cpp "${test_bin_path}" --64 --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
 
         local skip_32_tests=""
         if is_variable_set "XBB_SKIP_32_BIT_TESTS"
@@ -1109,34 +1224,99 @@ function llvm_test()
           echo
           echo "Skipping clang -m32 tests..."
         else
-          (
-            test_compiler_c_cpp "${test_bin_path}" --32
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
+          test_compiler_c_cpp "${test_bin_path}" --32
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
 
+          (
             export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
             echo
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-            if true
-            then
-              test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --crt --libunwind
+            # With compiler-rt.
+            test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --crt --libunwind
 
-              test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
-              test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
-            fi
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --crt --libunwind --lld
+
+            # With compiler-rt & libc++.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
+
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld
           )
+
+          # -----------------------------------------------------------------
+
+          # WARNING: check if they run on RH!
+          # -static-libgcc -static-libgcc.
+          test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
+
+          # -static.
+          test_compiler_c_cpp "${test_bin_path}" --32 --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
+
+          # (.text+0x22a): undefined reference to `_Unwind_Resume'
+          if false
+          then
+            # With compiler-rt & libc++.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind --static
+
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld --static
+          fi
         fi
       else
-        (
-          # arm & aarch64.
+        # arm & aarch64.
 
+        # test_compiler_c_cpp "${test_bin_path}" # Already done.
+        test_compiler_c_cpp "${test_bin_path}" --gc
+        test_compiler_c_cpp "${test_bin_path}" --lto
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
+
+        (
           export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
@@ -1145,11 +1325,71 @@ function llvm_test()
           # For example, on Raspberry Pi OS 32-bit:
           # error: unable to execute command: Segmentation fault (core dumped)
 
-          # test_compiler_c_cpp "${test_bin_path}" # Already done.
-          test_compiler_c_cpp "${test_bin_path}" --gc
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
+          # With compiler-rt.
+          test_compiler_c_cpp "${test_bin_path}" --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind --lld
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
         )
+
+        # ---------------------------------------------------------------------
+
+        # WARNING: check if they run on RH!
+        # -static-libgcc -static-libgcc.
+        test_compiler_c_cpp "${test_bin_path}" --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
+
+        # -static.
+        test_compiler_c_cpp "${test_bin_path}" --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --static
+        test_compiler_c_cpp "${test_bin_path}" --lto --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
+
+        # ...
+
+        # With compiler-rt & libc++.
+        test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
+        test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
       fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
@@ -1223,7 +1463,7 @@ function llvm_test()
         fi
       fi
 
-      # It is mandatory that the compiler runs properly without any
+      # It is mandatory for the compiler to run properly without any
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) will fail probing for
       # capabilities.
