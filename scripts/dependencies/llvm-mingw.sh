@@ -778,10 +778,10 @@ function test_mingw_llvm()
 
     local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
 
-    if [ ${llvm_version_major} -eq 15 ]
+    if [ ${llvm_version_major} -eq 14 ] || \
+       [ ${llvm_version_major} -eq 15 ]
     then
-
-      # LTO weak C++ tests fail with 15.0.7-1.
+      # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
       # ld.lld: error: duplicate symbol: world()
       # >>> defined at hello-weak-cpp.cpp
       # >>>            lto-hello-weak-cpp-32.cpp.o
@@ -807,51 +807,51 @@ function test_mingw_llvm()
 
       export XBB_SKIP_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
       export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
-
-    elif [ ${llvm_version_major} -eq 14 ]
+    elif [ ${llvm_version_major} -eq 17 ]
     then
+      # weak-undef
+      # Surprisingly, the non LTO variant is functional.
+      # export XBB_SKIP_TEST_WEAK_UNDEF_C_32="y"
+      # export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
 
-      # LTO weak C++ tests fail with 14.0.6-3.
-      # ld.lld: error: duplicate symbol: world()
-      # >>> defined at hello-weak-cpp.cpp
-      # >>>            lto-hello-weak-cpp-32.cpp.o
-      # >>> defined at hello-f-weak-cpp.cpp
-      # >>>            lto-hello-f-weak-cpp-32.cpp.o
-      # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+      # ... but fails with LTO, even with lld.
+      # ld.lld: error: undefined symbol: _func
+      # >>> referenced by main-weak.c
+      # >>>               lto-main-weak-32.c.o
 
-      # Skip the same tests for both triplets.
-      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+      # Both 32 & 64-bit are affected.
+      export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_SKIP_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_SKIP_TEST_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_SKIP_TEST_STATIC_LIB_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CRT_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
-
+      export XBB_SKIP_TEST_STATIC_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_WEAK_UNDEF_C="y"
     fi
 
-    # The DLLs are usually in bin, but for consistency within GCC, they are
-    # also copied to lib; it is recommended to ask the compiler for the
-    # actual path.
-    # export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
-    export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
-    echo "WINEPATH=${WINEPATH}"
+    (
+      # The DLLs are usually in bin, but for consistency within GCC, they are
+      # also copied to lib; it is recommended to ask the compiler for the
+      # actual path.
+      # export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
+      export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
+      echo "WINEPATH=${WINEPATH}"
 
-    test_compiler_c_cpp "${test_bin_path}" --${bits}
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
-
+      test_compiler_c_cpp "${test_bin_path}" --${bits}
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
+    )
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
       test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
@@ -865,11 +865,16 @@ function test_mingw_llvm()
       test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto
     fi
 
-    # Once again with --crt
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --crt
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --crt
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --lto --crt
-    test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto --crt
+    (
+      export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
+      echo "WINEPATH=${WINEPATH}"
+
+      # Once again with --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --lto --crt
+      test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto --crt
+    )
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
