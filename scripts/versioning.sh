@@ -155,13 +155,17 @@ function clang_build_common()
     xbb_reset_env
     xbb_set_target "mingw-w64-native"
 
-    # Build a bootstrap toolchain, mainly for the *-tblgen tools, but
-    # also because mixing with mingw-gcc may lead to unexpected results.
+    if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-""}" == "y" ] || \
+       [ "${XBB_TEST_ONLY}" != "y" ]
+    then
+      # Build a bootstrap toolchain, mainly for the *-tblgen tools, but
+      # also because mixing with mingw-gcc may lead to unexpected results.
 
-    clang_build_mingw_bootstrap
+      clang_build_mingw_bootstrap
+    fi
 
     # Switch used during development to test bootstrap.
-    if [ -z ${XBB_APPLICATION_BOOTSTRAP_ONLY+x} ]
+    if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-""}" != "y" ]
     then
 
       # -----------------------------------------------------------------------
