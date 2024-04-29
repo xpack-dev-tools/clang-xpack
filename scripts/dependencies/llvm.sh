@@ -957,10 +957,10 @@ function llvm_test()
       # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
       # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
 
-      if [ ${llvm_version_major} -eq 15 ]
+      if [ ${llvm_version_major} -eq 14 ] || \
+         [ ${llvm_version_major} -eq 15 ]
       then
-
-        # LTO weak C++ tests fail with 15.0.7-1.
+        # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
         # ld.lld: error: duplicate symbol: world()
         # >>> defined at hello-weak-cpp.cpp
         # >>>            lto-hello-weak-cpp-32.cpp.o
@@ -977,52 +977,57 @@ function llvm_test()
 
         export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+      fi
 
-      elif [ ${llvm_version_major} -eq 14 ]
+      if [ ${llvm_version_major} -eq 17 ]
       then
+        # weak-undef
+        # Surprisingly, the non LTO variant is functional.
+        # export XBB_SKIP_TEST_WEAK_UNDEF_C_32="y"
+        # export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
 
-        # LTO weak C++ tests fail with 14.0.6-3.
-        # ld.lld: error: duplicate symbol: world()
-        # >>> defined at hello-weak-cpp.cpp
-        # >>>            lto-hello-weak-cpp-32.cpp.o
-        # >>> defined at hello-f-weak-cpp.cpp
-        # >>>            lto-hello-f-weak-cpp-32.cpp.o
-        # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+        # ... but fails with LTO, even with lld.
+        # ld.lld: error: undefined symbol: _func
+        # >>> referenced by main-weak.c
+        # >>>               lto-main-weak-32.c.o
 
-        # Skip the same tests for both triplets.
-        export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
-        export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+        # Both 32 & 64-bit are affected.
+        export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
 
-        export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-        export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+        export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
 
-        export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-        export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-
+        export XBB_SKIP_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
       fi
 
       for bits in 32 64
       do
-        # For libc++.dll & co.
-        # The DLLs are usually in bin, but for consistency within GCC, they are
-        # also copied to lib; it is recommended to ask the compiler for the
-        # actual path.
-        if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
-        then
-          cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
-          export PATH="${cxx_lib_path}:${PATH:-}"
-          echo "PATH=${PATH}"
-        else
-          cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
-          export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
-          echo "WINEPATH=${WINEPATH}"
-        fi
+        (
+          # For libc++.dll & co.
+          # The DLLs are usually in bin, but for consistency within GCC, they are
+          # also copied to lib; it is recommended to ask the compiler for the
+          # actual path.
+          if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
+          then
+            cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
+            export PATH="${cxx_lib_path}:${PATH:-}"
+            echo "PATH=${PATH}"
+          else
+            cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
+            export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
+            echo "WINEPATH=${WINEPATH}"
+          fi
 
-        test_compiler_c_cpp "${test_bin_path}" --${bits}
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
+          test_compiler_c_cpp "${test_bin_path}" --${bits}
 
+          test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
+          test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
+          test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
+        )
+
+        # All static variants should need not special paths to DLLs.
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto
@@ -1032,6 +1037,7 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static --lto
         test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto
+
       done
 
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
@@ -1054,10 +1060,6 @@ function llvm_test()
         (
           # x64 & aarch64, both with multilib.
 
-          export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}" -m64)"
-          echo
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
-
           # LTO global-terminate test fails on 15.0.7-1.
           # Segmentation fault (core dumped)
           # Program received signal SIGSEGV, Segmentation fault.
@@ -1070,6 +1072,10 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --64 --gc
           test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
+
+          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
           if true
           then
@@ -1106,14 +1112,14 @@ function llvm_test()
           echo "Skipping clang -m32 tests..."
         else
           (
-            export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}" -m32)"
-            echo
-            echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
-
             test_compiler_c_cpp "${test_bin_path}" --32
             test_compiler_c_cpp "${test_bin_path}" --32 --gc
             test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
+
+            export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
+            echo
+            echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
             if true
             then
@@ -1133,7 +1139,7 @@ function llvm_test()
         (
           # arm & aarch64.
 
-          export LD_LIBRARY_PATH="$(xbb_get_libs_path "${CXX}")"
+          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
@@ -1141,7 +1147,7 @@ function llvm_test()
           # For example, on Raspberry Pi OS 32-bit:
           # error: unable to execute command: Segmentation fault (core dumped)
 
-          test_compiler_c_cpp "${test_bin_path}"
+          # test_compiler_c_cpp "${test_bin_path}" # Already done.
           test_compiler_c_cpp "${test_bin_path}" --gc
           test_compiler_c_cpp "${test_bin_path}" --lto --lld
           test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
