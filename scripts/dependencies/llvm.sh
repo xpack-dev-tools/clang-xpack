@@ -1519,48 +1519,50 @@ function llvm_test()
       # -static-libstdc++ not available on macOS:
       # clang-11: warning: argument unused during compilation: '-static-libstdc++'
 
-      # -flto fails at run on Intel.
-      # Does not identify the custom exceptions:
-      # [./lto-throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught std::exception <--
-      # caught unexpected exception 3!
-      # throwing SecondException
-      # caught std::exception <--
-      # caught unexpected exception 3!
-      # throwing std::exception
-      # caught std::exception
-      # got errors
-
-      # Expected behaviour:
-      # [./throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught FirstException
-      # throwing SecondException
-      # caught SecondException
-      # throwing std::exception
-      # caught std::exception
-      # all ok <--
 
       if [ ${llvm_version_major} -eq 13 ] || \
-          [ ${llvm_version_major} -eq 14 ] || \
-          [ ${llvm_version_major} -eq 15 ] || \
-          [ ${llvm_version_major} -eq 16 ] || \
-          [ ${llvm_version_major} -eq 17 ] || \
-          [ ${llvm_version_major} -eq 18 ]
+         [ ${llvm_version_major} -eq 14 ] || \
+         [ ${llvm_version_major} -eq 15 ] || \
+         [ ${llvm_version_major} -eq 16 ]
       then
         if [ "${XBB_TARGET_ARCH}" == "x64" ]
         then
-            export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-            export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          # -flto fails at run on Intel.
+          # Does not identify the custom exceptions:
+          # [./lto-throwcatch-main ]
+          # not throwing
+          # throwing FirstException
+          # caught std::exception <--
+          # caught unexpected exception 3!
+          # throwing SecondException
+          # caught std::exception <--
+          # caught unexpected exception 3!
+          # throwing std::exception
+          # caught std::exception
+          # got errors
 
-            export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-            export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+          # Expected behaviour:
+          # [./throwcatch-main ]
+          # not throwing
+          # throwing FirstException
+          # caught FirstException
+          # throwing SecondException
+          # caught SecondException
+          # throwing std::exception
+          # caught std::exception
+          # all ok <--
+
+          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+          export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
         fi
-        
-        # Most likely an Apple linker issue. Passes on static.
+      elif [ ${llvm_version_major} -eq 17 ] || \
+           [ ${llvm_version_major} -eq 18 ]
+      then
+        # Most likely an incompatibility with the Apple linker.
+        # Static tests pass.
         # Undefined symbols for architecture x86_64:
         #   "_func", referenced from:
         export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
@@ -1578,27 +1580,31 @@ function llvm_test()
       # explicit libraries or other options, otherwise tools used
       # during configuration (like meson) might fail probing for
       # capabilities.
+      # However this is not usable, since it uses the new headers
+      # with the system libraries.
       test_compiler_c_cpp "${test_bin_path}"
 
-      # Again, with various options.
-      test_compiler_c_cpp "${test_bin_path}" --gc
-      test_compiler_c_cpp "${test_bin_path}" --lto
-      test_compiler_c_cpp "${test_bin_path}" --gc --lto
+      (
+        # The shared libraries are in a custom location and require setting
+        # the path explicitly.
 
-      # Redundant, the current default is compiler-rt anyway.
-      if false
-      then
-        test_compiler_c_cpp "${test_bin_path}" --crt
-        test_compiler_c_cpp "${test_bin_path}" --gc --crt
-        test_compiler_c_cpp "${test_bin_path}" --lto --crt
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt
-      fi
+        export DYLD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
+        echo
+        echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}"
 
-      # Again with lld.
-      test_compiler_c_cpp "${test_bin_path}" --lld
-      test_compiler_c_cpp "${test_bin_path}" --gc --lld
-      test_compiler_c_cpp "${test_bin_path}" --lto --lld
-      test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
+        # Again, with various options.
+        # test_compiler_c_cpp "${test_bin_path}" --gc
+        # test_compiler_c_cpp "${test_bin_path}" --lto
+        # test_compiler_c_cpp "${test_bin_path}" --gc --lto
+
+        # No need for compiler-rt or libc++, they are the defaults.
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
+      )
 
       # ld: library not found for -lcrt0.o
       # test_compiler_c_cpp "${test_bin_path}" --static
