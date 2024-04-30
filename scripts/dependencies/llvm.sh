@@ -1128,7 +1128,7 @@ function llvm_test()
 
       # It is mandatory for the compiler to run properly without any
       # explicit libraries or other options, otherwise tools used
-      # during configuration (like meson) will fail probing for
+      # during configuration (like meson) might fail probing for
       # capabilities.
       test_compiler_c_cpp "${test_bin_path}"
 
@@ -1136,7 +1136,10 @@ function llvm_test()
       # if [ "${XBB_HOST_BITS}" == "64" ]
       if [ "${XBB_HOST_ARCH}" == "x64" ]
       then
-        # x64 & aarch64, both with multilib.
+        # x64 with multilib.
+
+        # ---------------------------------------------------------------------
+        # First test using the system GCC runtime and libstdc++.
 
         test_compiler_c_cpp "${test_bin_path}" --64
         test_compiler_c_cpp "${test_bin_path}" --64 --gc
@@ -1149,7 +1152,38 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
 
+        # WARNING: check if they run on RH!
+        # -static-libgcc -static-libgcc.
+        test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
+
+        # -static.
+        test_compiler_c_cpp "${test_bin_path}" --64 --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
+
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
+
+        # ---------------------------------------------------------------------
+        # Second test LLVM runtime and libc++.
+
         (
+          # The shared libraries are in a custom location and require setting
+          # the path explicitly.
+
           export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
           echo
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
@@ -1179,32 +1213,50 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld
         )
 
+        if false
+        then
+          # -static-libgcc -static-libgcc.
+          # This combination seems not supported.
+
+          # clang++: warning: argument unused during compilation: '-static-libgcc'
+
+          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
+          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static-lib
+        fi
+
+        if false
+        then
+          # -static.
+          # This combination also seems not supported.
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind --static
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static
+        fi
+      fi
+
         # -------------------------------------------------------------------
 
-        # WARNING: check if they run on RH!
-        # -static-libgcc -static-libgcc.
-        test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
-
-        # -static.
-        test_compiler_c_cpp "${test_bin_path}" --64 --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
 
         local skip_32_tests=""
         if is_variable_set "XBB_SKIP_32_BIT_TESTS"
@@ -1225,12 +1277,18 @@ function llvm_test()
           echo
           echo "Skipping clang -m32 tests..."
         else
+          # ---------------------------------------------------------------------
+          # First test using the system GCC runtime and libstdc++.
+
           test_compiler_c_cpp "${test_bin_path}" --32
           test_compiler_c_cpp "${test_bin_path}" --32 --gc
           test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
           test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
 
           (
+            # The shared libraries are in a custom location and require setting
+            # the path explicitly.
+
             export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
             echo
             echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
@@ -1287,9 +1345,30 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
           test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
 
+          if false
+          then
+            # -static-libgcc -static-libgcc.
+            # This combination also seems not supported.
+
+            # With compiler-rt & libc++.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld --static-lib
+          fi
+
           # (.text+0x22a): undefined reference to `_Unwind_Resume'
           if false
           then
+            # -static.
+            # This combination also seems not supported.
+
             # With compiler-rt & libc++.
             test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --static
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --static
@@ -1499,7 +1578,7 @@ function llvm_test()
 
       # It is mandatory for the compiler to run properly without any
       # explicit libraries or other options, otherwise tools used
-      # during configuration (like meson) will fail probing for
+      # during configuration (like meson) might fail probing for
       # capabilities.
       test_compiler_c_cpp "${test_bin_path}"
 
