@@ -1136,7 +1136,7 @@ function llvm_test()
       # if [ "${XBB_HOST_BITS}" == "64" ]
       if [ "${XBB_HOST_ARCH}" == "x64" ]
       then
-        # x64 with multilib.
+        # x64 with multilib. Two runs, -m64 & -m32.
 
         # ---------------------------------------------------------------------
         # First test using the system GCC runtime and libstdc++.
@@ -1253,10 +1253,8 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld --static
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static
         fi
-      fi
 
         # -------------------------------------------------------------------
-
 
         local skip_32_tests=""
         if is_variable_set "XBB_SKIP_32_BIT_TESTS"
