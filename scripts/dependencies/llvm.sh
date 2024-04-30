@@ -1069,7 +1069,7 @@ function llvm_test()
         export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
 
         # -------------------------------------------------------------------
-        # -static and lld seem to have a problem with C++.
+        # -static and lld seem to have a problem with C++, but only on 32-bit.
 
         # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
         # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
@@ -1124,7 +1124,6 @@ function llvm_test()
         export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
         export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-
       fi
 
       # It is mandatory for the compiler to run properly without any
@@ -1307,6 +1306,9 @@ function llvm_test()
       else
         # arm & aarch64.
 
+        # ---------------------------------------------------------------------
+        # First test using the system GCC runtime and libstdc++.
+
         # test_compiler_c_cpp "${test_bin_path}" # Already done.
         test_compiler_c_cpp "${test_bin_path}" --gc
         test_compiler_c_cpp "${test_bin_path}" --lto
@@ -1318,44 +1320,8 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
 
-        (
-          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
-          echo
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
-
-          # The Linux system linker may fail with -flto, use the included lld.
-          # For example, on Raspberry Pi OS 32-bit:
-          # error: unable to execute command: Segmentation fault (core dumped)
-
-          # With compiler-rt.
-          test_compiler_c_cpp "${test_bin_path}" --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind --lld
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
-        )
-
-        # ---------------------------------------------------------------------
-
-        # WARNING: check if they run on RH!
         # -static-libgcc -static-libgcc.
+        # WARNING: check if they run on RH!
         test_compiler_c_cpp "${test_bin_path}" --static-lib
         test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
         test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
@@ -1379,19 +1345,85 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
 
-        # ...
+        # ---------------------------------------------------------------------
+        # Second test LLVM runtime and libc++.
 
-        # With compiler-rt & libc++.
-        test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
-        test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
+        (
+          # The shared libraries are in a custom location and require setting
+          # the path explicitly.
+          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
+          echo
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
+          # The Linux system linker may fail with -flto, use the included lld.
+          # For example, on Raspberry Pi OS 32-bit:
+          # error: unable to execute command: Segmentation fault (core dumped)
+
+          # With compiler-rt.
+          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind --lld
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
+        )
+
+        if false
+        then
+          # -static-libgcc -static-libgcc.
+          # This combination seems not supported.
+
+          # clang++: warning: argument unused during compilation: '-static-libgcc'
+
+          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
+          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld --static-lib
+        fi
+
+        if false
+        then
+          # -static.
+          # This combination also seems not supported.
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind --static
+
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld --static
+        fi
       fi
 
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
