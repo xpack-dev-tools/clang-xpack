@@ -1519,59 +1519,59 @@ function llvm_test()
       # -static-libstdc++ not available on macOS:
       # clang-11: warning: argument unused during compilation: '-static-libstdc++'
 
-      if [ "${XBB_TARGET_ARCH}" == "x64" ]
+      # -flto fails at run on Intel.
+      # Does not identify the custom exceptions:
+      # [./lto-throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing SecondException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing std::exception
+      # caught std::exception
+      # got errors
+
+      # Expected behaviour:
+      # [./throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught FirstException
+      # throwing SecondException
+      # caught SecondException
+      # throwing std::exception
+      # caught std::exception
+      # all ok <--
+
+      if [ ${llvm_version_major} -eq 13 ] || \
+          [ ${llvm_version_major} -eq 14 ] || \
+          [ ${llvm_version_major} -eq 15 ] || \
+          [ ${llvm_version_major} -eq 16 ] || \
+          [ ${llvm_version_major} -eq 17 ] || \
+          [ ${llvm_version_major} -eq 18 ]
       then
-        # -flto fails at run on Intel.
-        # Does not identify the custom exceptions:
-        # [./lto-throwcatch-main ]
-        # not throwing
-        # throwing FirstException
-        # caught std::exception <--
-        # caught unexpected exception 3!
-        # throwing SecondException
-        # caught std::exception <--
-        # caught unexpected exception 3!
-        # throwing std::exception
-        # caught std::exception
-        # got errors
-
-        # Expected behaviour:
-        # [./throwcatch-main ]
-        # not throwing
-        # throwing FirstException
-        # caught FirstException
-        # throwing SecondException
-        # caught SecondException
-        # throwing std::exception
-        # caught std::exception
-        # all ok <--
-
-        if [ ${llvm_version_major} -eq 13 ] || \
-           [ ${llvm_version_major} -eq 14 ] || \
-           [ ${llvm_version_major} -eq 15 ] || \
-           [ ${llvm_version_major} -eq 16 ] || \
-           [ ${llvm_version_major} -eq 17 ] || \
-           [ ${llvm_version_major} -eq 18 ]
+        if [ "${XBB_TARGET_ARCH}" == "x64" ]
         then
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+            export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
+            export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
-          export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
-
-          # Most likely an Apple linker issue. Passes on static.
-          # Undefined symbols for architecture x86_64:
-          #   "_func", referenced from:
-          export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
-
-          export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
-          export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+            export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+            export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
         fi
+        
+        # Most likely an Apple linker issue. Passes on static.
+        # Undefined symbols for architecture x86_64:
+        #   "_func", referenced from:
+        export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+        export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
       fi
 
       # It is mandatory for the compiler to run properly without any
