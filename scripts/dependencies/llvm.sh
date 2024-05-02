@@ -946,6 +946,8 @@ function llvm_test()
         echo "MacOSX.sdk test failed"
         exit 1
       fi
+
+      show_host_libs "$(dirname $(dirname ${CXX}))/lib/libc++.dylib"
     fi
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
@@ -1184,8 +1186,10 @@ function llvm_test()
           # The shared libraries are in a custom location and require setting
           # the path explicitly.
 
-          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
+          LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
           export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+          LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
           export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
           echo
           echo "LDFLAGS=${LDFLAGS}"
@@ -1289,9 +1293,13 @@ function llvm_test()
             # The shared libraries are in a custom location and require setting
             # the path explicitly.
 
-            export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
+            local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
+            LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+            export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+            LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+            export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
             echo
-            echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+            echo "LDFLAGS=${LDFLAGS}"
 
             # With compiler-rt.
             test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind
@@ -1593,7 +1601,9 @@ function llvm_test()
         # the path explicitly.
 
         local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+        LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
         export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
         export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
         echo
         echo "LDFLAGS=${LDFLAGS}"
