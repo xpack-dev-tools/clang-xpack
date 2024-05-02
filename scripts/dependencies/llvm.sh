@@ -1184,9 +1184,11 @@ function llvm_test()
           # The shared libraries are in a custom location and require setting
           # the path explicitly.
 
-          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
+          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
           echo
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+          echo "LDFLAGS=${LDFLAGS}"
 
           # With compiler-rt.
           test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind
@@ -1428,9 +1430,11 @@ function llvm_test()
         (
           # The shared libraries are in a custom location and require setting
           # the path explicitly.
-          export LD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
+          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
           echo
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+          echo "LDFLAGS=${LDFLAGS}"
 
           # The Linux system linker may fail with -flto, use the included lld.
           # For example, on Raspberry Pi OS 32-bit:
@@ -1588,9 +1592,11 @@ function llvm_test()
         # The shared libraries are in a custom location and require setting
         # the path explicitly.
 
-        export DYLD_LIBRARY_PATH="$(xbb_get_toolchain_library_path "${CXX}")"
+        local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+        export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
         echo
-        echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}"
+        echo "LDFLAGS=${LDFLAGS}"
 
         # Again, with various options.
         # test_compiler_c_cpp "${test_bin_path}" --gc
