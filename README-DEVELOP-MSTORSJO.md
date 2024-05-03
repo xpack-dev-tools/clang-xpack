@@ -311,7 +311,6 @@ From `mstorsjo/llvm-mingw:cross` (actually build-output-x-cross-*.txt):
 #25 [21/21] RUN ln -s /opt/llvm-mingw-x86_64 llvm-mingw-$TAGx86_64 &&     zip -9r /llvm-mingw-$TAGx86_64.zip llvm-mingw-$TAGx86_64 &&     ls -lh /llvm-mingw-$TAGx86_64.zip
 #25 0.440   adding: llvm-mingw-x86_64/ (stored 0%)
 
-
 ```
 
 ## v15.0.7 - 2023-01-02
