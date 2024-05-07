@@ -263,7 +263,6 @@ function clang_build_common()
     zlib_build "${XBB_ZLIB_VERSION}"
     libffi_build "${XBB_LIBFFI_VERSION}"
 
-    XBB_NCURSES_DISABLE_WIDEC="y"
     ncurses_build "${XBB_NCURSES_VERSION}"
 
     xz_build "${XBB_XZ_VERSION}"
@@ -361,7 +360,7 @@ function application_build_versioned_components()
     # https://download.gnome.org/sources/libxml2/
     XBB_LIBXML2_VERSION="2.12.6" # "2.12.1"
     # https://www.thrysoee.dk/editline/
-    XBB_LIBEDIT_VERSION="20230828-3.1" 
+    XBB_LIBEDIT_VERSION="20230828-3.1"
 
     clang_build_common
 
@@ -513,8 +512,6 @@ function application_build_versioned_components()
     XBB_LIBXML2_VERSION="2.9.11"
     XBB_LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
 
-    XBB_NCURSES_DISABLE_WIDEC="y"
-
     clang_build_common
 
     # -------------------------------------------------------------------------
@@ -533,8 +530,6 @@ function application_build_versioned_components()
     XBB_XZ_VERSION="5.2.5"
     XBB_LIBXML2_VERSION="2.9.11"
     XBB_LIBEDIT_VERSION="20210910-3.1" # "20210522-3.1"
-
-    XBB_NCURSES_DISABLE_WIDEC="y"
 
     clang_build_common
 
