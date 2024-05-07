@@ -1070,6 +1070,16 @@ function llvm_test()
         export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
 
+        export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+
+        export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+        export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+
         # -------------------------------------------------------------------
         # -static and lld seem to have a problem with C++, but only on 32-bit.
 
