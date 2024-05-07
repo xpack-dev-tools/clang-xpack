@@ -1011,13 +1011,19 @@ function llvm_test()
           # actual path.
           if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
           then
+            # When running natively, set the PATH.
             cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
             export PATH="${cxx_lib_path}:${PATH:-}"
             echo "PATH=${PATH}"
-          else
+          elif [ "${XBB_BUILD_PLATFORM}" == "linux" ]
+          then
+            # When running via wine, set WINEPATH.
             cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
             export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
             echo "WINEPATH=${WINEPATH}"
+          else
+            echo "Unsupported XBB_BUILD_PLATFORM=${XBB_BUILD_PLATFORM} in ${FUNCNAME[0]}()"
+            exit 1
           fi
 
           test_compiler_c_cpp "${test_bin_path}" --${bits}
