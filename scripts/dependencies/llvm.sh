@@ -174,7 +174,7 @@ function llvm_build()
 
           config_options=()
 
-          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          if is_develop
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -614,14 +614,14 @@ function llvm_build()
         echo
         echo "Running llvm build..."
 
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        if is_develop
         then
           run_verbose_timed "${CMAKE}" \
             --build . \
             --verbose \
             --parallel ${XBB_JOBS}
 
-          if [ "${XBB_WITH_STRIP}" == "y" ]
+          if with_strip
           then
             run_verbose "${CMAKE}" \
               --build . \
@@ -652,7 +652,7 @@ function llvm_build()
           run_verbose "${CMAKE}" \
             --build .
 
-          if [ "${XBB_WITH_STRIP}" == "y" ]
+          if with_strip
           then
             run_verbose "${CMAKE}" \
               --build . \
@@ -1720,7 +1720,7 @@ function strip_libs()
   echo_develop
   echo_develop "[${FUNCNAME[0]} $@]"
 
-  if [ "${XBB_WITH_STRIP}" == "y" ]
+  if with_strip
   then
     (
       echo

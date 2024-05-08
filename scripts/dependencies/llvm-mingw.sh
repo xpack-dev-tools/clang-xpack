@@ -84,7 +84,7 @@ function llvm_mingw_build_first()
 
           config_options=()
 
-          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          if is_develop
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -153,14 +153,14 @@ function llvm_mingw_build_first()
         echo
         echo "Running ${name_prefix}llvm-first build..."
 
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        if is_develop
         then
           run_verbose_timed cmake \
             --build . \
             --verbose \
             --parallel ${XBB_JOBS}
 
-          if [ "${XBB_WITH_STRIP}" == "y" ]
+          if with_strip
           then
             run_verbose "${CMAKE}" \
               --build . \
@@ -176,7 +176,7 @@ function llvm_mingw_build_first()
           run_verbose "${CMAKE}" \
             --build .
 
-          if [ "${XBB_WITH_STRIP}" == "y" ]
+          if with_strip
           then
             run_verbose "${CMAKE}" \
               --build . \
@@ -294,7 +294,7 @@ function llvm_mingw_build_compiler_rt()
 
           config_options=()
 
-          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          if is_develop
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -378,7 +378,7 @@ function llvm_mingw_build_compiler_rt()
       fi
 
       (
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        if is_develop
         then
           run_verbose_timed "${CMAKE}" \
             --build . \
@@ -470,7 +470,7 @@ function llvm_mingw_build_libcxx()
 
           config_options=()
 
-          if [ "${XBB_IS_DEVELOP}" == "y" ]
+          if is_develop
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -596,7 +596,7 @@ function llvm_mingw_build_libcxx()
         #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
         #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
 
-        if [ "${XBB_IS_DEVELOP}" == "y" ]
+        if is_develop
         then
           run_verbose "${NM}" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a"
         fi
