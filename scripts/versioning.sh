@@ -267,6 +267,8 @@ function clang_build_common()
 
     xz_build "${XBB_XZ_VERSION}"
     libxml2_build "${XBB_LIBXML2_VERSION}"
+
+    # Requires ncurses.
     libedit_build "${XBB_LIBEDIT_VERSION}"
 
     # -------------------------------------------------------------------------
