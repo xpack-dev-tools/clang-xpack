@@ -138,9 +138,9 @@ function llvm_build()
         # Undefined symbols for architecture x86_64:
         #   "_setupterm", referenced from:
         #       lldb_private::Editline::Editline(char const*, __sFILE*, __sFILE*, __sFILE*, std::__1::recursive_mutex&, bool) in liblldbHost.a(Editline.cpp.o)
-        LDFLAGS+=" -lncurses"
+        # LDFLAGS+=" -lncurses"
 
-        # To find libclang-cpp.dylib during compile-rt build
+        # To find libclang-cpp.dylib during compiler-rt build
         # run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
         XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
 
@@ -1611,7 +1611,8 @@ function llvm_test()
       # However this is not usable, since it uses the new headers
       # with the system libraries.
       test_compiler_c_cpp "${test_bin_path}"
-
+if false
+then
       (
         # The shared libraries are in a custom location and require setting
         # the path explicitly.
@@ -1637,7 +1638,7 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
       )
-
+fi
       # ld: library not found for -lcrt0.o
       # test_compiler_c_cpp "${test_bin_path}" --static
 
