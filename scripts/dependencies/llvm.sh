@@ -1611,8 +1611,7 @@ function llvm_test()
       # However this is not usable, since it uses the new headers
       # with the system libraries.
       test_compiler_c_cpp "${test_bin_path}"
-if false
-then
+
       (
         # The shared libraries are in a custom location and require setting
         # the path explicitly.
@@ -1638,7 +1637,7 @@ then
         test_compiler_c_cpp "${test_bin_path}" --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
       )
-fi
+
       # ld: library not found for -lcrt0.o
       # test_compiler_c_cpp "${test_bin_path}" --static
 
