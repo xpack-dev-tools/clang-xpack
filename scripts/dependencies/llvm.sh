@@ -252,7 +252,7 @@ function llvm_build()
 
           config_options+=("-DCUDA_64_BIT_DEVICE_CODE=OFF")
 
-          config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
+          # config_options+=("-DCURSES_INCLUDE_PATH=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include/ncurses")
 
           config_options+=("-DFFI_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
           config_options+=("-DFFI_LIB_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
