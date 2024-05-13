@@ -26,6 +26,13 @@ In Homebrew:
   ...
 ```
 
+A patch to add libtinfo to liblldb, otherwise, on macOS:
+
+```
+Undefined symbols for architecture x86_64:
+"_acs_map", "_curs_set", "_halfdelay", "_keypad", "_setupterm", "_stdscr"
+```
+
 ## llvm-16.0.6
 
 A patch from HomeBrew, apparently for meson.

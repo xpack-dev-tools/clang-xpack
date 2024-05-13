@@ -270,3 +270,22 @@ index 0000000000000000000000000000000000000000..23cf1dcda839e3072af578a617e5823c
 +
 +    RET undef $lr, implicit $x0
 +...
+
+
+diff --git a/lldb/source/API/CMakeLists.txt b/lldb/source/API/CMakeLists.txt
+index 39ac451c471c..dce13281f599 100644
+--- a/lldb/source/API/CMakeLists.txt
++++ b/lldb/source/API/CMakeLists.txt
+@@ -115,6 +115,10 @@ add_lldb_library(liblldb SHARED ${option_framework}
+   ${option_install_prefix}
+ )
+
++if( LLVM_ENABLE_TERMINFO )
++  target_link_libraries(liblldb PRIVATE Terminfo::terminfo)
++endif()
++
+ # lib/pythonX.Y/dist-packages/lldb/_lldb.so is a symlink to lib/liblldb.so,
+ # which depends on lib/libLLVM*.so (BUILD_SHARED_LIBS) or lib/libLLVM-10git.so
+ # (LLVM_LINK_LLVM_DYLIB). Add an additional rpath $ORIGIN/../../../../lib so
+--
+2.39.3 (Apple Git-146)
