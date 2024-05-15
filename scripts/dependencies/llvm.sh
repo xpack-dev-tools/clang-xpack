@@ -257,12 +257,6 @@ function llvm_build()
           config_options+=("-DFFI_INCLUDE_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/include")
           config_options+=("-DFFI_LIB_DIR=${XBB_LIBRARIES_INSTALL_FOLDER_PATH}/lib")
 
-          if [ ${llvm_version_major} -eq 17 ]
-          then
-            # ../x86_64-pc-linux-gnu/bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/x86_64-pc-linux-gnu/install/lib/libform.so: undefined reference to `_nc_wcrtomb'
-            config_options+=("-DLLDB_ENABLE_CURSES=OFF")
-          fi
-
           config_options+=("-DLLDB_ENABLE_LUA=OFF") # HB
           config_options+=("-DLLDB_ENABLE_PYTHON=OFF") # HB uses ON
           # config_options+=("-DLLDB_USE_SYSTEM_SIX=ON") # HB (?)
@@ -443,6 +437,12 @@ function llvm_build()
             # config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=OFF")
 
             config_options+=("-DLLDB_ENABLE_LZMA=ON")
+
+            if [ ${llvm_version_major} -eq 17 ]
+            then
+              # ../x86_64-pc-linux-gnu/bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/x86_64-pc-linux-gnu/install/lib/libform.so: undefined reference to `_nc_wcrtomb'
+              config_options+=("-DLLDB_ENABLE_CURSES=OFF")
+            fi
 
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
