@@ -438,12 +438,6 @@ function llvm_build()
 
             config_options+=("-DLLDB_ENABLE_LZMA=ON")
 
-            if [ ${llvm_version_major} -eq 17 ]
-            then
-              # ../x86_64-pc-linux-gnu/bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/x86_64-pc-linux-gnu/install/lib/libform.so: undefined reference to `_nc_wcrtomb'
-              config_options+=("-DLLDB_ENABLE_CURSES=OFF")
-            fi
-
             config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
 
