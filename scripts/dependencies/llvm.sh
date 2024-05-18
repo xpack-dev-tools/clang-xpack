@@ -994,7 +994,8 @@ function llvm_test()
 
         export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-      elif [ ${llvm_version_major} -eq 17 ]
+      elif [ ${llvm_version_major} -eq 17 ] || \
+           [ ${llvm_version_major} -eq 18 ]
       then
         # weak-undef
         # Surprisingly, the non LTO variant is functional.
@@ -1077,7 +1078,8 @@ function llvm_test()
 
         export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
         export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
-      elif [ ${llvm_version_major} -eq 17 ]
+      elif [ ${llvm_version_major} -eq 17 ] || \
+           [ ${llvm_version_major} -eq 18 ]
       then
         # Weird, -static crashes the threads.
         # 201486 Segmentation fault      (core dumped)
@@ -1291,7 +1293,7 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static
         fi
 
-        # -------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         local skip_32_tests=""
         if is_variable_set "XBB_SKIP_32_BIT_TESTS"
@@ -1312,7 +1314,7 @@ function llvm_test()
           echo
           echo "Skipping clang -m32 tests..."
         else
-          # ---------------------------------------------------------------------
+          # -------------------------------------------------------------------
           # First test using the system GCC runtime and libstdc++.
 
           test_compiler_c_cpp "${test_bin_path}" --32
@@ -1357,7 +1359,7 @@ function llvm_test()
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld
           )
 
-          # -----------------------------------------------------------------
+          # -------------------------------------------------------------------
 
           # WARNING: check if they run on RH!
           # -static-libgcc -static-libgcc.
