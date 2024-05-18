@@ -33,11 +33,6 @@ function llvm_mingw_build_first()
   local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
   local llvm_version_minor=$(xbb_get_version_minor "${ACTUAL_LLVM_VERSION}")
 
-  export llvm_src_folder_name="llvm-project-${ACTUAL_LLVM_VERSION}.src"
-
-  local llvm_archive="${llvm_src_folder_name}.tar.xz"
-  local llvm_url="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
-
   local llvm_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-first"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
@@ -46,11 +41,7 @@ function llvm_mingw_build_first()
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
 
-    mkdir -pv "${XBB_SOURCES_FOLDER_PATH}"
-    run_verbose_develop cd "${XBB_SOURCES_FOLDER_PATH}"
-
-    download_and_extract "${llvm_url}" "${llvm_archive}" \
-      "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
+    llvm_download "${ACTUAL_LLVM_VERSION}"
 
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"

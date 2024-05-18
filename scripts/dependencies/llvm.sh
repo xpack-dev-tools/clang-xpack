@@ -39,6 +39,32 @@
 
 # -----------------------------------------------------------------------------
 
+function llvm_download()
+{
+  local llvm_version="$1"
+
+  # local llvm_src_folder_name_default="llvm-project-${llvm_version}.src"
+  local llvm_src_folder_name_default="llvm-project-llvmorg-${llvm_version}"
+
+  export llvm_src_folder_name="${XBB_LLVM_SRC_FOLDER_NAME:-${llvm_src_folder_name_default}}"
+
+  # local llvm_archive="${llvm_src_folder_name}.tar.xz"
+  # local llvm_url_default="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
+
+  local llvm_archive="llvmorg-${llvm_version}.tar.gz"
+  # https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-18.1.6.tar.gz
+  local llvm_url_default="https://github.com/llvm/llvm-project/archive/refs/tags/${llvm_archive}"
+  local llvm_url="${XBB_LLVM_URL:-${llvm_url_default}}"
+
+  mkdir -pv "${XBB_SOURCES_FOLDER_PATH}"
+  cd "${XBB_SOURCES_FOLDER_PATH}"
+
+  download_and_extract "${llvm_url}" "${llvm_archive}" \
+    "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
+}
+
+# -----------------------------------------------------------------------------
+
 # Environment variables:
 # XBB_LLVM_PATCH_FILE_NAME
 
@@ -55,13 +81,6 @@ function llvm_build()
 
   local llvm_enable_tests="${XBB_APPLICATION_LLVM_ENABLE_TESTS:-""}"
 
-  local llvm_src_folder_name_default="llvm-project-${ACTUAL_LLVM_VERSION}.src"
-  export llvm_src_folder_name="${XBB_LLVM_SRC_FOLDER_NAME:-${llvm_src_folder_name_default}}"
-
-  local llvm_archive="${llvm_src_folder_name}.tar.xz"
-  local llvm_url_default="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
-  local llvm_url="${XBB_LLVM_URL:-${llvm_url_default}}"
-
   local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
@@ -70,11 +89,7 @@ function llvm_build()
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
 
-    mkdir -pv "${XBB_SOURCES_FOLDER_PATH}"
-    cd "${XBB_SOURCES_FOLDER_PATH}"
-
-    download_and_extract "${llvm_url}" "${llvm_archive}" \
-      "${llvm_src_folder_name}" "${XBB_LLVM_PATCH_FILE_NAME}"
+    llvm_download "${ACTUAL_LLVM_VERSION}"
 
     if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
