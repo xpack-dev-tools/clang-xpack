@@ -25,15 +25,15 @@ function llvm_mingw_build_first()
   echo_develop
   echo_develop "[${FUNCNAME[0]} $@]"
 
-  export ACTUAL_LLVM_VERSION="$1"
+  export XBB_ACTUAL_LLVM_VERSION="$1"
   shift
 
   local name_prefix="mingw-w64-"
 
-  local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
-  local llvm_version_minor=$(xbb_get_version_minor "${ACTUAL_LLVM_VERSION}")
+  local llvm_version_major=$(xbb_get_version_major "${XBB_ACTUAL_LLVM_VERSION}")
+  local llvm_version_minor=$(xbb_get_version_minor "${XBB_ACTUAL_LLVM_VERSION}")
 
-  local llvm_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-first"
+  local llvm_folder_name="${name_prefix}llvm-${XBB_ACTUAL_LLVM_VERSION}-first"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
@@ -41,7 +41,7 @@ function llvm_mingw_build_first()
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
 
-    llvm_download "${ACTUAL_LLVM_VERSION}"
+    llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
 
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
@@ -248,9 +248,9 @@ function llvm_mingw_build_compiler_rt()
     esac
   done
 
-  local llvm_compiler_rt_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-compiler-rt"
+  local llvm_compiler_rt_folder_name="${name_prefix}llvm-${XBB_ACTUAL_LLVM_VERSION}-compiler-rt"
 
-  local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
+  local llvm_version_major=$(xbb_get_version_major "${XBB_ACTUAL_LLVM_VERSION}")
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}"
 
@@ -298,7 +298,7 @@ function llvm_mingw_build_compiler_rt()
             config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}") # MS
           else
             # Up to clang 15, the full version number was used.
-            config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}") # MS
+            config_options+=("-DCMAKE_INSTALL_PREFIX=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${XBB_ACTUAL_LLVM_VERSION}") # MS
           fi
 
           config_options+=("-DCMAKE_BUILD_TYPE=Release") # MS
@@ -424,7 +424,7 @@ function llvm_mingw_build_libcxx()
     esac
   done
 
-  local llvm_libcxx_folder_name="${name_prefix}llvm-${ACTUAL_LLVM_VERSION}-libcxx"
+  local llvm_libcxx_folder_name="${name_prefix}llvm-${XBB_ACTUAL_LLVM_VERSION}-libcxx"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_libcxx_folder_name}"
 

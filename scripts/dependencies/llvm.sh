@@ -49,7 +49,7 @@ function llvm_download()
   export llvm_src_folder_name="${XBB_LLVM_SRC_FOLDER_NAME:-${llvm_src_folder_name_default}}"
 
   # local llvm_archive="${llvm_src_folder_name}.tar.xz"
-  # local llvm_url_default="https://github.com/llvm/llvm-project/releases/download/llvmorg-${ACTUAL_LLVM_VERSION}/${llvm_archive}"
+  # local llvm_url_default="https://github.com/llvm/llvm-project/releases/download/llvmorg-${XBB_ACTUAL_LLVM_VERSION}/${llvm_archive}"
 
   local llvm_archive="llvmorg-${llvm_version}.tar.gz"
   # https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-18.1.6.tar.gz
@@ -73,15 +73,15 @@ function llvm_build()
   echo_develop
   echo_develop "[${FUNCNAME[0]} $@]"
 
-  export ACTUAL_LLVM_VERSION="$1"
+  export XBB_ACTUAL_LLVM_VERSION="$1"
   shift
 
-  local llvm_version_major=$(xbb_get_version_major "${ACTUAL_LLVM_VERSION}")
-  local llvm_version_minor=$(xbb_get_version_minor "${ACTUAL_LLVM_VERSION}")
+  local llvm_version_major=$(xbb_get_version_major "${XBB_ACTUAL_LLVM_VERSION}")
+  local llvm_version_minor=$(xbb_get_version_minor "${XBB_ACTUAL_LLVM_VERSION}")
 
   local llvm_enable_tests="${XBB_APPLICATION_LLVM_ENABLE_TESTS:-""}"
 
-  local llvm_folder_name="llvm-${ACTUAL_LLVM_VERSION}"
+  local llvm_folder_name="llvm-${XBB_ACTUAL_LLVM_VERSION}"
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
@@ -89,7 +89,7 @@ function llvm_build()
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
 
-    llvm_download "${ACTUAL_LLVM_VERSION}"
+    llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
 
     if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
@@ -692,7 +692,7 @@ function llvm_build()
             fi
           else
             # Up to clang 15, the full version number was used.
-            if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${ACTUAL_LLVM_VERSION}/lib/darwin/libclang_rt.profile_osx.a" ]
+            if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${XBB_ACTUAL_LLVM_VERSION}/lib/darwin/libclang_rt.profile_osx.a" ]
             then
               echo
               echo "Missing libclang_rt.profile_osx.a"
