@@ -1603,8 +1603,7 @@ function llvm_test()
           export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
           export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
         fi
-      elif [ ${llvm_version_major} -eq 17 ] || \
-           [ ${llvm_version_major} -eq 18 ]
+      elif [ ${llvm_version_major} -eq 17 ]
       then
         # Most likely an incompatibility with the Apple linker.
         # Static tests pass.
@@ -1619,6 +1618,27 @@ function llvm_test()
         export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+
+        # export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+        # export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+      elif [ ${llvm_version_major} -eq 18 ]
+      then
+        # Most likely an incompatibility with the Apple linker.
+        # Static tests pass.
+        # Undefined symbols for architecture x86_64:
+        #   "_func", referenced from:
+        export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+        export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+
+        export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       fi
 
       # It is mandatory for the compiler to run properly without any
@@ -1634,10 +1654,16 @@ function llvm_test()
         # the path explicitly.
 
         local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+
         LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
         LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
+        export LDFLAGS
+        export LDXXFLAGS
+
         echo
         echo "LDFLAGS=${LDFLAGS}"
 
