@@ -1637,6 +1637,22 @@ function llvm_test()
         export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
 
+        # Segmentation fault: 11 on macOS 10.13 and macOS 11.6
+        export XBB_SKIP_TEST_LLD_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_GC_LLD_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_LTO_LLD_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+
+        # Segmentation fault: 11 on macOS 10.13
+        export XBB_SKIP_RUN_TEST_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_RUN_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_RUN_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+
+        # got exit code: 1 on macOS 10.13
+        export XBB_SKIP_RUN_TEST_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_RUN_TEST_GC_LLD_THROWCATCH_MAIN="y"
+
         export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
         export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       fi
