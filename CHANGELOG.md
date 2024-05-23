@@ -2,9 +2,157 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-05-19
+
+* 7fea3b9 llvm*.sh: rename XBB_ACTUAL_LLVM_VERSION
+* d45c35d VERSION 18.1.6-1
+* fd6124d llvm.sh: add 18 to test skips
+
+## 2024-05-18
+
+* 38c9f6f llvm-*.sh: add llvm_download
+* 9caaa05 READMEs update
+* be09e11 package.json: XBB_ENVIRONMENT_SKIP_CHECKS
+
+## 2024-05-16
+
+* 4ce6f1e READMEs update
+* 75157c4 versioning.sh: ncurses with --disable-lib-suffixes
+
+## 2024-05-15
+
+* e2b3b06 llvm.sh: no need to disable curses
+* 4e5f8aa llvm.sh: LLDB_ENABLE_CURSES=OFF only for linux
+* 8d428c4 llvm.sh: disable curses for clang 17
+* 98f1049 llvm-17: remove terminfo patch (again)
+
+## 2024-05-14
+
+* dfb4101 Revert "llvm-17... remove terminfo patch"
+* 03c8746 versioning.sh: ncurses with --disable-lib-suffixes
+* ec7b322 VERSION 17.0.6-2
+* d5af1e8 llvm-17... remove terminfo patch
+* 7bedb28 remove llvm-18 patch
+* c682cdd llvm.sh: remove ref to include/ncurses
+
+## 2024-05-13
+
+* fcb462e versioning.sh: remove --disable-widec
+* f28a4f3 versioning.sh: ncurses_build --disable-widec
+* 09af880 Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
+* c4547ea llvm-17.0.6-2.git.patch: add AddLLDB.cmake patch
+* 5c66cad VERSION 18.1.5-1
+* 82ef616 llvm.sh: re-enable macOS tests
+* 1140926 llvm-17.0.6-2.git.patch: add Terminfo::terminfo
+* 8ff30f3 llvm.sh: comment out explicit -lncurses
+
+## 2024-05-09
+
+* 5cc1090 versioning.sh: add comments
+* f6401ef use is_develop and with_strip
+
+## 2024-05-07
+
+* 9aff28f llvm.sh: add unsupported case
+* 7699c4f llvm.sh: disable static sleepy cv on linux
+* 4c8644b versioning.sh: remove DISABLE_WIDEC
+
+## 2024-05-03
+
+* 4f2db2c README update
+* 1b79709 README update
+* 8da4603 versioning.sh: update 18.x deps
+
+## 2024-05-02
+
+* 7295d02 package.json: clang 17.0.6-1.1
+* a77c0d1 llvm.sh: use both -L and -rpath
+* 4355faa llvm.sh: use -rpath
+
+## 2024-04-30
+
+* 2b6d2a6 llvm.sh: macOS tests update
+* 2edcbae llvm.sh: rework tests for macOS arm
+* 09f08c0 llvm.sh: fix syntax
+* 510b549 llvm.sh: reorder Linux x64 tests
+* 66b3713 llvm.sh: reorder Linux arm tests
+* 6225767 package.json: add bison to silence macOS
+* c87ae0e llvm.sh: cosmetics
+* 46b7084 llvm.sh: linux skips for arm too
+
+## 2024-04-29
+
+* 1b054cd llvm.sh: add more linux tests
+* 6a89965 llvm-mingw.sh: update tests
+* 9e51098 llvm.sh: cosmetics
+* 3990a1f llvm.sh: update linux & win32 tests
+* 3a6167b versioning.sh: skip bootstrap tests if not bootstrap only
+
+## 2024-04-27
+
+* a593adf llvm.sh: comment out mkdir
+* 8720bc8 llvm.sh: conditional -DCMAKE_OSX_DEPLOYMENT_TARGET
+* 3525761 application.sh: update deps
+* 1175849 llvm-mingw.sh: update tests
+* 824a897 llvm.sh: update tests for macOS
+
+## 2024-04-22
+
+* 1bfd73c rename test_compiler_*
+
+## 2024-04-07
+
+* 86a2e94 READMEs updates
+* 0980ad6 versioning.sh: add xz warning
+* 274c0de llvm.sh: create lib folder for rpath
+* 4f62ceb README update
+
+## 2024-04-06
+
+* 530bad6 llvm.sh: add ${llvm_folder_name}/lib to rpath
+* 299cc37 package.json: build 17.0.6-2 with 16.0.6
+
+## 2024-04-05
+
+* bc3de71 README update
+* 69437ac llvm-17.0.6-2 path with latest hb content
+* 07babd6 llvm.sh: move compiler-rt to RUNTIMES
+
+## 2024-04-04
+
+* 00657b1 VERSION 17.0.6-2
+* 34cf82d add 17.0.6-2 patch
+* 95d0dfe package.json: bump deps
+* 87f7637 llvm*.sh: cp -R
+
+## 2024-03-22
+
+* c993075 package.json: xpm-version 0.18.0
+
+## 2024-03-08
+
+* 24efb0e package.json: xpm-version 0.18.0
+
+## 2024-03-07
+
+* c5d1853 package.json: xpm-version 0.18.0
+* 51e42b1 package.json: bump deps
+
+## 2024-03-06
+
+* 85b2cef versioning.sh: use released 18.1.0
+* 2079c73 body-jekyll update
+* b8c4ab0 package.json: bump deps
+
+## 2024-02-08
+
+* 0a665ca patches README update
+* 2502a4b versioning.sh: add 18.x
+* 57687aa llvm.sh: customise archive via environment
+
 ## 2024-02-07
 
-* v18.1.0-1 prepared
+* 01bc5ea prepare v18.1.0-1
 * 3e6e338 READMEs update
 * 5cdb88c package.json: bump deps
 
