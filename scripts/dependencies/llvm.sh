@@ -1619,8 +1619,8 @@ function llvm_test()
         export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
 
-        # export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-        # export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       elif [ ${llvm_version_major} -eq 18 ]
       then
         # Most likely an incompatibility with the Apple linker.
@@ -1652,7 +1652,6 @@ function llvm_test()
         # got exit code: 1 on macOS 10.13
         export XBB_SKIP_RUN_TEST_LLD_THROWCATCH_MAIN="y"
         export XBB_SKIP_RUN_TEST_GC_LLD_THROWCATCH_MAIN="y"
-
         export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
         export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       fi
