@@ -2,6 +2,10 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-05-23
+
+* v17.0.6-2 prepared
+
 ## 2024-05-19
 
 * 7fea3b9 llvm*.sh: rename XBB_ACTUAL_LLVM_VERSION
