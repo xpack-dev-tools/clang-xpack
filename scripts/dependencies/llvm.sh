@@ -1081,7 +1081,7 @@ function llvm_test()
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
-        if [ "${XBB_HOST_ARCH}" == "x64" ]
+        if [ "${XBB_HOST_ARCH}" == "x64" ] || [ "${XBB_HOST_ARCH}" == "arm64" ]
         then
           # Weird, -static crashes the threads.
           # 201486 Segmentation fault      (core dumped)
@@ -1161,9 +1161,6 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-        elif [ "${XBB_HOST_ARCH}" == "arm64" ]
-        then
-          :
         elif [ "${XBB_HOST_ARCH}" == "arm" ]
         then
           # TODO from --static --lto
