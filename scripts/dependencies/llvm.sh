@@ -1076,8 +1076,8 @@ function llvm_test()
         # Program received signal SIGSEGV, Segmentation fault.
         # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
 
-        export XBB_SKIP_RUN_TEST_LTO_GLOBAL_TERMINATE_64="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+        export XBB_SKIP_TEST_LTO_GLOBAL_TERMINATE_64="y"
+        export XBB_SKIP_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
@@ -1597,11 +1597,11 @@ function llvm_test()
           # caught std::exception
           # all ok <--
 
-          export XBB_SKIP_RUN_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
-          export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-          export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
         fi
       elif [ ${llvm_version_major} -eq 17 ]
       then
@@ -1610,19 +1610,24 @@ function llvm_test()
         # Undefined symbols for architecture x86_64:
         #   "_func", referenced from:
         export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
+
         export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
+
         export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
+
         export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
         export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
 
-        export XBB_SKIP_RUN_TEST_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
+
+        export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+
+        export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       elif [ ${llvm_version_major} -eq 18 ]
       then
         # Most likely an incompatibility with the Apple linker.
@@ -1646,16 +1651,16 @@ function llvm_test()
         export XBB_SKIP_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
 
         # Segmentation fault: 11 on macOS 10.13
-        export XBB_SKIP_RUN_TEST_LLD_EXCEPTION_REDUCED="y"
-        export XBB_SKIP_RUN_TEST_GC_LLD_EXCEPTION_REDUCED="y"
-        export XBB_SKIP_RUN_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
 
         # got exit code: 1 on macOS 10.13
-        export XBB_SKIP_RUN_TEST_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-        export XBB_SKIP_RUN_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_GC_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
       fi
 
       # It is mandatory for the compiler to run properly without any
@@ -1668,7 +1673,7 @@ function llvm_test()
 
       (
         # The shared libraries are in a custom location and require setting
-        # the path explicitly.
+        # the libraries and rpath explicitly.
 
         local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
 
@@ -1685,9 +1690,9 @@ function llvm_test()
         echo "LDFLAGS=${LDFLAGS}"
 
         # Again, with various options.
-        # test_compiler_c_cpp "${test_bin_path}" --gc
-        # test_compiler_c_cpp "${test_bin_path}" --lto
-        # test_compiler_c_cpp "${test_bin_path}" --gc --lto
+        test_compiler_c_cpp "${test_bin_path}" --gc
+        test_compiler_c_cpp "${test_bin_path}" --lto
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto
 
         # No need for compiler-rt or libc++, they are the defaults.
 
