@@ -1699,29 +1699,63 @@ function llvm_test()
         fi
       elif [ ${llvm_version_major} -eq 17 ]
       then
-        # Most likely an incompatibility with the Apple linker.
-        # Static tests pass.
+
+        # x64
+        # 14 test(s) failed:
+        #
+        # fail: weak-undef-c
+        # fail: gc-weak-undef-c
+        # fail: lto-weak-undef-c
+        # fail: lto-throwcatch-main
+        # fail: gc-lto-weak-undef-c
+        # fail: gc-lto-throwcatch-main
+        # fail: lld-weak-undef-c
+        # fail: lld-throwcatch-main
+        # fail: gc-lld-weak-undef-c
+        # fail: gc-lld-throwcatch-main
+        # fail: lto-lld-weak-undef-c
+        # fail: lto-lld-throwcatch-main
+        # fail: gc-lto-lld-weak-undef-c
+        # fail: gc-lto-lld-throwcatch-main
+
+        # arm64
+        # 8 test(s) failed:
+        #
+        # fail: weak-undef-c
+        # fail: gc-weak-undef-c
+        # fail: lto-weak-undef-c
+        # fail: gc-lto-weak-undef-c
+        # fail: lld-weak-undef-c
+        # fail: gc-lld-weak-undef-c
+        # fail: lto-lld-weak-undef-c
+        # fail: gc-lto-lld-weak-undef-c
+
+        # weak-undef-c.
         # Undefined symbols for architecture x86_64:
         #   "_func", referenced from:
         export XBB_SKIP_TEST_WEAK_UNDEF_C="y"
-
         export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
-
         export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
-
         export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
+        # ld64.lld: error: undefined symbol: func
         export XBB_SKIP_TEST_LLD_WEAK_UNDEF_C="y"
-
         export XBB_SKIP_TEST_GC_LLD_WEAK_UNDEF_C="y"
-
         export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-
         export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
-        export XBB_SKIP_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+        if [ "${XBB_HOST_ARCH}" == "x64" ]
+        then
+          # throwcatch-main.
+          # Non LTO & non LLD are ok!
+          export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        fi
+
       elif [ ${llvm_version_major} -eq 18 ]
       then
         # Most likely an incompatibility with the Apple linker.
