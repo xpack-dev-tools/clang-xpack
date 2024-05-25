@@ -1085,6 +1085,8 @@ function llvm_test()
         then
           # Weird, -static crashes the threads.
           # 201486 Segmentation fault      (core dumped)
+
+          # sleepy-threads.
           export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS="y"
           export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS="y"
           export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS="y"
@@ -1095,6 +1097,7 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
 
+          # sleepy-threads-cv.
           export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
@@ -1112,51 +1115,62 @@ function llvm_test()
           # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
           # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
           # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+
+          # simple-hello-cpp-one.
           export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
 
+          # simple-hello-cpp-two.
           export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
 
+          # simple-exception.
           export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
 
+          # simple-str-exception.
           export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
 
+          # simple-int-exception.
           export XBB_SKIP_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
 
+          # hello-cpp.
           export XBB_SKIP_TEST_STATIC_LLD_HELLO_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_CPP_32="y"
 
+          # exception-locale.
           export XBB_SKIP_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
 
+          # crt-test.
           export XBB_SKIP_TEST_STATIC_LLD_CRT_TEST_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_CRT_TEST_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_CRT_TEST_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CRT_TEST_32="y"
 
+          # hello-weak-cpp.
           export XBB_SKIP_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_HELLO_WEAK_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_HELLO_WEAK_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK_CPP_32="y"
 
+          # overload-new-cpp.
           export XBB_SKIP_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
