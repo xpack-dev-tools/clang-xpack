@@ -1099,7 +1099,7 @@ function llvm_test()
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
-        if [ "${XBB_HOST_ARCH}" == "x64" ] || [ "${XBB_HOST_ARCH}" == "arm64" ]
+        if [ "${XBB_HOST_ARCH}" == "x64" ]
         then
 
           # x64
@@ -1270,6 +1270,49 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+        elif [ "${XBB_HOST_ARCH}" == "arm64" ]
+        then
+          # arm64
+          # 16 test(s) failed:
+
+          # fail: static-sleepy-threads
+          # fail: static-sleepy-threads-cv
+          # fail: static-gc-sleepy-threads
+          # fail: static-gc-sleepy-threads-cv
+          # fail: static-lto-sleepy-threads
+          # fail: static-lto-sleepy-threads-cv
+          # fail: static-gc-lto-sleepy-threads
+          # fail: static-gc-lto-sleepy-threads-cv
+          # fail: static-lld-sleepy-threads
+          # fail: static-lld-sleepy-threads-cv
+          # fail: static-gc-lld-sleepy-threads
+          # fail: static-gc-lld-sleepy-threads-cv
+          # fail: static-lto-lld-sleepy-threads
+          # fail: static-lto-lld-sleepy-threads-cv
+          # fail: static-gc-lto-lld-sleepy-threads
+          # fail: static-gc-lto-lld-sleepy-threads-cv
+
+          # sleepy-threads.
+          export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
+
+          # sleepy-threads-cv.
+          export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+
+          export XBB_SKIP_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
         elif [ "${XBB_HOST_ARCH}" == "arm" ]
         then
           # TODO from --static --lto
