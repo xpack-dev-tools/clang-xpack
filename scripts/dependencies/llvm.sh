@@ -997,6 +997,24 @@ function llvm_test()
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
+
+        # fail: lto-weak-undef-c-32
+        # fail: gc-lto-weak-undef-c-32
+        # fail: static-lib-lto-weak-undef-c-32
+        # fail: static-lib-gc-lto-weak-undef-c-32
+        # fail: static-lto-weak-undef-c-32
+        # fail: static-gc-lto-weak-undef-c-32
+        # fail: lto-weak-undef-c-64
+        # fail: gc-lto-weak-undef-c-64
+        # fail: static-lib-lto-weak-undef-c-64
+        # fail: static-lib-gc-lto-weak-undef-c-64
+        # fail: static-lto-weak-undef-c-64
+        # fail: static-gc-lto-weak-undef-c-64
+
+        # bufferoverflow.
+        # error: unable to find library -lssp
+        export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
+
         # weak-undef
         # Surprisingly, the non LTO variant is functional.
         # export XBB_SKIP_TEST_WEAK_UNDEF_C_32="y"
@@ -1083,6 +1101,83 @@ function llvm_test()
       then
         if [ "${XBB_HOST_ARCH}" == "x64" ] || [ "${XBB_HOST_ARCH}" == "arm64" ]
         then
+
+          # x64
+          # 72 test(s) failed:
+
+          # fail: static-sleepy-threads-64
+          # fail: static-sleepy-threads-cv-64
+          # fail: static-gc-sleepy-threads-64
+          # fail: static-gc-sleepy-threads-cv-64
+          # fail: static-lto-sleepy-threads-64
+          # fail: static-lto-sleepy-threads-cv-64
+          # fail: static-gc-lto-sleepy-threads-64
+          # fail: static-gc-lto-sleepy-threads-cv-64
+          # fail: static-lld-sleepy-threads-64
+          # fail: static-lld-sleepy-threads-cv-64
+          # fail: static-gc-lld-sleepy-threads-64
+          # fail: static-gc-lld-sleepy-threads-cv-64
+          # fail: static-lto-lld-sleepy-threads-64
+          # fail: static-lto-lld-sleepy-threads-cv-64
+          # fail: static-gc-lto-lld-sleepy-threads-64
+          # fail: static-gc-lto-lld-sleepy-threads-cv-64
+          # fail: static-sleepy-threads-32
+          # fail: static-sleepy-threads-cv-32
+          # fail: static-gc-sleepy-threads-32
+          # fail: static-gc-sleepy-threads-cv-32
+          # fail: static-lto-sleepy-threads-32
+          # fail: static-lto-sleepy-threads-cv-32
+          # fail: static-gc-lto-sleepy-threads-32
+          # fail: static-gc-lto-sleepy-threads-cv-32
+          # fail: static-lld-simple-hello-cpp-one-32
+          # fail: static-lld-simple-hello-cpp-two-32
+          # fail: static-lld-simple-exception-32
+          # fail: static-lld-simple-str-exception-32
+          # fail: static-lld-simple-int-exception-32
+          # fail: static-lld-sleepy-threads-32
+          # fail: static-lld-sleepy-threads-cv-32
+          # fail: static-lld-hello-cpp-32
+          # fail: static-lld-exception-locale-32
+          # fail: static-lld-crt-test-32
+          # fail: static-lld-hello-weak-cpp-32
+          # fail: static-lld-overload-new-cpp-32
+          # fail: static-gc-lld-simple-hello-cpp-one-32
+          # fail: static-gc-lld-simple-hello-cpp-two-32
+          # fail: static-gc-lld-simple-exception-32
+          # fail: static-gc-lld-simple-str-exception-32
+          # fail: static-gc-lld-simple-int-exception-32
+          # fail: static-gc-lld-sleepy-threads-32
+          # fail: static-gc-lld-sleepy-threads-cv-32
+          # fail: static-gc-lld-hello-cpp-32
+          # fail: static-gc-lld-exception-locale-32
+          # fail: static-gc-lld-crt-test-32
+          # fail: static-gc-lld-hello-weak-cpp-32
+          # fail: static-gc-lld-overload-new-cpp-32
+          # fail: static-lto-lld-simple-hello-cpp-one-32
+          # fail: static-lto-lld-simple-hello-cpp-two-32
+          # fail: static-lto-lld-simple-exception-32
+          # fail: static-lto-lld-simple-str-exception-32
+          # fail: static-lto-lld-simple-int-exception-32
+          # fail: static-lto-lld-sleepy-threads-32
+          # fail: static-lto-lld-sleepy-threads-cv-32
+          # fail: static-lto-lld-hello-cpp-32
+          # fail: static-lto-lld-exception-locale-32
+          # fail: static-lto-lld-crt-test-32
+          # fail: static-lto-lld-hello-weak-cpp-32
+          # fail: static-lto-lld-overload-new-cpp-32
+          # fail: static-gc-lto-lld-simple-hello-cpp-one-32
+          # fail: static-gc-lto-lld-simple-hello-cpp-two-32
+          # fail: static-gc-lto-lld-simple-exception-32
+          # fail: static-gc-lto-lld-simple-str-exception-32
+          # fail: static-gc-lto-lld-simple-int-exception-32
+          # fail: static-gc-lto-lld-sleepy-threads-32
+          # fail: static-gc-lto-lld-sleepy-threads-cv-32
+          # fail: static-gc-lto-lld-hello-cpp-32
+          # fail: static-gc-lto-lld-exception-locale-32
+          # fail: static-gc-lto-lld-crt-test-32
+          # fail: static-gc-lto-lld-hello-weak-cpp-32
+          # fail: static-gc-lto-lld-overload-new-cpp-32
+
           # Weird, -static crashes the threads.
           # 201486 Segmentation fault      (core dumped)
 
