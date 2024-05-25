@@ -800,7 +800,12 @@ function test_mingw_llvm()
       export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
     elif [ ${llvm_version_major} -eq 17 ]
     then
-      # weak-undef
+
+      # bufferoverflow.
+      # error: unable to find library -lssp
+      export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
+
+      # weak-undef.
       # Surprisingly, the non LTO variant is functional.
       # export XBB_SKIP_TEST_WEAK_UNDEF_C_32="y"
       # export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
