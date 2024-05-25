@@ -2,9 +2,30 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-05-25
+
+* c623eb7 llvm.sh: update skips
+* c74d379 llvm.sh: more comments
+
+## 2024-05-24
+
+* 51bc355 llvm.sh: update tests for macOS
+* a15b3c1 Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
+* 9384794 llvm.sh: update skips for continuation
+* f6905e0 llvm.sh: arm64 skips from x64
+* abd70a5 llvm.sh: skipsome tests for arm (not all)
+
 ## 2024-05-23
 
-* v17.0.6-2 prepared
+* 3623d6e llvm.sh: skip tests for 17
+* 1aad9e5 llvm.sh: skip tests for 17
+* 2507768 Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
+* b7ca190 VERSION 17.0.6-2 for release
+* be38112 llvm.sh: skip more macOS for 18
+* f21d371 llvm.sh: skip tests on 18
+* 91fb21a package.json: clang 16.0.6-1.1
+* df0c846 CHANGELOG update
+* 2b9e8a2 CHANGELOG update
 
 ## 2024-05-19
 
