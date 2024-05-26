@@ -732,6 +732,7 @@ function test_mingw_llvm()
 
     source "${helper_folder_path}/tests/c-cpp/test-compiler.sh"
     run_verbose cp -Rv "${helper_folder_path}/tests/c-cpp" .
+    chmod -R a+w c-cpp
 
     run_verbose cp -Rv "${helper_folder_path}/tests/wine"/* c-cpp
     chmod -R a+w c-cpp
