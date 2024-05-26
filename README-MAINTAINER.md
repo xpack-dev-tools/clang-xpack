@@ -201,15 +201,6 @@ Check if there are changes in the tests, and update.
 
 Check if there are changes in the wrappers, and update.
 
-The first step is to build and test only the bootstrap,
-for this, un-comment a line in `application.sh`:
-
-```sh
-XBB_APPLICATION_BOOTSTRAP_ONLY="y"
-```
-
-After the bootstrap passes the tests, comment out this line and proceed.
-
 ## Build
 
 The builds currently run on 5 dedicated machines (Intel GNU/Linux,
@@ -224,6 +215,17 @@ Before the real build, run test builds on all platforms.
 All actions are defined as **xPack actions** and can be conveniently
 triggered via the VS Code graphical interface, using the
 [xPack extension](https://marketplace.visualstudio.com/items?itemName=ilg-vscode.xpack).
+
+### Bootstrap
+
+The first step is to build and test only the bootstrap,
+for this, un-comment a line in `application.sh`:
+
+```sh
+XBB_APPLICATION_BOOTSTRAP_ONLY="y"
+```
+
+After the bootstrap passes the tests, comment out this line and repeat.
 
 #### Intel macOS
 
@@ -255,7 +257,26 @@ For a debug build:
 xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-The build takes about 1h10.
+The build takes about 70 minutes (1h10).
+
+The failing tests are:
+
+```
+268 test(s) passed, 12 failed:
+
+fail: weak-undef-c
+fail: gc-weak-undef-c
+fail: lto-weak-undef-c
+fail: lto-throwcatch-main
+fail: gc-lto-weak-undef-c
+fail: gc-lto-throwcatch-main
+fail: lld-weak-undef-c
+fail: gc-lld-weak-undef-c
+fail: lto-lld-weak-undef-c
+fail: lto-lld-throwcatch-main
+fail: gc-lto-lld-weak-undef-c
+fail: gc-lto-lld-throwcatch-main
+```
 
 When functional, push the `xpack-develop` branch to GitHub.
 
@@ -282,7 +303,7 @@ xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 1h25 later, the output of the build script is a compressed
+About 90 minutes later (1h30), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
@@ -290,6 +311,27 @@ $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
 total 197144
 -rw-r--r--  1 ilg  staff  98658386 Apr  7 01:52 xpack-clang-17.0.6-2-darwin-x64.tar.gz
 -rw-r--r--  1 ilg  staff       105 Apr  7 01:52 xpack-clang-17.0.6-2-darwin-x64.tar.gz.sha
+```
+
+The failing tests are:
+
+```
+266 test(s) passed, 14 failed:
+
+fail: weak-undef-c
+fail: gc-weak-undef-c
+fail: lto-weak-undef-c
+fail: lto-throwcatch-main
+fail: gc-lto-weak-undef-c
+fail: gc-lto-throwcatch-main
+fail: lld-weak-undef-c
+fail: lld-throwcatch-main
+fail: gc-lld-weak-undef-c
+fail: gc-lld-throwcatch-main
+fail: lto-lld-weak-undef-c
+fail: lto-lld-throwcatch-main
+fail: gc-lto-lld-weak-undef-c
+fail: gc-lto-lld-throwcatch-main
 ```
 
 #### Apple Silicon macOS
@@ -327,6 +369,21 @@ total 198328
 -rw-r--r--  1 ilg  staff       107 Apr  7 01:01 xpack-clang-17.0.6-2-darwin-arm64.tar.gz.sha
 ```
 
+The failing tests are:
+
+```
+272 test(s) passed, 8 failed:
+
+fail: weak-undef-c
+fail: gc-weak-undef-c
+fail: lto-weak-undef-c
+fail: gc-lto-weak-undef-c
+fail: lld-weak-undef-c
+fail: gc-lld-weak-undef-c
+fail: lto-lld-weak-undef-c
+fail: gc-lto-lld-weak-undef-c
+```
+
 #### Intel GNU/Linux
 
 Run the docker build on the production machine (`xbbli`);
@@ -354,7 +411,7 @@ xpm run docker-link-deps --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 1h45 later, the output of the build script is a compressed
+About 130 minutes later (2h10), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
@@ -362,6 +419,85 @@ $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
 total 208408
 -rw-r--r-- 1 ilg ilg 213399569 Apr  6 23:06 xpack-clang-17.0.6-2-linux-x64.tar.gz
 -rw-r--r-- 1 ilg ilg       104 Apr  6 23:06 xpack-clang-17.0.6-2-linux-x64.tar.gz.sha
+```
+
+The failing tests are:
+
+```
+2575 test(s) passed, 72 failed:
+
+fail: static-sleepy-threads-64
+fail: static-sleepy-threads-cv-64
+fail: static-gc-sleepy-threads-64
+fail: static-gc-sleepy-threads-cv-64
+fail: static-lto-sleepy-threads-64
+fail: static-lto-sleepy-threads-cv-64
+fail: static-gc-lto-sleepy-threads-64
+fail: static-gc-lto-sleepy-threads-cv-64
+fail: static-lld-sleepy-threads-64
+fail: static-lld-sleepy-threads-cv-64
+fail: static-gc-lld-sleepy-threads-64
+fail: static-gc-lld-sleepy-threads-cv-64
+fail: static-lto-lld-sleepy-threads-64
+fail: static-lto-lld-sleepy-threads-cv-64
+fail: static-gc-lto-lld-sleepy-threads-64
+fail: static-gc-lto-lld-sleepy-threads-cv-64
+fail: static-sleepy-threads-32
+fail: static-sleepy-threads-cv-32
+fail: static-gc-sleepy-threads-32
+fail: static-gc-sleepy-threads-cv-32
+fail: static-lto-sleepy-threads-32
+fail: static-lto-sleepy-threads-cv-32
+fail: static-gc-lto-sleepy-threads-32
+fail: static-gc-lto-sleepy-threads-cv-32
+fail: static-lld-simple-hello-cpp-one-32
+fail: static-lld-simple-hello-cpp-two-32
+fail: static-lld-simple-exception-32
+fail: static-lld-simple-str-exception-32
+fail: static-lld-simple-int-exception-32
+fail: static-lld-sleepy-threads-32
+fail: static-lld-sleepy-threads-cv-32
+fail: static-lld-hello-cpp-32
+fail: static-lld-exception-locale-32
+fail: static-lld-crt-test-32
+fail: static-lld-hello-weak-cpp-32
+fail: static-lld-overload-new-cpp-32
+fail: static-gc-lld-simple-hello-cpp-one-32
+fail: static-gc-lld-simple-hello-cpp-two-32
+fail: static-gc-lld-simple-exception-32
+fail: static-gc-lld-simple-str-exception-32
+fail: static-gc-lld-simple-int-exception-32
+fail: static-gc-lld-sleepy-threads-32
+fail: static-gc-lld-sleepy-threads-cv-32
+fail: static-gc-lld-hello-cpp-32
+fail: static-gc-lld-exception-locale-32
+fail: static-gc-lld-crt-test-32
+fail: static-gc-lld-hello-weak-cpp-32
+fail: static-gc-lld-overload-new-cpp-32
+fail: static-lto-lld-simple-hello-cpp-one-32
+fail: static-lto-lld-simple-hello-cpp-two-32
+fail: static-lto-lld-simple-exception-32
+fail: static-lto-lld-simple-str-exception-32
+fail: static-lto-lld-simple-int-exception-32
+fail: static-lto-lld-sleepy-threads-32
+fail: static-lto-lld-sleepy-threads-cv-32
+fail: static-lto-lld-hello-cpp-32
+fail: static-lto-lld-exception-locale-32
+fail: static-lto-lld-crt-test-32
+fail: static-lto-lld-hello-weak-cpp-32
+fail: static-lto-lld-overload-new-cpp-32
+fail: static-gc-lto-lld-simple-hello-cpp-one-32
+fail: static-gc-lto-lld-simple-hello-cpp-two-32
+fail: static-gc-lto-lld-simple-exception-32
+fail: static-gc-lto-lld-simple-str-exception-32
+fail: static-gc-lto-lld-simple-int-exception-32
+fail: static-gc-lto-lld-sleepy-threads-32
+fail: static-gc-lto-lld-sleepy-threads-cv-32
+fail: static-gc-lto-lld-hello-cpp-32
+fail: static-gc-lto-lld-exception-locale-32
+fail: static-gc-lto-lld-crt-test-32
+fail: static-gc-lto-lld-hello-weak-cpp-32
+fail: static-gc-lto-lld-overload-new-cpp-32
 ```
 
 ##### Build the Intel Windows binaries
@@ -382,7 +518,7 @@ xpm run docker-link-deps --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 2h45 later, the output of the build script is a compressed
+About 180 minutes later (3h00), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
@@ -390,6 +526,76 @@ $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
 total 403676
 -rw-r--r-- 1 ilg ilg 413355016 Apr  6 23:56 xpack-clang-17.0.6-2-win32-x64.zip
 -rw-r--r-- 1 ilg ilg       101 Apr  6 23:56 xpack-clang-17.0.6-2-win32-x64.zip.sha
+```
+
+The failing tests are:
+
+```
+1508 test(s) passed, 60 failed:
+
+fail: bufferoverflow-32
+fail: gc-bufferoverflow-32
+fail: lto-bufferoverflow-32
+fail: lto-weak-undef-c-32
+fail: gc-lto-bufferoverflow-32
+fail: gc-lto-weak-undef-c-32
+fail: crt-bufferoverflow-32
+fail: gc-crt-bufferoverflow-32
+fail: lto-crt-bufferoverflow-32
+fail: lto-crt-weak-undef-c-32
+fail: gc-lto-crt-bufferoverflow-32
+fail: gc-lto-crt-weak-undef-c-32
+
+fail: bufferoverflow-64
+fail: gc-bufferoverflow-64
+fail: lto-bufferoverflow-64
+fail: lto-weak-undef-c-64
+fail: gc-lto-bufferoverflow-64
+fail: gc-lto-weak-undef-c-64
+fail: crt-bufferoverflow-64
+fail: gc-crt-bufferoverflow-64
+fail: lto-crt-bufferoverflow-64
+fail: lto-crt-weak-undef-c-64
+fail: gc-lto-crt-bufferoverflow-64
+fail: gc-lto-crt-weak-undef-c-64
+---
+fail: bufferoverflow-32
+fail: gc-bufferoverflow-32
+fail: lto-bufferoverflow-32
+fail: lto-weak-undef-c-32
+fail: gc-lto-bufferoverflow-32
+fail: gc-lto-weak-undef-c-32
+fail: static-lib-bufferoverflow-32
+fail: static-lib-gc-bufferoverflow-32
+fail: static-lib-lto-bufferoverflow-32
+fail: static-lib-lto-weak-undef-c-32
+fail: static-lib-gc-lto-bufferoverflow-32
+fail: static-lib-gc-lto-weak-undef-c-32
+fail: static-bufferoverflow-32
+fail: static-gc-bufferoverflow-32
+fail: static-lto-bufferoverflow-32
+fail: static-lto-weak-undef-c-32
+fail: static-gc-lto-bufferoverflow-32
+fail: static-gc-lto-weak-undef-c-32
+
+fail: bufferoverflow-64
+fail: gc-bufferoverflow-64
+fail: lto-bufferoverflow-64
+fail: lto-weak-undef-c-64
+fail: gc-lto-bufferoverflow-64
+fail: gc-lto-weak-undef-c-64
+fail: static-lib-bufferoverflow-64
+fail: static-lib-gc-bufferoverflow-64
+fail: static-lib-lto-bufferoverflow-64
+fail: static-lib-lto-weak-undef-c-64
+fail: static-lib-gc-lto-bufferoverflow-64
+fail: static-lib-gc-lto-weak-undef-c-64
+fail: static-bufferoverflow-64
+fail: static-gc-bufferoverflow-64
+fail: static-lto-bufferoverflow-64
+fail: static-lto-weak-undef-c-64
+fail: static-gc-lto-bufferoverflow-64
+fail: static-gc-lto-weak-undef-c-64
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -417,7 +623,7 @@ xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xp
 xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 12h later (2h20 on ampere), the output of the build script is a compressed
+About 12h later (2h25 on ampere), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
@@ -425,6 +631,29 @@ $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
 total 185996
 -rw-r--r-- 1 ilg ilg 190449779 Apr  7 09:29 xpack-clang-17.0.6-2-linux-arm64.tar.gz
 -rw-r--r-- 1 ilg ilg       106 Apr  7 09:29 xpack-clang-17.0.6-2-linux-arm64.tar.gz.sha
+```
+
+The failing tests are:
+
+```
+1360 test(s) passed, 16 failed:
+
+fail: static-sleepy-threads
+fail: static-sleepy-threads-cv
+fail: static-gc-sleepy-threads
+fail: static-gc-sleepy-threads-cv
+fail: static-lto-sleepy-threads
+fail: static-lto-sleepy-threads-cv
+fail: static-gc-lto-sleepy-threads
+fail: static-gc-lto-sleepy-threads-cv
+fail: static-lld-sleepy-threads
+fail: static-lld-sleepy-threads-cv
+fail: static-gc-lld-sleepy-threads
+fail: static-gc-lld-sleepy-threads-cv
+fail: static-lto-lld-sleepy-threads
+fail: static-lto-lld-sleepy-threads-cv
+fail: static-gc-lto-lld-sleepy-threads
+fail: static-gc-lto-lld-sleepy-threads-cv
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -452,7 +681,7 @@ xpm run docker-link-deps --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 10h later, the output of the build script is a compressed
+About 10h30 later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
@@ -460,6 +689,143 @@ $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
 total 174560
 -rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-17.0.6-2-linux-arm.tar.gz
 -rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-17.0.6-2-linux-arm.tar.gz.sha
+```
+
+The failing tests are:
+
+```
+1246 test(s) passed, 130 failed:
+
+fail: lto-adder-shared
+fail: lto-simple-exception
+fail: lto-sleepy-threads
+fail: lto-hello-cpp
+fail: lto-longjmp-cleanup
+fail: lto-hello-weak-cpp
+fail: lto-normal
+fail: lto-weak-undef-c
+fail: lto-weak-defined-c
+fail: lto-weak-use-c
+fail: lto-weak-override-c
+fail: gc-lto-adder-shared
+fail: gc-lto-simple-exception
+fail: gc-lto-sleepy-threads
+fail: gc-lto-hello-cpp
+fail: gc-lto-longjmp-cleanup
+fail: gc-lto-hello-weak-c
+fail: gc-lto-hello-weak-cpp
+fail: gc-lto-normal
+fail: gc-lto-weak-undef-c
+fail: gc-lto-weak-defined-c
+fail: gc-lto-weak-use-c
+fail: gc-lto-weak-override-c
+fail: static-lib-lto-adder-shared
+fail: static-lib-lto-simple-exception
+fail: static-lib-lto-sleepy-threads
+fail: static-lib-lto-longjmp-cleanup
+fail: static-lib-lto-hello-weak-c
+fail: static-lib-lto-normal
+fail: static-lib-lto-weak-undef-c
+fail: static-lib-lto-weak-defined-c
+fail: static-lib-lto-weak-use-c
+fail: static-lib-lto-weak-override-c
+fail: static-lib-gc-lto-adder-shared
+fail: static-lib-gc-lto-simple-exception
+fail: static-lib-gc-lto-sleepy-threads
+fail: static-lib-gc-lto-hello-cpp
+fail: static-lib-gc-lto-longjmp-cleanup
+fail: static-lib-gc-lto-hello-weak-c
+fail: static-lib-gc-lto-hello-weak-cpp
+fail: static-lib-gc-lto-normal
+fail: static-lib-gc-lto-weak-undef-c
+fail: static-lib-gc-lto-weak-defined-c
+fail: static-lib-gc-lto-weak-use-c
+fail: static-lib-gc-lto-weak-override-c
+fail: static-sleepy-threads
+fail: static-sleepy-threads-cv
+fail: static-gc-sleepy-threads
+fail: static-gc-sleepy-threads-cv
+fail: static-lto-simple-exception
+fail: static-lto-sleepy-threads
+fail: static-lto-sleepy-threads-cv
+fail: static-lto-longjmp-cleanup
+fail: static-lto-exception-reduced
+fail: static-lto-hello-weak-c
+fail: static-lto-normal
+fail: static-lto-weak-undef-c
+fail: static-lto-weak-defined-c
+fail: static-lto-weak-use-c
+fail: static-lto-weak-override-c
+fail: static-gc-lto-simple-exception
+fail: static-gc-lto-simple-str-exception
+fail: static-gc-lto-sleepy-threads
+fail: static-gc-lto-sleepy-threads-cv
+fail: static-gc-lto-hello-cpp
+fail: static-gc-lto-longjmp-cleanup
+fail: static-gc-lto-exception-reduced
+fail: static-gc-lto-hello-weak-c
+fail: static-gc-lto-normal
+fail: static-gc-lto-weak-undef-c
+fail: static-gc-lto-weak-defined-c
+fail: static-gc-lto-weak-use-c
+fail: static-gc-lto-weak-override-c
+fail: static-lld-sleepy-threads
+fail: static-lld-sleepy-threads-cv
+fail: static-gc-lld-sleepy-threads
+fail: static-gc-lld-sleepy-threads-cv
+fail: static-lto-lld-sleepy-threads
+fail: static-lto-lld-sleepy-threads-cv
+fail: static-gc-lto-lld-sleepy-threads
+fail: static-gc-lto-lld-sleepy-threads-cv
+fail: crt-hello-exception
+fail: crt-exception-locale
+fail: crt-exception-reduced
+fail: gc-crt-hello-exception
+fail: gc-crt-exception-locale
+fail: gc-crt-exception-reduced
+fail: lto-crt-adder-shared
+fail: lto-crt-simple-exception
+fail: lto-crt-sleepy-threads
+fail: lto-crt-hello-cpp
+fail: lto-crt-longjmp-cleanup
+fail: lto-crt-hello-exception
+fail: lto-crt-exception-locale
+fail: lto-crt-exception-reduced
+fail: lto-crt-hello-weak-c
+fail: lto-crt-normal
+fail: lto-crt-weak-undef-c
+fail: lto-crt-weak-defined-c
+fail: lto-crt-weak-use-c
+fail: lto-crt-weak-override-c
+fail: lto-crt-weak-duplicate-c
+fail: gc-lto-crt-adder-shared
+fail: gc-lto-crt-simple-exception
+fail: gc-lto-crt-sleepy-threads
+fail: gc-lto-crt-hello-cpp
+fail: gc-lto-crt-longjmp-cleanup
+fail: gc-lto-crt-hello-exception
+fail: gc-lto-crt-exception-locale
+fail: gc-lto-crt-exception-reduced
+fail: gc-lto-crt-hello-weak-c
+fail: gc-lto-crt-hello-weak-cpp
+fail: gc-lto-crt-normal
+fail: gc-lto-crt-weak-undef-c
+fail: gc-lto-crt-weak-defined-c
+fail: gc-lto-crt-weak-use-c
+fail: gc-lto-crt-weak-override-c
+fail: gc-lto-crt-weak-duplicate-c
+fail: crt-lld-hello-exception
+fail: crt-lld-exception-locale
+fail: crt-lld-exception-reduced
+fail: gc-crt-lld-hello-exception
+fail: gc-crt-lld-exception-locale
+fail: gc-crt-lld-exception-reduced
+fail: lto-crt-lld-hello-exception
+fail: lto-crt-lld-exception-locale
+fail: lto-crt-lld-exception-reduced
+fail: gc-lto-crt-lld-hello-exception
+fail: gc-lto-crt-lld-exception-locale
+fail: gc-lto-crt-lld-exception-reduced
 ```
 
 ### Update README-MAINTAINER listing output
