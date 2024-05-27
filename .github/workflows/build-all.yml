@@ -75,7 +75,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
@@ -148,7 +148,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
@@ -221,7 +221,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
@@ -293,7 +293,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
@@ -361,7 +361,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
@@ -430,7 +430,7 @@ jobs:
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
           ls -lLA
-          env | sort | egrep '^[^ \t]+='
+          env | sort | grep -E '^[^ \t]+='
 
       - name: 'Clean working area'
         run: |
