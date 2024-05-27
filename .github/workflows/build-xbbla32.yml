@@ -77,15 +77,6 @@ jobs:
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
-      - name: 'Clean working area'
-        run: |
-          chmod -Rf a+w * || true
-          rm -rf * .git*
-
-      - name: 'Checkout project'
-        uses: actions/checkout@v1 # v1 for old Git
-        with:
-          fetch-depth: 3
 
       - name: 'Install xpm'
         timeout-minutes: 1440
