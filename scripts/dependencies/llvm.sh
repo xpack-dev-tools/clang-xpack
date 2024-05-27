@@ -1583,7 +1583,7 @@ function llvm_test()
           # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
           export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP
+          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
 
           # weak/normal.
           export XBB_SKIP_TEST_LTO_NORMAL="y"
