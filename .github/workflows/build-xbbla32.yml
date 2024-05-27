@@ -83,7 +83,7 @@ jobs:
         run: |
           npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
           xpm --version
-          git config --add safe.directory /__w/clang-xpack/clang-xpack
+          git config --global --add safe.directory /__w/clang-xpack/clang-xpack
           git pull
 
       - name: 'Install project dependencies'
