@@ -79,7 +79,7 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -Rf a+w *
+          chmod -Rf a+w * || true
           rm -rf * .git*
 
       - name: 'Checkout project'
