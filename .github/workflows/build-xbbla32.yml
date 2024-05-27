@@ -83,6 +83,7 @@ jobs:
         run: |
           npm install --location=global xpm@${{ github.event.inputs.xpm_version }}
           xpm --version
+          git pull
 
       - name: 'Install project dependencies'
         timeout-minutes: 1440
