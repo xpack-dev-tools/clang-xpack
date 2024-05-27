@@ -1695,7 +1695,7 @@ function llvm_test()
            [[ ${distro} == RedHat* ]] || \
            [[ ${distro} == Fedora ]] || \
            [[ ${distro} == openSUSE ]] || \
-           [[ ${distro} == archlinux ]]
+           [[ ${distro} == Arch ]]
         then
           # RedHat has no static libstdc++.
           # Arch: undefined reference to `fmod' (static)
@@ -1891,7 +1891,7 @@ function llvm_test()
              [[ ${distro} == RedHat* ]] || \
              [[ ${distro} == Fedora ]] || \
              [[ ${distro} == openSUSE ]] || \
-             [[ ${distro} == archlinux ]]
+             [[ ${distro} == Arch ]]
           then
             # RedHat has no static libstdc++.
             # Arch: undefined reference to `fmod' (static)
