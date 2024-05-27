@@ -1084,6 +1084,8 @@ function llvm_test()
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
 
+      local distro=$(lsb_release -is)
+
       # Defaults:
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
       # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
@@ -1665,30 +1667,38 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
 
-        # WARNING: check if they run on RH!
-        # -static-libgcc -static-libgcc.
-        test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
+        if [[ ${distro} == CentOS ]] || \
+           [[ ${distro} == RedHat* ]] || \
+           [[ ${distro} == Fedora ]]
+        then
+          # RedHat has no static libstdc++.
+          echo
+          echo "Skipping all static on ${distro}..."
+        else
+          # -static-libgcc -static-libgcc.
+          test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
 
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
 
-        # -static.
-        test_compiler_c_cpp "${test_bin_path}" --64 --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
+          # -static.
+          test_compiler_c_cpp "${test_bin_path}" --64 --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
 
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
+        fi
 
         # ---------------------------------------------------------------------
         # Second test LLVM runtime and libc++.
@@ -1839,30 +1849,38 @@ function llvm_test()
 
           # -------------------------------------------------------------------
 
-          # WARNING: check if they run on RH!
-          # -static-libgcc -static-libgcc.
-          test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
+          if [[ ${distro} == CentOS ]] || \
+             [[ ${distro} == RedHat* ]] || \
+             [[ ${distro} == Fedora ]]
+          then
+            # RedHat has no static libstdc++.
+            echo
+            echo "Skipping all static on ${distro}..."
+          else
+            # -static-libgcc -static-libgcc.
+            test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
 
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
 
-          # -static.
-          test_compiler_c_cpp "${test_bin_path}" --32 --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
+            # -static.
+            test_compiler_c_cpp "${test_bin_path}" --32 --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
 
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
+            # Again with lld.
+            test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
+            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
+          fi
 
           if false
           then
@@ -1918,30 +1936,39 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
 
-        # -static-libgcc -static-libgcc.
-        # WARNING: check if they run on RH!
-        test_compiler_c_cpp "${test_bin_path}" --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
+        if [[ ${distro} == CentOS ]] || \
+           [[ ${distro} == RedHat* ]] || \
+           [[ ${distro} == Fedora ]]
+        then
+          # RedHat has no static libstdc++.
+          echo
+          echo "Skipping all static on ${distro}..."
+        else
+          # -static-libgcc -static-libgcc.
+          # WARNING: check if they run on RH!
+          test_compiler_c_cpp "${test_bin_path}" --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
 
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
 
-        # -static.
-        test_compiler_c_cpp "${test_bin_path}" --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --static
-        test_compiler_c_cpp "${test_bin_path}" --lto --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
+          # -static.
+          test_compiler_c_cpp "${test_bin_path}" --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --static
+          test_compiler_c_cpp "${test_bin_path}" --lto --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
 
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
+        fi
 
         # ---------------------------------------------------------------------
         # Second test LLVM runtime and libc++.
