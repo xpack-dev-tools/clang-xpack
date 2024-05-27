@@ -80,7 +80,7 @@ jobs:
       - name: 'Clean working area'
         run: |
           chmod -R a+w *
-          rm -rf * .git*
+          rm -rf .git*
 
       - name: 'Checkout project'
         uses: actions/checkout@v1 # v1 for old Git
