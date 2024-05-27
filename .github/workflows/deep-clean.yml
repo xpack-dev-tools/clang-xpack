@@ -47,7 +47,7 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -R a+w *
+          chmod -Rf a+w *
           rm -rf * .git*
 
 
@@ -69,7 +69,7 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -R a+w *
+          chmod -Rf a+w *
           rm -rf * .git*
 
 
@@ -90,7 +90,7 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -R a+w *
+          chmod -Rf a+w *
           rm -rf * .git*
 
 
@@ -113,7 +113,7 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -R a+w *
+          chmod -Rf a+w *
           rm -rf * .git*
 
 
@@ -136,5 +136,5 @@ jobs:
 
       - name: 'Clean working area'
         run: |
-          chmod -R a+w *
+          chmod -Rf a+w *
           rm -rf * .git*
