@@ -1686,7 +1686,19 @@ function llvm_test()
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
           test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
+        fi
 
+        if [[ ${distro} == CentOS ]] || \
+           [[ ${distro} == RedHat* ]] || \
+           [[ ${distro} == Fedora ]] || \
+           [[ ${distro} == archlinux ]]
+        then
+          # RedHat has no static libstdc++.
+          # Arch: undefined reference to `fmod' (static)
+          # Arch: cannot find -latomic (static)
+          echo
+          echo "Skipping all static on ${distro}..."
+        else
           # -static.
           test_compiler_c_cpp "${test_bin_path}" --64 --static
           test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
@@ -1868,7 +1880,19 @@ function llvm_test()
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
             test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
+            fi
 
+          if [[ ${distro} == CentOS ]] || \
+             [[ ${distro} == RedHat* ]] || \
+             [[ ${distro} == Fedora ]] || \
+             [[ ${distro} == archlinux ]]
+          then
+            # RedHat has no static libstdc++.
+            # Arch: undefined reference to `fmod' (static)
+            # Arch: cannot find -latomic (static)
+            echo
+            echo "Skipping all static on ${distro}..."
+          else
             # -static.
             test_compiler_c_cpp "${test_bin_path}" --32 --static
             test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
