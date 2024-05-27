@@ -1085,6 +1085,8 @@ function llvm_test()
     then
 
       local distro=$(lsb_release -is)
+      echo
+      run_verbose lsb_release -a
 
       # Defaults:
       # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
