@@ -1671,7 +1671,8 @@ function llvm_test()
 
         if [[ ${distro} == CentOS ]] || \
            [[ ${distro} == RedHat* ]] || \
-           [[ ${distro} == Fedora ]]
+           [[ ${distro} == Fedora ]] || \
+           [[ ${distro} == openSUSE ]]
         then
           # RedHat has no static libstdc++.
           echo
@@ -1693,6 +1694,7 @@ function llvm_test()
         if [[ ${distro} == CentOS ]] || \
            [[ ${distro} == RedHat* ]] || \
            [[ ${distro} == Fedora ]] || \
+           [[ ${distro} == openSUSE ]] || \
            [[ ${distro} == archlinux ]]
         then
           # RedHat has no static libstdc++.
@@ -1865,7 +1867,8 @@ function llvm_test()
 
           if [[ ${distro} == CentOS ]] || \
              [[ ${distro} == RedHat* ]] || \
-             [[ ${distro} == Fedora ]]
+             [[ ${distro} == Fedora ]] || \
+             [[ ${distro} == openSUSE ]]
           then
             # RedHat has no static libstdc++.
             echo
@@ -1887,6 +1890,7 @@ function llvm_test()
           if [[ ${distro} == CentOS ]] || \
              [[ ${distro} == RedHat* ]] || \
              [[ ${distro} == Fedora ]] || \
+             [[ ${distro} == openSUSE ]] || \
              [[ ${distro} == archlinux ]]
           then
             # RedHat has no static libstdc++.
@@ -1964,7 +1968,8 @@ function llvm_test()
 
         if [[ ${distro} == CentOS ]] || \
            [[ ${distro} == RedHat* ]] || \
-           [[ ${distro} == Fedora ]]
+           [[ ${distro} == Fedora ]] || \
+           [[ ${distro} == openSUSE ]]
         then
           # RedHat has no static libstdc++.
           echo
