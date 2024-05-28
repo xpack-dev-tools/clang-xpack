@@ -4,7 +4,9 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-05-28
 
-* v17.0.6-2 released
+* v17.0.6-2.1 published on npmjs.com
+* b929cdd package.json: update urls for 17.0.6-2.1 release
+* fc476a2 CHANGELOG update
 * 7203256 README update
 * 89a594d llvm.sh: update skips
 * 21ad0d9 package.json: bump deps
