@@ -1458,14 +1458,6 @@ function llvm_test()
           # fail: gc-lto-crt-lld-exception-locale
           # fail: gc-lto-crt-lld-exception-reduced
 
-          # adder-static.
-          export XBB_SKIP_TEST_LTO_ADDER_STATIC="y"
-          export XBB_SKIP_TEST_GC_LTO_ADDER_STATIC="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
-          export XBB_SKIP_TEST_LTO_CRT_ADDER_STATIC="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_ADDER_STATIC="y"
-
           # adder-shared.
           # clang lto-add.c.o -shared -o liblto-add-shared.so -flto -g -v
           # clang: error: unable to execute command: Segmentation fault (core dumped)
@@ -1476,6 +1468,14 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
           export XBB_SKIP_TEST_LTO_CRT_ADDER_SHARED="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_ADDER_SHARED="y"
+
+          # adder-static.
+          export XBB_SKIP_TEST_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_GC_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_LTO_CRT_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_ADDER_STATIC="y"
 
           # atomic.
           export XBB_SKIP_TEST_LTO_CRT_ATOMIC="y"
@@ -1700,15 +1700,15 @@ function llvm_test()
           export XBB_SKIP_TEST_LTO_CRT_WEAK_DEFINED_C="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
 
-          # weak-use-c.
-          export XBB_SKIP_TEST_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_GC_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_STATIC_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_LTO_CRT_WEAK_USE_C="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_USE_C="y"
+          # weak-duplicate-c.
+          export XBB_SKIP_TEST_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
 
           # weak-override-c.
           export XBB_SKIP_TEST_LTO_WEAK_OVERRIDE_C="y"
@@ -1720,16 +1720,15 @@ function llvm_test()
           export XBB_SKIP_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
 
-          # weak-duplicate-c.
-          export XBB_SKIP_TEST_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
-
+          # weak-use-c.
+          export XBB_SKIP_TEST_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_GC_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_STATIC_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_LTO_CRT_WEAK_USE_C="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_USE_C="y"
         fi
       fi
 
