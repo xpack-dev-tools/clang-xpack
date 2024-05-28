@@ -1259,10 +1259,10 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
 
           # crt-test.
-          export XBB_SKIP_TEST_STATIC_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LLD_CRT_TEST_32="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_LLD_CNRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LLD_CNRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LLD_CNRT_TEST_32="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_CNRT_TEST_32="y"
 
           # hello-weak-cpp.
           export XBB_SKIP_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
@@ -1322,6 +1322,9 @@ function llvm_test()
         then
 
           # arm
+          # Basically LTO is unreliable, use LLD.
+          # Static is also unreliable.
+
           # 1246 test(s) passed, 130 failed:
 
           # fail: lto-adder-shared
@@ -1455,17 +1458,142 @@ function llvm_test()
           # fail: gc-lto-crt-lld-exception-locale
           # fail: gc-lto-crt-lld-exception-reduced
 
+          # adder-static.
+          export XBB_SKIP_TEST_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_GC_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_LTO_CRT_ADDER_STATIC="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_ADDER_STATIC="y"
+
           # adder-shared.
           # clang lto-add.c.o -shared -o liblto-add-shared.so -flto -g -v
           # clang: error: unable to execute command: Segmentation fault (core dumped)
           # clang: error: linker command failed due to signal (use -v to see invocation)
-
           export XBB_SKIP_TEST_LTO_ADDER_SHARED="y"
           export XBB_SKIP_TEST_GC_LTO_ADDER_SHARED="y"
           export XBB_SKIP_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
           export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
           export XBB_SKIP_TEST_LTO_CRT_ADDER_SHARED="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_ADDER_SHARED="y"
+
+          # atomic.
+          export XBB_SKIP_TEST_LTO_CRT_ATOMIC="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_ATOMIC="y"
+
+          # cnrt-test.
+          export XBB_SKIP_TEST_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_GC_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_STATIC_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_CNRT_TEST="y"
+          export XBB_SKIP_TEST_LTO_CRT_CNRT_TEST="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_CNRT_TEST="y"
+
+          # exception-locale.
+          export XBB_SKIP_TEST_CRT_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_GC_CRT_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+
+          # exception-reduced.
+          export XBB_SKIP_TEST_STATIC_LTO_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_CRT_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_GC_CRT_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+
+          # global-terminate.
+          export XBB_SKIP_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
+
+          # hello-c.
+          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_C="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_C="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_C="y"
+
+          # hello-cpp.
+          # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
+          # clang++: error: unable to execute command: Segmentation fault (core dumped)
+          # clang++: error: linker command failed due to signal (use -v to see invocation)
+          export XBB_SKIP_TEST_LTO_HELLO_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_HELLO_CPP="y"
+          # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_CPP="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_CPP="y"
+
+          # hello-exception.
+          export XBB_SKIP_TEST_CRT_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_GC_CRT_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+
+          # hello-weak-c.
+          export XBB_SKIP_TEST_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_C="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_C="y"
+
+          # hello-weak-cpp.
+          # clang++: error: unable to execute command: Segmentation fault (core dumped)
+          # clang++: error: linker command failed due to signal (use -v to see invocation)
+          export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+
+          # longjmp-cleanup.
+          # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
+          # clang++: error: unable to execute command: Segmentation fault (core dumped)
+          # clang++: error: linker command failed due to signal (use -v to see invocation)
+          export XBB_SKIP_TEST_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_GC_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_LTO_CRT_LONGJMP_CLEANUP="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_LONGJMP_CLEANUP="y"
+
+          # normal.
+          export XBB_SKIP_TEST_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_GC_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_STATIC_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_NORMAL="y"
+          export XBB_SKIP_TEST_LTO_CRT_NORMAL="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_NORMAL="y"
 
           # simple-exception.
           # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
@@ -1480,18 +1608,23 @@ function llvm_test()
           export XBB_SKIP_TEST_LTO_CRT_SIMPLE_EXCEPTION="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
 
+          # simple-hello-c-one.
+          export XBB_SKIP_TEST_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
+
+          # simple-hello-c-two.
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_C_TWO="y"
+          export XBB_SKIP_TEST_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
+
+          # simple-objc.
+          export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_OBJC="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
+          export XBB_SKIP_TEST_LTO_CRT_SIMPLE_OBJC="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
+
           # simple-str-exception.
           export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_STR_EXCEPTION="y"
-
-          # exception-locale.
-          export XBB_SKIP_TEST_CRT_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_GC_CRT_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
 
           # sleepy-threads.
           export XBB_SKIP_TEST_LTO_SLEEPY_THREADS="y"
@@ -1519,81 +1652,33 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
 
-          # hello-cpp.
-          # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_SKIP_TEST_LTO_HELLO_CPP="y"
-          export XBB_SKIP_TEST_GC_LTO_HELLO_CPP="y"
-          # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_CPP="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_CPP="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_CPP="y"
-          export XBB_SKIP_TEST_LTO_CRT_HELLO_CPP="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_CPP="y"
+          # throwcatch-main.
+          export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_LTO_CRT_THROWCATCH_MAIN="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
 
-          # longjmp-cleanup.
-          # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_SKIP_TEST_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_STATIC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_LTO_CRT_LONGJMP_CLEANUP="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_LONGJMP_CLEANUP="y"
+          # unwind-strong-cpp.
+          export XBB_SKIP_TEST_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
 
-          # exception-reduced.
-          export XBB_SKIP_TEST_STATIC_LTO_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_CRT_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_GC_CRT_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-
-          # hello-exception.
-          export XBB_SKIP_TEST_CRT_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_GC_CRT_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-
-          # hello-weak-c.
-          export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_C="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_C="y"
-
-          # hello-weak-cpp.
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
-          export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
-          # export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-
-          # weak/normal.
-          export XBB_SKIP_TEST_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_GC_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_STATIC_LIB_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_STATIC_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_STATIC_GC_LTO_NORMAL="y"
-          export XBB_SKIP_TEST_LTO_CRT_NORMAL="y"
-          export XBB_SKIP_TEST_GC_LTO_CRT_NORMAL="y"
+          # unwind-weak-cpp.
+          export XBB_SKIP_TEST_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
+          export XBB_SKIP_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
 
           # weak-undef-c.
           export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
@@ -1636,10 +1721,15 @@ function llvm_test()
           export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
 
           # weak-duplicate-c.
+          export XBB_SKIP_TEST_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
           export XBB_SKIP_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
 
-          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
         fi
       fi
 
