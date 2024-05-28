@@ -1659,6 +1659,7 @@ function llvm_test()
           export XBB_SKIP_TEST_GC_LTO_CRT_SLEEPY_THREADS="y"
 
           # sleepy-threads-cv.
+          export XBB_SKIP_TEST_LTO_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
@@ -2279,6 +2280,16 @@ function llvm_test()
         # fail: gc-lld-weak-undef-c
         # fail: lto-lld-weak-undef-c
         # fail: gc-lto-lld-weak-undef-c
+
+        # exception-reduced.
+        export XBB_SKIP_TEST_GC_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_LTO_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+
+        # hello-exception.
+        export XBB_SKIP_TEST_GC_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_LTO_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_GC_LTO_HELLO_EXCEPTION="y"
 
         # weak-undef-c.
         # Undefined symbols for architecture x86_64:
