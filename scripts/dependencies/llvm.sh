@@ -1516,11 +1516,23 @@ function llvm_test()
           # global-terminate.
           export XBB_SKIP_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
+          export XBB_SKIP_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
 
           # hello-c.
           export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_C="y"
           export XBB_SKIP_TEST_LTO_CRT_HELLO_C="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_C="y"
+          export XBB_SKIP_TEST_STATIC_LTO_HELLO_C="y"
+
+          # hello-c-one.
+          export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_HELLO_C_ONE="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_ONE="y"
+
+          # hello-c-two.
+          export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_HELLO_C_TWO="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_TWO="y"
 
           # hello-cpp.
           # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
@@ -1611,11 +1623,15 @@ function llvm_test()
           # simple-hello-c-one.
           export XBB_SKIP_TEST_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
+          export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_HELLO_C_ONE="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_ONE="y"
 
           # simple-hello-c-two.
           export XBB_SKIP_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_C_TWO="y"
           export XBB_SKIP_TEST_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
           export XBB_SKIP_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
+          export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_HELLO_C_TWO="y"
+          export XBB_SKIP_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_TWO="y"
 
           # simple-objc.
           export XBB_SKIP_TEST_STATIC_LTO_SIMPLE_OBJC="y"
@@ -1643,6 +1659,9 @@ function llvm_test()
           export XBB_SKIP_TEST_GC_LTO_CRT_SLEEPY_THREADS="y"
 
           # sleepy-threads-cv.
+          export XBB_SKIP_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
@@ -1759,9 +1778,9 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
 
         if [[ ${distro} == CentOS ]] || \
-           [[ ${distro} == RedHat* ]] || \
-           [[ ${distro} == Fedora ]] || \
-           [[ ${distro} == openSUSE ]]
+          [[ ${distro} == RedHat* ]] || \
+          [[ ${distro} == Fedora ]] || \
+          [[ ${distro} == openSUSE ]]
         then
           # RedHat has no static libstdc++.
           echo
@@ -1781,10 +1800,10 @@ function llvm_test()
         fi
 
         if [[ ${distro} == CentOS ]] || \
-           [[ ${distro} == RedHat* ]] || \
-           [[ ${distro} == Fedora ]] || \
-           [[ ${distro} == openSUSE ]] || \
-           [[ ${distro} == Arch ]]
+          [[ ${distro} == RedHat* ]] || \
+          [[ ${distro} == Fedora ]] || \
+          [[ ${distro} == openSUSE ]] || \
+          [[ ${distro} == Arch ]]
         then
           # RedHat has no static libstdc++.
           # Arch: undefined reference to `fmod' (static)
@@ -1955,9 +1974,9 @@ function llvm_test()
           # -------------------------------------------------------------------
 
           if [[ ${distro} == CentOS ]] || \
-             [[ ${distro} == RedHat* ]] || \
-             [[ ${distro} == Fedora ]] || \
-             [[ ${distro} == openSUSE ]]
+            [[ ${distro} == RedHat* ]] || \
+            [[ ${distro} == Fedora ]] || \
+            [[ ${distro} == openSUSE ]]
           then
             # RedHat has no static libstdc++.
             echo
@@ -1977,10 +1996,10 @@ function llvm_test()
             fi
 
           if [[ ${distro} == CentOS ]] || \
-             [[ ${distro} == RedHat* ]] || \
-             [[ ${distro} == Fedora ]] || \
-             [[ ${distro} == openSUSE ]] || \
-             [[ ${distro} == Arch ]]
+            [[ ${distro} == RedHat* ]] || \
+            [[ ${distro} == Fedora ]] || \
+            [[ ${distro} == openSUSE ]] || \
+            [[ ${distro} == Arch ]]
           then
             # RedHat has no static libstdc++.
             # Arch: undefined reference to `fmod' (static)
@@ -2056,9 +2075,9 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
 
         if [[ ${distro} == CentOS ]] || \
-           [[ ${distro} == RedHat* ]] || \
-           [[ ${distro} == Fedora ]] || \
-           [[ ${distro} == openSUSE ]]
+          [[ ${distro} == RedHat* ]] || \
+          [[ ${distro} == Fedora ]] || \
+          [[ ${distro} == openSUSE ]]
         then
           # RedHat has no static libstdc++.
           echo
@@ -2191,9 +2210,9 @@ function llvm_test()
 
 
       if [ ${llvm_version_major} -eq 13 ] || \
-         [ ${llvm_version_major} -eq 14 ] || \
-         [ ${llvm_version_major} -eq 15 ] || \
-         [ ${llvm_version_major} -eq 16 ]
+        [ ${llvm_version_major} -eq 14 ] || \
+        [ ${llvm_version_major} -eq 15 ] || \
+        [ ${llvm_version_major} -eq 16 ]
       then
         if [ "${XBB_TARGET_ARCH}" == "x64" ]
         then
