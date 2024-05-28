@@ -2,8 +2,59 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-05-28
+
+* v17.0.6-2 released
+* 7203256 README update
+* 89a594d llvm.sh: update skips
+* 21ad0d9 package.json: bump deps
+* 58ed89e re-generate workflows
+* e91901b build-xbbla32.yml: try to restart tests
+* f9d0b42 build-xbbla32.yml: try to restart tests
+* 8e5c935 build-xbbla32.yml: try to restart tests
+* 012d684 build-xbbla32.yml: try to restart tests
+* 2f5fe99 llvm.sh: fix arm 32 skip
+* 49db494 test-docker-linux-intel.yml: temporarily simplified
+* 52de703 package.json: bump deps
+
+## 2024-05-27
+
+* f1d98c4 llvm.sh: fix Arch conditionals
+* 4482a5c llvm.sh: add openSUSE static skips
+* 5f630f6 re-generate workflows
+* 575b4cc test-docker-linux-intel: temporarily simplify for arch
+* f1abe5b llvm.sh: verbose lsb_release
+* 2da7380 llvm.sh: skip static for archlinux
+* 5cb8548 package.json: bump deps
+* 02e2368 package.json: bump deps
+* 1888b85 Revert "test-prime.yml: enable -x for macOS"
+* 15a4eed package.json: bump deps
+* b8a3bcc test-prime.yml: enable -x for macOS
+* bae9eac package.json: bump deps
+* 89a6cf8 re-generate workflows
+* 9a347e3 re-generate workflows
+* 71769d3 package.json: bump deps
+* 0947ad3 llvm.sh: skip static tests in redhat and fedora
+* b9a9fb7 Revert "temporarily skip cleaning"
+* 70dbc6b temporarily skip cleaning
+* 81b933d llvm.sh: skip 2 more arm32 tests
+* 19ef537 re-generate workflows
+* 0e35075 llvm-mingw.sh: make c-cpp folder writable
+* f744fe0 llvm.sh: make c-cpp folder writable
+
+## 2024-05-26
+
+* 5ac0245 re-generate workflows
+* 4f2da05 .vscode/settings.json: ignoreWords
+* dfc9c39 README update
+* 86b767c package.json: bump deps
+
 ## 2024-05-25
 
+* 1d77ff6 CHANGELOG update
+* d4cee0b llvm-mingw.sh: skip bufferoverflow
+* 555fab6 llvm.sh: update arm skips
+* 275b588 llvm.sh: separate arm64 skips
 * c623eb7 llvm.sh: update skips
 * c74d379 llvm.sh: more comments
 
