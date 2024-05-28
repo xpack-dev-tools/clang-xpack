@@ -252,13 +252,7 @@ function clang_build_common()
 
     # xbb_prepare_gcc_env
 
-    if true # [ "${XBB_REQUESTED_HOST_PLATFORM}" == "win32" ]
-    then
-      libiconv_build "${XBB_LIBICONV_VERSION}"
-    else
-      # Already built with the native dependencies.
-      :
-    fi
+    libiconv_build "${XBB_LIBICONV_VERSION}"
 
     zlib_build "${XBB_ZLIB_VERSION}"
     libffi_build "${XBB_LIBFFI_VERSION}"
@@ -360,9 +354,9 @@ function application_build_versioned_components()
     # Avoid 5.6.[01]!
     XBB_XZ_VERSION="5.4.6" # "5.4.5"
     # https://download.gnome.org/sources/libxml2/
-    XBB_LIBXML2_VERSION="2.12.6" # "2.12.1"
+    XBB_LIBXML2_VERSION="2.12.7" # "2.12.1"
     # https://www.thrysoee.dk/editline/
-    XBB_LIBEDIT_VERSION="20230828-3.1"
+    XBB_LIBEDIT_VERSION="20240517-3.1" # "20230828-3.1"
 
     clang_build_common
 

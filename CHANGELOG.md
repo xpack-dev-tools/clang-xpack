@@ -4,7 +4,15 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-05-28
 
-* v17.0.6-2.1 published on npmjs.com
+* v18.1.6-1 prepared
+* f5b7c95 llvm.sh: more skips
+* 0ba675e test-xpm.yml: try macos-14
+* 12f5e16 llvm.sh: more arm 32 skips
+* 2689f24 package.json: bump deps
+* 31e7b08 package.json: bump deps
+* 2d61121 llvm.sh: reorder skips for arm
+* 5d6c717 17.0.6-2.1
+* de316f0 CHANGELOG: publish npm v17.0.6-2.1
 * b929cdd package.json: update urls for 17.0.6-2.1 release
 * fc476a2 CHANGELOG update
 * 7203256 README update
