@@ -2319,6 +2319,7 @@ function llvm_test()
 
       elif [ ${llvm_version_major} -eq 18 ]
       then
+        # weak-undef-c.
         # Most likely an incompatibility with the Apple linker.
         # Static tests pass.
         # Undefined symbols for architecture x86_64:
@@ -2333,19 +2334,33 @@ function llvm_test()
         export XBB_SKIP_TEST_LTO_LLD_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
 
-        # Segmentation fault: 11 on macOS 10.13 and macOS 11.6
+        # hello-exception.
+        # on macOS 10.14 and 11.7
+        export XBB_SKIP_TEST_GC_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_LTO_HELLO_EXCEPTION="y"
+        export XBB_SKIP_TEST_GC_LTO_HELLO_EXCEPTION="y"
+        # Segmentation fault: 11 on macOS 10.14 and macOS 11.6
         export XBB_SKIP_TEST_LLD_HELLO_EXCEPTION="y"
         export XBB_SKIP_TEST_GC_LLD_HELLO_EXCEPTION="y"
         export XBB_SKIP_TEST_LTO_LLD_HELLO_EXCEPTION="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
 
-        # Segmentation fault: 11 on macOS 10.13
+        # exceptions-reduced.
+        # Segmentation fault: 11 on macOS 10.14
+        export XBB_SKIP_TEST_GC_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_LTO_EXCEPTION_REDUCED="y"
+        export XBB_SKIP_TEST_GC_LTO_EXCEPTION_REDUCED="y"
         export XBB_SKIP_TEST_LLD_EXCEPTION_REDUCED="y"
         export XBB_SKIP_TEST_GC_LLD_EXCEPTION_REDUCED="y"
         export XBB_SKIP_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
         export XBB_SKIP_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
 
-        # got exit code: 1 on macOS 10.13
+        # throwcatch-main.
+        # got exit code: 1 on macOS 10.14 & macOS 14
+        export XBB_SKIP_TEST_LTO_THROWCATCH_MAIN="y"
+        export XBB_SKIP_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+        # got exit code: 1 on macOS 10.14
         export XBB_SKIP_TEST_LLD_THROWCATCH_MAIN="y"
         export XBB_SKIP_TEST_GC_LLD_THROWCATCH_MAIN="y"
         export XBB_SKIP_TEST_LTO_LLD_THROWCATCH_MAIN="y"
