@@ -782,34 +782,34 @@ function test_mingw_llvm()
       # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
 
       # Skip the same tests for both triplets.
-      export XBB_SKIP_TEST_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK_CPP="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
 
-      export XBB_SKIP_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK_CPP="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
     elif [ ${llvm_version_major} -eq 17 ]
     then
 
       # bufferoverflow.
       # error: unable to find library -lssp
-      export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
+      export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
 
       # weak-undef.
       # Surprisingly, the non LTO variant is functional.
-      # export XBB_SKIP_TEST_WEAK_UNDEF_C_32="y"
-      # export XBB_SKIP_TEST_GC_WEAK_UNDEF_C="y"
+      # export XBB_IGNORE_TEST_WEAK_UNDEF_C_32="y"
+      # export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
 
       # ... but fails with LTO, even with lld.
       # ld.lld: error: undefined symbol: _func
@@ -817,28 +817,28 @@ function test_mingw_llvm()
       # >>>               lto-main-weak-32.c.o
 
       # Both 32 & 64-bit are affected.
-      export XBB_SKIP_TEST_LTO_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_LTO_CRT_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LIB_LTO_CRT_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_STATIC_LIB_GC_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CRT_WEAK_UNDEF_C="y"
 
-      export XBB_SKIP_TEST_STATIC_LTO_CRT_WEAK_UNDEF_C="y"
-      export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CRT_WEAK_UNDEF_C="y"
     elif [ ${llvm_version_major} -eq 18 ]
     then
       # bufferoverflow.
       # error: unable to find library -lssp
-      export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
+      export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
     fi
 
     (
