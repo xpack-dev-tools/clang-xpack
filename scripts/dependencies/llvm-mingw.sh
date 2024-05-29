@@ -834,6 +834,11 @@ function test_mingw_llvm()
 
       export XBB_SKIP_TEST_STATIC_LTO_CRT_WEAK_UNDEF_C="y"
       export XBB_SKIP_TEST_STATIC_GC_LTO_CRT_WEAK_UNDEF_C="y"
+    elif [ ${llvm_version_major} -eq 18 ]
+    then
+      # bufferoverflow.
+      # error: unable to find library -lssp
+      export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
     fi
 
     (

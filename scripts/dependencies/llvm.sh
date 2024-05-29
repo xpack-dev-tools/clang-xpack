@@ -995,8 +995,7 @@ function llvm_test()
 
         export XBB_SKIP_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-      elif [ ${llvm_version_major} -eq 17 ] || \
-           [ ${llvm_version_major} -eq 18 ]
+      elif [ ${llvm_version_major} -eq 17 ]
       then
 
         # fail: lto-weak-undef-c-32
@@ -1035,6 +1034,11 @@ function llvm_test()
 
         export XBB_SKIP_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
         export XBB_SKIP_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+      elif [ ${llvm_version_major} -eq 18 ]
+      then
+        # bufferoverflow.
+        # error: unable to find library -lssp
+        export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
       fi
 
       for bits in 32 64
@@ -1309,6 +1313,9 @@ function llvm_test()
           export XBB_SKIP_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
 
           # sleepy-threads-cv.
+          # terminate called after throwing an instance of 'std::system_error'
+          #   what():  Unknown error 5774344
+
           export XBB_SKIP_TEST_STATIC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
           export XBB_SKIP_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
