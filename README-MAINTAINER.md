@@ -117,8 +117,8 @@ Find the latest release that seems stable, usually like X.0.6, sometimes X.0.7.
 
 ### Increase the version
 
-Determine the version (like `18.1.6`) and update the `scripts/VERSION`
-file; the format is `18.1.6-1`. The fourth number is the xPack release number
+Determine the version (like `18.1.7`) and update the `scripts/VERSION`
+file; the format is `18.1.7-1`. The fourth number is the xPack release number
 of this version. A fifth number will be added when publishing
 the package on the `npm` server.
 
@@ -128,7 +128,7 @@ Check GitHub issues and pull requests:
 
 - <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
-and fix them; assign them to a milestone (like `18.1.6-1`).
+and fix them; assign them to a milestone (like `18.1.7-1`).
 
 ### Check `README.md`
 
@@ -143,14 +143,14 @@ but in the web release files.
 
 ### Update version in `package.json` to a pre-release
 
-Use the new version, suffixed by `pre`, like `18.1.6-1.pre`.
+Use the new version, suffixed by `pre`, like `18.1.7-1.pre`.
 
 ### Update `CHANGELOG.md`
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
-- add a new entry like _* v18.1.6-1 prepared_
-- commit with a message like _prepare v18.1.6-1_
+- add a new entry like _* v18.1.7-1 prepared_
+- commit with a message like _prepare v18.1.7-1_
 
 ### Update the version specific code
 
@@ -163,16 +163,16 @@ To keep the development repository fork in sync with the upstream LLVM
 repository, in the `xpack-dev-tools/llvm-project` Git repo:
 
 - fetch `upstream`
-- checkout the `llvmorg-18.1.6` tag in detached state HEAD
-- create a branch like `v18.1.6-xpack`
+- checkout the `llvmorg-18.1.7` tag in detached state HEAD
+- create a branch like `v18.1.7-xpack`
 - cherry pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
   enable commit immediately
 - push branch to `origin`
-- add a `v18.1.6-1-xpack` tag; enable push to origin
+- add a `v18.1.7-1-xpack` tag; enable push to origin
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-18.1.6-1.git.patch`
+- rename `llvm-18.1.7-1.git.patch`
 
 Note: currently the patch is required to fix the CLT library path.
 
@@ -262,20 +262,24 @@ The build takes about 70 minutes (1h10).
 The failing tests are:
 
 ```
-268 test(s) passed, 12 failed:
+Tests report for clang 18.1.7-1 on darwin-x64 (macOS 14.3.1)
 
-fail: weak-undef-c
-fail: gc-weak-undef-c
-fail: lto-weak-undef-c
-fail: lto-throwcatch-main
-fail: gc-lto-weak-undef-c
-fail: gc-lto-throwcatch-main
-fail: lld-weak-undef-c
-fail: gc-lld-weak-undef-c
-fail: lto-lld-weak-undef-c
-fail: lto-lld-throwcatch-main
-fail: gc-lto-lld-weak-undef-c
-fail: gc-lto-lld-throwcatch-main
+260 test(s) passed, 12 failed:
+
+- fail: weak-undef-c
+- fail: gc-weak-undef-c
+- fail: lto-weak-undef-c
+- fail: lto-throwcatch-main
+- fail: gc-lto-weak-undef-c
+- fail: gc-lto-throwcatch-main
+- fail: lld-weak-undef-c
+- fail: gc-lld-weak-undef-c
+- fail: lto-lld-weak-undef-c
+- fail: lto-lld-throwcatch-main
+- fail: gc-lto-lld-weak-undef-c
+- fail: gc-lto-lld-throwcatch-main
+
+Result: tests accepted
 ```
 
 When functional, push the `xpack-develop` branch to GitHub.
@@ -308,30 +312,48 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
-total 197144
--rw-r--r--  1 ilg  staff  98658386 Apr  7 01:52 xpack-clang-18.1.6-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff       105 Apr  7 01:52 xpack-clang-18.1.6-1-darwin-x64.tar.gz.sha
+total 229400
+-rw-r--r--  1 ilg  staff  101979704 May 29 10:39 xpack-clang-18.1.7-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 May 29 10:39 xpack-clang-18.1.7-1-darwin-x64.tar.gz.sha
 ```
 
 The failing tests are:
 
 ```
-266 test(s) passed, 14 failed:
+Tests report for clang 18.1.7-1 darwin-x64
 
-fail: weak-undef-c
-fail: gc-weak-undef-c
-fail: lto-weak-undef-c
-fail: lto-throwcatch-main
-fail: gc-lto-weak-undef-c
-fail: gc-lto-throwcatch-main
-fail: lld-weak-undef-c
-fail: lld-throwcatch-main
-fail: gc-lld-weak-undef-c
-fail: gc-lld-throwcatch-main
-fail: lto-lld-weak-undef-c
-fail: lto-lld-throwcatch-main
-fail: gc-lto-lld-weak-undef-c
-fail: gc-lto-lld-throwcatch-main
+244 test(s) passed, 28 failed:
+
+- fail: weak-undef-c
+- fail: gc-hello-exception
+- fail: gc-exception-reduced
+- fail: gc-weak-undef-c
+- fail: lto-hello-exception
+- fail: lto-exception-reduced
+- fail: lto-weak-undef-c
+- fail: lto-throwcatch-main
+- fail: gc-lto-hello-exception
+- fail: gc-lto-exception-reduced
+- fail: gc-lto-weak-undef-c
+- fail: gc-lto-throwcatch-main
+- fail: lld-hello-exception
+- fail: lld-exception-reduced
+- fail: lld-weak-undef-c
+- fail: lld-throwcatch-main
+- fail: gc-lld-hello-exception
+- fail: gc-lld-exception-reduced
+- fail: gc-lld-weak-undef-c
+- fail: gc-lld-throwcatch-main
+- fail: lto-lld-hello-exception
+- fail: lto-lld-exception-reduced
+- fail: lto-lld-weak-undef-c
+- fail: lto-lld-throwcatch-main
+- fail: gc-lto-lld-hello-exception
+- fail: gc-lto-lld-exception-reduced
+- fail: gc-lto-lld-weak-undef-c
+- fail: gc-lto-lld-throwcatch-main
+
+Result: tests accepted
 ```
 
 #### Apple Silicon macOS
@@ -364,24 +386,42 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
-total 198328
--rw-r--r--  1 ilg  staff  92628546 Apr  7 01:01 xpack-clang-18.1.6-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Apr  7 01:01 xpack-clang-18.1.6-1-darwin-arm64.tar.gz.sha
+total 196632
+-rw-r--r--  1 ilg  staff  95640264 May 29 10:40 xpack-clang-18.1.7-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 May 29 10:40 xpack-clang-18.1.7-1-darwin-arm64.tar.gz.sha
 ```
 
 The failing tests are:
 
 ```
-272 test(s) passed, 8 failed:
+Tests report for clang 18.1.7-1 darwin-arm64
 
-fail: weak-undef-c
-fail: gc-weak-undef-c
-fail: lto-weak-undef-c
-fail: gc-lto-weak-undef-c
-fail: lld-weak-undef-c
-fail: gc-lld-weak-undef-c
-fail: lto-lld-weak-undef-c
-fail: gc-lto-lld-weak-undef-c
+250 test(s) passed, 22 failed:
+
+- fail: weak-undef-c
+- fail: gc-hello-exception
+- fail: gc-exception-reduced
+- fail: gc-weak-undef-c
+- fail: lto-hello-exception
+- fail: lto-exception-reduced
+- fail: lto-weak-undef-c
+- fail: gc-lto-hello-exception
+- fail: gc-lto-exception-reduced
+- fail: gc-lto-weak-undef-c
+- fail: lld-hello-exception
+- fail: lld-exception-reduced
+- fail: lld-weak-undef-c
+- fail: gc-lld-hello-exception
+- fail: gc-lld-exception-reduced
+- fail: gc-lld-weak-undef-c
+- fail: lto-lld-hello-exception
+- fail: lto-lld-exception-reduced
+- fail: lto-lld-weak-undef-c
+- fail: gc-lto-lld-hello-exception
+- fail: gc-lto-lld-exception-reduced
+- fail: gc-lto-lld-weak-undef-c
+
+Result: tests accepted
 ```
 
 #### Intel GNU/Linux
@@ -416,88 +456,76 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
-total 208408
--rw-r--r-- 1 ilg ilg 213399569 Apr  6 23:06 xpack-clang-18.1.6-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Apr  6 23:06 xpack-clang-18.1.6-1-linux-x64.tar.gz.sha
+total 215716
+-rw-r--r-- 1 ilg ilg 220882615 May 28 23:04 xpack-clang-18.1.7-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 May 28 23:04 xpack-clang-18.1.7-1-linux-x64.tar.gz.sha
 ```
 
 The failing tests are:
 
 ```
-2575 test(s) passed, 72 failed:
+Tests report for clang 18.1.7-1 linux-x64
 
-fail: static-sleepy-threads-64
-fail: static-sleepy-threads-cv-64
-fail: static-gc-sleepy-threads-64
-fail: static-gc-sleepy-threads-cv-64
-fail: static-lto-sleepy-threads-64
-fail: static-lto-sleepy-threads-cv-64
-fail: static-gc-lto-sleepy-threads-64
-fail: static-gc-lto-sleepy-threads-cv-64
-fail: static-lld-sleepy-threads-64
-fail: static-lld-sleepy-threads-cv-64
-fail: static-gc-lld-sleepy-threads-64
-fail: static-gc-lld-sleepy-threads-cv-64
-fail: static-lto-lld-sleepy-threads-64
-fail: static-lto-lld-sleepy-threads-cv-64
-fail: static-gc-lto-lld-sleepy-threads-64
-fail: static-gc-lto-lld-sleepy-threads-cv-64
-fail: static-sleepy-threads-32
-fail: static-sleepy-threads-cv-32
-fail: static-gc-sleepy-threads-32
-fail: static-gc-sleepy-threads-cv-32
-fail: static-lto-sleepy-threads-32
-fail: static-lto-sleepy-threads-cv-32
-fail: static-gc-lto-sleepy-threads-32
-fail: static-gc-lto-sleepy-threads-cv-32
-fail: static-lld-simple-hello-cpp-one-32
-fail: static-lld-simple-hello-cpp-two-32
-fail: static-lld-simple-exception-32
-fail: static-lld-simple-str-exception-32
-fail: static-lld-simple-int-exception-32
-fail: static-lld-sleepy-threads-32
-fail: static-lld-sleepy-threads-cv-32
-fail: static-lld-hello-cpp-32
-fail: static-lld-exception-locale-32
-fail: static-lld-crt-test-32
-fail: static-lld-hello-weak-cpp-32
-fail: static-lld-overload-new-cpp-32
-fail: static-gc-lld-simple-hello-cpp-one-32
-fail: static-gc-lld-simple-hello-cpp-two-32
-fail: static-gc-lld-simple-exception-32
-fail: static-gc-lld-simple-str-exception-32
-fail: static-gc-lld-simple-int-exception-32
-fail: static-gc-lld-sleepy-threads-32
-fail: static-gc-lld-sleepy-threads-cv-32
-fail: static-gc-lld-hello-cpp-32
-fail: static-gc-lld-exception-locale-32
-fail: static-gc-lld-crt-test-32
-fail: static-gc-lld-hello-weak-cpp-32
-fail: static-gc-lld-overload-new-cpp-32
-fail: static-lto-lld-simple-hello-cpp-one-32
-fail: static-lto-lld-simple-hello-cpp-two-32
-fail: static-lto-lld-simple-exception-32
-fail: static-lto-lld-simple-str-exception-32
-fail: static-lto-lld-simple-int-exception-32
-fail: static-lto-lld-sleepy-threads-32
-fail: static-lto-lld-sleepy-threads-cv-32
-fail: static-lto-lld-hello-cpp-32
-fail: static-lto-lld-exception-locale-32
-fail: static-lto-lld-crt-test-32
-fail: static-lto-lld-hello-weak-cpp-32
-fail: static-lto-lld-overload-new-cpp-32
-fail: static-gc-lto-lld-simple-hello-cpp-one-32
-fail: static-gc-lto-lld-simple-hello-cpp-two-32
-fail: static-gc-lto-lld-simple-exception-32
-fail: static-gc-lto-lld-simple-str-exception-32
-fail: static-gc-lto-lld-simple-int-exception-32
-fail: static-gc-lto-lld-sleepy-threads-32
-fail: static-gc-lto-lld-sleepy-threads-cv-32
-fail: static-gc-lto-lld-hello-cpp-32
-fail: static-gc-lto-lld-exception-locale-32
-fail: static-gc-lto-lld-crt-test-32
-fail: static-gc-lto-lld-hello-weak-cpp-32
-fail: static-gc-lto-lld-overload-new-cpp-32
+2514 test(s) passed, 56 failed:
+
+- fail: static-sleepy-threads-cv-64
+- fail: static-gc-sleepy-threads-cv-64
+- fail: static-lto-sleepy-threads-cv-64
+- fail: static-gc-lto-sleepy-threads-cv-64
+- fail: static-lld-sleepy-threads-cv-64
+- fail: static-gc-lld-sleepy-threads-cv-64
+- fail: static-lto-lld-sleepy-threads-cv-64
+- fail: static-gc-lto-lld-sleepy-threads-cv-64
+- fail: static-sleepy-threads-cv-32
+- fail: static-gc-sleepy-threads-cv-32
+- fail: static-lto-sleepy-threads-cv-32
+- fail: static-gc-lto-sleepy-threads-cv-32
+- fail: static-lld-simple-hello1-cpp-one-32
+- fail: static-lld-simple-hello1-cpp-two-32
+- fail: static-lld-simple-exception-32
+- fail: static-lld-simple-str-exception-32
+- fail: static-lld-simple-int-exception-32
+- fail: static-lld-sleepy-threads-cv-32
+- fail: static-lld-hello-cpp-32
+- fail: static-lld-exception-locale-32
+- fail: static-lld-cnrt-test-32
+- fail: static-lld-hello-weak-cpp-32
+- fail: static-lld-overload-new-cpp-32
+- fail: static-gc-lld-simple-hello1-cpp-one-32
+- fail: static-gc-lld-simple-hello1-cpp-two-32
+- fail: static-gc-lld-simple-exception-32
+- fail: static-gc-lld-simple-str-exception-32
+- fail: static-gc-lld-simple-int-exception-32
+- fail: static-gc-lld-sleepy-threads-cv-32
+- fail: static-gc-lld-hello-cpp-32
+- fail: static-gc-lld-exception-locale-32
+- fail: static-gc-lld-cnrt-test-32
+- fail: static-gc-lld-hello-weak-cpp-32
+- fail: static-gc-lld-overload-new-cpp-32
+- fail: static-lto-lld-simple-hello1-cpp-one-32
+- fail: static-lto-lld-simple-hello1-cpp-two-32
+- fail: static-lto-lld-simple-exception-32
+- fail: static-lto-lld-simple-str-exception-32
+- fail: static-lto-lld-simple-int-exception-32
+- fail: static-lto-lld-sleepy-threads-cv-32
+- fail: static-lto-lld-hello-cpp-32
+- fail: static-lto-lld-exception-locale-32
+- fail: static-lto-lld-cnrt-test-32
+- fail: static-lto-lld-hello-weak-cpp-32
+- fail: static-lto-lld-overload-new-cpp-32
+- fail: static-gc-lto-lld-simple-hello1-cpp-one-32
+- fail: static-gc-lto-lld-simple-hello1-cpp-two-32
+- fail: static-gc-lto-lld-simple-exception-32
+- fail: static-gc-lto-lld-simple-str-exception-32
+- fail: static-gc-lto-lld-simple-int-exception-32
+- fail: static-gc-lto-lld-sleepy-threads-cv-32
+- fail: static-gc-lto-lld-hello-cpp-32
+- fail: static-gc-lto-lld-exception-locale-32
+- fail: static-gc-lto-lld-cnrt-test-32
+- fail: static-gc-lto-lld-hello-weak-cpp-32
+- fail: static-gc-lto-lld-overload-new-cpp-32
+
+Result: tests accepted
 ```
 
 ##### Build the Intel Windows binaries
@@ -524,78 +552,62 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
 total 403676
--rw-r--r-- 1 ilg ilg 413355016 Apr  6 23:56 xpack-clang-18.1.6-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Apr  6 23:56 xpack-clang-18.1.6-1-win32-x64.zip.sha
+-rw-r--r-- 1 ilg ilg 413355016 Apr  6 23:56 xpack-clang-18.1.7-1-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Apr  6 23:56 xpack-clang-18.1.7-1-win32-x64.zip.sha
 ```
 
 The failing tests are:
 
 ```
-1508 test(s) passed, 60 failed:
+Tests report for clang 18.1.7-1 on win32-x64 (Ubuntu 18.04)
 
-fail: bufferoverflow-32
-fail: gc-bufferoverflow-32
-fail: lto-bufferoverflow-32
-fail: lto-weak-undef-c-32
-fail: gc-lto-bufferoverflow-32
-fail: gc-lto-weak-undef-c-32
-fail: crt-bufferoverflow-32
-fail: gc-crt-bufferoverflow-32
-fail: lto-crt-bufferoverflow-32
-fail: lto-crt-weak-undef-c-32
-fail: gc-lto-crt-bufferoverflow-32
-fail: gc-lto-crt-weak-undef-c-32
+1488 test(s) passed, 40 failed:
 
-fail: bufferoverflow-64
-fail: gc-bufferoverflow-64
-fail: lto-bufferoverflow-64
-fail: lto-weak-undef-c-64
-fail: gc-lto-bufferoverflow-64
-fail: gc-lto-weak-undef-c-64
-fail: crt-bufferoverflow-64
-fail: gc-crt-bufferoverflow-64
-fail: lto-crt-bufferoverflow-64
-fail: lto-crt-weak-undef-c-64
-fail: gc-lto-crt-bufferoverflow-64
-fail: gc-lto-crt-weak-undef-c-64
+- fail: bufferoverflow-32
+- fail: gc-bufferoverflow-32
+- fail: lto-bufferoverflow-32
+- fail: gc-lto-bufferoverflow-32
+- fail: crt-bufferoverflow-32
+- fail: gc-crt-bufferoverflow-32
+- fail: lto-crt-bufferoverflow-32
+- fail: gc-lto-crt-bufferoverflow-32
+
+- fail: bufferoverflow-64
+- fail: gc-bufferoverflow-64
+- fail: lto-bufferoverflow-64
+- fail: gc-lto-bufferoverflow-64
+- fail: crt-bufferoverflow-64
+- fail: gc-crt-bufferoverflow-64
+- fail: lto-crt-bufferoverflow-64
+- fail: gc-lto-crt-bufferoverflow-64
 ---
-fail: bufferoverflow-32
-fail: gc-bufferoverflow-32
-fail: lto-bufferoverflow-32
-fail: lto-weak-undef-c-32
-fail: gc-lto-bufferoverflow-32
-fail: gc-lto-weak-undef-c-32
-fail: static-lib-bufferoverflow-32
-fail: static-lib-gc-bufferoverflow-32
-fail: static-lib-lto-bufferoverflow-32
-fail: static-lib-lto-weak-undef-c-32
-fail: static-lib-gc-lto-bufferoverflow-32
-fail: static-lib-gc-lto-weak-undef-c-32
-fail: static-bufferoverflow-32
-fail: static-gc-bufferoverflow-32
-fail: static-lto-bufferoverflow-32
-fail: static-lto-weak-undef-c-32
-fail: static-gc-lto-bufferoverflow-32
-fail: static-gc-lto-weak-undef-c-32
+- fail: bufferoverflow-32
+- fail: gc-bufferoverflow-32
+- fail: lto-bufferoverflow-32
+- fail: gc-lto-bufferoverflow-32
+- fail: static-lib-bufferoverflow-32
+- fail: static-lib-gc-bufferoverflow-32
+- fail: static-lib-lto-bufferoverflow-32
+- fail: static-lib-gc-lto-bufferoverflow-32
+- fail: static-bufferoverflow-32
+- fail: static-gc-bufferoverflow-32
+- fail: static-lto-bufferoverflow-32
+- fail: static-gc-lto-bufferoverflow-32
 
-fail: bufferoverflow-64
-fail: gc-bufferoverflow-64
-fail: lto-bufferoverflow-64
-fail: lto-weak-undef-c-64
-fail: gc-lto-bufferoverflow-64
-fail: gc-lto-weak-undef-c-64
-fail: static-lib-bufferoverflow-64
-fail: static-lib-gc-bufferoverflow-64
-fail: static-lib-lto-bufferoverflow-64
-fail: static-lib-lto-weak-undef-c-64
-fail: static-lib-gc-lto-bufferoverflow-64
-fail: static-lib-gc-lto-weak-undef-c-64
-fail: static-bufferoverflow-64
-fail: static-gc-bufferoverflow-64
-fail: static-lto-bufferoverflow-64
-fail: static-lto-weak-undef-c-64
-fail: static-gc-lto-bufferoverflow-64
-fail: static-gc-lto-weak-undef-c-64
+- fail: bufferoverflow-64
+- fail: gc-bufferoverflow-64
+- fail: lto-bufferoverflow-64
+- fail: gc-lto-bufferoverflow-64
+- fail: static-lib-bufferoverflow-64
+- fail: static-lib-gc-bufferoverflow-64
+- fail: static-lib-lto-bufferoverflow-64
+- fail: static-lib-gc-lto-bufferoverflow-64
+- fail: static-bufferoverflow-64
+- fail: static-gc-bufferoverflow-64
+- fail: static-lto-bufferoverflow-64
+- fail: static-gc-lto-bufferoverflow-64
+
+Result: tests accepted
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -629,8 +641,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
 total 185996
--rw-r--r-- 1 ilg ilg 190449779 Apr  7 09:29 xpack-clang-18.1.6-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Apr  7 09:29 xpack-clang-18.1.6-1-linux-arm64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 190449779 Apr  7 09:29 xpack-clang-18.1.7-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Apr  7 09:29 xpack-clang-18.1.7-1-linux-arm64.tar.gz.sha
 ```
 
 The failing tests are:
@@ -687,8 +699,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
 total 174560
--rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-18.1.6-1-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-18.1.6-1-linux-arm.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-18.1.7-1-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-18.1.7-1-linux-arm.tar.gz.sha
 ```
 
 The failing tests are:
@@ -1046,20 +1058,20 @@ xattr -cr ${HOME}/Downloads/xpack-*
 On GNU/Linux and macOS systems, use:
 
 ```sh
-.../xpack-clang-18.1.6-1/bin/clang --version
-xPack x86_64 clang version 18.1.6
+.../xpack-clang-18.1.7-1/bin/clang --version
+xPack x86_64 clang version 18.1.7
 ```
 
 On Windows use:
 
 ```dos
-...\xpack-clang-18.1.6-1\bin\clang --version
-xPack x86_64 clang version 18.1.6
+...\xpack-clang-18.1.7-1\bin\clang --version
+xPack x86_64 clang version 18.1.7
 ```
 
 ## Create a new GitHub pre-release draft
 
-- in `CHANGELOG.md`, add the release date and a message like _* v18.1.6-1 released_
+- in `CHANGELOG.md`, add the release date and a message like _* v18.1.7-1 released_
 - commit with _CHANGELOG update_
 - check and possibly update the `templates/body-github-release-liquid.md`
 - push the `xpack-develop` branch
@@ -1070,8 +1082,8 @@ The workflow result and logs are available from the
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-tagged like **v18.1.6-1** (mind the dash in the middle!) and
-named like **xPack LLVM clang v18.1.6-1** (mind the dash),
+tagged like **v18.1.7-1** (mind the dash in the middle!) and
+named like **xPack LLVM clang v18.1.7-1** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
@@ -1095,7 +1107,7 @@ If any, refer to closed
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like _xPack LLVM clang v18.1.6-1 released_
+  use a message like _xPack LLVM clang v18.1.7-1 released_
 - push to GitHub
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
@@ -1136,18 +1148,18 @@ watching this project.
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes, use a message like
-  _package.json: update urls for 18.1.6-1.1 release_ (without _v_)
+  _package.json: update urls for 18.1.7-1.1 release_ (without _v_)
 
 ## Publish on the npmjs.com server
 
 - select the `xpack-develop` branch
 - check the latest commits `npm run git-log`
-- update `CHANGELOG.md`, add a line like _* v18.1.6-1.1 published on npmjs.com_
-- commit with a message like _CHANGELOG: publish npm v18.1.6-1.1_
+- update `CHANGELOG.md`, add a line like _* v18.1.7-1.1 published on npmjs.com_
+- commit with a message like _CHANGELOG: publish npm v18.1.7-1.1_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
-- `npm version 18.1.6-1.1`; the first 4 numbers are the same as the
+- `npm version 18.1.7-1.1`; the first 4 numbers are the same as the
   GitHub release; the fifth number is the npm specific version
 - the commits and the tag should have been pushed by the `postversion` script;
   if not, push them with `git push origin --tags`
@@ -1178,12 +1190,12 @@ The Windows tests take more than 20 minutes to complete.
 When the release is considered stable, promote it as `latest`:
 
 - `npm dist-tag ls @xpack-dev-tools/clang`
-- `npm dist-tag add @xpack-dev-tools/clang@18.1.6-1.1 latest`
+- `npm dist-tag add @xpack-dev-tools/clang@18.1.7-1.1 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
 In case the previous version is not functional and needs to be unpublished:
 
-- `npm unpublish @xpack-dev-tools/clang@18.1.6-1.1`
+- `npm unpublish @xpack-dev-tools/clang@18.1.7-1.1`
 
 ## Update the Web
 
@@ -1205,7 +1217,7 @@ In case the previous version is not functional and needs to be unpublished:
 
 - in a separate browser windows, open [X/Twitter](https://twitter.com)
 - using the `@xpack_project` account
-- paste the release name like **xPack LLVM clang v18.1.6-1 released**
+- paste the release name like **xPack LLVM clang v18.1.7-1 released**
 - paste the link to the Web page
   [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button

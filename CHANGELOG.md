@@ -2,9 +2,19 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-06-10
+
+* v18.1.7-1 prepared
+
+## 2024-05-29
+
+* 0246321 llvm*.sh: rename XBB_IGNORE_TEST_
+* b86fcd4 llvm*.sh: update skips for 18
+* be0e60e llvm.sh: update skips for 18
+* bf88f77 prepare v18.1.6-1
+
 ## 2024-05-28
 
-* v18.1.6-1 prepared
 * f5b7c95 llvm.sh: more skips
 * 0ba675e test-xpm.yml: try macos-14
 * 12f5e16 llvm.sh: more arm 32 skips
