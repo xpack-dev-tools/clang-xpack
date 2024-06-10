@@ -4,7 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-06-10
 
-* v18.1.7-1 prepared
+* f5d7264 llvm*.sh: update XBB_IGNORE_*
+* 42c9bb2 package.json: bump deps
+* 89f994f README update
+* 6d8454c prepare v18.1.7-1
 
 ## 2024-05-29
 
