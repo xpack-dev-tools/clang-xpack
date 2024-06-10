@@ -782,23 +782,23 @@ function test_mingw_llvm()
       # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
 
       # Skip the same tests for both triplets.
-      export XBB_IGNORE_TEST_LTO_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
 
-      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
 
-      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
 
-      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
 
-      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
 
-      export XBB_IGNORE_TEST_STATIC_LTO_CRT_HELLO_WEAK_CPP="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
     elif [ ${llvm_version_major} -eq 17 ]
     then
 

@@ -987,14 +987,14 @@ function llvm_test()
         # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
 
         # Skip the same tests for both triplets.
-        export XBB_IGNORE_TEST_LTO_HELLO_WEAK_CPP="y"
-        export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK_CPP="y"
+        export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+        export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
 
-        export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
+        export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
 
-        export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-        export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
+        export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+        export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
       elif [ ${llvm_version_major} -eq 17 ]
       then
 
@@ -1138,8 +1138,8 @@ function llvm_test()
           # fail: static-lto-sleepy-threads-cv-32
           # fail: static-gc-lto-sleepy-threads-32
           # fail: static-gc-lto-sleepy-threads-cv-32
-          # fail: static-lld-simple-hello-cpp-one-32
-          # fail: static-lld-simple-hello-cpp-two-32
+          # fail: static-lld-simple-hello1-cpp-one-32
+          # fail: static-lld-simple-hello1-cpp-two-32
           # fail: static-lld-simple-exception-32
           # fail: static-lld-simple-str-exception-32
           # fail: static-lld-simple-int-exception-32
@@ -1150,8 +1150,8 @@ function llvm_test()
           # fail: static-lld-crt-test-32
           # fail: static-lld-hello-weak-cpp-32
           # fail: static-lld-overload-new-cpp-32
-          # fail: static-gc-lld-simple-hello-cpp-one-32
-          # fail: static-gc-lld-simple-hello-cpp-two-32
+          # fail: static-gc-lld-simple-hello1-cpp-one-32
+          # fail: static-gc-lld-simple-hello1-cpp-two-32
           # fail: static-gc-lld-simple-exception-32
           # fail: static-gc-lld-simple-str-exception-32
           # fail: static-gc-lld-simple-int-exception-32
@@ -1162,8 +1162,8 @@ function llvm_test()
           # fail: static-gc-lld-crt-test-32
           # fail: static-gc-lld-hello-weak-cpp-32
           # fail: static-gc-lld-overload-new-cpp-32
-          # fail: static-lto-lld-simple-hello-cpp-one-32
-          # fail: static-lto-lld-simple-hello-cpp-two-32
+          # fail: static-lto-lld-simple-hello1-cpp-one-32
+          # fail: static-lto-lld-simple-hello1-cpp-two-32
           # fail: static-lto-lld-simple-exception-32
           # fail: static-lto-lld-simple-str-exception-32
           # fail: static-lto-lld-simple-int-exception-32
@@ -1174,8 +1174,8 @@ function llvm_test()
           # fail: static-lto-lld-crt-test-32
           # fail: static-lto-lld-hello-weak-cpp-32
           # fail: static-lto-lld-overload-new-cpp-32
-          # fail: static-gc-lto-lld-simple-hello-cpp-one-32
-          # fail: static-gc-lto-lld-simple-hello-cpp-two-32
+          # fail: static-gc-lto-lld-simple-hello1-cpp-one-32
+          # fail: static-gc-lto-lld-simple-hello1-cpp-two-32
           # fail: static-gc-lto-lld-simple-exception-32
           # fail: static-gc-lto-lld-simple-str-exception-32
           # fail: static-gc-lto-lld-simple-int-exception-32
@@ -1191,15 +1191,15 @@ function llvm_test()
           # 201486 Segmentation fault      (core dumped)
 
           # sleepy-threads.
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
+          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
 
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
 
           # sleepy-threads-cv.
           export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
@@ -1220,17 +1220,17 @@ function llvm_test()
           # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
           # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
 
-          # simple-hello-cpp-one.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_ONE_32="y"
+          # simple-hello1-cpp-one.
+          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
 
-          # simple-hello-cpp-two.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_CPP_TWO_32="y"
+          # simple-hello1-cpp-two.
+          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
 
           # simple-exception.
           export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
@@ -1251,10 +1251,10 @@ function llvm_test()
           export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
 
           # hello-cpp.
-          export XBB_IGNORE_TEST_STATIC_LLD_HELLO_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_HELLO2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO2_CPP_32="y"
 
           # exception-locale.
           export XBB_IGNORE_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
@@ -1269,10 +1269,10 @@ function llvm_test()
           export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_CNRT_TEST_32="y"
 
           # hello-weak-cpp.
-          export XBB_IGNORE_TEST_STATIC_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_WEAK_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_HELLO_WEAK2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_WEAK2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
 
           # overload-new-cpp.
           export XBB_IGNORE_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
@@ -1302,15 +1302,15 @@ function llvm_test()
           # fail: static-gc-lto-lld-sleepy-threads-cv
 
           # sleepy-threads.
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
+          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
 
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
 
           # sleepy-threads-cv.
           # terminate called after throwing an instance of 'std::system_error'
@@ -1528,30 +1528,30 @@ function llvm_test()
           export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
 
           # hello-c.
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
 
           # hello-c-one.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_ONE="y"
 
           # hello-c-two.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_TWO="y"
 
           # hello-cpp.
           # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
           # clang++: error: unable to execute command: Segmentation fault (core dumped)
           # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_HELLO_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_CPP="y"
-          # export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_CPP="y"
+          export XBB_IGNORE_TEST_LTO_HELLO2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO2_CPP="y"
+          # export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO2_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO2_CPP="y"
 
           # hello-exception.
           export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
@@ -1564,32 +1564,32 @@ function llvm_test()
           export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
 
           # hello-weak-c.
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK_C="y"
+          export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
 
           # hello-weak-cpp.
           # clang++: error: unable to execute command: Segmentation fault (core dumped)
           # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
 
           # longjmp-cleanup.
           # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
@@ -1627,18 +1627,18 @@ function llvm_test()
           export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_EXCEPTION="y"
           export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
 
-          # simple-hello-c-one.
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_ONE="y"
+          # simple-hello1-c-one.
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_ONE="y"
 
-          # simple-hello-c-two.
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_C_TWO="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_C_TWO="y"
+          # simple-hello1-c-two.
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_TWO="y"
 
           # simple-objc.
           export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
@@ -1650,20 +1650,20 @@ function llvm_test()
           export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_STR_EXCEPTION="y"
 
           # sleepy-threads.
-          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SLEEPY_THREADS="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SLEEPY_THREADS="y"
+          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SLEEPY_THREADS_SL="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SLEEPY_THREADS_SL="y"
 
           # sleepy-threads-cv.
           export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
