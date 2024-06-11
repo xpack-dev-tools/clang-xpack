@@ -995,6 +995,22 @@ function llvm_test()
 
         export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
         export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+      elif [ ${llvm_version_major} -eq 16 ]
+      then
+        # bufferoverflow.
+        # error: unable to find library -lssp
+        export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+
+        # Both 32 & 64-bit are affected.
+        # Surprisingly, the non LTO variant is functional.
+        export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+        export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+        export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+
+        export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+        export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
       elif [ ${llvm_version_major} -eq 17 ]
       then
 
@@ -1105,6 +1121,9 @@ function llvm_test()
 
         export XBB_IGNORE_TEST_LTO_GLOBAL_TERMINATE_64="y"
         export XBB_IGNORE_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+      elif [ ${llvm_version_major} -eq 16 ]
+      then
+        : # None!
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
