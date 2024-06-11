@@ -16,6 +16,10 @@
 # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_dispatch
 # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
+# https://github.com/actions/checkout
+# https://github.com/actions/upload-artifact
+# https://github.com/actions/download-artifact
+
 # -----------------------------------------------------------------------------
 
 
@@ -60,20 +64,20 @@ jobs:
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:
-      image: ilegeul/ubuntu:amd64-18.04-xbb-v5.1.1
+      image: ilegeul/ubuntu:amd64-18.04-xbb-v5.2.1
     defaults:
       run:
         shell: bash
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          lsb_release -sd
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          lsb_release -sd
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
@@ -133,20 +137,20 @@ jobs:
     timeout-minutes: 5760 # 4 days
     runs-on: [self-hosted, linux, x64]
     container:
-      image: ilegeul/ubuntu:amd64-18.04-xbb-v5.1.1
+      image: ilegeul/ubuntu:amd64-18.04-xbb-v5.2.1
     defaults:
       run:
         shell: bash
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          lsb_release -sd
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          lsb_release -sd
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
@@ -206,20 +210,20 @@ jobs:
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, linux, arm, xbbla32]
     container:
-      image: ilegeul/ubuntu:arm32v7-18.04-xbb-v5.1.1
+      image: ilegeul/ubuntu:arm32v7-18.04-xbb-v5.2.1
     defaults:
       run:
         shell: bash
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          lsb_release -sd
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          lsb_release -sd
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
@@ -278,20 +282,20 @@ jobs:
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, linux, arm64, xbbla]
     container:
-      image: ilegeul/ubuntu:arm64v8-18.04-xbb-v5.1.1
+      image: ilegeul/ubuntu:arm64v8-18.04-xbb-v5.2.1
     defaults:
       run:
         shell: bash
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          lsb_release -sd
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          lsb_release -sd
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
@@ -352,14 +356,17 @@ jobs:
     runs-on: [self-hosted, macos, intel]
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          sw_vers
-          echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
+          echo "whoami: $(whoami)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          sw_vers
+          xcode-select --print-path
+          pkgutil --pkg-info=com.apple.pkg.CLTools_Executables || xcodebuild -version
+          ls -l /Library/Developer/CommandLineTools/usr/include || true
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
@@ -421,14 +428,17 @@ jobs:
     runs-on: [self-hosted, macos, apple]
 
     steps:
-      - name: 'Environment'
+      - name: 'Show environment'
         run: |
-          uname -a
-          sw_vers
-          echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
+          echo "whoami: $(whoami)"
           echo "node: $(node --version)"
           echo "npm: $(npm --version)"
+          uname -a
+          sw_vers
+          xcode-select --print-path
+          pkgutil --pkg-info=com.apple.pkg.CLTools_Executables || xcodebuild -version
+          ls -l /Library/Developer/CommandLineTools/usr/include || true
           ls -lLA
           env | sort | grep -E '^[^ \t]+='
 
