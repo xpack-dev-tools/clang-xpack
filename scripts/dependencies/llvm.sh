@@ -1123,7 +1123,208 @@ function llvm_test()
         export XBB_IGNORE_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
       elif [ ${llvm_version_major} -eq 16 ]
       then
-        : # None!
+        if [ "${XBB_HOST_ARCH}" == "arm" ]
+        then
+          # adder-shared.
+          export XBB_IGNORE_TEST_LTO_ADDER_SHARED="y"
+          export XBB_IGNORE_TEST_GC_LTO_ADDER_SHARED="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
+          export XBB_IGNORE_TEST_LTO_CRT_ADDER_SHARED="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_SHARED="y"
+
+          # adder-static.
+          export XBB_IGNORE_TEST_LTO_ADDER_STATIC="y"
+          export XBB_IGNORE_TEST_GC_LTO_ADDER_STATIC="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
+          export XBB_IGNORE_TEST_LTO_CRT_ADDER_STATIC="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_STATIC="y"
+
+          # cnrt-test.
+          export XBB_IGNORE_TEST_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_GC_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_LTO_CRT_CNRT_TEST="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_CNRT_TEST="y"
+
+          # exception-locale.
+          export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+
+          # exception-reduced.
+          export XBB_IGNORE_TEST_CRT_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+
+          # global-terminate.
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
+          export XBB_IGNORE_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
+
+          # hello-exception.
+          export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+
+          # hello-weak1-c.
+          export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
+
+          # hello-weak2-cpp.
+          export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
+
+          # hello1-c.
+          export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
+
+          # normal.
+          export XBB_IGNORE_TEST_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_GC_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_NORMAL="y"
+          export XBB_IGNORE_TEST_LTO_CRT_NORMAL="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_NORMAL="y"
+
+          # simple-hello-printf-one.
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+
+          # simple-hello-printf-two.
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+
+          # simple-objc.
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_OBJC="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
+
+          # sleepy-threads-cv.
+          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
+
+          # throwcatch-main.
+          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_LTO_CRT_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
+
+          # unwind-strong-cpp.
+          export XBB_IGNORE_TEST_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
+
+          # unwind-weak-cpp.
+          export XBB_IGNORE_TEST_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
+
+          # weak-defined-c.
+          export XBB_IGNORE_TEST_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DEFINED_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
+
+          # weak-duplicate-c.
+          export XBB_IGNORE_TEST_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
+
+          # weak-override-c.
+          export XBB_IGNORE_TEST_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
+
+          # weak-undef-c.
+          export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
+
+          # weak-use-c.
+          export XBB_IGNORE_TEST_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
+        fi
       elif [ ${llvm_version_major} -eq 17 ] || \
            [ ${llvm_version_major} -eq 18 ]
       then
@@ -2000,52 +2201,29 @@ function llvm_test()
 
           # -------------------------------------------------------------------
 
-          if [[ ${distro} == CentOS ]] || \
-            [[ ${distro} == RedHat* ]] || \
-            [[ ${distro} == Fedora ]] || \
-            [[ ${distro} == openSUSE ]]
-          then
-            # RedHat has no static libstdc++.
-            echo
-            echo "Skipping all static on ${distro}..."
-          else
-            # -static-libgcc -static-libgcc.
-            test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
+          # -static-libgcc -static-libgcc.
+          test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
 
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
-            fi
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
 
-          if [[ ${distro} == CentOS ]] || \
-            [[ ${distro} == RedHat* ]] || \
-            [[ ${distro} == Fedora ]] || \
-            [[ ${distro} == openSUSE ]] || \
-            [[ ${distro} == Arch ]]
-          then
-            # RedHat has no static libstdc++.
-            # Arch: undefined reference to `fmod' (static)
-            # Arch: cannot find -latomic (static)
-            echo
-            echo "Skipping all static on ${distro}..."
-          else
-            # -static.
-            test_compiler_c_cpp "${test_bin_path}" --32 --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
+          # -static.
+          test_compiler_c_cpp "${test_bin_path}" --32 --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
 
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
-          fi
+          # Again with lld.
+          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
+          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
 
           if false
           then
@@ -2101,40 +2279,30 @@ function llvm_test()
         test_compiler_c_cpp "${test_bin_path}" --lto --lld
         test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
 
-        if [[ ${distro} == CentOS ]] || \
-          [[ ${distro} == RedHat* ]] || \
-          [[ ${distro} == Fedora ]] || \
-          [[ ${distro} == openSUSE ]]
-        then
-          # RedHat has no static libstdc++.
-          echo
-          echo "Skipping all static on ${distro}..."
-        else
-          # -static-libgcc -static-libgcc.
-          # WARNING: check if they run on RH!
-          test_compiler_c_cpp "${test_bin_path}" --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
+        # -static-libgcc -static-libgcc.
+        # WARNING: check if they run on RH!
+        test_compiler_c_cpp "${test_bin_path}" --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
 
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
 
-          # -static.
-          test_compiler_c_cpp "${test_bin_path}" --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --static
-          test_compiler_c_cpp "${test_bin_path}" --lto --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
+        # -static.
+        test_compiler_c_cpp "${test_bin_path}" --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --static
+        test_compiler_c_cpp "${test_bin_path}" --lto --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
 
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
-        fi
+        # Again with lld.
+        test_compiler_c_cpp "${test_bin_path}" --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
+        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
 
         # ---------------------------------------------------------------------
         # Second test LLVM runtime and libc++.
