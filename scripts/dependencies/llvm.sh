@@ -2218,9 +2218,9 @@ function llvm_test()
 
 
       if [ ${llvm_version_major} -eq 13 ] || \
-        [ ${llvm_version_major} -eq 14 ] || \
-        [ ${llvm_version_major} -eq 15 ] || \
-        [ ${llvm_version_major} -eq 16 ]
+         [ ${llvm_version_major} -eq 14 ] || \
+         [ ${llvm_version_major} -eq 15 ] || \
+         [ ${llvm_version_major} -eq 16 ]
       then
         if [ "${XBB_TARGET_ARCH}" == "x64" ]
         then
@@ -2433,31 +2433,89 @@ function llvm_test()
       if true
       then
 
-        # Note: __EOF__ is NOT quoted to allow substitutions here.
-        cat <<__EOF__ > "compile_commands.json"
+        test_case_clangd_hello
+
+        # Segmentation fault (core dumped) on 13 & 14
+        test_case_clangd_unchecked_exception
+
+      fi
+    )
+
+  )
+}
+
+function test_case_clangd_hello()
+{
+  local test_case_name="$(test_case_get_name)"
+
+  local prefix=${PREFIX:-""}
+  local suffix=${SUFFIX:-""}
+
+  (
+    trap 'test_case_trap_handler ${test_case_name} $? $LINENO; return 0' ERR
+
+    # Note: __EOF__ is quoted to prevent substitutions here.
+    cat <<'__EOF__' > "clangd-hello.cpp"
+#include <iostream>
+
+class Hello {
+public:
+    Hello() {
+        printf("Hello ctor\n");
+    }
+    ~Hello() {
+        printf("Hello dtor\n");
+    }
+};
+
+Hello global_h;
+
+__attribute__((constructor)) static void attr_ctor(void) {
+    printf("attr_ctor\n");
+}
+
+__attribute__((destructor)) static void attr_dtor(void) {
+    printf("attr_dtor\n");
+}
+
+int main(int argc, char* argv[]) {
+    std::cout<<"Hello world C++"<<std::endl;
+    return 0;
+}
+__EOF__
+
+    # Note: __EOF__ is NOT quoted to allow substitutions here.
+    cat <<__EOF__ > "compile_commands.json"
 [
   {
     "directory": "$(pwd)",
-    "command": "${CXX} -c hello-cpp.cpp",
-    "file": "hello-cpp.cpp"
+    "command": "${CXX} -c clangd-hello.cpp",
+    "file": "clangd-hello.cpp"
   }
 ]
 __EOF__
 
-        cat "compile_commands.json"
+    cat "compile_commands.json"
 
-        run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+    run_host_app_verbose "${test_bin_path}/clangd" --check="clangd-hello.cpp"
 
-        if [ ${llvm_version_major} -eq 13 ] || [ ${llvm_version_major} -eq 14 ]
-        then
+    test_case_pass "${test_case_name}"
+  ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
+}
 
-          # Segmentation fault (core dumped)
-          echo "Skip clangd unchecked-exception"
 
-        else
+function test_case_clangd_unchecked_exception()
+{
+  local test_case_name="$(test_case_get_name)"
 
-          # Note: __EOF__ is quoted to prevent substitutions here.
-          cat <<'__EOF__' > "unchecked-exception.cpp"
+  local prefix=${PREFIX:-""}
+  local suffix=${SUFFIX:-""}
+
+  (
+    trap 'test_case_trap_handler ${test_case_name} $? $LINENO; return 0' ERR
+
+    # Note: __EOF__ is quoted to prevent substitutions here.
+    cat <<'__EOF__' > "clangd-unchecked-exception.cpp"
 // repro for clangd crash from github.com/clangd/clangd issue #1072
 #include <exception>
 int main() {
@@ -2467,26 +2525,23 @@ int main() {
 }
 __EOF__
 
-          # Note: __EOF__ is NOT quoted to allow substitutions here.
-          cat <<__EOF__ > "compile_commands.json"
+    # Note: __EOF__ is NOT quoted to allow substitutions here.
+    cat <<__EOF__ > "compile_commands.json"
 [
   {
     "directory": "$(pwd)",
-    "command": "${CXX} -c unchecked-exception.cpp",
-    "file": "unchecked-exception.cpp"
+    "command": "${CXX} -c clangd-unchecked-exception.cpp",
+    "file": "clangd-unchecked-exception.cpp"
   }
 ]
 __EOF__
 
-          cat "compile_commands.json"
+    cat "compile_commands.json"
 
-          run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
+    run_host_app_verbose "${test_bin_path}/clangd" --check="clangd-unchecked-exception.cpp"
 
-        fi
-      fi
-    )
-
-  )
+    test_case_pass "${test_case_name}"
+  ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
 }
 
 # -----------------------------------------------------------------------------
