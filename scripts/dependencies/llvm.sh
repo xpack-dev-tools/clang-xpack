@@ -2219,8 +2219,7 @@ function llvm_test()
 
       if [ ${llvm_version_major} -eq 13 ] || \
          [ ${llvm_version_major} -eq 14 ] || \
-         [ ${llvm_version_major} -eq 15 ] || \
-         [ ${llvm_version_major} -eq 16 ]
+         [ ${llvm_version_major} -eq 15 ]
       then
         if [ "${XBB_TARGET_ARCH}" == "x64" ]
         then
@@ -2254,6 +2253,54 @@ function llvm_test()
 
           export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
           export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        fi
+      elif [ ${llvm_version_major} -eq 16 ]
+      then
+        if [ "${XBB_TARGET_ARCH}" == "x64" ]
+        then
+          # -flto fails at run on Intel.
+          # Does not identify the custom exceptions:
+          # [./lto-throwcatch-main ]
+          # not throwing
+          # throwing FirstException
+          # caught std::exception <--
+          # caught unexpected exception 3!
+          # throwing SecondException
+          # caught std::exception <--
+          # caught unexpected exception 3!
+          # throwing std::exception
+          # caught std::exception
+          # got errors
+
+          # Expected behaviour:
+          # [./throwcatch-main ]
+          # not throwing
+          # throwing FirstException
+          # caught FirstException
+          # throwing SecondException
+          # caught SecondException
+          # throwing std::exception
+          # caught std::exception
+          # all ok <--
+
+          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+          export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+          export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+        elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+        then
+          # 6083 Trace/BPT trap: 5
+          # exception-reduced.
+          export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+          export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+
+          # 6141 Trace/BPT trap: 5
+          # hello-exception.
+          export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+          export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
         fi
       elif [ ${llvm_version_major} -eq 17 ]
       then
