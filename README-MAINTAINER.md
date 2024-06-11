@@ -1180,6 +1180,18 @@ The tests results are available from the
 
 The Windows tests take more than 20 minutes to complete.
 
+## Prepare the test results page
+
+Download the `tests-report` artefact, unpack it and copy
+the `18.1.7-1.md` file to the web site `pages/dev-tools/clang/tests` folder.
+
+Generating the tests results for a specific version can be done with the
+command:
+
+```bash
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-test-xpm.sh --package-version 18.1.7-1.1
+```
+
 ## Update the repo
 
 - merge `xpack-develop` into `xpack`

@@ -1221,16 +1221,16 @@ function llvm_test()
           # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
 
           # simple-hello1-cpp-one.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO2_CPP_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
 
           # simple-hello1-cpp-two.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO2_CPP_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
 
           # simple-exception.
           export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
@@ -1534,12 +1534,12 @@ function llvm_test()
           export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
 
           # hello-c-one.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
 
           # hello-c-two.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
 
           # hello-cpp.
           # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
@@ -1628,17 +1628,17 @@ function llvm_test()
           export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
 
           # simple-hello1-c-one.
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO1_C_ONE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO1_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_ONE="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
 
           # simple-hello1-c-two.
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO1_C_TWO="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO1_C_TWO="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO1_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO1_C_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO1_C_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
 
           # simple-objc.
           export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
