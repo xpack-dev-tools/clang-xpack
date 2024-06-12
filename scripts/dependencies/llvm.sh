@@ -164,7 +164,7 @@ function llvm_build()
         XBB_LIBRARY_PATH="${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib:${XBB_LIBRARY_PATH}"
       elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
       then
-        # For libc++abi to find libnunwind.so
+        # For libc++abi to find libunwind.so
         LDFLAGS+=" -L${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
         # run_verbose mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib"
         XBB_LIBRARY_PATH="${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}/lib:${XBB_LIBRARY_PATH}"
@@ -815,39 +815,77 @@ function llvm_test()
     echo
     echo "Testing the ${name_prefix}llvm binaries..."
 
-    run_verbose ls -l "${test_bin_path}"
+    if [ "${XBB_TEST_SYSTEM_TOOLS:-""}" == "y" ]
+    then
+      CC="$(which clang)"
+      CXX="$(which clang++)"
 
-    CC="${test_bin_path}/clang"
-    CXX="${test_bin_path}/clang++"
-    DLLTOOL="${test_bin_path}/llvm-dlltool"
-    WIDL="${test_bin_path}/widl"
-    GENDEF="${test_bin_path}/gendef"
-    AR="${test_bin_path}/llvm-ar"
-    RANLIB="${test_bin_path}/llvm-ranlib"
+      AR="$(which llvm-ar || which ar)"
+      RANLIB="$(which llvm-ranlib || which ranlib)"
 
-    LLD="${test_bin_path}/lld"
-    LLDB="${test_bin_path}/lldb"
-    CLANG_FORMAT="${test_bin_path}/clang-format"
+      if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
+      then
+        DLLTOOL="$(which llvm-dlltool)"
+        WIDL="$(which widl)"
+        GENDEF="$(which gendef)"
+      fi
 
-    LD_LLD="${test_bin_path}/ld.lld"
-    LD64_LLD="${test_bin_path}/ld64.lld"
+      LLD="$(which lld || true)"
+      LLDB="$(which lldb || true)"
+      CLANG_FORMAT="$(which clang-format || true)"
 
-    CLANGD="${test_bin_path}/clangd"
+      LD_LLD="$(which ld.lld || true)"
+      LD64_LLD="$(which ld64.lld || true)"
 
-    LLVM_AR="${test_bin_path}/llvm-ar"
-    LLVM_NM="${test_bin_path}/llvm-nm"
-    LLVM_OBJCOPY="${test_bin_path}/llvm-objcopy"
-    LLVM_OBJDUMP="${test_bin_path}/llvm-objdump"
-    LLVM_RANLIB="${test_bin_path}/llvm-ranlib"
-    LLVM_READELF="${test_bin_path}/llvm-readelf"
-    LLVM_SIZE="${test_bin_path}/llvm-size"
-    LLVM_STRINGS="${test_bin_path}/llvm-strings"
-    LLVM_STRIP="${test_bin_path}/llvm-strip"
+      CLANGD="$(which clangd || true)"
+
+      LLVM_AR="$(which llvm-ar || true)"
+      LLVM_NM="$(which llvm-nm || true)"
+      LLVM_OBJCOPY="$(which llvm-objcopy || true)"
+      LLVM_OBJDUMP="$(which llvm-objdump || true)"
+      LLVM_RANLIB="$(which llvm-ranlib || true)"
+      LLVM_READELF="$(which llvm-readelf || true)"
+      LLVM_SIZE="$(which llvm-size || true)"
+      LLVM_STRINGS="$(which llvm-strings || true)"
+      LLVM_STRIP="$(which llvm-strip || true)"
+    else
+      run_verbose ls -l "${test_bin_path}"
+
+      CC="${test_bin_path}/clang"
+      CXX="${test_bin_path}/clang++"
+      DLLTOOL="${test_bin_path}/llvm-dlltool"
+      WIDL="${test_bin_path}/widl"
+      GENDEF="${test_bin_path}/gendef"
+      AR="${test_bin_path}/llvm-ar"
+      RANLIB="${test_bin_path}/llvm-ranlib"
+
+      LLD="${test_bin_path}/lld"
+      LLDB="${test_bin_path}/lldb"
+      CLANG_FORMAT="${test_bin_path}/clang-format"
+
+      LD_LLD="${test_bin_path}/ld.lld"
+      LD64_LLD="${test_bin_path}/ld64.lld"
+
+      CLANGD="${test_bin_path}/clangd"
+
+      LLVM_AR="${test_bin_path}/llvm-ar"
+      LLVM_NM="${test_bin_path}/llvm-nm"
+      LLVM_OBJCOPY="${test_bin_path}/llvm-objcopy"
+      LLVM_OBJDUMP="${test_bin_path}/llvm-objdump"
+      LLVM_RANLIB="${test_bin_path}/llvm-ranlib"
+      LLVM_READELF="${test_bin_path}/llvm-readelf"
+      LLVM_SIZE="${test_bin_path}/llvm-size"
+      LLVM_STRINGS="${test_bin_path}/llvm-strings"
+      LLVM_STRIP="${test_bin_path}/llvm-strip"
+    fi
 
     if [ "${XBB_BUILD_PLATFORM}" != "win32" ]
     then
       show_host_libs "${CC}"
-      show_host_libs "${LLD}"
+      if [ -f "${LLD}${XBB_HOST_DOT_EXE}" ]
+      then
+        show_host_libs "${LLD}"
+      fi
       if [ -f "${LLDB}${XBB_HOST_DOT_EXE}" ]
       then
         # lldb not available on Ubuntu 16 Arm.
@@ -858,7 +896,6 @@ function llvm_test()
     test_case_llvm_binaries_start
 
     test_case_clang_configuration
-
 
     echo
     echo "Testing if ${name_prefix}clang compiles simple programs..."
@@ -916,7 +953,7 @@ function llvm_test()
     (
       cd c-cpp
 
-      if true
+      if [ -f "${CLANGD}${XBB_HOST_DOT_EXE}" ]
       then
 
         test_case_clangd_hello
@@ -956,22 +993,37 @@ function test_case_llvm_binaries_start()
     # lld is a generic driver.
     # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
     # run_host_app_verbose "${LLD}" --version || true
-    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ] && [ -f "${LD_LLD}${XBB_HOST_DOT_EXE}" ]
     then
       run_host_app_verbose "${LD_LLD}" --version || true
-    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ] && [ -f "${LD64_LLD}${XBB_HOST_DOT_EXE}" ]
     then
       run_host_app_verbose "${LD64_LLD}" --version || true
-    elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
+    elif [ "${XBB_HOST_PLATFORM}" == "win32" ] && [ -f "${LD_LLD}${XBB_HOST_DOT_EXE}" ]
     then
       run_host_app_verbose "${LD_LLD}" --version || true
     fi
 
-    run_host_app_verbose "${LLVM_AR}" --version
-    run_host_app_verbose "${LLVM_NM}" --version
-    run_host_app_verbose "${LLVM_OBJCOPY}" --version
-    run_host_app_verbose "${LLVM_OBJDUMP}" --version
-    run_host_app_verbose "${LLVM_RANLIB}" --version
+    if [ -f "${LLVM_AR}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_AR}" --version
+    fi
+    if [ "${LLVM_NM}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_NM}" --version
+    fi
+    if [ -f "${LLVM_OBJCOPY}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_OBJCOPY}" --version
+    fi
+    if [ -f "${LLVM_OBJDUMP}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_OBJDUMP}" --version
+    fi
+    if [ -f "${LLVM_RANLIB}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_RANLIB}" --version
+    fi
     if [ -f "${LLVM_READELF}${XBB_HOST_DOT_EXE}" ]
     then
       run_host_app_verbose "${LLVM_READELF}" --version
@@ -980,8 +1032,14 @@ function test_case_llvm_binaries_start()
     then
       run_host_app_verbose "${LLVM_SIZE}" --version
     fi
-    run_host_app_verbose "${LLVM_STRINGS}" --version
-    run_host_app_verbose "${LLVM_STRIP}" --version
+    if [ -f "${LLVM_STRINGS}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_STRINGS}" --version
+    fi
+    if [ -f "${LLVM_STRIP}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_STRIP}" --version
+    fi
 
     test_case_pass "${test_case_name}"
   ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
@@ -2485,15 +2543,15 @@ function test_darwin()
   then
     if [ "${XBB_TARGET_ARCH}" == "x64" ]
     then
-      # -flto fails at run on Intel.
+      # -flto fails to run on Intel.
       # Does not identify the custom exceptions:
       # [./lto-throwcatch-main ]
       # not throwing
       # throwing FirstException
-      # caught std::exception <--
+      # caught std::exception <-- instead of FirstException
       # caught unexpected exception 3!
       # throwing SecondException
-      # caught std::exception <--
+      # caught std::exception <-- instead of SecondException
       # caught unexpected exception 3!
       # throwing std::exception
       # caught std::exception
@@ -2716,11 +2774,15 @@ function test_darwin()
 
     # No need for compiler-rt or libc++, they are the defaults.
 
-    # Again with lld.
-    test_compiler_c_cpp --lld
-    test_compiler_c_cpp --gc --lld
-    test_compiler_c_cpp --lto --lld
-    test_compiler_c_cpp --gc --lto --lld
+    # `lld` is not present in macOS SDK.
+    if [ ! -z "${LLD}" ]
+    then
+      # Again with lld.
+      test_compiler_c_cpp --lld
+      test_compiler_c_cpp --gc --lld
+      test_compiler_c_cpp --lto --lld
+      test_compiler_c_cpp --gc --lto --lld
+    fi
   )
 
   # ld: library not found for -lcrt0.o
