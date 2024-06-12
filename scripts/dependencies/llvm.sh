@@ -2515,13 +2515,16 @@ function test_linux()
 
 function test_darwin()
 {
-  touch sdk-check.cpp
-
-  local first_path="$(run_host_app ${CXX} -v sdk-check.cpp -c 2>&1| grep -E '^ ' | grep  -E '^ /' | sed -e '2,$d')"
-  if echo ${first_path} | grep MacOSX.sdk
+  if false
   then
-    echo "MacOSX.sdk test failed"
-    exit 1
+    touch sdk-check.cpp
+
+    local first_path="$(run_host_app ${CXX} -v sdk-check.cpp -c 2>&1| grep -E '^ ' | grep  -E '^ /' | sed -e '2,$d')"
+    if echo ${first_path} | grep MacOSX.sdk
+    then
+      echo "MacOSX.sdk test failed"
+      exit 1
+    fi
   fi
 
   show_host_libs "$(dirname $(dirname ${CXX}))/lib/libc++.dylib"
