@@ -2575,7 +2575,7 @@ function test_darwin()
   # caught std::exception
   # all ok <--
 
-  # The clang version on macOS 10.13 is 4.
+  # The clang version on macOS 10.14 is 4.
   if [ ${LLVM_VERSION_MAJOR} -eq 4 ] || \
      [ ${LLVM_VERSION_MAJOR} -eq 10 ] || \
      [ ${LLVM_VERSION_MAJOR} -eq 11 ] || \
