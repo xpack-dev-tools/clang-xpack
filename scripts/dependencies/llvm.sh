@@ -1064,9 +1064,12 @@ function test_case_clang_configuration()
     # otherwise the tests will not find the C++ headers and/or libraries.
     run_host_app_verbose "${CC}" -v
 
-    run_host_app_verbose "${CC}" -print-target-triple
-    run_host_app_verbose "${CC}" -print-targets
-    run_host_app_verbose "${CC}" -print-supported-cpus
+    if [ ${LLVM_VERSION_MAJOR} -gt 10 ]
+    then
+      run_host_app_verbose "${CC}" -print-target-triple
+      run_host_app_verbose "${CC}" -print-targets
+      run_host_app_verbose "${CC}" -print-supported-cpus
+    fi
     run_host_app_verbose "${CC}" -print-search-dirs
     run_host_app_verbose "${CC}" -print-resource-dir
     run_host_app_verbose "${CC}" -print-libgcc-file-name
