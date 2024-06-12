@@ -802,16 +802,19 @@ function llvm_build()
 
 function llvm_test()
 {
+  echo_develop
+  echo_develop "[${FUNCNAME[0]} $@]"
+
   local test_bin_path="$1"
   shift
 
   local name_suffix=""
   local name_prefix=""
 
-  echo
-  echo "Testing the ${name_prefix}llvm binaries..."
-
   (
+    echo
+    echo "Testing the ${name_prefix}llvm binaries..."
+
     run_verbose ls -l "${test_bin_path}"
 
     CC="${test_bin_path}/clang"
@@ -822,76 +825,40 @@ function llvm_test()
     AR="${test_bin_path}/llvm-ar"
     RANLIB="${test_bin_path}/llvm-ranlib"
 
+    LLD="${test_bin_path}/lld"
+    LLDB="${test_bin_path}/lldb"
+    CLANG_FORMAT="${test_bin_path}/clang-format"
+
+    LD_LLD="${test_bin_path}/ld.lld"
+    LD64_LLD="${test_bin_path}/ld64.lld"
+
+    CLANGD="${test_bin_path}/clangd"
+
+    LLVM_AR="${test_bin_path}/llvm-ar"
+    LLVM_NM="${test_bin_path}/llvm-nm"
+    LLVM_OBJCOPY="${test_bin_path}/llvm-objcopy"
+    LLVM_OBJDUMP="${test_bin_path}/llvm-objdump"
+    LLVM_RANLIB="${test_bin_path}/llvm-ranlib"
+    LLVM_READELF="${test_bin_path}/llvm-readelf"
+    LLVM_SIZE="${test_bin_path}/llvm-size"
+    LLVM_STRINGS="${test_bin_path}/llvm-strings"
+    LLVM_STRIP="${test_bin_path}/llvm-strip"
+
     if [ "${XBB_BUILD_PLATFORM}" != "win32" ]
     then
-      show_host_libs "${test_bin_path}/clang"
-      show_host_libs "${test_bin_path}/lld"
-      if [ -f "${test_bin_path}/lldb" -o \
-          -f "${test_bin_path}/lldb${XBB_HOST_DOT_EXE}" ]
+      show_host_libs "${CC}"
+      show_host_libs "${LLD}"
+      if [ -f "${LLDB}${XBB_HOST_DOT_EXE}" ]
       then
         # lldb not available on Ubuntu 16 Arm.
-        show_host_libs "${test_bin_path}/lldb"
+        show_host_libs "${LLDB}"
       fi
     fi
 
-    echo
-    echo "Testing if the ${name_prefix}llvm binaries start properly..."
+    test_case_llvm_binaries_start
 
-    run_host_app_verbose "${CC}" --version
-    run_host_app_verbose "${CXX}" --version
+    test_case_clang_configuration
 
-    if [ -f "${test_bin_path}/clang-format${XBB_HOST_DOT_EXE}" ]
-    then
-      run_host_app_verbose "${test_bin_path}/clang-format" --version
-    fi
-
-    # lld is a generic driver.
-    # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
-    # run_host_app_verbose "${test_bin_path}/lld" --version || true
-    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
-    then
-      run_host_app_verbose "${test_bin_path}/ld.lld" --version || true
-    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-    then
-      run_host_app_verbose "${test_bin_path}/ld64.lld" --version || true
-    elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
-    then
-      # run_host_app_verbose "${test_bin_path}/ld-link" --version || true
-      run_host_app_verbose "${test_bin_path}/ld.lld" --version || true
-    fi
-
-    run_host_app_verbose "${test_bin_path}/llvm-ar" --version
-    run_host_app_verbose "${test_bin_path}/llvm-nm" --version
-    run_host_app_verbose "${test_bin_path}/llvm-objcopy" --version
-    run_host_app_verbose "${test_bin_path}/llvm-objdump" --version
-    run_host_app_verbose "${test_bin_path}/llvm-ranlib" --version
-    if [ -f "${test_bin_path}/llvm-readelf${XBB_HOST_DOT_EXE}" ]
-    then
-      run_host_app_verbose "${test_bin_path}/llvm-readelf" --version
-    fi
-    if [ -f "${test_bin_path}/llvm-size" ]
-    then
-      run_host_app_verbose "${test_bin_path}/llvm-size" --version
-    fi
-    run_host_app_verbose "${test_bin_path}/llvm-strings" --version
-    run_host_app_verbose "${test_bin_path}/llvm-strip" --version
-
-    echo
-    echo "Testing the ${name_prefix}clang configuration..."
-
-    # Show the selected GCC & multilib.
-    # There must be a g++ with that version installed,
-    # otherwise the tests will not find the C++ headers and/or libraries.
-    run_host_app_verbose "${test_bin_path}/clang" -v
-
-    run_host_app_verbose "${test_bin_path}/clang" -print-target-triple
-    run_host_app_verbose "${test_bin_path}/clang" -print-targets
-    run_host_app_verbose "${test_bin_path}/clang" -print-supported-cpus
-    run_host_app_verbose "${test_bin_path}/clang" -print-search-dirs
-    run_host_app_verbose "${test_bin_path}/clang" -print-resource-dir
-    run_host_app_verbose "${test_bin_path}/clang" -print-libgcc-file-name
-
-    # run_app_verbose "${test_bin_path}/llvm-config" --help
 
     echo
     echo "Testing if ${name_prefix}clang compiles simple programs..."
@@ -928,1741 +895,20 @@ function llvm_test()
 
     # -------------------------------------------------------------------------
 
-    local llvm_version=$(run_host_app "${CC}" -dumpversion)
-    echo "clang: ${llvm_version}"
+    export LLVM_VERSION=$(run_host_app "${CC}" -dumpversion)
+    echo "clang: ${LLVM_VERSION}"
 
-    local llvm_version_major=$(xbb_get_version_major "${llvm_version}")
-
-    if false # [ "${XBB_TARGET_PLATFORM}" != "win32" ]
-    then
-
-      # Check if InstalledDir is correct when invoked via a
-      # link from a differnet folder.
-      local install_dir_line_cc="$(run_host_app ${CC} -v 2>&1 | grep 'InstalledDir:')"
-      ln -s "${CC}" cc_link
-      local install_dir_line_cc_link="$(run_host_app ./cc_link -v 2>&1 | grep 'InstalledDir:')"
-
-      if [ "${install_dir_line_cc}" == "${install_dir_line_cc_link}" ]
-      then
-        echo "${install_dir_line_cc_link} - passed"
-      else
-        echo "${install_dir_line_cc_link} - failed"
-        exit 1
-      fi
-
-    fi
-
-    if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
-    then
-      touch sdk-check.cpp
-
-      local first_path="$(run_host_app ${CXX} -v sdk-check.cpp -c 2>&1| grep -E '^ ' | grep  -E '^ /' | sed -e '2,$d')"
-      if echo ${first_path} | grep MacOSX.sdk
-      then
-        echo "MacOSX.sdk test failed"
-        exit 1
-      fi
-
-      show_host_libs "$(dirname $(dirname ${CXX}))/lib/libc++.dylib"
-    fi
+    export LLVM_VERSION_MAJOR=$(xbb_get_version_major "${LLVM_VERSION}")
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
-
-      # Defaults:
-      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
-      # config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
-      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
-      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
-
-      if [ ${llvm_version_major} -eq 14 ] || \
-         [ ${llvm_version_major} -eq 15 ]
-      then
-        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-        export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
-
-        # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
-        # ld.lld: error: duplicate symbol: world()
-        # >>> defined at hello-weak-cpp.cpp
-        # >>>            lto-hello-weak-cpp-32.cpp.o
-        # >>> defined at hello-f-weak-cpp.cpp
-        # >>>            lto-hello-f-weak-cpp-32.cpp.o
-        # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
-
-        # Skip the same tests for both triplets.
-        export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
-        export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
-
-        export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
-        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
-
-        export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
-        export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
-      elif [ ${llvm_version_major} -eq 16 ]
-      then
-        # bufferoverflow.
-        # error: unable to find library -lssp
-        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-        export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
-
-        # Both 32 & 64-bit are affected.
-        # Surprisingly, the non LTO variant is functional.
-        export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-
-        export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
-
-        export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
-      elif [ ${llvm_version_major} -eq 17 ]
-      then
-
-        # fail: lto-weak-undef-c-32
-        # fail: gc-lto-weak-undef-c-32
-        # fail: static-lib-lto-weak-undef-c-32
-        # fail: static-lib-gc-lto-weak-undef-c-32
-        # fail: static-lto-weak-undef-c-32
-        # fail: static-gc-lto-weak-undef-c-32
-        # fail: lto-weak-undef-c-64
-        # fail: gc-lto-weak-undef-c-64
-        # fail: static-lib-lto-weak-undef-c-64
-        # fail: static-lib-gc-lto-weak-undef-c-64
-        # fail: static-lto-weak-undef-c-64
-        # fail: static-gc-lto-weak-undef-c-64
-
-        # bufferoverflow.
-        # error: unable to find library -lssp
-        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-        export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
-
-        # weak-undef
-        # Surprisingly, the non LTO variant is functional.
-        # export XBB_IGNORE_TEST_WEAK_UNDEF_C_32="y"
-        # export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
-
-        # ... but fails with LTO, even with lld.
-        # ld.lld: error: undefined symbol: _func
-        # >>> referenced by main-weak.c
-        # >>>               lto-main-weak-32.c.o
-
-        # Both 32 & 64-bit are affected.
-        export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-
-        export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
-
-        export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
-      elif [ ${llvm_version_major} -eq 18 ]
-      then
-        # bufferoverflow.
-        # error: unable to find library -lssp
-        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-        export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
-      fi
-
-      for bits in 32 64
-      do
-        (
-          # For libc++.dll & co.
-          # The DLLs are usually in bin, but for consistency within GCC, they are
-          # also copied to lib; it is recommended to ask the compiler for the
-          # actual path.
-          if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
-          then
-            # When running natively, set the PATH.
-            cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
-            export PATH="${cxx_lib_path}:${PATH:-}"
-            echo "PATH=${PATH}"
-          elif [ "${XBB_BUILD_PLATFORM}" == "linux" ]
-          then
-            # When running via wine, set WINEPATH.
-            cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
-            export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
-            echo "WINEPATH=${WINEPATH}"
-          else
-            echo "Unsupported XBB_BUILD_PLATFORM=${XBB_BUILD_PLATFORM} in ${FUNCNAME[0]}()"
-            exit 1
-          fi
-
-          test_compiler_c_cpp "${test_bin_path}" --${bits}
-
-          test_compiler_c_cpp "${test_bin_path}" --${bits} --gc
-          test_compiler_c_cpp "${test_bin_path}" --${bits} --lto
-          test_compiler_c_cpp "${test_bin_path}" --${bits} --gc --lto
-        )
-
-        # All static variants should need no special paths to DLLs.
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --lto
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static-lib --gc --lto
-
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --lto
-        test_compiler_c_cpp "${test_bin_path}" --${bits} --static --gc --lto
-
-      done
-
+      test_win32
     elif [ "${XBB_HOST_PLATFORM}" == "linux" ]
     then
-
-      local distro=$(lsb_release -is)
-      echo
-      run_verbose lsb_release -a
-
-      # Defaults:
-      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
-      # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
-
-      if [ ${llvm_version_major} -eq 15 ]
-      then
-        # LTO global-terminate test fails on 15.0.7-1.
-        # Segmentation fault (core dumped)
-        # Program received signal SIGSEGV, Segmentation fault.
-        # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
-
-        export XBB_IGNORE_TEST_LTO_GLOBAL_TERMINATE_64="y"
-        export XBB_IGNORE_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
-      elif [ ${llvm_version_major} -eq 16 ]
-      then
-        if [ "${XBB_HOST_ARCH}" == "arm" ]
-        then
-          # adder-shared.
-          export XBB_IGNORE_TEST_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_GC_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_SHARED="y"
-
-          # adder-static.
-          export XBB_IGNORE_TEST_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_GC_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_LTO_CRT_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_STATIC="y"
-
-          # cnrt-test.
-          export XBB_IGNORE_TEST_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_LTO_CRT_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_CNRT_TEST="y"
-
-          # exception-locale.
-          export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
-
-          # exception-reduced.
-          export XBB_IGNORE_TEST_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-
-          # global-terminate.
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
-
-          # hello-exception.
-          export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-
-          # hello-weak1-c.
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
-
-          # hello-weak2-cpp.
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
-
-          # hello1-c.
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
-
-          # normal.
-          export XBB_IGNORE_TEST_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_LTO_CRT_NORMAL="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_NORMAL="y"
-
-          # simple-hello-printf-one.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
-
-          # simple-hello-printf-two.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
-
-          # simple-objc.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
-
-          # sleepy-threads-cv.
-          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
-
-          # throwcatch-main.
-          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_LTO_CRT_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
-
-          # unwind-strong-cpp.
-          export XBB_IGNORE_TEST_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
-
-          # unwind-weak-cpp.
-          export XBB_IGNORE_TEST_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
-
-          # weak-defined-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
-
-          # weak-duplicate-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
-
-          # weak-override-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
-
-          # weak-undef-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
-
-          # weak-use-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
-        fi
-      elif [ ${llvm_version_major} -eq 17 ] || \
-           [ ${llvm_version_major} -eq 18 ]
-      then
-        if [ "${XBB_HOST_ARCH}" == "x64" ]
-        then
-
-          # x64
-          # 72 test(s) failed:
-
-          # fail: static-sleepy-threads-64
-          # fail: static-sleepy-threads-cv-64
-          # fail: static-gc-sleepy-threads-64
-          # fail: static-gc-sleepy-threads-cv-64
-          # fail: static-lto-sleepy-threads-64
-          # fail: static-lto-sleepy-threads-cv-64
-          # fail: static-gc-lto-sleepy-threads-64
-          # fail: static-gc-lto-sleepy-threads-cv-64
-          # fail: static-lld-sleepy-threads-64
-          # fail: static-lld-sleepy-threads-cv-64
-          # fail: static-gc-lld-sleepy-threads-64
-          # fail: static-gc-lld-sleepy-threads-cv-64
-          # fail: static-lto-lld-sleepy-threads-64
-          # fail: static-lto-lld-sleepy-threads-cv-64
-          # fail: static-gc-lto-lld-sleepy-threads-64
-          # fail: static-gc-lto-lld-sleepy-threads-cv-64
-          # fail: static-sleepy-threads-32
-          # fail: static-sleepy-threads-cv-32
-          # fail: static-gc-sleepy-threads-32
-          # fail: static-gc-sleepy-threads-cv-32
-          # fail: static-lto-sleepy-threads-32
-          # fail: static-lto-sleepy-threads-cv-32
-          # fail: static-gc-lto-sleepy-threads-32
-          # fail: static-gc-lto-sleepy-threads-cv-32
-          # fail: static-lld-simple-hello1-cpp-one-32
-          # fail: static-lld-simple-hello1-cpp-two-32
-          # fail: static-lld-simple-exception-32
-          # fail: static-lld-simple-str-exception-32
-          # fail: static-lld-simple-int-exception-32
-          # fail: static-lld-sleepy-threads-32
-          # fail: static-lld-sleepy-threads-cv-32
-          # fail: static-lld-hello-cpp-32
-          # fail: static-lld-exception-locale-32
-          # fail: static-lld-crt-test-32
-          # fail: static-lld-hello-weak-cpp-32
-          # fail: static-lld-overload-new-cpp-32
-          # fail: static-gc-lld-simple-hello1-cpp-one-32
-          # fail: static-gc-lld-simple-hello1-cpp-two-32
-          # fail: static-gc-lld-simple-exception-32
-          # fail: static-gc-lld-simple-str-exception-32
-          # fail: static-gc-lld-simple-int-exception-32
-          # fail: static-gc-lld-sleepy-threads-32
-          # fail: static-gc-lld-sleepy-threads-cv-32
-          # fail: static-gc-lld-hello-cpp-32
-          # fail: static-gc-lld-exception-locale-32
-          # fail: static-gc-lld-crt-test-32
-          # fail: static-gc-lld-hello-weak-cpp-32
-          # fail: static-gc-lld-overload-new-cpp-32
-          # fail: static-lto-lld-simple-hello1-cpp-one-32
-          # fail: static-lto-lld-simple-hello1-cpp-two-32
-          # fail: static-lto-lld-simple-exception-32
-          # fail: static-lto-lld-simple-str-exception-32
-          # fail: static-lto-lld-simple-int-exception-32
-          # fail: static-lto-lld-sleepy-threads-32
-          # fail: static-lto-lld-sleepy-threads-cv-32
-          # fail: static-lto-lld-hello-cpp-32
-          # fail: static-lto-lld-exception-locale-32
-          # fail: static-lto-lld-crt-test-32
-          # fail: static-lto-lld-hello-weak-cpp-32
-          # fail: static-lto-lld-overload-new-cpp-32
-          # fail: static-gc-lto-lld-simple-hello1-cpp-one-32
-          # fail: static-gc-lto-lld-simple-hello1-cpp-two-32
-          # fail: static-gc-lto-lld-simple-exception-32
-          # fail: static-gc-lto-lld-simple-str-exception-32
-          # fail: static-gc-lto-lld-simple-int-exception-32
-          # fail: static-gc-lto-lld-sleepy-threads-32
-          # fail: static-gc-lto-lld-sleepy-threads-cv-32
-          # fail: static-gc-lto-lld-hello-cpp-32
-          # fail: static-gc-lto-lld-exception-locale-32
-          # fail: static-gc-lto-lld-crt-test-32
-          # fail: static-gc-lto-lld-hello-weak-cpp-32
-          # fail: static-gc-lto-lld-overload-new-cpp-32
-
-          # Weird, -static crashes the threads.
-          # 201486 Segmentation fault      (core dumped)
-
-          # sleepy-threads.
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
-
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
-
-          # sleepy-threads-cv.
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
-
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-
-          # -------------------------------------------------------------------
-          # -static and lld seem to have a problem with C++, but only on 32-bit.
-
-          # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
-          # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
-          # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
-          # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
-
-          # simple-hello1-cpp-one.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
-
-          # simple-hello1-cpp-two.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
-
-          # simple-exception.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
-
-          # simple-str-exception.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
-
-          # simple-int-exception.
-          export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
-
-          # hello-cpp.
-          export XBB_IGNORE_TEST_STATIC_LLD_HELLO2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO2_CPP_32="y"
-
-          # exception-locale.
-          export XBB_IGNORE_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
-
-          # crt-test.
-          export XBB_IGNORE_TEST_STATIC_LLD_CNRT_TEST_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_CNRT_TEST_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_CNRT_TEST_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_CNRT_TEST_32="y"
-
-          # hello-weak-cpp.
-          export XBB_IGNORE_TEST_STATIC_LLD_HELLO_WEAK2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_WEAK2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
-
-          # overload-new-cpp.
-          export XBB_IGNORE_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
-        elif [ "${XBB_HOST_ARCH}" == "arm64" ]
-        then
-          # arm64
-          # 16 test(s) failed:
-
-          # fail: static-sleepy-threads
-          # fail: static-sleepy-threads-cv
-          # fail: static-gc-sleepy-threads
-          # fail: static-gc-sleepy-threads-cv
-          # fail: static-lto-sleepy-threads
-          # fail: static-lto-sleepy-threads-cv
-          # fail: static-gc-lto-sleepy-threads
-          # fail: static-gc-lto-sleepy-threads-cv
-          # fail: static-lld-sleepy-threads
-          # fail: static-lld-sleepy-threads-cv
-          # fail: static-gc-lld-sleepy-threads
-          # fail: static-gc-lld-sleepy-threads-cv
-          # fail: static-lto-lld-sleepy-threads
-          # fail: static-lto-lld-sleepy-threads-cv
-          # fail: static-gc-lto-lld-sleepy-threads
-          # fail: static-gc-lto-lld-sleepy-threads-cv
-
-          # sleepy-threads.
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
-
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
-
-          # sleepy-threads-cv.
-          # terminate called after throwing an instance of 'std::system_error'
-          #   what():  Unknown error 5774344
-
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
-
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-        elif [ "${XBB_HOST_ARCH}" == "arm" ]
-        then
-
-          # arm
-          # Basically LTO is unreliable, use LLD.
-          # Static is also unreliable.
-
-          # 1246 test(s) passed, 130 failed:
-
-          # fail: lto-adder-shared
-          # fail: lto-simple-exception
-          # fail: lto-sleepy-threads
-          # fail: lto-hello-cpp
-          # fail: lto-longjmp-cleanup
-          # fail: lto-hello-weak-cpp
-          # fail: lto-normal
-          # fail: lto-weak-undef-c
-          # fail: lto-weak-defined-c
-          # fail: lto-weak-use-c
-          # fail: lto-weak-override-c
-          # fail: gc-lto-adder-shared
-          # fail: gc-lto-simple-exception
-          # fail: gc-lto-sleepy-threads
-          # fail: gc-lto-hello-cpp
-          # fail: gc-lto-longjmp-cleanup
-          # fail: gc-lto-hello-weak-c
-          # fail: gc-lto-hello-weak-cpp
-          # fail: gc-lto-normal
-          # fail: gc-lto-weak-undef-c
-          # fail: gc-lto-weak-defined-c
-          # fail: gc-lto-weak-use-c
-          # fail: gc-lto-weak-override-c
-          # fail: static-lib-lto-adder-shared
-          # fail: static-lib-lto-simple-exception
-          # fail: static-lib-lto-sleepy-threads
-          # fail: static-lib-lto-longjmp-cleanup
-          # fail: static-lib-lto-hello-weak-c
-          # fail: static-lib-lto-normal
-          # fail: static-lib-lto-weak-undef-c
-          # fail: static-lib-lto-weak-defined-c
-          # fail: static-lib-lto-weak-use-c
-          # fail: static-lib-lto-weak-override-c
-          # fail: static-lib-gc-lto-adder-shared
-          # fail: static-lib-gc-lto-simple-exception
-          # fail: static-lib-gc-lto-sleepy-threads
-          # fail: static-lib-gc-lto-hello-cpp
-          # fail: static-lib-gc-lto-longjmp-cleanup
-          # fail: static-lib-gc-lto-hello-weak-c
-          # fail: static-lib-gc-lto-hello-weak-cpp
-          # fail: static-lib-gc-lto-normal
-          # fail: static-lib-gc-lto-weak-undef-c
-          # fail: static-lib-gc-lto-weak-defined-c
-          # fail: static-lib-gc-lto-weak-use-c
-          # fail: static-lib-gc-lto-weak-override-c
-          # fail: static-sleepy-threads
-          # fail: static-sleepy-threads-cv
-          # fail: static-gc-sleepy-threads
-          # fail: static-gc-sleepy-threads-cv
-          # fail: static-lto-simple-exception
-          # fail: static-lto-sleepy-threads
-          # fail: static-lto-sleepy-threads-cv
-          # fail: static-lto-longjmp-cleanup
-          # fail: static-lto-exception-reduced
-          # fail: static-lto-hello-weak-c
-          # fail: static-lto-normal
-          # fail: static-lto-weak-undef-c
-          # fail: static-lto-weak-defined-c
-          # fail: static-lto-weak-use-c
-          # fail: static-lto-weak-override-c
-          # fail: static-gc-lto-simple-exception
-          # fail: static-gc-lto-simple-str-exception
-          # fail: static-gc-lto-sleepy-threads
-          # fail: static-gc-lto-sleepy-threads-cv
-          # fail: static-gc-lto-hello-cpp
-          # fail: static-gc-lto-longjmp-cleanup
-          # fail: static-gc-lto-exception-reduced
-          # fail: static-gc-lto-hello-weak-c
-          # fail: static-gc-lto-normal
-          # fail: static-gc-lto-weak-undef-c
-          # fail: static-gc-lto-weak-defined-c
-          # fail: static-gc-lto-weak-use-c
-          # fail: static-gc-lto-weak-override-c
-          # fail: static-lld-sleepy-threads
-          # fail: static-lld-sleepy-threads-cv
-          # fail: static-gc-lld-sleepy-threads
-          # fail: static-gc-lld-sleepy-threads-cv
-          # fail: static-lto-lld-sleepy-threads
-          # fail: static-lto-lld-sleepy-threads-cv
-          # fail: static-gc-lto-lld-sleepy-threads
-          # fail: static-gc-lto-lld-sleepy-threads-cv
-          # fail: crt-hello-exception
-          # fail: crt-exception-locale
-          # fail: crt-exception-reduced
-          # fail: gc-crt-hello-exception
-          # fail: gc-crt-exception-locale
-          # fail: gc-crt-exception-reduced
-          # fail: lto-crt-adder-shared
-          # fail: lto-crt-simple-exception
-          # fail: lto-crt-sleepy-threads
-          # fail: lto-crt-hello-cpp
-          # fail: lto-crt-longjmp-cleanup
-          # fail: lto-crt-hello-exception
-          # fail: lto-crt-exception-locale
-          # fail: lto-crt-exception-reduced
-          # fail: lto-crt-hello-weak-c
-          # fail: lto-crt-normal
-          # fail: lto-crt-weak-undef-c
-          # fail: lto-crt-weak-defined-c
-          # fail: lto-crt-weak-use-c
-          # fail: lto-crt-weak-override-c
-          # fail: lto-crt-weak-duplicate-c
-          # fail: gc-lto-crt-adder-shared
-          # fail: gc-lto-crt-simple-exception
-          # fail: gc-lto-crt-sleepy-threads
-          # fail: gc-lto-crt-hello-cpp
-          # fail: gc-lto-crt-longjmp-cleanup
-          # fail: gc-lto-crt-hello-exception
-          # fail: gc-lto-crt-exception-locale
-          # fail: gc-lto-crt-exception-reduced
-          # fail: gc-lto-crt-hello-weak-c
-          # fail: gc-lto-crt-hello-weak-cpp
-          # fail: gc-lto-crt-normal
-          # fail: gc-lto-crt-weak-undef-c
-          # fail: gc-lto-crt-weak-defined-c
-          # fail: gc-lto-crt-weak-use-c
-          # fail: gc-lto-crt-weak-override-c
-          # fail: gc-lto-crt-weak-duplicate-c
-          # fail: crt-lld-hello-exception
-          # fail: crt-lld-exception-locale
-          # fail: crt-lld-exception-reduced
-          # fail: gc-crt-lld-hello-exception
-          # fail: gc-crt-lld-exception-locale
-          # fail: gc-crt-lld-exception-reduced
-          # fail: lto-crt-lld-hello-exception
-          # fail: lto-crt-lld-exception-locale
-          # fail: lto-crt-lld-exception-reduced
-          # fail: gc-lto-crt-lld-hello-exception
-          # fail: gc-lto-crt-lld-exception-locale
-          # fail: gc-lto-crt-lld-exception-reduced
-
-          # adder-shared.
-          # clang lto-add.c.o -shared -o liblto-add-shared.so -flto -g -v
-          # clang: error: unable to execute command: Segmentation fault (core dumped)
-          # clang: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_GC_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_ADDER_SHARED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_SHARED="y"
-
-          # adder-static.
-          export XBB_IGNORE_TEST_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_GC_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_LTO_CRT_ADDER_STATIC="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_STATIC="y"
-
-          # atomic.
-          export XBB_IGNORE_TEST_LTO_CRT_ATOMIC="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_ATOMIC="y"
-
-          # cnrt-test.
-          export XBB_IGNORE_TEST_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_LTO_CRT_CNRT_TEST="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_CNRT_TEST="y"
-
-          # exception-locale.
-          export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
-
-          # exception-reduced.
-          export XBB_IGNORE_TEST_STATIC_LTO_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
-
-          # global-terminate.
-          export XBB_IGNORE_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
-
-          # hello-c.
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
-
-          # hello-c-one.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-
-          # hello-c-two.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-
-          # hello-cpp.
-          # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_HELLO2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO2_CPP="y"
-          # export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO2_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO2_CPP="y"
-
-          # hello-exception.
-          export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
-
-          # hello-weak-c.
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
-
-          # hello-weak-cpp.
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
-
-          # longjmp-cleanup.
-          # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see invocation)
-          export XBB_IGNORE_TEST_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_LONGJMP_CLEANUP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_LONGJMP_CLEANUP="y"
-
-          # normal.
-          export XBB_IGNORE_TEST_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_NORMAL="y"
-          export XBB_IGNORE_TEST_LTO_CRT_NORMAL="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_NORMAL="y"
-
-          # simple-exception.
-          # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
-          # clang++: error: unable to execute command: Segmentation fault (core dumped)
-          # clang++: error: linker command failed due to signal (use -v to see
-          export XBB_IGNORE_TEST_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
-
-          # simple-hello1-c-one.
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
-
-          # simple-hello1-c-two.
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
-
-          # simple-objc.
-          export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_OBJC="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
-
-          # simple-str-exception.
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_STR_EXCEPTION="y"
-
-          # sleepy-threads.
-          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_LTO_CRT_SLEEPY_THREADS_SL="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_SLEEPY_THREADS_SL="y"
-
-          # sleepy-threads-cv.
-          export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-
-          # throwcatch-main.
-          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_LTO_CRT_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
-
-          # unwind-strong-cpp.
-          export XBB_IGNORE_TEST_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
-
-          # unwind-weak-cpp.
-          export XBB_IGNORE_TEST_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
-
-          # weak-undef-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
-
-          # weak-defined-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DEFINED_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
-
-          # weak-duplicate-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
-
-          # weak-override-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
-
-          # weak-use-c.
-          export XBB_IGNORE_TEST_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
-          export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
-        fi
-      fi
-
-      # It is mandatory for the compiler to run properly without any
-      # explicit libraries or other options, otherwise tools used
-      # during configuration (like meson) might fail probing for
-      # capabilities.
-      test_compiler_c_cpp "${test_bin_path}"
-
-      # aarch64 multilib not yet available
-      # if [ "${XBB_HOST_BITS}" == "64" ]
-      if [ "${XBB_HOST_ARCH}" == "x64" ]
-      then
-        # x64 with multilib. Two runs, -m64 & -m32.
-
-        # ---------------------------------------------------------------------
-        # First test using the system GCC runtime and libstdc++.
-
-        test_compiler_c_cpp "${test_bin_path}" --64
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --64 --lld
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld
-        test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld
-        test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld
-
-        if [[ ${distro} == CentOS ]] || \
-          [[ ${distro} == RedHat* ]] || \
-          [[ ${distro} == Fedora ]] || \
-          [[ ${distro} == openSUSE ]]
-        then
-          # RedHat has no static libstdc++.
-          echo
-          echo "Skipping all static on ${distro}..."
-        else
-          # -static-libgcc -static-libgcc.
-          test_compiler_c_cpp "${test_bin_path}" --64 --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static-lib
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static-lib
-        fi
-
-        if [[ ${distro} == CentOS ]] || \
-          [[ ${distro} == RedHat* ]] || \
-          [[ ${distro} == Fedora ]] || \
-          [[ ${distro} == openSUSE ]] || \
-          [[ ${distro} == Arch ]]
-        then
-          # RedHat has no static libstdc++.
-          # Arch: undefined reference to `fmod' (static)
-          # Arch: cannot find -latomic (static)
-          echo
-          echo "Skipping all static on ${distro}..."
-        else
-          # -static.
-          test_compiler_c_cpp "${test_bin_path}" --64 --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --static
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --static
-        fi
-
-        # ---------------------------------------------------------------------
-        # Second test LLVM runtime and libc++.
-
-        (
-          # The shared libraries are in a custom location and require setting
-          # the path explicitly.
-
-          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
-          LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-          LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-          echo
-          echo "LDFLAGS=${LDFLAGS}"
-
-          # With compiler-rt.
-          test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --crt --libunwind --lld
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld
-        )
-
-        if false
-        then
-          # -static-libgcc -static-libgcc.
-          # This combination seems not supported.
-
-          # clang++: warning: argument unused during compilation: '-static-libgcc'
-
-          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
-          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind --static-lib
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static-lib
-        fi
-
-        if false
-        then
-          # -static.
-          # This combination also seems not supported.
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --lld --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --lld --libc++ --crt --libunwind --static
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --64 --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --lto --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --64 --gc --lto --libc++ --crt --libunwind --lld --static
-        fi
-
-        # ---------------------------------------------------------------------
-
-        local skip_32_tests=""
-        if is_variable_set "XBB_SKIP_32_BIT_TESTS"
-        then
-          skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
-        else
-          local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
-          if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
-          then
-            # If the compiler does not find the full path of the
-            # 32-bit c++ library, multilib support is not installed; skip.
-            skip_32_tests="y"
-          fi
-        fi
-
-        if [ "${skip_32_tests}" == "y" ]
-        then
-          echo
-          echo "Skipping clang -m32 tests..."
-        else
-          # -------------------------------------------------------------------
-          # First test using the system GCC runtime and libstdc++.
-
-          test_compiler_c_cpp "${test_bin_path}" --32
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld
-
-          (
-            # The shared libraries are in a custom location and require setting
-            # the path explicitly.
-
-            local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
-            LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-            export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-            LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-            export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-            echo
-            echo "LDFLAGS=${LDFLAGS}"
-
-            # With compiler-rt.
-            test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --crt --libunwind
-
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --crt --libunwind --lld
-
-            # With compiler-rt & libc++.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind
-
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld
-          )
-
-          # -------------------------------------------------------------------
-
-          # -static-libgcc -static-libgcc.
-          test_compiler_c_cpp "${test_bin_path}" --32 --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static-lib
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static-lib
-
-          # -static.
-          test_compiler_c_cpp "${test_bin_path}" --32 --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --static
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --32 --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --static
-
-          if false
-          then
-            # -static-libgcc -static-libgcc.
-            # This combination also seems not supported.
-
-            # With compiler-rt & libc++.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind --static-lib
-
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld --static-lib
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld --static-lib
-          fi
-
-          # (.text+0x22a): undefined reference to `_Unwind_Resume'
-          if false
-          then
-            # -static.
-            # This combination also seems not supported.
-
-            # With compiler-rt & libc++.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --lld --libc++ --crt --libunwind --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --lld --libc++ --crt --libunwind --static
-
-            # Again with lld.
-            test_compiler_c_cpp "${test_bin_path}" --32 --libc++ --crt --libunwind --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --libc++ --crt --libunwind --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --lto --libc++ --crt --libunwind --lld --static
-            test_compiler_c_cpp "${test_bin_path}" --32 --gc --lto --libc++ --crt --libunwind --lld --static
-          fi
-        fi
-      else
-        # arm & aarch64.
-
-        # ---------------------------------------------------------------------
-        # First test using the system GCC runtime and libstdc++.
-
-        # test_compiler_c_cpp "${test_bin_path}" # Already done.
-        test_compiler_c_cpp "${test_bin_path}" --gc
-        test_compiler_c_cpp "${test_bin_path}" --lto
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
-
-        # -static-libgcc -static-libgcc.
-        # WARNING: check if they run on RH!
-        test_compiler_c_cpp "${test_bin_path}" --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --lto --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static-lib
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static-lib
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static-lib
-
-        # -static.
-        test_compiler_c_cpp "${test_bin_path}" --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --static
-        test_compiler_c_cpp "${test_bin_path}" --lto --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --static
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld --static
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --static
-
-        # ---------------------------------------------------------------------
-        # Second test LLVM runtime and libc++.
-
-        (
-          # The shared libraries are in a custom location and require setting
-          # the path explicitly.
-          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
-          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-          echo
-          echo "LDFLAGS=${LDFLAGS}"
-
-          # The Linux system linker may fail with -flto, use the included lld.
-          # For example, on Raspberry Pi OS 32-bit:
-          # error: unable to execute command: Segmentation fault (core dumped)
-
-          # With compiler-rt.
-          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --lto --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --crt --libunwind --lld
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld
-        )
-
-        if false
-        then
-          # -static-libgcc -static-libgcc.
-          # This combination seems not supported.
-
-          # clang++: warning: argument unused during compilation: '-static-libgcc'
-
-          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
-          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind --static-lib
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld --static-lib
-        fi
-
-        if false
-        then
-          # -static.
-          # This combination also seems not supported.
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --lto --lld --libc++ --crt --libunwind --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld --libc++ --crt --libunwind --static
-
-          # Again with lld.
-          test_compiler_c_cpp "${test_bin_path}" --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --lto --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp "${test_bin_path}" --gc --lto --libc++ --crt --libunwind --lld --static
-        fi
-      fi
-
+      test_linux
     elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
-
-      # Defaults: (different from HB)
-      # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
-      # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
-      # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
-
-      # `-fuse-ld=lld` fails on macOS:
-      # ld64.lld: warning: ignoring unknown argument: -no_deduplicate
-      # ld64.lld: warning: -sdk_version is required when emitting min version load command.  Setting sdk version to match provided min version
-      # For now use the system linker /usr/bin/ld.
-
-      # -static-libstdc++ not available on macOS:
-      # clang-11: warning: argument unused during compilation: '-static-libstdc++'
-
-
-      if [ ${llvm_version_major} -eq 13 ] || \
-         [ ${llvm_version_major} -eq 14 ] || \
-         [ ${llvm_version_major} -eq 15 ]
-      then
-        if [ "${XBB_TARGET_ARCH}" == "x64" ]
-        then
-          # -flto fails at run on Intel.
-          # Does not identify the custom exceptions:
-          # [./lto-throwcatch-main ]
-          # not throwing
-          # throwing FirstException
-          # caught std::exception <--
-          # caught unexpected exception 3!
-          # throwing SecondException
-          # caught std::exception <--
-          # caught unexpected exception 3!
-          # throwing std::exception
-          # caught std::exception
-          # got errors
-
-          # Expected behaviour:
-          # [./throwcatch-main ]
-          # not throwing
-          # throwing FirstException
-          # caught FirstException
-          # throwing SecondException
-          # caught SecondException
-          # throwing std::exception
-          # caught std::exception
-          # all ok <--
-
-          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-
-          export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
-        fi
-      elif [ ${llvm_version_major} -eq 16 ]
-      then
-        if [ "${XBB_TARGET_ARCH}" == "x64" ]
-        then
-          # -flto fails at run on Intel.
-          # Does not identify the custom exceptions:
-          # [./lto-throwcatch-main ]
-          # not throwing
-          # throwing FirstException
-          # caught std::exception <--
-          # caught unexpected exception 3!
-          # throwing SecondException
-          # caught std::exception <--
-          # caught unexpected exception 3!
-          # throwing std::exception
-          # caught std::exception
-          # got errors
-
-          # Expected behaviour:
-          # [./throwcatch-main ]
-          # not throwing
-          # throwing FirstException
-          # caught FirstException
-          # throwing SecondException
-          # caught SecondException
-          # throwing std::exception
-          # caught std::exception
-          # all ok <--
-
-          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-
-          export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
-        elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
-        then
-          # 6083 Trace/BPT trap: 5
-          # exception-reduced.
-          export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
-          export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
-
-          # 6141 Trace/BPT trap: 5
-          # hello-exception.
-          export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
-          export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
-        fi
-      elif [ ${llvm_version_major} -eq 17 ]
-      then
-
-        # x64
-        # 14 test(s) failed:
-        #
-        # fail: weak-undef-c
-        # fail: gc-weak-undef-c
-        # fail: lto-weak-undef-c
-        # fail: lto-throwcatch-main
-        # fail: gc-lto-weak-undef-c
-        # fail: gc-lto-throwcatch-main
-        # fail: lld-weak-undef-c
-        # fail: lld-throwcatch-main
-        # fail: gc-lld-weak-undef-c
-        # fail: gc-lld-throwcatch-main
-        # fail: lto-lld-weak-undef-c
-        # fail: lto-lld-throwcatch-main
-        # fail: gc-lto-lld-weak-undef-c
-        # fail: gc-lto-lld-throwcatch-main
-
-        # arm64
-        # 8 test(s) failed:
-        #
-        # fail: weak-undef-c
-        # fail: gc-weak-undef-c
-        # fail: lto-weak-undef-c
-        # fail: gc-lto-weak-undef-c
-        # fail: lld-weak-undef-c
-        # fail: gc-lld-weak-undef-c
-        # fail: lto-lld-weak-undef-c
-        # fail: gc-lto-lld-weak-undef-c
-
-        # exception-reduced.
-        export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
-
-        # hello-exception.
-        export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
-
-        # weak-undef-c.
-        # Undefined symbols for architecture x86_64:
-        #   "_func", referenced from:
-        export XBB_IGNORE_TEST_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-
-        # ld64.lld: error: undefined symbol: func
-        export XBB_IGNORE_TEST_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_LTO_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
-
-        if [ "${XBB_HOST_ARCH}" == "x64" ]
-        then
-          # throwcatch-main.
-          # Non LTO & non LLD are ok!
-          export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-          export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
-        fi
-
-      elif [ ${llvm_version_major} -eq 18 ]
-      then
-        # weak-undef-c.
-        # Most likely an incompatibility with the Apple linker.
-        # Static tests pass.
-        # Undefined symbols for architecture x86_64:
-        #   "_func", referenced from:
-        export XBB_IGNORE_TEST_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
-
-        export XBB_IGNORE_TEST_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_LTO_LLD_WEAK_UNDEF_C="y"
-        export XBB_IGNORE_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
-
-        # hello-exception.
-        # on macOS 10.14 and 11.7
-        export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
-        # Segmentation fault: 11 on macOS 10.14 and macOS 11.6
-        export XBB_IGNORE_TEST_LLD_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
-        export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
-
-        # exceptions-reduced.
-        # Segmentation fault: 11 on macOS 10.14
-        export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_LLD_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
-        export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
-
-        # throwcatch-main.
-        # got exit code: 1 on macOS 10.14 & macOS 14
-        export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-        export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
-
-        # got exit code: 1 on macOS 10.14
-        export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
-        export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
-        export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-        export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
-      fi
-
-      # It is mandatory for the compiler to run properly without any
-      # explicit libraries or other options, otherwise tools used
-      # during configuration (like meson) might fail probing for
-      # capabilities.
-      # However this is not usable, since it uses the new headers
-      # with the system libraries.
-      test_compiler_c_cpp "${test_bin_path}"
-
-      (
-        # The shared libraries are in a custom location and require setting
-        # the libraries and rpath explicitly.
-
-        local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
-
-        LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-
-        LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-
-        export LDFLAGS
-        export LDXXFLAGS
-
-        echo
-        echo "LDFLAGS=${LDFLAGS}"
-
-        # Again, with various options.
-        test_compiler_c_cpp "${test_bin_path}" --gc
-        test_compiler_c_cpp "${test_bin_path}" --lto
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto
-
-        # No need for compiler-rt or libc++, they are the defaults.
-
-        # Again with lld.
-        test_compiler_c_cpp "${test_bin_path}" --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --lld
-        test_compiler_c_cpp "${test_bin_path}" --lto --lld
-        test_compiler_c_cpp "${test_bin_path}" --gc --lto --lld
-      )
-
-      # ld: library not found for -lcrt0.o
-      # test_compiler_c_cpp "${test_bin_path}" --static
-
-      # ld64.lld: warning: Option `-static' is not yet implemented. Stay tuned...
-      # ld64.lld: error: library not found for -lcrt0.o
-      # ld64.lld: error: undefined symbol: printf
-
-      # test_compiler_c_cpp "${test_bin_path}" --static --lld
-
+      test_darwin
     fi
 
     # -------------------------------------------------------------------------
@@ -2683,6 +929,1811 @@ function llvm_test()
 
   )
 }
+
+# -----------------------------------------------------------------------------
+
+function test_case_llvm_binaries_start()
+{
+  local test_case_name="$(test_case_get_name)"
+
+  local prefix=${PREFIX:-""}
+  local suffix=${SUFFIX:-""}
+
+  (
+    trap 'test_case_trap_handler ${test_case_name} $? $LINENO; return 0' ERR
+
+    echo
+    echo "Testing if the ${prefix}llvm binaries start properly..."
+
+    run_host_app_verbose "${CC}" --version
+    run_host_app_verbose "${CXX}" --version
+
+    if [ -f "${CLANG_FORMAT}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${CLANG_FORMAT}" --version
+    fi
+
+    # lld is a generic driver.
+    # Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
+    # run_host_app_verbose "${LLD}" --version || true
+    if [ "${XBB_HOST_PLATFORM}" == "linux" ]
+    then
+      run_host_app_verbose "${LD_LLD}" --version || true
+    elif [ "${XBB_HOST_PLATFORM}" == "darwin" ]
+    then
+      run_host_app_verbose "${LD64_LLD}" --version || true
+    elif [ "${XBB_HOST_PLATFORM}" == "win32" ]
+    then
+      run_host_app_verbose "${LD_LLD}" --version || true
+    fi
+
+    run_host_app_verbose "${LLVM_AR}" --version
+    run_host_app_verbose "${LLVM_NM}" --version
+    run_host_app_verbose "${LLVM_OBJCOPY}" --version
+    run_host_app_verbose "${LLVM_OBJDUMP}" --version
+    run_host_app_verbose "${LLVM_RANLIB}" --version
+    if [ -f "${LLVM_READELF}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_READELF}" --version
+    fi
+    if [ -f "${LLVM_SIZE}${XBB_HOST_DOT_EXE}" ]
+    then
+      run_host_app_verbose "${LLVM_SIZE}" --version
+    fi
+    run_host_app_verbose "${LLVM_STRINGS}" --version
+    run_host_app_verbose "${LLVM_STRIP}" --version
+
+    test_case_pass "${test_case_name}"
+  ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
+}
+
+
+function test_case_clang_configuration()
+{
+  local test_case_name="$(test_case_get_name)"
+
+  local prefix=${PREFIX:-""}
+  local suffix=${SUFFIX:-""}
+
+  (
+    trap 'test_case_trap_handler ${test_case_name} $? $LINENO; return 0' ERR
+
+    echo
+    echo "Testing the ${prefix}clang configuration..."
+
+    # Show the selected GCC & multilib.
+    # There must be a g++ with that version installed,
+    # otherwise the tests will not find the C++ headers and/or libraries.
+    run_host_app_verbose "${CC}" -v
+
+    run_host_app_verbose "${CC}" -print-target-triple
+    run_host_app_verbose "${CC}" -print-targets
+    run_host_app_verbose "${CC}" -print-supported-cpus
+    run_host_app_verbose "${CC}" -print-search-dirs
+    run_host_app_verbose "${CC}" -print-resource-dir
+    run_host_app_verbose "${CC}" -print-libgcc-file-name
+
+    # run_app_verbose "${test_bin_path}/llvm-config" --help
+
+    test_case_pass "${test_case_name}"
+  ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
+}
+
+# -----------------------------------------------------------------------------
+
+function test_win32()
+{
+  # Defaults:
+  # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++") # MS
+  # config_options+=("-DCLANG_DEFAULT_LINKER=lld") # MS
+  # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt") # MS
+  # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind") # MS
+
+  if [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+  then
+    # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+
+    # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
+    # ld.lld: error: duplicate symbol: world()
+    # >>> defined at hello-weak-cpp.cpp
+    # >>>            lto-hello-weak-cpp-32.cpp.o
+    # >>> defined at hello-f-weak-cpp.cpp
+    # >>>            lto-hello-f-weak-cpp-32.cpp.o
+    # clang-15: error: linker command failed with exit code 1 (use -v to see invocation)
+
+    # Skip the same tests for both triplets.
+    export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+    export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
+
+    export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+    export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
+
+    export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+    export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+  elif [ ${LLVM_VERSION_MAJOR} -eq 16 ]
+  then
+    # bufferoverflow.
+    # error: unable to find library -lssp
+    # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+
+    # Both 32 & 64-bit are affected.
+    # Surprisingly, the non LTO variant is functional.
+    export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+    export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+
+    export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+  elif [ ${LLVM_VERSION_MAJOR} -eq 17 ]
+  then
+
+    # fail: lto-weak-undef-c-32
+    # fail: gc-lto-weak-undef-c-32
+    # fail: static-lib-lto-weak-undef-c-32
+    # fail: static-lib-gc-lto-weak-undef-c-32
+    # fail: static-lto-weak-undef-c-32
+    # fail: static-gc-lto-weak-undef-c-32
+    # fail: lto-weak-undef-c-64
+    # fail: gc-lto-weak-undef-c-64
+    # fail: static-lib-lto-weak-undef-c-64
+    # fail: static-lib-gc-lto-weak-undef-c-64
+    # fail: static-lto-weak-undef-c-64
+    # fail: static-gc-lto-weak-undef-c-64
+
+    # bufferoverflow.
+    # error: unable to find library -lssp
+    # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+
+    # weak-undef
+    # Surprisingly, the non LTO variant is functional.
+    # export XBB_IGNORE_TEST_WEAK_UNDEF_C_32="y"
+    # export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
+
+    # ... but fails with LTO, even with lld.
+    # ld.lld: error: undefined symbol: _func
+    # >>> referenced by main-weak.c
+    # >>>               lto-main-weak-32.c.o
+
+    # Both 32 & 64-bit are affected.
+    export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+    export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+
+    export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+  elif [ ${LLVM_VERSION_MAJOR} -eq 18 ]
+  then
+    # bufferoverflow.
+    # error: unable to find library -lssp
+    # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+  fi
+
+  for bits in 32 64
+  do
+    (
+      # For libc++.dll & co.
+      # The DLLs are usually in bin, but for consistency within GCC, they are
+      # also copied to lib; it is recommended to ask the compiler for the
+      # actual path.
+      if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
+      then
+        # When running natively, set the PATH.
+        cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
+        export PATH="${cxx_lib_path}:${PATH:-}"
+        echo "PATH=${PATH}"
+      elif [ "${XBB_BUILD_PLATFORM}" == "linux" ]
+      then
+        # When running via wine, set WINEPATH.
+        cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
+        export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
+        echo "WINEPATH=${WINEPATH}"
+      else
+        echo "Unsupported XBB_BUILD_PLATFORM=${XBB_BUILD_PLATFORM} in ${FUNCNAME[0]}()"
+        exit 1
+      fi
+
+      test_compiler_c_cpp --${bits}
+
+      test_compiler_c_cpp --${bits} --gc
+      test_compiler_c_cpp --${bits} --lto
+      test_compiler_c_cpp --${bits} --gc --lto
+    )
+
+    # All static variants should need no special paths to DLLs.
+    test_compiler_c_cpp --${bits} --static-lib
+    test_compiler_c_cpp --${bits} --static-lib --gc
+    test_compiler_c_cpp --${bits} --static-lib --lto
+    test_compiler_c_cpp --${bits} --static-lib --gc --lto
+
+    test_compiler_c_cpp --${bits} --static
+    test_compiler_c_cpp --${bits} --static --gc
+    test_compiler_c_cpp --${bits} --static --lto
+    test_compiler_c_cpp --${bits} --static --gc --lto
+
+  done
+}
+
+# -----------------------------------------------------------------------------
+
+function test_linux()
+{
+  local distro=$(lsb_release -is)
+  echo
+  run_verbose lsb_release -a
+
+  # Defaults:
+  # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libstdc++")
+  # config_options+=("-DCLANG_DEFAULT_RTLIB=libgcc")
+
+  if [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+  then
+    # LTO global-terminate test fails on 15.0.7-1.
+    # Segmentation fault (core dumped)
+    # Program received signal SIGSEGV, Segmentation fault.
+    # __strlen_avx2 () at ../sysdeps/x86_64/multiarch/strlen-avx2.S:65
+
+    export XBB_IGNORE_TEST_LTO_GLOBAL_TERMINATE_64="y"
+    export XBB_IGNORE_TEST_GC_LTO_GLOBAL_TERMINATE_64="y"
+  elif [ ${LLVM_VERSION_MAJOR} -eq 16 ]
+  then
+    if [ "${XBB_HOST_ARCH}" == "arm" ]
+    then
+      # adder-shared.
+      export XBB_IGNORE_TEST_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_GC_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_SHARED="y"
+
+      # adder-static.
+      export XBB_IGNORE_TEST_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_LTO_CRT_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_STATIC="y"
+
+      # cnrt-test.
+      export XBB_IGNORE_TEST_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_LTO_CRT_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_CNRT_TEST="y"
+
+      # exception-locale.
+      export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+
+      # exception-reduced.
+      export XBB_IGNORE_TEST_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+
+      # global-terminate.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
+
+      # hello-exception.
+      export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+
+      # hello-weak1-c.
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
+
+      # hello-weak2-cpp.
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
+
+      # hello1-c.
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
+
+      # normal.
+      export XBB_IGNORE_TEST_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_LTO_CRT_NORMAL="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_NORMAL="y"
+
+      # simple-hello-printf-one.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+
+      # simple-hello-printf-two.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+
+      # simple-objc.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
+
+      # sleepy-threads-cv.
+      export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
+
+      # throwcatch-main.
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LTO_CRT_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
+
+      # unwind-strong-cpp.
+      export XBB_IGNORE_TEST_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
+
+      # unwind-weak-cpp.
+      export XBB_IGNORE_TEST_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
+
+      # weak-defined-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
+
+      # weak-duplicate-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
+
+      # weak-override-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
+
+      # weak-undef-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
+
+      # weak-use-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
+    fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 17 ] || \
+        [ ${LLVM_VERSION_MAJOR} -eq 18 ]
+  then
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+
+      # x64
+      # 72 test(s) failed:
+
+      # fail: static-sleepy-threads-64
+      # fail: static-sleepy-threads-cv-64
+      # fail: static-gc-sleepy-threads-64
+      # fail: static-gc-sleepy-threads-cv-64
+      # fail: static-lto-sleepy-threads-64
+      # fail: static-lto-sleepy-threads-cv-64
+      # fail: static-gc-lto-sleepy-threads-64
+      # fail: static-gc-lto-sleepy-threads-cv-64
+      # fail: static-lld-sleepy-threads-64
+      # fail: static-lld-sleepy-threads-cv-64
+      # fail: static-gc-lld-sleepy-threads-64
+      # fail: static-gc-lld-sleepy-threads-cv-64
+      # fail: static-lto-lld-sleepy-threads-64
+      # fail: static-lto-lld-sleepy-threads-cv-64
+      # fail: static-gc-lto-lld-sleepy-threads-64
+      # fail: static-gc-lto-lld-sleepy-threads-cv-64
+      # fail: static-sleepy-threads-32
+      # fail: static-sleepy-threads-cv-32
+      # fail: static-gc-sleepy-threads-32
+      # fail: static-gc-sleepy-threads-cv-32
+      # fail: static-lto-sleepy-threads-32
+      # fail: static-lto-sleepy-threads-cv-32
+      # fail: static-gc-lto-sleepy-threads-32
+      # fail: static-gc-lto-sleepy-threads-cv-32
+      # fail: static-lld-simple-hello1-cpp-one-32
+      # fail: static-lld-simple-hello1-cpp-two-32
+      # fail: static-lld-simple-exception-32
+      # fail: static-lld-simple-str-exception-32
+      # fail: static-lld-simple-int-exception-32
+      # fail: static-lld-sleepy-threads-32
+      # fail: static-lld-sleepy-threads-cv-32
+      # fail: static-lld-hello-cpp-32
+      # fail: static-lld-exception-locale-32
+      # fail: static-lld-crt-test-32
+      # fail: static-lld-hello-weak-cpp-32
+      # fail: static-lld-overload-new-cpp-32
+      # fail: static-gc-lld-simple-hello1-cpp-one-32
+      # fail: static-gc-lld-simple-hello1-cpp-two-32
+      # fail: static-gc-lld-simple-exception-32
+      # fail: static-gc-lld-simple-str-exception-32
+      # fail: static-gc-lld-simple-int-exception-32
+      # fail: static-gc-lld-sleepy-threads-32
+      # fail: static-gc-lld-sleepy-threads-cv-32
+      # fail: static-gc-lld-hello-cpp-32
+      # fail: static-gc-lld-exception-locale-32
+      # fail: static-gc-lld-crt-test-32
+      # fail: static-gc-lld-hello-weak-cpp-32
+      # fail: static-gc-lld-overload-new-cpp-32
+      # fail: static-lto-lld-simple-hello1-cpp-one-32
+      # fail: static-lto-lld-simple-hello1-cpp-two-32
+      # fail: static-lto-lld-simple-exception-32
+      # fail: static-lto-lld-simple-str-exception-32
+      # fail: static-lto-lld-simple-int-exception-32
+      # fail: static-lto-lld-sleepy-threads-32
+      # fail: static-lto-lld-sleepy-threads-cv-32
+      # fail: static-lto-lld-hello-cpp-32
+      # fail: static-lto-lld-exception-locale-32
+      # fail: static-lto-lld-crt-test-32
+      # fail: static-lto-lld-hello-weak-cpp-32
+      # fail: static-lto-lld-overload-new-cpp-32
+      # fail: static-gc-lto-lld-simple-hello1-cpp-one-32
+      # fail: static-gc-lto-lld-simple-hello1-cpp-two-32
+      # fail: static-gc-lto-lld-simple-exception-32
+      # fail: static-gc-lto-lld-simple-str-exception-32
+      # fail: static-gc-lto-lld-simple-int-exception-32
+      # fail: static-gc-lto-lld-sleepy-threads-32
+      # fail: static-gc-lto-lld-sleepy-threads-cv-32
+      # fail: static-gc-lto-lld-hello-cpp-32
+      # fail: static-gc-lto-lld-exception-locale-32
+      # fail: static-gc-lto-lld-crt-test-32
+      # fail: static-gc-lto-lld-hello-weak-cpp-32
+      # fail: static-gc-lto-lld-overload-new-cpp-32
+
+      # Weird, -static crashes the threads.
+      # 201486 Segmentation fault      (core dumped)
+
+      # sleepy-threads.
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
+
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
+
+      # sleepy-threads-cv.
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+
+      # -------------------------------------------------------------------
+      # -static and lld seem to have a problem with C++, but only on 32-bit.
+
+      # ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
+      # >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
+      # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
+      # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+
+      # simple-hello1-cpp-one.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+
+      # simple-hello1-cpp-two.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+
+      # simple-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+
+      # simple-str-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+
+      # simple-int-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+
+      # hello-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO2_CPP_32="y"
+
+      # exception-locale.
+      export XBB_IGNORE_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+
+      # crt-test.
+      export XBB_IGNORE_TEST_STATIC_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_CNRT_TEST_32="y"
+
+      # hello-weak-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
+
+      # overload-new-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+    elif [ "${XBB_HOST_ARCH}" == "arm64" ]
+    then
+      # arm64
+      # 16 test(s) failed:
+
+      # fail: static-sleepy-threads
+      # fail: static-sleepy-threads-cv
+      # fail: static-gc-sleepy-threads
+      # fail: static-gc-sleepy-threads-cv
+      # fail: static-lto-sleepy-threads
+      # fail: static-lto-sleepy-threads-cv
+      # fail: static-gc-lto-sleepy-threads
+      # fail: static-gc-lto-sleepy-threads-cv
+      # fail: static-lld-sleepy-threads
+      # fail: static-lld-sleepy-threads-cv
+      # fail: static-gc-lld-sleepy-threads
+      # fail: static-gc-lld-sleepy-threads-cv
+      # fail: static-lto-lld-sleepy-threads
+      # fail: static-lto-lld-sleepy-threads-cv
+      # fail: static-gc-lto-lld-sleepy-threads
+      # fail: static-gc-lto-lld-sleepy-threads-cv
+
+      # sleepy-threads.
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
+
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
+
+      # sleepy-threads-cv.
+      # terminate called after throwing an instance of 'std::system_error'
+      #   what():  Unknown error 5774344
+
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+    elif [ "${XBB_HOST_ARCH}" == "arm" ]
+    then
+
+      # arm
+      # Basically LTO is unreliable, use LLD.
+      # Static is also unreliable.
+
+      # 1246 test(s) passed, 130 failed:
+
+      # fail: lto-adder-shared
+      # fail: lto-simple-exception
+      # fail: lto-sleepy-threads
+      # fail: lto-hello-cpp
+      # fail: lto-longjmp-cleanup
+      # fail: lto-hello-weak-cpp
+      # fail: lto-normal
+      # fail: lto-weak-undef-c
+      # fail: lto-weak-defined-c
+      # fail: lto-weak-use-c
+      # fail: lto-weak-override-c
+      # fail: gc-lto-adder-shared
+      # fail: gc-lto-simple-exception
+      # fail: gc-lto-sleepy-threads
+      # fail: gc-lto-hello-cpp
+      # fail: gc-lto-longjmp-cleanup
+      # fail: gc-lto-hello-weak-c
+      # fail: gc-lto-hello-weak-cpp
+      # fail: gc-lto-normal
+      # fail: gc-lto-weak-undef-c
+      # fail: gc-lto-weak-defined-c
+      # fail: gc-lto-weak-use-c
+      # fail: gc-lto-weak-override-c
+      # fail: static-lib-lto-adder-shared
+      # fail: static-lib-lto-simple-exception
+      # fail: static-lib-lto-sleepy-threads
+      # fail: static-lib-lto-longjmp-cleanup
+      # fail: static-lib-lto-hello-weak-c
+      # fail: static-lib-lto-normal
+      # fail: static-lib-lto-weak-undef-c
+      # fail: static-lib-lto-weak-defined-c
+      # fail: static-lib-lto-weak-use-c
+      # fail: static-lib-lto-weak-override-c
+      # fail: static-lib-gc-lto-adder-shared
+      # fail: static-lib-gc-lto-simple-exception
+      # fail: static-lib-gc-lto-sleepy-threads
+      # fail: static-lib-gc-lto-hello-cpp
+      # fail: static-lib-gc-lto-longjmp-cleanup
+      # fail: static-lib-gc-lto-hello-weak-c
+      # fail: static-lib-gc-lto-hello-weak-cpp
+      # fail: static-lib-gc-lto-normal
+      # fail: static-lib-gc-lto-weak-undef-c
+      # fail: static-lib-gc-lto-weak-defined-c
+      # fail: static-lib-gc-lto-weak-use-c
+      # fail: static-lib-gc-lto-weak-override-c
+      # fail: static-sleepy-threads
+      # fail: static-sleepy-threads-cv
+      # fail: static-gc-sleepy-threads
+      # fail: static-gc-sleepy-threads-cv
+      # fail: static-lto-simple-exception
+      # fail: static-lto-sleepy-threads
+      # fail: static-lto-sleepy-threads-cv
+      # fail: static-lto-longjmp-cleanup
+      # fail: static-lto-exception-reduced
+      # fail: static-lto-hello-weak-c
+      # fail: static-lto-normal
+      # fail: static-lto-weak-undef-c
+      # fail: static-lto-weak-defined-c
+      # fail: static-lto-weak-use-c
+      # fail: static-lto-weak-override-c
+      # fail: static-gc-lto-simple-exception
+      # fail: static-gc-lto-simple-str-exception
+      # fail: static-gc-lto-sleepy-threads
+      # fail: static-gc-lto-sleepy-threads-cv
+      # fail: static-gc-lto-hello-cpp
+      # fail: static-gc-lto-longjmp-cleanup
+      # fail: static-gc-lto-exception-reduced
+      # fail: static-gc-lto-hello-weak-c
+      # fail: static-gc-lto-normal
+      # fail: static-gc-lto-weak-undef-c
+      # fail: static-gc-lto-weak-defined-c
+      # fail: static-gc-lto-weak-use-c
+      # fail: static-gc-lto-weak-override-c
+      # fail: static-lld-sleepy-threads
+      # fail: static-lld-sleepy-threads-cv
+      # fail: static-gc-lld-sleepy-threads
+      # fail: static-gc-lld-sleepy-threads-cv
+      # fail: static-lto-lld-sleepy-threads
+      # fail: static-lto-lld-sleepy-threads-cv
+      # fail: static-gc-lto-lld-sleepy-threads
+      # fail: static-gc-lto-lld-sleepy-threads-cv
+      # fail: crt-hello-exception
+      # fail: crt-exception-locale
+      # fail: crt-exception-reduced
+      # fail: gc-crt-hello-exception
+      # fail: gc-crt-exception-locale
+      # fail: gc-crt-exception-reduced
+      # fail: lto-crt-adder-shared
+      # fail: lto-crt-simple-exception
+      # fail: lto-crt-sleepy-threads
+      # fail: lto-crt-hello-cpp
+      # fail: lto-crt-longjmp-cleanup
+      # fail: lto-crt-hello-exception
+      # fail: lto-crt-exception-locale
+      # fail: lto-crt-exception-reduced
+      # fail: lto-crt-hello-weak-c
+      # fail: lto-crt-normal
+      # fail: lto-crt-weak-undef-c
+      # fail: lto-crt-weak-defined-c
+      # fail: lto-crt-weak-use-c
+      # fail: lto-crt-weak-override-c
+      # fail: lto-crt-weak-duplicate-c
+      # fail: gc-lto-crt-adder-shared
+      # fail: gc-lto-crt-simple-exception
+      # fail: gc-lto-crt-sleepy-threads
+      # fail: gc-lto-crt-hello-cpp
+      # fail: gc-lto-crt-longjmp-cleanup
+      # fail: gc-lto-crt-hello-exception
+      # fail: gc-lto-crt-exception-locale
+      # fail: gc-lto-crt-exception-reduced
+      # fail: gc-lto-crt-hello-weak-c
+      # fail: gc-lto-crt-hello-weak-cpp
+      # fail: gc-lto-crt-normal
+      # fail: gc-lto-crt-weak-undef-c
+      # fail: gc-lto-crt-weak-defined-c
+      # fail: gc-lto-crt-weak-use-c
+      # fail: gc-lto-crt-weak-override-c
+      # fail: gc-lto-crt-weak-duplicate-c
+      # fail: crt-lld-hello-exception
+      # fail: crt-lld-exception-locale
+      # fail: crt-lld-exception-reduced
+      # fail: gc-crt-lld-hello-exception
+      # fail: gc-crt-lld-exception-locale
+      # fail: gc-crt-lld-exception-reduced
+      # fail: lto-crt-lld-hello-exception
+      # fail: lto-crt-lld-exception-locale
+      # fail: lto-crt-lld-exception-reduced
+      # fail: gc-lto-crt-lld-hello-exception
+      # fail: gc-lto-crt-lld-exception-locale
+      # fail: gc-lto-crt-lld-exception-reduced
+
+      # adder-shared.
+      # clang lto-add.c.o -shared -o liblto-add-shared.so -flto -g -v
+      # clang: error: unable to execute command: Segmentation fault (core dumped)
+      # clang: error: linker command failed due to signal (use -v to see invocation)
+      export XBB_IGNORE_TEST_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_GC_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_ADDER_SHARED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_SHARED="y"
+
+      # adder-static.
+      export XBB_IGNORE_TEST_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_LTO_CRT_ADDER_STATIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_ADDER_STATIC="y"
+
+      # atomic.
+      export XBB_IGNORE_TEST_LTO_CRT_ATOMIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_ATOMIC="y"
+
+      # cnrt-test.
+      export XBB_IGNORE_TEST_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_LTO_CRT_CNRT_TEST="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_CNRT_TEST="y"
+
+      # exception-locale.
+      export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+
+      # exception-reduced.
+      export XBB_IGNORE_TEST_STATIC_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+
+      # global-terminate.
+      export XBB_IGNORE_TEST_LTO_CRT_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_GLOBAL_TERMINATE="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_GLOBAL_TERMINATE="y"
+
+      # hello-c.
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO1_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO1_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO1_C="y"
+
+      # hello-c-one.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+
+      # hello-c-two.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+
+      # hello-cpp.
+      # clang++ hello-cpp.cpp -o lto-hello-cpp -flto -g -v
+      # clang++: error: unable to execute command: Segmentation fault (core dumped)
+      # clang++: error: linker command failed due to signal (use -v to see invocation)
+      export XBB_IGNORE_TEST_LTO_HELLO2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO2_CPP="y"
+      # export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO2_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO2_CPP="y"
+
+      # hello-exception.
+      export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+
+      # hello-weak-c.
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK1_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK1_C="y"
+
+      # hello-weak-cpp.
+      # clang++: error: unable to execute command: Segmentation fault (core dumped)
+      # clang++: error: linker command failed due to signal (use -v to see invocation)
+      export XBB_IGNORE_TEST_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_HELLO_WEAK2_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_HELLO_WEAK2_CPP="y"
+
+      # longjmp-cleanup.
+      # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
+      # clang++: error: unable to execute command: Segmentation fault (core dumped)
+      # clang++: error: linker command failed due to signal (use -v to see invocation)
+      export XBB_IGNORE_TEST_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_GC_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LONGJMP_CLEANUP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LONGJMP_CLEANUP="y"
+
+      # normal.
+      export XBB_IGNORE_TEST_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_NORMAL="y"
+      export XBB_IGNORE_TEST_LTO_CRT_NORMAL="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_NORMAL="y"
+
+      # simple-exception.
+      # clang++ simple-exception.cpp -o lto-simple-exception -flto -g -v
+      # clang++: error: unable to execute command: Segmentation fault (core dumped)
+      # clang++: error: linker command failed due to signal (use -v to see
+      export XBB_IGNORE_TEST_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
+
+      # simple-hello1-c-one.
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+
+      # simple-hello1-c-two.
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
+
+      # simple-objc.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_OBJC="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_OBJC="y"
+
+      # simple-str-exception.
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_STR_EXCEPTION="y"
+
+      # sleepy-threads.
+      export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_LTO_CRT_SLEEPY_THREADS_SL="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_SLEEPY_THREADS_SL="y"
+
+      # sleepy-threads-cv.
+      export XBB_IGNORE_TEST_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_GC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+
+      # throwcatch-main.
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LTO_CRT_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_THROWCATCH_MAIN="y"
+
+      # unwind-strong-cpp.
+      export XBB_IGNORE_TEST_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_STRONG_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_STRONG_CPP="y"
+
+      # unwind-weak-cpp.
+      export XBB_IGNORE_TEST_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_LTO_CRT_UNWIND_WEAK_CPP="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_UNWIND_WEAK_CPP="y"
+
+      # weak-undef-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_UNDEF_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_UNDEF_C="y"
+
+      # weak-defined-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_DEFINED_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DEFINED_C="y"
+
+      # weak-duplicate-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_DUPLICATE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_DUPLICATE_C="y"
+
+      # weak-override-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_OVERRIDE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_OVERRIDE_C="y"
+
+      # weak-use-c.
+      export XBB_IGNORE_TEST_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
+    fi
+  fi
+
+  # It is mandatory for the compiler to run properly without any
+  # explicit libraries or other options, otherwise tools used
+  # during configuration (like meson) might fail probing for
+  # capabilities.
+  test_compiler_c_cpp
+
+  # aarch64 multilib not yet available
+  # if [ "${XBB_HOST_BITS}" == "64" ]
+  if [ "${XBB_HOST_ARCH}" == "x64" ]
+  then
+    # x64 with multilib. Two runs, -m64 & -m32.
+
+    # ---------------------------------------------------------------------
+    # First test using the system GCC runtime and libstdc++.
+
+    test_compiler_c_cpp --64
+    test_compiler_c_cpp --64 --gc
+    test_compiler_c_cpp --64 --lto
+    test_compiler_c_cpp --64 --gc --lto
+
+    # Again with lld.
+    test_compiler_c_cpp --64 --lld
+    test_compiler_c_cpp --64 --gc --lld
+    test_compiler_c_cpp --64 --lto --lld
+    test_compiler_c_cpp --64 --gc --lto --lld
+
+    if [[ ${distro} == CentOS ]] || \
+      [[ ${distro} == RedHat* ]] || \
+      [[ ${distro} == Fedora ]] || \
+      [[ ${distro} == openSUSE ]]
+    then
+      # RedHat has no static libstdc++.
+      echo
+      echo "Skipping all static on ${distro}..."
+    else
+      # -static-libgcc -static-libgcc.
+      test_compiler_c_cpp --64 --static-lib
+      test_compiler_c_cpp --64 --gc --static-lib
+      test_compiler_c_cpp --64 --lto --static-lib
+      test_compiler_c_cpp --64 --gc --lto --static-lib
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --lld --static-lib
+      test_compiler_c_cpp --64 --gc --lld --static-lib
+      test_compiler_c_cpp --64 --lto --lld --static-lib
+      test_compiler_c_cpp --64 --gc --lto --lld --static-lib
+    fi
+
+    if [[ ${distro} == CentOS ]] || \
+      [[ ${distro} == RedHat* ]] || \
+      [[ ${distro} == Fedora ]] || \
+      [[ ${distro} == openSUSE ]] || \
+      [[ ${distro} == Arch ]]
+    then
+      # RedHat has no static libstdc++.
+      # Arch: undefined reference to `fmod' (static)
+      # Arch: cannot find -latomic (static)
+      echo
+      echo "Skipping all static on ${distro}..."
+    else
+      # -static.
+      test_compiler_c_cpp --64 --static
+      test_compiler_c_cpp --64 --gc --static
+      test_compiler_c_cpp --64 --lto --static
+      test_compiler_c_cpp --64 --gc --lto --static
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --lld --static
+      test_compiler_c_cpp --64 --gc --lld --static
+      test_compiler_c_cpp --64 --lto --lld --static
+      test_compiler_c_cpp --64 --gc --lto --lld --static
+    fi
+
+    # ---------------------------------------------------------------------
+    # Second test LLVM runtime and libc++.
+
+    (
+      # The shared libraries are in a custom location and require setting
+      # the path explicitly.
+
+      local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
+      LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+      export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+      LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+      export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+      echo
+      echo "LDFLAGS=${LDFLAGS}"
+
+      # With compiler-rt.
+      test_compiler_c_cpp --64 --crt --libunwind
+      test_compiler_c_cpp --64 --gc --crt --libunwind
+      test_compiler_c_cpp --64 --lto --crt --libunwind
+      test_compiler_c_cpp --64 --gc --lto --crt --libunwind
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --crt --libunwind --lld
+      test_compiler_c_cpp --64 --gc --crt --libunwind --lld
+      test_compiler_c_cpp --64 --lto --crt --libunwind --lld
+      test_compiler_c_cpp --64 --gc --lto --crt --libunwind --lld
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind
+      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind
+      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld
+    )
+
+    if false
+    then
+      # -static-libgcc -static-libgcc.
+      # This combination seems not supported.
+
+      # clang++: warning: argument unused during compilation: '-static-libgcc'
+
+      # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
+      # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --64 --lto --lld --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --64 --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld --static-lib
+    fi
+
+    if false
+    then
+      # -static.
+      # This combination also seems not supported.
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --64 --lto --lld --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --64 --gc --lto --lld --libc++ --crt --libunwind --static
+
+      # Again with lld.
+      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld --static
+    fi
+
+    # ---------------------------------------------------------------------
+
+    local skip_32_tests=""
+    if is_variable_set "XBB_SKIP_32_BIT_TESTS"
+    then
+      skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
+    else
+      local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
+      if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
+      then
+        # If the compiler does not find the full path of the
+        # 32-bit c++ library, multilib support is not installed; skip.
+        skip_32_tests="y"
+      fi
+    fi
+
+    if [ "${skip_32_tests}" == "y" ]
+    then
+      echo
+      echo "Skipping clang -m32 tests..."
+    else
+      # -------------------------------------------------------------------
+      # First test using the system GCC runtime and libstdc++.
+
+      test_compiler_c_cpp --32
+      test_compiler_c_cpp --32 --gc
+      test_compiler_c_cpp --32 --lto --lld
+      test_compiler_c_cpp --32 --gc --lto --lld
+
+      (
+        # The shared libraries are in a custom location and require setting
+        # the path explicitly.
+
+        local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
+        LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+        export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+        export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+        echo
+        echo "LDFLAGS=${LDFLAGS}"
+
+        # With compiler-rt.
+        test_compiler_c_cpp --32 --crt --libunwind
+        test_compiler_c_cpp --32 --gc --crt --libunwind
+        test_compiler_c_cpp --32 --lto --crt --libunwind
+        test_compiler_c_cpp --32 --gc --lto --crt --libunwind
+
+        # Again with lld.
+        test_compiler_c_cpp --32 --crt --libunwind --lld
+        test_compiler_c_cpp --32 --gc --crt --libunwind --lld
+        test_compiler_c_cpp --32 --lto --crt --libunwind --lld
+        test_compiler_c_cpp --32 --gc --lto --crt --libunwind --lld
+
+        # With compiler-rt & libc++.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind
+        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind
+        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind
+
+        # Again with lld.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld
+        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld
+      )
+
+      # -------------------------------------------------------------------
+
+      # -static-libgcc -static-libgcc.
+      test_compiler_c_cpp --32 --static-lib
+      test_compiler_c_cpp --32 --gc --static-lib
+      test_compiler_c_cpp --32 --lto --static-lib
+      test_compiler_c_cpp --32 --gc --lto --static-lib
+
+      # Again with lld.
+      test_compiler_c_cpp --32 --lld --static-lib
+      test_compiler_c_cpp --32 --gc --lld --static-lib
+      test_compiler_c_cpp --32 --lto --lld --static-lib
+      test_compiler_c_cpp --32 --gc --lto --lld --static-lib
+
+      # -static.
+      test_compiler_c_cpp --32 --static
+      test_compiler_c_cpp --32 --gc --static
+      test_compiler_c_cpp --32 --lto --static
+      test_compiler_c_cpp --32 --gc --lto --static
+
+      # Again with lld.
+      test_compiler_c_cpp --32 --lld --static
+      test_compiler_c_cpp --32 --gc --lld --static
+      test_compiler_c_cpp --32 --lto --lld --static
+      test_compiler_c_cpp --32 --gc --lto --lld --static
+
+      if false
+      then
+        # -static-libgcc -static-libgcc.
+        # This combination also seems not supported.
+
+        # With compiler-rt & libc++.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind --static-lib
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --static-lib
+        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind --static-lib
+        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+        # Again with lld.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld --static-lib
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld --static-lib
+        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld --static-lib
+        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld --static-lib
+      fi
+
+      # (.text+0x22a): undefined reference to `_Unwind_Resume'
+      if false
+      then
+        # -static.
+        # This combination also seems not supported.
+
+        # With compiler-rt & libc++.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind --static
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --static
+        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind --static
+        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind --static
+
+        # Again with lld.
+        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld --static
+        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld --static
+        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld --static
+        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld --static
+      fi
+    fi
+  else
+    # arm & aarch64.
+
+    # ---------------------------------------------------------------------
+    # First test using the system GCC runtime and libstdc++.
+
+    # test_compiler_c_cpp # Already done.
+    test_compiler_c_cpp --gc
+    test_compiler_c_cpp --lto
+    test_compiler_c_cpp --gc --lto
+
+    # Again with lld.
+    test_compiler_c_cpp --lld
+    test_compiler_c_cpp --gc --lld
+    test_compiler_c_cpp --lto --lld
+    test_compiler_c_cpp --gc --lto --lld
+
+    # -static-libgcc -static-libgcc.
+    # WARNING: check if they run on RH!
+    test_compiler_c_cpp --static-lib
+    test_compiler_c_cpp --gc --static-lib
+    test_compiler_c_cpp --lto --static-lib
+    test_compiler_c_cpp --gc --lto --static-lib
+
+    # Again with lld.
+    test_compiler_c_cpp --lld --static-lib
+    test_compiler_c_cpp --gc --lld --static-lib
+    test_compiler_c_cpp --lto --lld --static-lib
+    test_compiler_c_cpp --gc --lto --lld --static-lib
+
+    # -static.
+    test_compiler_c_cpp --static
+    test_compiler_c_cpp --gc --static
+    test_compiler_c_cpp --lto --static
+    test_compiler_c_cpp --gc --lto --static
+
+    # Again with lld.
+    test_compiler_c_cpp --lld --static
+    test_compiler_c_cpp --gc --lld --static
+    test_compiler_c_cpp --lto --lld --static
+    test_compiler_c_cpp --gc --lto --lld --static
+
+    # ---------------------------------------------------------------------
+    # Second test LLVM runtime and libc++.
+
+    (
+      # The shared libraries are in a custom location and require setting
+      # the path explicitly.
+      local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+      export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+      export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+      echo
+      echo "LDFLAGS=${LDFLAGS}"
+
+      # The Linux system linker may fail with -flto, use the included lld.
+      # For example, on Raspberry Pi OS 32-bit:
+      # error: unable to execute command: Segmentation fault (core dumped)
+
+      # With compiler-rt.
+      test_compiler_c_cpp --crt --libunwind
+      test_compiler_c_cpp --gc --crt --libunwind
+      test_compiler_c_cpp --lto --crt --libunwind
+      test_compiler_c_cpp --gc --lto --crt --libunwind
+
+      # Again with lld.
+      test_compiler_c_cpp --crt --libunwind --lld
+      test_compiler_c_cpp --gc --crt --libunwind --lld
+      test_compiler_c_cpp --lto --crt --libunwind --lld
+      test_compiler_c_cpp --gc --lto --crt --libunwind --lld
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --libc++ --crt --libunwind
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind
+      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind
+      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind
+
+      # Again with lld.
+      test_compiler_c_cpp --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld
+    )
+
+    if false
+    then
+      # -static-libgcc -static-libgcc.
+      # This combination seems not supported.
+
+      # clang++: warning: argument unused during compilation: '-static-libgcc'
+
+      # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
+      # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+      # Again with lld.
+      test_compiler_c_cpp --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld --static-lib
+    fi
+
+    if false
+    then
+      # -static.
+      # This combination also seems not supported.
+
+      # With compiler-rt & libc++.
+      test_compiler_c_cpp --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind --static
+      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind --static
+
+      # Again with lld.
+      test_compiler_c_cpp --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld --static
+    fi
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function test_darwin()
+{
+  touch sdk-check.cpp
+
+  local first_path="$(run_host_app ${CXX} -v sdk-check.cpp -c 2>&1| grep -E '^ ' | grep  -E '^ /' | sed -e '2,$d')"
+  if echo ${first_path} | grep MacOSX.sdk
+  then
+    echo "MacOSX.sdk test failed"
+    exit 1
+  fi
+
+  show_host_libs "$(dirname $(dirname ${CXX}))/lib/libc++.dylib"
+
+  # Defaults: (different from HB)
+  # config_options+=("-DCLANG_DEFAULT_CXX_STDLIB=libc++")
+  # config_options+=("-DCLANG_DEFAULT_RTLIB=compiler-rt")
+  # config_options+=("-DCLANG_DEFAULT_UNWINDLIB=libunwind")
+
+  # `-fuse-ld=lld` fails on macOS:
+  # ld64.lld: warning: ignoring unknown argument: -no_deduplicate
+  # ld64.lld: warning: -sdk_version is required when emitting min version load command.  Setting sdk version to match provided min version
+  # For now use the system linker /usr/bin/ld.
+
+  # -static-libstdc++ not available on macOS:
+  # clang-11: warning: argument unused during compilation: '-static-libstdc++'
+
+
+  if [ ${LLVM_VERSION_MAJOR} -eq 13 ] || \
+      [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
+      [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+  then
+    if [ "${XBB_TARGET_ARCH}" == "x64" ]
+    then
+      # -flto fails at run on Intel.
+      # Does not identify the custom exceptions:
+      # [./lto-throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing SecondException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing std::exception
+      # caught std::exception
+      # got errors
+
+      # Expected behaviour:
+      # [./throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught FirstException
+      # throwing SecondException
+      # caught SecondException
+      # throwing std::exception
+      # caught std::exception
+      # all ok <--
+
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+    fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 16 ]
+  then
+    if [ "${XBB_TARGET_ARCH}" == "x64" ]
+    then
+      # -flto fails at run on Intel.
+      # Does not identify the custom exceptions:
+      # [./lto-throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing SecondException
+      # caught std::exception <--
+      # caught unexpected exception 3!
+      # throwing std::exception
+      # caught std::exception
+      # got errors
+
+      # Expected behaviour:
+      # [./throwcatch-main ]
+      # not throwing
+      # throwing FirstException
+      # caught FirstException
+      # throwing SecondException
+      # caught SecondException
+      # throwing std::exception
+      # caught std::exception
+      # all ok <--
+
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+    elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+    then
+      # 6083 Trace/BPT trap: 5
+      # exception-reduced.
+      export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+
+      # 6141 Trace/BPT trap: 5
+      # hello-exception.
+      export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+    fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 17 ]
+  then
+
+    # x64
+    # 14 test(s) failed:
+    #
+    # fail: weak-undef-c
+    # fail: gc-weak-undef-c
+    # fail: lto-weak-undef-c
+    # fail: lto-throwcatch-main
+    # fail: gc-lto-weak-undef-c
+    # fail: gc-lto-throwcatch-main
+    # fail: lld-weak-undef-c
+    # fail: lld-throwcatch-main
+    # fail: gc-lld-weak-undef-c
+    # fail: gc-lld-throwcatch-main
+    # fail: lto-lld-weak-undef-c
+    # fail: lto-lld-throwcatch-main
+    # fail: gc-lto-lld-weak-undef-c
+    # fail: gc-lto-lld-throwcatch-main
+
+    # arm64
+    # 8 test(s) failed:
+    #
+    # fail: weak-undef-c
+    # fail: gc-weak-undef-c
+    # fail: lto-weak-undef-c
+    # fail: gc-lto-weak-undef-c
+    # fail: lld-weak-undef-c
+    # fail: gc-lld-weak-undef-c
+    # fail: lto-lld-weak-undef-c
+    # fail: gc-lto-lld-weak-undef-c
+
+    # exception-reduced.
+    export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+
+    # hello-exception.
+    export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+
+    # weak-undef-c.
+    # Undefined symbols for architecture x86_64:
+    #   "_func", referenced from:
+    export XBB_IGNORE_TEST_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+    # ld64.lld: error: undefined symbol: func
+    export XBB_IGNORE_TEST_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      # throwcatch-main.
+      # Non LTO & non LLD are ok!
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+    fi
+
+  elif [ ${LLVM_VERSION_MAJOR} -eq 18 ]
+  then
+    # weak-undef-c.
+    # Most likely an incompatibility with the Apple linker.
+    # Static tests pass.
+    # Undefined symbols for architecture x86_64:
+    #   "_func", referenced from:
+    export XBB_IGNORE_TEST_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_LTO_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_WEAK_UNDEF_C="y"
+
+    export XBB_IGNORE_TEST_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_LTO_LLD_WEAK_UNDEF_C="y"
+    export XBB_IGNORE_TEST_GC_LTO_LLD_WEAK_UNDEF_C="y"
+
+    # hello-exception.
+    # on macOS 10.14 and 11.7
+    export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+    # Segmentation fault: 11 on macOS 10.14 and macOS 11.6
+    export XBB_IGNORE_TEST_LLD_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+
+    # exceptions-reduced.
+    # Segmentation fault: 11 on macOS 10.14
+    export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_LLD_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+
+    # throwcatch-main.
+    # got exit code: 1 on macOS 10.14 & macOS 14
+    export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+    export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+    # got exit code: 1 on macOS 10.14
+    export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
+    export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
+    export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+    export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+  fi
+
+  # It is mandatory for the compiler to run properly without any
+  # explicit libraries or other options, otherwise tools used
+  # during configuration (like meson) might fail probing for
+  # capabilities.
+  # However this is not usable, since it uses the new headers
+  # with the system libraries.
+  test_compiler_c_cpp
+
+  (
+    # The shared libraries are in a custom location and require setting
+    # the libraries and rpath explicitly.
+
+    local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+
+    LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+    LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
+    LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+    LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
+    export LDFLAGS
+    export LDXXFLAGS
+
+    echo
+    echo "LDFLAGS=${LDFLAGS}"
+
+    # Again, with various options.
+    test_compiler_c_cpp --gc
+    test_compiler_c_cpp --lto
+    test_compiler_c_cpp --gc --lto
+
+    # No need for compiler-rt or libc++, they are the defaults.
+
+    # Again with lld.
+    test_compiler_c_cpp --lld
+    test_compiler_c_cpp --gc --lld
+    test_compiler_c_cpp --lto --lld
+    test_compiler_c_cpp --gc --lto --lld
+  )
+
+  # ld: library not found for -lcrt0.o
+  # test_compiler_c_cpp --static
+
+  # ld64.lld: warning: Option `-static' is not yet implemented. Stay tuned...
+  # ld64.lld: error: library not found for -lcrt0.o
+  # ld64.lld: error: undefined symbol: printf
+
+  # test_compiler_c_cpp --static --lld
+}
+
+# -----------------------------------------------------------------------------
 
 function test_case_clangd_hello()
 {
@@ -2737,7 +2788,7 @@ __EOF__
 
     cat "compile_commands.json"
 
-    run_host_app_verbose "${test_bin_path}/clangd" --check="clangd-hello.cpp"
+    run_host_app_verbose "${CLANGD}" --check="clangd-hello.cpp"
 
     test_case_pass "${test_case_name}"
   ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
@@ -2778,7 +2829,7 @@ __EOF__
 
     cat "compile_commands.json"
 
-    run_host_app_verbose "${test_bin_path}/clangd" --check="clangd-unchecked-exception.cpp"
+    run_host_app_verbose "${CLANGD}" --check="clangd-unchecked-exception.cpp"
 
     test_case_pass "${test_case_name}"
   ) 2>&1 | tee "${XBB_TEST_RESULTS_FOLDER_PATH}/${prefix}${test_case_name}${suffix}.txt"
