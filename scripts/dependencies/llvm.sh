@@ -2575,7 +2575,9 @@ function test_darwin()
   # caught std::exception
   # all ok <--
 
-  if [ ${LLVM_VERSION_MAJOR} -eq 10 ] || \
+  # The clang version on macOS 10.13 is 4.
+  if [ ${LLVM_VERSION_MAJOR} -eq 4 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 10 ] || \
      [ ${LLVM_VERSION_MAJOR} -eq 11 ] || \
      [ ${LLVM_VERSION_MAJOR} -eq 12 ]
   then
@@ -2585,8 +2587,8 @@ function test_darwin()
       export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
     fi
   elif [ ${LLVM_VERSION_MAJOR} -eq 13 ] || \
-     [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
-     [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+       [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
+       [ ${LLVM_VERSION_MAJOR} -eq 15 ]
   then
     if [ "${XBB_TARGET_ARCH}" == "x64" ]
     then
