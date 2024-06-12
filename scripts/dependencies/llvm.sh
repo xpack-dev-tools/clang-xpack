@@ -2539,38 +2539,48 @@ function test_darwin()
   # -static-libstdc++ not available on macOS:
   # clang-11: warning: argument unused during compilation: '-static-libstdc++'
 
+  # throwcatch-main with -flto fails to run on Intel.
+  # Reproducible with the system compiler/linker too.
 
-  if [ ${LLVM_VERSION_MAJOR} -eq 13 ] || \
-      [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
-      [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+  # Does not identify the custom exceptions:
+  # [./lto-throwcatch-main ]
+  # not throwing
+  # throwing FirstException
+  # caught std::exception <-- instead of FirstException
+  # caught unexpected exception 3!
+  # throwing SecondException
+  # caught std::exception <-- instead of SecondException
+  # caught unexpected exception 3!
+  # throwing std::exception
+  # caught std::exception
+  # got errors
+
+  # Expected behaviour:
+  # [./throwcatch-main ]
+  # not throwing
+  # throwing FirstException
+  # caught FirstException
+  # throwing SecondException
+  # caught SecondException
+  # throwing std::exception
+  # caught std::exception
+  # all ok <--
+
+  if [ ${LLVM_VERSION_MAJOR} -eq 10 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 11 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 12 ]
   then
     if [ "${XBB_TARGET_ARCH}" == "x64" ]
     then
-      # -flto fails to run on Intel.
-      # Does not identify the custom exceptions:
-      # [./lto-throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught std::exception <-- instead of FirstException
-      # caught unexpected exception 3!
-      # throwing SecondException
-      # caught std::exception <-- instead of SecondException
-      # caught unexpected exception 3!
-      # throwing std::exception
-      # caught std::exception
-      # got errors
-
-      # Expected behaviour:
-      # [./throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught FirstException
-      # throwing SecondException
-      # caught SecondException
-      # throwing std::exception
-      # caught std::exception
-      # all ok <--
-
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+    fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 13 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 14 ] || \
+     [ ${LLVM_VERSION_MAJOR} -eq 15 ]
+  then
+    if [ "${XBB_TARGET_ARCH}" == "x64" ]
+    then
       export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
       export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
@@ -2581,31 +2591,6 @@ function test_darwin()
   then
     if [ "${XBB_TARGET_ARCH}" == "x64" ]
     then
-      # -flto fails at run on Intel.
-      # Does not identify the custom exceptions:
-      # [./lto-throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught std::exception <--
-      # caught unexpected exception 3!
-      # throwing SecondException
-      # caught std::exception <--
-      # caught unexpected exception 3!
-      # throwing std::exception
-      # caught std::exception
-      # got errors
-
-      # Expected behaviour:
-      # [./throwcatch-main ]
-      # not throwing
-      # throwing FirstException
-      # caught FirstException
-      # throwing SecondException
-      # caught SecondException
-      # throwing std::exception
-      # caught std::exception
-      # all ok <--
-
       export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
       export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
@@ -2732,16 +2717,19 @@ function test_darwin()
     export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
     export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
 
-    # throwcatch-main.
-    # got exit code: 1 on macOS 10.14 & macOS 14
-    export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
-    export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      # throwcatch-main.
+      # got exit code: 1 on macOS 10.14 & macOS 14
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
 
-    # got exit code: 1 on macOS 10.14
-    export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
-    export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
-    export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
-    export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+      # got exit code: 1 on macOS 10.14
+      export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+    fi
   fi
 
   # It is mandatory for the compiler to run properly without any
