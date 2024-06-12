@@ -1069,6 +1069,26 @@ On Windows use:
 xPack x86_64 clang version 18.1.7
 ```
 
+### Running the tests with the system clang
+
+To calibrate the tests with the system compiler:
+
+```
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system
+```
+
+On Ubuntu, to install clang and libraries, use:
+
+```
+sudo apt-get install --yes clang lld libc++-dev libc++abi-dev
+```
+
+On Linux x64, the 32-bit clang libraries are not available, skip the tests:
+
+```
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system --skip-32
+```
+
 ## Create a new GitHub pre-release draft
 
 - in `CHANGELOG.md`, add the release date and a message like _* v18.1.7-1 released_
