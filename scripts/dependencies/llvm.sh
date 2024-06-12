@@ -879,6 +879,15 @@ function llvm_test()
       LLVM_STRIP="${test_bin_path}/llvm-strip"
     fi
 
+    # -------------------------------------------------------------------------
+
+    export LLVM_VERSION=$(run_host_app "${CC}" -dumpversion)
+    echo "clang: ${LLVM_VERSION}"
+
+    export LLVM_VERSION_MAJOR=$(xbb_get_version_major "${LLVM_VERSION}")
+
+    # -------------------------------------------------------------------------
+
     if [ "${XBB_BUILD_PLATFORM}" != "win32" ]
     then
       show_host_libs "${CC}"
@@ -896,6 +905,8 @@ function llvm_test()
     test_case_llvm_binaries_start
 
     test_case_clang_configuration
+
+    # -------------------------------------------------------------------------
 
     echo
     echo "Testing if ${name_prefix}clang compiles simple programs..."
@@ -931,11 +942,6 @@ function llvm_test()
     fi
 
     # -------------------------------------------------------------------------
-
-    export LLVM_VERSION=$(run_host_app "${CC}" -dumpversion)
-    echo "clang: ${LLVM_VERSION}"
-
-    export LLVM_VERSION_MAJOR=$(xbb_get_version_major "${LLVM_VERSION}")
 
     if [ "${XBB_HOST_PLATFORM}" == "win32" ]
     then
