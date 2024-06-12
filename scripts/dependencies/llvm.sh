@@ -978,6 +978,9 @@ function llvm_test()
       if [ ${llvm_version_major} -eq 14 ] || \
          [ ${llvm_version_major} -eq 15 ]
       then
+        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        extern XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+
         # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
         # ld.lld: error: duplicate symbol: world()
         # >>> defined at hello-weak-cpp.cpp
@@ -999,7 +1002,8 @@ function llvm_test()
       then
         # bufferoverflow.
         # error: unable to find library -lssp
-        export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        extern XBB_SKIP_TEST_BUFFEROVERFLOW="y"
 
         # Both 32 & 64-bit are affected.
         # Surprisingly, the non LTO variant is functional.
@@ -1029,7 +1033,8 @@ function llvm_test()
 
         # bufferoverflow.
         # error: unable to find library -lssp
-        export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        extern XBB_SKIP_TEST_BUFFEROVERFLOW="y"
 
         # weak-undef
         # Surprisingly, the non LTO variant is functional.
@@ -1054,7 +1059,8 @@ function llvm_test()
       then
         # bufferoverflow.
         # error: unable to find library -lssp
-        export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
+        extern XBB_SKIP_TEST_BUFFEROVERFLOW="y"
       fi
 
       for bits in 32 64
