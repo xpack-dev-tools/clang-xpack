@@ -820,7 +820,7 @@ function llvm_test()
     if [ "${XBB_TEST_SYSTEM_TOOLS:-""}" == "y" ]
     then
       # On Ubuntu requires
-      # sudo apt-get install --yes clang lld
+      # sudo apt-get install --yes clang lld libc++-dev libc++abi-dev
 
       CC="$(which clang)"
       CXX="$(which clang++)"
