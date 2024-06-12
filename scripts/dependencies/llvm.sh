@@ -800,6 +800,8 @@ function llvm_build()
   tests_add "llvm_test" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 }
 
+# =============================================================================
+
 function llvm_test()
 {
   echo_develop
@@ -817,6 +819,9 @@ function llvm_test()
 
     if [ "${XBB_TEST_SYSTEM_TOOLS:-""}" == "y" ]
     then
+      # On Ubuntu requires
+      # sudo apt-get install --yes clang lld
+
       CC="$(which clang)"
       CXX="$(which clang++)"
 
