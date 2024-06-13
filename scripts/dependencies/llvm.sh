@@ -1199,7 +1199,7 @@ function test_win32()
       if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
       then
         # When running natively, set the PATH.
-        libcxx_file_path=$(${CXX} -m${bits} -print-file-name=libc++.dll)
+        libcxx_file_path="$(${CXX} -m${bits} -print-file-name=libc++.dll)"
         if [ "${libcxx_file_path}" == "libc++.dll" ]
         then
           echo "Cannot get libc++.dll path"
@@ -1213,7 +1213,7 @@ function test_win32()
       elif [ "${XBB_BUILD_PLATFORM}" == "linux" ]
       then
         # When running via wine, set WINEPATH.
-        libcxx_file_path=$(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll)
+        libcxx_file_path="$(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll)"
         if [ "${libcxx_file_path}" == "libc++.dll" ]
         then
           echo "Cannot get libc++.dll path"
