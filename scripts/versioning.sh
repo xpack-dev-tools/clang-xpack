@@ -77,7 +77,7 @@ function clang_build_mingw_bootstrap()
     # Build LLVM with the host XBB compiler.
     # Has a reference to /opt/xbb/lib/libncurses.so.
     # The result is installed in x86_64-pc-linux-gnu/install
-    llvm_mingw_build_first "${XBB_LLVM_VERSION}"
+    llvm_mingw_build_first "${XBB_LLVM_VERSION}" --bootstrap
 
     # Add wrappers to both i686-* and x64_64-* applications.
     clang_add_mingw_wrappers

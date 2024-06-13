@@ -28,6 +28,25 @@ function llvm_mingw_build_first()
   export XBB_ACTUAL_LLVM_VERSION="$1"
   shift
 
+  local is_bootstrap=""
+  local bootstrap_option=""
+
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --bootstrap )
+        is_bootstrap="y"
+        bootstrap_option="$1"
+        shift
+        ;;
+
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+  done
+
   local name_prefix="mingw-w64-"
 
   local llvm_version_major=$(xbb_get_version_major "${XBB_ACTUAL_LLVM_VERSION}")
@@ -219,7 +238,7 @@ function llvm_mingw_build_first()
 
   for triplet in "${XBB_MINGW_TRIPLETS[@]}"
   do
-    tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin" --triplet="${triplet}"
+    tests_add "test_mingw_llvm" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin" --triplet="${triplet}" "${bootstrap_option}"
   done
 }
 
@@ -617,11 +636,20 @@ function test_mingw_llvm()
   local name_prefix=""
   local name_suffix=""
 
+  local is_bootstrap=""
+  local bootstrap_option=""
+
   while [ $# -gt 0 ]
   do
     case "$1" in
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
+        shift
+        ;;
+
+      --bootstrap )
+        is_bootstrap="y"
+        bootstrap_option="$1"
         shift
         ;;
 
@@ -662,6 +690,8 @@ function test_mingw_llvm()
     GENDEF="${test_bin_path}/gendef"
     AR="${test_bin_path}/${triplet}-ar"
     RANLIB="${test_bin_path}/${triplet}-ranlib"
+
+    CLANGD="${test_bin_path}/clangd"
 
     # For consistency, on Linux it is available in the system.
     local realpath=$(which grealpath || which realpath || echo realpath)
@@ -849,49 +879,61 @@ function test_mingw_llvm()
       # also copied to lib; it is recommended to ask the compiler for the
       # actual path.
       # export WINEPATH="${test_bin_path}/../${triplet}/bin;${WINEPATH:-}"
-      export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
+      libcxx_file_path="$(${CXX} -print-file-name=libc++.dll)"
+      if [ "${libcxx_file_path}" == "libc++.dll" ]
+      then
+        echo "Cannot get libc++.dll path"
+        exit 1
+      fi
+      export WINEPATH="$(dirname $(echo "${libcxx_file_path}"))"
       echo "WINEPATH=${WINEPATH}"
 
-      test_compiler_c_cpp --${bits}
-      test_compiler_c_cpp --${bits} --gc
-      test_compiler_c_cpp --${bits} --lto
-      test_compiler_c_cpp --${bits} --gc --lto
+      test_compiler_c_cpp --${bits} "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --gc "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --lto "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --gc --lto "${bootstrap_option}"
     )
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      test_compiler_c_cpp --${bits} --static-lib
-      test_compiler_c_cpp --${bits} --static-lib --gc
-      test_compiler_c_cpp --${bits} --static-lib --lto
-      test_compiler_c_cpp --${bits} --static-lib --gc --lto
+      test_compiler_c_cpp --${bits} --static-lib "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --gc "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --lto "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --gc --lto "${bootstrap_option}"
 
-      test_compiler_c_cpp --${bits} --static
-      test_compiler_c_cpp --${bits} --static --gc
-      test_compiler_c_cpp --${bits} --static --lto
-      test_compiler_c_cpp --${bits} --static --gc --lto
+      test_compiler_c_cpp --${bits} --static "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --gc "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --lto "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --gc --lto "${bootstrap_option}"
     fi
 
     (
-      export WINEPATH="$(dirname $(${CXX} -print-file-name=libc++.dll))"
+      libcxx_file_path="$(${CXX} -print-file-name=libc++.dll)"
+      if [ "${libcxx_file_path}" == "libc++.dll" ]
+      then
+        echo "Cannot get libc++.dll path"
+        exit 1
+      fi
+      export WINEPATH="$(dirname $(echo "${libcxx_file_path}"))"
       echo "WINEPATH=${WINEPATH}"
 
       # Once again with --crt
-      test_compiler_c_cpp --${bits} --crt
-      test_compiler_c_cpp --${bits} --gc --crt
-      test_compiler_c_cpp --${bits} --lto --crt
-      test_compiler_c_cpp --${bits} --gc --lto --crt
+      test_compiler_c_cpp --${bits} --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --gc --lto --crt "${bootstrap_option}"
     )
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      test_compiler_c_cpp --${bits} --static-lib --crt
-      test_compiler_c_cpp --${bits} --static-lib --gc --crt
-      test_compiler_c_cpp --${bits} --static-lib --lto --crt
-      test_compiler_c_cpp --${bits} --static-lib --gc --lto --crt
+      test_compiler_c_cpp --${bits} --static-lib --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static-lib --gc --lto --crt "${bootstrap_option}"
 
-      test_compiler_c_cpp --${bits} --static --crt
-      test_compiler_c_cpp --${bits} --static --gc --crt
-      test_compiler_c_cpp --${bits} --static --lto --crt
-      test_compiler_c_cpp --${bits} --static --gc --lto --crt
+      test_compiler_c_cpp --${bits} --static --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp --${bits} --static --gc --lto --crt "${bootstrap_option}"
     fi
 
     # -------------------------------------------------------------------------
@@ -902,47 +944,16 @@ function test_mingw_llvm()
       # On Windows things are a bit more complicated
       if is_native
       then
+        if [ -f "${CLANGD}${XBB_HOST_DOT_EXE}" ]
+        then
 
-        # Note: __EOF__ is NOT quoted to allow substitutions here.
-        cat <<__EOF__ > "compile_commands.json"
-[
-  {
-    "directory": "$(pwd)",
-    "command": "${CXX} -c hello-cpp.cpp",
-    "file": "hello-cpp.cpp"
-  }
-]
-__EOF__
+          test_case_clangd_hello
 
-cat "compile_commands.json"
+          # Segmentation fault (core dumped) on 13 & 14
+          test_case_clangd_unchecked_exception
 
-        run_host_app_verbose "${test_bin_path}/clangd" --check="hello-cpp.cpp"
+        fi
 
-        # Note: __EOF__ is quoted to prevent substitutions here.
-        cat <<'__EOF__' > "unchecked-exception.cpp"
-// repro for clangd crash from github.com/clangd/clangd issue #1072
-#include <exception>
-int main() {
-    std::exception_ptr foo;
-    try {} catch (...) { }
-    return 0;
-}
-__EOF__
-
-        # Note: __EOF__ is NOT quoted to allow substitutions here.
-        cat <<__EOF__ > "compile_commands.json"
-[
-  {
-    "directory": "$(pwd)",
-    "command": "${CXX} -c unchecked-exception.cpp",
-    "file": "unchecked-exception.cpp"
-  }
-]
-__EOF__
-
-cat "compile_commands.json"
-
-        run_host_app_verbose "${test_bin_path}/clangd" --check="unchecked-exception.cpp"
       fi
     )
 
