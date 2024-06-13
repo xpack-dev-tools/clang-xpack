@@ -1199,14 +1199,30 @@ function test_win32()
       if [ "${XBB_BUILD_PLATFORM}" == "win32" ]
       then
         # When running natively, set the PATH.
-        cxx_lib_path=$(dirname $(${CXX} -m${bits} -print-file-name=libc++.dll | sed -e 's|:||' | sed -e 's|^|/|'))
+        libcxx_file_path=$(${CXX} -m${bits} -print-file-name=libc++.dll)
+        if [ "${libcxx_file_path}" == "libc++.dll" ]
+        then
+          echo "Cannot get libc++.dll path"
+          exit 1
+        fi
+        cxx_lib_path=$(dirname $(echo "${libcxx_file_path}" | sed -e 's|:||' | sed -e 's|^|/|'))
         export PATH="${cxx_lib_path}:${PATH:-}"
+        echo
+        echo "${bits}-bits libs"
         echo "PATH=${PATH}"
       elif [ "${XBB_BUILD_PLATFORM}" == "linux" ]
       then
         # When running via wine, set WINEPATH.
-        cxx_lib_path=$(dirname $(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll | sed -e 's|[a-zA-Z]:||'))
+        libcxx_file_path=$(wine64 ${CXX}.exe -m${bits} -print-file-name=libc++.dll)
+        if [ "${libcxx_file_path}" == "libc++.dll" ]
+        then
+          echo "Cannot get libc++.dll path"
+          exit 1
+        fi
+        cxx_lib_path=$(dirname $(echo "${libcxx_file_path}" | sed -e 's|[a-zA-Z]:||'))
         export WINEPATH="${cxx_lib_path};${WINEPATH:-}"
+        echo
+        echo "${bits}-bits libs"
         echo "WINEPATH=${WINEPATH}"
       else
         echo "Unsupported XBB_BUILD_PLATFORM=${XBB_BUILD_PLATFORM} in ${FUNCNAME[0]}()"
