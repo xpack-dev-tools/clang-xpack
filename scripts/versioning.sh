@@ -210,6 +210,14 @@ function clang_build_common()
           mingw_build_gendef --triplet="${triplet}" --program-prefix=
 
           mingw_build_crt --triplet="${triplet}"
+
+          if [ ! -f "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a" ]; then
+              # Create empty dummy archives, to avoid failing when the compiler
+              # driver adds "-lssp -lssh_nonshared" when linking. (from llvm-mingw)
+              llvm-ar rcs "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a"
+              llvm-ar rcs "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp_nonshared.a"
+          fi
+
           mingw_build_winpthreads --triplet="${triplet}"
           mingw_build_winstorecompat --triplet="${triplet}"
         )
