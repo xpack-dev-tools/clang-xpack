@@ -257,29 +257,21 @@ For a debug build:
 xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-The build takes about 70 minutes (1h10).
+The build takes about 80 minutes (1h20).
 
 The failing tests are:
 
-```
-Tests report for clang 18.1.7-1 on darwin-x64 (macOS 14.3.1)
+```txt
+Tests summary for clang 18.1.7-1 on darwin-x64 (macOS 14.3.1)
 
-260 test(s) passed, 12 failed:
+272 test cases passed, 0 skipped, 4 failed:
 
-- fail: weak-undef-c
-- fail: gc-weak-undef-c
-- fail: lto-weak-undef-c
-- fail: lto-throwcatch-main
-- fail: gc-lto-weak-undef-c
-- fail: gc-lto-throwcatch-main
-- fail: lld-weak-undef-c
-- fail: gc-lld-weak-undef-c
-- fail: lto-lld-weak-undef-c
-- fail: lto-lld-throwcatch-main
-- fail: gc-lto-lld-weak-undef-c
-- fail: gc-lto-lld-throwcatch-main
+- xfail: lto-throwcatch-main
+- xfail: gc-lto-throwcatch-main
+- xfail: lto-lld-throwcatch-main
+- xfail: gc-lto-lld-throwcatch-main
 
-Result: tests accepted
+Verdict: tests reluctantly accepted
 ```
 
 When functional, push the `xpack-develop` branch to GitHub.
@@ -307,53 +299,45 @@ xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 90 minutes later (1h30), the output of the build script is a compressed
+About 93 minutes later (1h33), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
-total 229400
--rw-r--r--  1 ilg  staff  101979704 May 29 10:39 xpack-clang-18.1.7-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff        105 May 29 10:39 xpack-clang-18.1.7-1-darwin-x64.tar.gz.sha
+total 229672
+-rw-r--r--  1 ilg  staff  101978812 Jun 13 21:23 xpack-clang-18.1.7-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Jun 13 21:23 xpack-clang-18.1.7-1-darwin-x64.tar.gz.sha
 ```
 
 The failing tests are:
 
-```
-Tests report for clang 18.1.7-1 darwin-x64
+```txt
+Tests summary for clang 18.1.7-1 on darwin-x64 (MacOSX 10.14.6)
 
-244 test(s) passed, 28 failed:
+256 test cases passed, 0 skipped, 20 failed:
 
-- fail: weak-undef-c
-- fail: gc-hello-exception
-- fail: gc-exception-reduced
-- fail: gc-weak-undef-c
-- fail: lto-hello-exception
-- fail: lto-exception-reduced
-- fail: lto-weak-undef-c
-- fail: lto-throwcatch-main
-- fail: gc-lto-hello-exception
-- fail: gc-lto-exception-reduced
-- fail: gc-lto-weak-undef-c
-- fail: gc-lto-throwcatch-main
-- fail: lld-hello-exception
-- fail: lld-exception-reduced
-- fail: lld-weak-undef-c
-- fail: lld-throwcatch-main
-- fail: gc-lld-hello-exception
-- fail: gc-lld-exception-reduced
-- fail: gc-lld-weak-undef-c
-- fail: gc-lld-throwcatch-main
-- fail: lto-lld-hello-exception
-- fail: lto-lld-exception-reduced
-- fail: lto-lld-weak-undef-c
-- fail: lto-lld-throwcatch-main
-- fail: gc-lto-lld-hello-exception
-- fail: gc-lto-lld-exception-reduced
-- fail: gc-lto-lld-weak-undef-c
-- fail: gc-lto-lld-throwcatch-main
+- xfail: gc-hello-exception
+- xfail: gc-exception-reduced
+- xfail: lto-hello-exception
+- xfail: lto-exception-reduced
+- xfail: lto-throwcatch-main
+- xfail: gc-lto-hello-exception
+- xfail: gc-lto-exception-reduced
+- xfail: gc-lto-throwcatch-main
+- xfail: lld-hello-exception
+- xfail: lld-exception-reduced
+- xfail: lld-throwcatch-main
+- xfail: gc-lld-hello-exception
+- xfail: gc-lld-exception-reduced
+- xfail: gc-lld-throwcatch-main
+- xfail: lto-lld-hello-exception
+- xfail: lto-lld-exception-reduced
+- xfail: lto-lld-throwcatch-main
+- xfail: gc-lto-lld-hello-exception
+- xfail: gc-lto-lld-exception-reduced
+- xfail: gc-lto-lld-throwcatch-main
 
-Result: tests accepted
+Verdict: tests reluctantly accepted
 ```
 
 #### Apple Silicon macOS
@@ -381,47 +365,39 @@ xpm install --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 35 minutes later, the output of the build script is a compressed
+About 37 minutes later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
-total 196632
--rw-r--r--  1 ilg  staff  95640264 May 29 10:40 xpack-clang-18.1.7-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 May 29 10:40 xpack-clang-18.1.7-1-darwin-arm64.tar.gz.sha
+total 197848
+-rw-r--r--  1 ilg  staff  95637479 Jun 13 20:28 xpack-clang-18.1.7-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jun 13 20:28 xpack-clang-18.1.7-1-darwin-arm64.tar.gz.sha
 ```
 
 The failing tests are:
 
-```
-Tests report for clang 18.1.7-1 darwin-arm64
+```txt
+Tests summary for clang 18.1.7-1 on darwin-arm64 (macOS 11.7.10)
 
-250 test(s) passed, 22 failed:
+262 test cases passed, 0 skipped, 14 failed:
 
-- fail: weak-undef-c
-- fail: gc-hello-exception
-- fail: gc-exception-reduced
-- fail: gc-weak-undef-c
-- fail: lto-hello-exception
-- fail: lto-exception-reduced
-- fail: lto-weak-undef-c
-- fail: gc-lto-hello-exception
-- fail: gc-lto-exception-reduced
-- fail: gc-lto-weak-undef-c
-- fail: lld-hello-exception
-- fail: lld-exception-reduced
-- fail: lld-weak-undef-c
-- fail: gc-lld-hello-exception
-- fail: gc-lld-exception-reduced
-- fail: gc-lld-weak-undef-c
-- fail: lto-lld-hello-exception
-- fail: lto-lld-exception-reduced
-- fail: lto-lld-weak-undef-c
-- fail: gc-lto-lld-hello-exception
-- fail: gc-lto-lld-exception-reduced
-- fail: gc-lto-lld-weak-undef-c
+- xfail: gc-hello-exception
+- xfail: gc-exception-reduced
+- xfail: lto-hello-exception
+- xfail: lto-exception-reduced
+- xfail: gc-lto-hello-exception
+- xfail: gc-lto-exception-reduced
+- xfail: lld-hello-exception
+- xfail: lld-exception-reduced
+- xfail: gc-lld-hello-exception
+- xfail: gc-lld-exception-reduced
+- xfail: lto-lld-hello-exception
+- xfail: lto-lld-exception-reduced
+- xfail: gc-lto-lld-hello-exception
+- xfail: gc-lto-lld-exception-reduced
 
-Result: tests accepted
+Verdict: tests reluctantly accepted
 ```
 
 #### Intel GNU/Linux
@@ -451,81 +427,81 @@ xpm run docker-link-deps --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 130 minutes later (2h10), the output of the build script is a compressed
+About 110 minutes later (1h50), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
-total 215716
--rw-r--r-- 1 ilg ilg 220882615 May 28 23:04 xpack-clang-18.1.7-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 May 28 23:04 xpack-clang-18.1.7-1-linux-x64.tar.gz.sha
+total 215724
+-rw-r--r-- 1 ilg ilg 220891481 Jun 13 18:17 xpack-clang-18.1.7-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jun 13 18:17 xpack-clang-18.1.7-1-linux-x64.tar.gz.sha
 ```
 
 The failing tests are:
 
-```
-Tests report for clang 18.1.7-1 linux-x64
+```txt
+Tests summary for clang 18.1.7-1 on linux-x64 (Ubuntu 18.04)
 
-2514 test(s) passed, 56 failed:
+2518 test cases passed, 0 skipped, 56 failed:
 
-- fail: static-sleepy-threads-cv-64
-- fail: static-gc-sleepy-threads-cv-64
-- fail: static-lto-sleepy-threads-cv-64
-- fail: static-gc-lto-sleepy-threads-cv-64
-- fail: static-lld-sleepy-threads-cv-64
-- fail: static-gc-lld-sleepy-threads-cv-64
-- fail: static-lto-lld-sleepy-threads-cv-64
-- fail: static-gc-lto-lld-sleepy-threads-cv-64
-- fail: static-sleepy-threads-cv-32
-- fail: static-gc-sleepy-threads-cv-32
-- fail: static-lto-sleepy-threads-cv-32
-- fail: static-gc-lto-sleepy-threads-cv-32
-- fail: static-lld-simple-hello1-cpp-one-32
-- fail: static-lld-simple-hello1-cpp-two-32
-- fail: static-lld-simple-exception-32
-- fail: static-lld-simple-str-exception-32
-- fail: static-lld-simple-int-exception-32
-- fail: static-lld-sleepy-threads-cv-32
-- fail: static-lld-hello-cpp-32
-- fail: static-lld-exception-locale-32
-- fail: static-lld-cnrt-test-32
-- fail: static-lld-hello-weak-cpp-32
-- fail: static-lld-overload-new-cpp-32
-- fail: static-gc-lld-simple-hello1-cpp-one-32
-- fail: static-gc-lld-simple-hello1-cpp-two-32
-- fail: static-gc-lld-simple-exception-32
-- fail: static-gc-lld-simple-str-exception-32
-- fail: static-gc-lld-simple-int-exception-32
-- fail: static-gc-lld-sleepy-threads-cv-32
-- fail: static-gc-lld-hello-cpp-32
-- fail: static-gc-lld-exception-locale-32
-- fail: static-gc-lld-cnrt-test-32
-- fail: static-gc-lld-hello-weak-cpp-32
-- fail: static-gc-lld-overload-new-cpp-32
-- fail: static-lto-lld-simple-hello1-cpp-one-32
-- fail: static-lto-lld-simple-hello1-cpp-two-32
-- fail: static-lto-lld-simple-exception-32
-- fail: static-lto-lld-simple-str-exception-32
-- fail: static-lto-lld-simple-int-exception-32
-- fail: static-lto-lld-sleepy-threads-cv-32
-- fail: static-lto-lld-hello-cpp-32
-- fail: static-lto-lld-exception-locale-32
-- fail: static-lto-lld-cnrt-test-32
-- fail: static-lto-lld-hello-weak-cpp-32
-- fail: static-lto-lld-overload-new-cpp-32
-- fail: static-gc-lto-lld-simple-hello1-cpp-one-32
-- fail: static-gc-lto-lld-simple-hello1-cpp-two-32
-- fail: static-gc-lto-lld-simple-exception-32
-- fail: static-gc-lto-lld-simple-str-exception-32
-- fail: static-gc-lto-lld-simple-int-exception-32
-- fail: static-gc-lto-lld-sleepy-threads-cv-32
-- fail: static-gc-lto-lld-hello-cpp-32
-- fail: static-gc-lto-lld-exception-locale-32
-- fail: static-gc-lto-lld-cnrt-test-32
-- fail: static-gc-lto-lld-hello-weak-cpp-32
-- fail: static-gc-lto-lld-overload-new-cpp-32
+- xfail: static-sleepy-threads-cv-64
+- xfail: static-gc-sleepy-threads-cv-64
+- xfail: static-lto-sleepy-threads-cv-64
+- xfail: static-gc-lto-sleepy-threads-cv-64
+- xfail: static-lld-sleepy-threads-cv-64
+- xfail: static-gc-lld-sleepy-threads-cv-64
+- xfail: static-lto-lld-sleepy-threads-cv-64
+- xfail: static-gc-lto-lld-sleepy-threads-cv-64
+- xfail: static-sleepy-threads-cv-32
+- xfail: static-gc-sleepy-threads-cv-32
+- xfail: static-lto-sleepy-threads-cv-32
+- xfail: static-gc-lto-sleepy-threads-cv-32
+- xfail: static-lld-simple-hello-cout-one-32
+- xfail: static-lld-simple-hello-cout-two-32
+- xfail: static-lld-simple-exception-32
+- xfail: static-lld-simple-str-exception-32
+- xfail: static-lld-simple-int-exception-32
+- xfail: static-lld-sleepy-threads-cv-32
+- xfail: static-lld-hello2-cpp-32
+- xfail: static-lld-exception-locale-32
+- xfail: static-lld-cnrt-test-32
+- xfail: static-lld-hello-weak2-cpp-32
+- xfail: static-lld-overload-new-cpp-32
+- xfail: static-gc-lld-simple-hello-cout-one-32
+- xfail: static-gc-lld-simple-hello-cout-two-32
+- xfail: static-gc-lld-simple-exception-32
+- xfail: static-gc-lld-simple-str-exception-32
+- xfail: static-gc-lld-simple-int-exception-32
+- xfail: static-gc-lld-sleepy-threads-cv-32
+- xfail: static-gc-lld-hello2-cpp-32
+- xfail: static-gc-lld-exception-locale-32
+- xfail: static-gc-lld-cnrt-test-32
+- xfail: static-gc-lld-hello-weak2-cpp-32
+- xfail: static-gc-lld-overload-new-cpp-32
+- xfail: static-lto-lld-simple-hello-cout-one-32
+- xfail: static-lto-lld-simple-hello-cout-two-32
+- xfail: static-lto-lld-simple-exception-32
+- xfail: static-lto-lld-simple-str-exception-32
+- xfail: static-lto-lld-simple-int-exception-32
+- xfail: static-lto-lld-sleepy-threads-cv-32
+- xfail: static-lto-lld-hello2-cpp-32
+- xfail: static-lto-lld-exception-locale-32
+- xfail: static-lto-lld-cnrt-test-32
+- xfail: static-lto-lld-hello-weak2-cpp-32
+- xfail: static-lto-lld-overload-new-cpp-32
+- xfail: static-gc-lto-lld-simple-hello-cout-one-32
+- xfail: static-gc-lto-lld-simple-hello-cout-two-32
+- xfail: static-gc-lto-lld-simple-exception-32
+- xfail: static-gc-lto-lld-simple-str-exception-32
+- xfail: static-gc-lto-lld-simple-int-exception-32
+- xfail: static-gc-lto-lld-sleepy-threads-cv-32
+- xfail: static-gc-lto-lld-hello2-cpp-32
+- xfail: static-gc-lto-lld-exception-locale-32
+- xfail: static-gc-lto-lld-cnrt-test-32
+- xfail: static-gc-lto-lld-hello-weak2-cpp-32
+- xfail: static-gc-lto-lld-overload-new-cpp-32
 
-Result: tests accepted
+Verdict: tests reluctantly accepted
 ```
 
 ##### Build the Intel Windows binaries
@@ -558,56 +534,29 @@ total 403676
 
 The failing tests are:
 
-```
-Tests report for clang 18.1.7-1 on win32-x64 (Ubuntu 18.04)
+```txt
+Tests summary for clang 18.1.7-1 on win32-x64 (Ubuntu 18.04)
 
-1488 test(s) passed, 40 failed:
+1516 test cases passed, 0 skipped, 16 failed:
 
-- fail: bufferoverflow-32
-- fail: gc-bufferoverflow-32
-- fail: lto-bufferoverflow-32
-- fail: gc-lto-bufferoverflow-32
-- fail: crt-bufferoverflow-32
-- fail: gc-crt-bufferoverflow-32
-- fail: lto-crt-bufferoverflow-32
-- fail: gc-lto-crt-bufferoverflow-32
+- xfail: bufferoverflow-32
+- xfail: gc-bufferoverflow-32
+- xfail: lto-bufferoverflow-32
+- xfail: gc-lto-bufferoverflow-32
+- xfail: crt-bufferoverflow-32
+- xfail: gc-crt-bufferoverflow-32
+- xfail: lto-crt-bufferoverflow-32
+- xfail: gc-lto-crt-bufferoverflow-32
+- xfail: bufferoverflow-64
+- xfail: gc-bufferoverflow-64
+- xfail: lto-bufferoverflow-64
+- xfail: gc-lto-bufferoverflow-64
+- xfail: crt-bufferoverflow-64
+- xfail: gc-crt-bufferoverflow-64
+- xfail: lto-crt-bufferoverflow-64
+- xfail: gc-lto-crt-bufferoverflow-64
 
-- fail: bufferoverflow-64
-- fail: gc-bufferoverflow-64
-- fail: lto-bufferoverflow-64
-- fail: gc-lto-bufferoverflow-64
-- fail: crt-bufferoverflow-64
-- fail: gc-crt-bufferoverflow-64
-- fail: lto-crt-bufferoverflow-64
-- fail: gc-lto-crt-bufferoverflow-64
----
-- fail: bufferoverflow-32
-- fail: gc-bufferoverflow-32
-- fail: lto-bufferoverflow-32
-- fail: gc-lto-bufferoverflow-32
-- fail: static-lib-bufferoverflow-32
-- fail: static-lib-gc-bufferoverflow-32
-- fail: static-lib-lto-bufferoverflow-32
-- fail: static-lib-gc-lto-bufferoverflow-32
-- fail: static-bufferoverflow-32
-- fail: static-gc-bufferoverflow-32
-- fail: static-lto-bufferoverflow-32
-- fail: static-gc-lto-bufferoverflow-32
-
-- fail: bufferoverflow-64
-- fail: gc-bufferoverflow-64
-- fail: lto-bufferoverflow-64
-- fail: gc-lto-bufferoverflow-64
-- fail: static-lib-bufferoverflow-64
-- fail: static-lib-gc-bufferoverflow-64
-- fail: static-lib-lto-bufferoverflow-64
-- fail: static-lib-gc-lto-bufferoverflow-64
-- fail: static-bufferoverflow-64
-- fail: static-gc-bufferoverflow-64
-- fail: static-lto-bufferoverflow-64
-- fail: static-gc-lto-bufferoverflow-64
-
-Result: tests accepted
+Verdict: tests reluctantly accepted
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -635,37 +584,33 @@ xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xp
 xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 12h later (2h25 on ampere), the output of the build script is a compressed
+About 12h later (2h30 on ampere), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
-total 185996
--rw-r--r-- 1 ilg ilg 190449779 Apr  7 09:29 xpack-clang-18.1.7-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Apr  7 09:29 xpack-clang-18.1.7-1-linux-arm64.tar.gz.sha
+total 192976
+-rw-r--r-- 1 ilg ilg 197597695 Jun 13 19:13 xpack-clang-18.1.7-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jun 13 19:13 xpack-clang-18.1.7-1-linux-arm64.tar.gz.sha
 ```
 
 The failing tests are:
 
-```
-1360 test(s) passed, 16 failed:
+```txt
+Tests summary for clang 18.1.7-1 on linux-arm64 (Ubuntu 18.04)
 
-fail: static-sleepy-threads
-fail: static-sleepy-threads-cv
-fail: static-gc-sleepy-threads
-fail: static-gc-sleepy-threads-cv
-fail: static-lto-sleepy-threads
-fail: static-lto-sleepy-threads-cv
-fail: static-gc-lto-sleepy-threads
-fail: static-gc-lto-sleepy-threads-cv
-fail: static-lld-sleepy-threads
-fail: static-lld-sleepy-threads-cv
-fail: static-gc-lld-sleepy-threads
-fail: static-gc-lld-sleepy-threads-cv
-fail: static-lto-lld-sleepy-threads
-fail: static-lto-lld-sleepy-threads-cv
-fail: static-gc-lto-lld-sleepy-threads
-fail: static-gc-lto-lld-sleepy-threads-cv
+1332 test cases passed, 0 skipped, 8 failed:
+
+- xfail: static-sleepy-threads-cv
+- xfail: static-gc-sleepy-threads-cv
+- xfail: static-lto-sleepy-threads-cv
+- xfail: static-gc-lto-sleepy-threads-cv
+- xfail: static-lld-sleepy-threads-cv
+- xfail: static-gc-lld-sleepy-threads-cv
+- xfail: static-lto-lld-sleepy-threads-cv
+- xfail: static-gc-lto-lld-sleepy-threads-cv
+
+Verdict: tests reluctantly accepted
 ```
 
 #### Arm GNU/Linux 32-bit
@@ -705,7 +650,7 @@ total 174560
 
 The failing tests are:
 
-```
+```txt
 1246 test(s) passed, 130 failed:
 
 fail: lto-adder-shared
