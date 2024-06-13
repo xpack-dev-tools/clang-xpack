@@ -1105,7 +1105,7 @@ function test_win32()
      [ ${LLVM_VERSION_MAJOR} -eq 15 ]
   then
     # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
 
     # LTO weak C++ tests fail with 14.0.6-3 & 15.0.7-1.
     # ld.lld: error: duplicate symbol: world()
@@ -1129,7 +1129,7 @@ function test_win32()
     # bufferoverflow.
     # error: unable to find library -lssp
     # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
 
     # Both 32 & 64-bit are affected.
     # Surprisingly, the non LTO variant is functional.
@@ -1160,7 +1160,7 @@ function test_win32()
     # bufferoverflow.
     # error: unable to find library -lssp
     # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+    export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
 
     # weak-undef
     # Surprisingly, the non LTO variant is functional.
@@ -1186,7 +1186,7 @@ function test_win32()
     # bufferoverflow.
     # error: unable to find library -lssp
     # export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
-    export XBB_SKIP_TEST_BUFFEROVERFLOW="y"
+    : # export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
   fi
 
   for bits in 32 64
