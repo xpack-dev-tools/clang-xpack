@@ -114,6 +114,14 @@ function clang_build_mingw_bootstrap()
         # x86_64-pc-linux-gnu/install/i686-w64-mingw32
         mingw_build_crt --triplet="${triplet}"
 
+        if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a" ]
+        then
+          # Create empty dummy archives, to avoid failing when the compiler
+          # driver adds "-lssp -lssh_nonshared" when linking. (from llvm-mingw)
+          ${AR} rcs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a"
+          ${AR} rcs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp_nonshared.a"
+        fi
+
         # The library is installed in
         # x86_64-pc-linux-gnu/install/lib/clang/16.0.6/lib/windows/libclang_rt.builtins-i386.a
         llvm_mingw_build_compiler_rt --triplet="${triplet}"
@@ -211,11 +219,12 @@ function clang_build_common()
 
           mingw_build_crt --triplet="${triplet}"
 
-          if [ ! -f "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a" ]; then
-              # Create empty dummy archives, to avoid failing when the compiler
-              # driver adds "-lssp -lssh_nonshared" when linking. (from llvm-mingw)
-              llvm-ar rcs "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a"
-              llvm-ar rcs "${XBB_APPLICATION_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp_nonshared.a"
+          if [ ! -f "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a" ]
+          then
+            # Create empty dummy archives, to avoid failing when the compiler
+            # driver adds "-lssp -lssh_nonshared" when linking. (from llvm-mingw)
+            ${AR} rcs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp.a"
+            ${AR} rcs "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libssp_nonshared.a"
           fi
 
           mingw_build_winpthreads --triplet="${triplet}"
