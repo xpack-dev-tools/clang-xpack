@@ -63,6 +63,8 @@ The same test on a plain Ubuntu 20 passes.
 
 On RedHat systems, the tests that expected a `libstdc++.a` fail.
 
+The solution is to install the static libraries.
+
 ## 13.0.1-2
 
 Fails the build for Windows and for macOS Sonoma.
@@ -78,6 +80,23 @@ Fails on Windows to compile static
 ld.lld: error: undefined symbol: __declspec(dllimport) std::__1::cout
 >>> referenced by C:/users/ilg/Temp/simple-hello1-cfc904.o:(_main)
 ```
+
+## 18.1.7-1
+
+On Ubuntu 18, x64, 32-bit static lld tests fail, most probably due to an
+issue with the old 32-bit libraries:
+
+
+```
+  ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
+  >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
+  >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
+  clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+
+  xfail: static-lld-simple-hello-cout-one-32
+```
+
+
 
 ## Oracle ampere tests
 

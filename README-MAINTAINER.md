@@ -259,7 +259,7 @@ xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-
 
 The build takes about 80 minutes (1h20).
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on darwin-x64 (macOS 14.3.1)
@@ -309,7 +309,7 @@ total 229672
 -rw-r--r--  1 ilg  staff        105 Jun 13 21:23 xpack-clang-18.1.7-1-darwin-x64.tar.gz.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on darwin-x64 (MacOSX 10.14.6)
@@ -375,7 +375,7 @@ total 197848
 -rw-r--r--  1 ilg  staff       107 Jun 13 20:28 xpack-clang-18.1.7-1-darwin-arm64.tar.gz.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on darwin-arm64 (macOS 11.7.10)
@@ -437,7 +437,7 @@ total 215724
 -rw-r--r-- 1 ilg ilg       104 Jun 13 18:17 xpack-clang-18.1.7-1-linux-x64.tar.gz.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on linux-x64 (Ubuntu 18.04)
@@ -532,31 +532,13 @@ total 403676
 -rw-r--r-- 1 ilg ilg       101 Apr  6 23:56 xpack-clang-18.1.7-1-win32-x64.zip.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on win32-x64 (Ubuntu 18.04)
 
-1516 test cases passed, 0 skipped, 16 failed:
-
-- xfail: bufferoverflow-32
-- xfail: gc-bufferoverflow-32
-- xfail: lto-bufferoverflow-32
-- xfail: gc-lto-bufferoverflow-32
-- xfail: crt-bufferoverflow-32
-- xfail: gc-crt-bufferoverflow-32
-- xfail: lto-crt-bufferoverflow-32
-- xfail: gc-lto-crt-bufferoverflow-32
-- xfail: bufferoverflow-64
-- xfail: gc-bufferoverflow-64
-- xfail: lto-bufferoverflow-64
-- xfail: gc-lto-bufferoverflow-64
-- xfail: crt-bufferoverflow-64
-- xfail: gc-crt-bufferoverflow-64
-- xfail: lto-crt-bufferoverflow-64
-- xfail: gc-lto-crt-bufferoverflow-64
-
-Verdict: tests reluctantly accepted
+1532 test cases passed, 0 skipped
+Verdict: tests accepted
 ```
 
 #### Arm GNU/Linux 64-bit
@@ -594,7 +576,7 @@ total 192976
 -rw-r--r-- 1 ilg ilg       106 Jun 13 19:13 xpack-clang-18.1.7-1-linux-arm64.tar.gz.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 Tests summary for clang 18.1.7-1 on linux-arm64 (Ubuntu 18.04)
@@ -648,7 +630,7 @@ total 174560
 -rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-18.1.7-1-linux-arm.tar.gz.sha
 ```
 
-The failing tests are:
+The tests report is:
 
 ```txt
 1246 test(s) passed, 130 failed:
@@ -887,22 +869,24 @@ rm -rf ~/Work/xpack-dev-tools/*/build
 
 ### Manually trigger the build GitHub Actions
 
-To trigger the GitHub Actions build, use the xPack action:
+To trigger the GitHub Actions builds, use the xPack actions:
 
-- `trigger-workflow-build-xbbmi`
-- `trigger-workflow-build-xbbma`
-- `trigger-workflow-build-xbbli`
-- `trigger-workflow-build-xbbla`
-- `trigger-workflow-build-xbbla32`
+- `trigger-workflow-build-darwin-x64`
+- `trigger-workflow-build-darwin-arm64`
+- `trigger-workflow-build-linux-x64`
+- `trigger-workflow-build-win32-x64`
+- `trigger-workflow-build-linux-arm64`
+- `trigger-workflow-build-linux-arm`
 
-This is equivalent to:
+These are equivalent to:
 
 ```sh
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbmi
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbma
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbli
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --machine xbbla32
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-darwin-x64.yml
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-darwin-arm64.yml
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-linux-x64.yml
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-win32-x64.yml
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-linux-arm64.yml
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-build.sh --workflow build-linux-arm.yml
 ```
 
 These scripts require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
@@ -1024,13 +1008,15 @@ bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system
 
 On Ubuntu, to install clang and libraries, use:
 
-```
+```sh
 sudo apt-get install --yes clang lld libc++-dev libc++abi-dev
 ```
 
+On Manjaro, install `clang lld libc++ libc++abi`.
+
 On Linux x64, the 32-bit clang libraries are not available, skip the tests:
 
-```
+```sh
 bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system --skip-32
 ```
 
