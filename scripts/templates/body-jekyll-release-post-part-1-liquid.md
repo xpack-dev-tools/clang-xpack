@@ -198,7 +198,8 @@ function that computes
 
 ## Known problems
 
-- none
+Please see the separate
+[tests results page]({{ site.baseurl }}/dev-tools/clang/tests/{{ XBB_RELEASE_VERSION }}/).
 
 ## Shared libraries
 
