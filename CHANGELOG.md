@@ -2,8 +2,71 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-06-20
+
+* v18.1.8-1 prepared
+* a4ad300 llvm.sh: cosmetics
+* 6ebdfd2 llvm.sh: ignore some more arm 32 tests
+* 86cbd29 llvm.sh: loop 32 64 in x64 tests
+* e243a16 llvm.sh: no explicit RUNTIME_TARGETS for Arm
+* 01aa5dd body-jekyll-release update
+* 09eb07f llvm.sh cosmetics
+* 48bfb29 re-generate workflows
+
+## 2024-06-18
+
+* 8b41c5b READMEs update
+
+## 2024-06-17
+
+* 6a8cf67 package.json: rework generate workflows
+* 51bc264 package.json: bump deps
+
+## 2024-06-14
+
+* 1efee76 README update
+* 9d10888 versioning.sh: add empty libssp.a to bootstrap
+* 920b954 llvm-mingw.sh: add --bootstrap
+* 8fab7d2 llvm.sh: add quotes to libcxx_file_path
+
+## 2024-06-13
+
+* b1f0dd3 versioning.sh: add empty libssp.a
+* cbace30 llsn.sh: rename XBB_SKIP_TEST_ALL_BUFFEROVERFLOW
+* d766270 llvm.sh: validate libc++.dll path
+
+## 2024-06-12
+
+* d33d963 README update
+* 0217507 llvm.sh: update comments
+* 076244f run.sh: skip ld.gold test if SYSTEM_TOOLS
+* 86514f7 llvm.sh: cosmetics
+* 8ad353a llvm.sh: fix comment
+* cd6ef78 llvm.sh: fix old compiler version 4
+* 18ab4e6 llvm.sh: reorder LLVM_VERSION to front
+* 032add6 Merge branch 'xpack-develop' of https://github.com/xpack-dev-tools/clang-xpack into xpack-develop
+* c4b234b llvm.sh: ignore throwcatch-main -flto only on intel
+* 81c2c9c llvm.sh: skip some -print-* on older clang
+* 49048b8 llvm.sh: disable SDK test
+* e6b6770 llvm.sh: add support for XBB_TEST_SYSTEM_TOOLS
+* a491ded llvm*.sh: modularise
+* ea91824 llvm.sh: fix export
+* 4c3ec0d llvm.sh: XBB_SKIP_TEST_BUFFEROVERFLOW
+* 5bef30d llvm.sh: add ignore 16 arm
+
+## 2024-06-11
+
+* 619de30 llvm.sh: XBB_IGNORE 16 update
+* 1b6ef77 llvm.sh: update XBB_IGNORE for 16
+* 2509ba7 application.sh: update NPM_PACKAGE
+* 78e60c1 llvm.sh: update XBB_IGNORE_*
+* eeeaac4 re-generate scripts
+* 5fb9ec5 re-generate workflows
+* ea73cab llvm.sh: clangd tests cases
+
 ## 2024-06-10
 
+* f5f1334 CHANGELOG update
 * f5d7264 llvm*.sh: update XBB_IGNORE_*
 * 42c9bb2 package.json: bump deps
 * 89f994f README update
