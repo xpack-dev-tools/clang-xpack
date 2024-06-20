@@ -2146,279 +2146,164 @@ function test_linux()
   then
     # x64 with multilib. Two runs, -m64 & -m32.
 
-    # ---------------------------------------------------------------------
-    # First test using the system GCC runtime and libstdc++.
-
-    test_compiler_c_cpp --64
-    test_compiler_c_cpp --64 --gc
-    test_compiler_c_cpp --64 --lto
-    test_compiler_c_cpp --64 --gc --lto
-
-    # Again with lld.
-    test_compiler_c_cpp --64 --lld
-    test_compiler_c_cpp --64 --gc --lld
-    test_compiler_c_cpp --64 --lto --lld
-    test_compiler_c_cpp --64 --gc --lto --lld
-
-    if [[ ${distro} == CentOS ]] || \
-      [[ ${distro} == RedHat* ]] || \
-      [[ ${distro} == Fedora ]] || \
-      [[ ${distro} == openSUSE ]]
-    then
-      # RedHat has no static libstdc++.
-      echo
-      echo "Skipping all static on ${distro}..."
-    else
-      # -static-libgcc -static-libgcc.
-      test_compiler_c_cpp --64 --static-lib
-      test_compiler_c_cpp --64 --gc --static-lib
-      test_compiler_c_cpp --64 --lto --static-lib
-      test_compiler_c_cpp --64 --gc --lto --static-lib
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --lld --static-lib
-      test_compiler_c_cpp --64 --gc --lld --static-lib
-      test_compiler_c_cpp --64 --lto --lld --static-lib
-      test_compiler_c_cpp --64 --gc --lto --lld --static-lib
-    fi
-
-    if [[ ${distro} == CentOS ]] || \
-      [[ ${distro} == RedHat* ]] || \
-      [[ ${distro} == Fedora ]] || \
-      [[ ${distro} == openSUSE ]] || \
-      [[ ${distro} == Arch ]]
-    then
-      # RedHat has no static libstdc++.
-      # Arch: undefined reference to `fmod' (static)
-      # Arch: cannot find -latomic (static)
-      echo
-      echo "Skipping all static on ${distro}..."
-    else
-      # -static.
-      test_compiler_c_cpp --64 --static
-      test_compiler_c_cpp --64 --gc --static
-      test_compiler_c_cpp --64 --lto --static
-      test_compiler_c_cpp --64 --gc --lto --static
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --lld --static
-      test_compiler_c_cpp --64 --gc --lld --static
-      test_compiler_c_cpp --64 --lto --lld --static
-      test_compiler_c_cpp --64 --gc --lto --lld --static
-    fi
-
-    # ---------------------------------------------------------------------
-    # Second test LLVM runtime and libc++.
-
-    (
-      # The shared libraries are in a custom location and require setting
-      # the path explicitly.
-
-      local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m64)"
-      LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-      export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-      LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-      export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-      echo
-      echo "LDFLAGS=${LDFLAGS}"
-
-      # With compiler-rt.
-      test_compiler_c_cpp --64 --crt --libunwind
-      test_compiler_c_cpp --64 --gc --crt --libunwind
-      test_compiler_c_cpp --64 --lto --crt --libunwind
-      test_compiler_c_cpp --64 --gc --lto --crt --libunwind
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --crt --libunwind --lld
-      test_compiler_c_cpp --64 --gc --crt --libunwind --lld
-      test_compiler_c_cpp --64 --lto --crt --libunwind --lld
-      test_compiler_c_cpp --64 --gc --lto --crt --libunwind --lld
-
-      # With compiler-rt & libc++.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind
-      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind
-      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld
-    )
-
-    if false
-    then
-      # -static-libgcc -static-libgcc.
-      # This combination seems not supported.
-
-      # clang++: warning: argument unused during compilation: '-static-libgcc'
-
-      # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
-      # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
-
-      # With compiler-rt & libc++.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --64 --lto --lld --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --64 --gc --lto --lld --libc++ --crt --libunwind --static-lib
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld --static-lib
-    fi
-
-    if false
-    then
-      # -static.
-      # This combination also seems not supported.
-
-      # With compiler-rt & libc++.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --64 --lto --lld --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --64 --gc --lto --lld --libc++ --crt --libunwind --static
-
-      # Again with lld.
-      test_compiler_c_cpp --64 --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --64 --gc --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --64 --lto --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --64 --gc --lto --libc++ --crt --libunwind --lld --static
-    fi
-
-    # ---------------------------------------------------------------------
-
-    local skip_32_tests=""
-    if is_variable_set "XBB_SKIP_32_BIT_TESTS"
-    then
-      skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
-    else
-      local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
-      if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
-      then
-        # If the compiler does not find the full path of the
-        # 32-bit c++ library, multilib support is not installed; skip.
-        skip_32_tests="y"
-      fi
-    fi
-
-    if [ "${skip_32_tests}" == "y" ]
-    then
-      echo
-      echo "Skipping clang -m32 tests..."
-    else
-      # -------------------------------------------------------------------
-      # First test using the system GCC runtime and libstdc++.
-
-      test_compiler_c_cpp --32
-      test_compiler_c_cpp --32 --gc
-      test_compiler_c_cpp --32 --lto --lld
-      test_compiler_c_cpp --32 --gc --lto --lld
-
+    for bits in 32 64
+    do
       (
-        # The shared libraries are in a custom location and require setting
-        # the path explicitly.
+        if [ ${bits} -eq 32 ]
+        then
+          local skip_32_tests=""
+          if is_variable_set "XBB_SKIP_32_BIT_TESTS"
+          then
+            skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
+          else
+            local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
+            if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
+            then
+              # If the compiler does not find the full path of the
+              # 32-bit c++ library, multilib support is not installed; skip.
+              skip_32_tests="y"
+            fi
+          fi
 
-        local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m32)"
-        LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-        LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-        export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-        echo
-        echo "LDFLAGS=${LDFLAGS}"
+          if [ "${skip_32_tests}" == "y" ]
+          then
+            echo
+            echo "Skipping clang -m32 tests..."
+            continue
+          fi
+        fi
 
-        # With compiler-rt.
-        test_compiler_c_cpp --32 --crt --libunwind
-        test_compiler_c_cpp --32 --gc --crt --libunwind
-        test_compiler_c_cpp --32 --lto --crt --libunwind
-        test_compiler_c_cpp --32 --gc --lto --crt --libunwind
+        # ---------------------------------------------------------------------
+        # First test using the system GCC runtime and libstdc++.
+
+        test_compiler_c_cpp --${bits}
+        test_compiler_c_cpp --${bits} --gc
+        test_compiler_c_cpp --${bits} --lto
+        test_compiler_c_cpp --${bits} --gc --lto
 
         # Again with lld.
-        test_compiler_c_cpp --32 --crt --libunwind --lld
-        test_compiler_c_cpp --32 --gc --crt --libunwind --lld
-        test_compiler_c_cpp --32 --lto --crt --libunwind --lld
-        test_compiler_c_cpp --32 --gc --lto --crt --libunwind --lld
+        test_compiler_c_cpp --${bits} --lld
+        test_compiler_c_cpp --${bits} --gc --lld
+        test_compiler_c_cpp --${bits} --lto --lld
+        test_compiler_c_cpp --${bits} --gc --lto --lld
 
-        # With compiler-rt & libc++.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind
-        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind
-        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind
-
-        # Again with lld.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld
-        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld
-      )
-
-      # -------------------------------------------------------------------
-
-      # -static-libgcc -static-libgcc.
-      test_compiler_c_cpp --32 --static-lib
-      test_compiler_c_cpp --32 --gc --static-lib
-      test_compiler_c_cpp --32 --lto --static-lib
-      test_compiler_c_cpp --32 --gc --lto --static-lib
-
-      # Again with lld.
-      test_compiler_c_cpp --32 --lld --static-lib
-      test_compiler_c_cpp --32 --gc --lld --static-lib
-      test_compiler_c_cpp --32 --lto --lld --static-lib
-      test_compiler_c_cpp --32 --gc --lto --lld --static-lib
-
-      # -static.
-      test_compiler_c_cpp --32 --static
-      test_compiler_c_cpp --32 --gc --static
-      test_compiler_c_cpp --32 --lto --static
-      test_compiler_c_cpp --32 --gc --lto --static
-
-      # Again with lld.
-      test_compiler_c_cpp --32 --lld --static
-      test_compiler_c_cpp --32 --gc --lld --static
-      test_compiler_c_cpp --32 --lto --lld --static
-      test_compiler_c_cpp --32 --gc --lto --lld --static
-
-      if false
-      then
         # -static-libgcc -static-libgcc.
-        # This combination also seems not supported.
-
-        # With compiler-rt & libc++.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind --static-lib
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --static-lib
-        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind --static-lib
-        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind --static-lib
+        test_compiler_c_cpp --${bits} --static-lib
+        test_compiler_c_cpp --${bits} --gc --static-lib
+        test_compiler_c_cpp --${bits} --lto --static-lib
+        test_compiler_c_cpp --${bits} --gc --lto --static-lib
 
         # Again with lld.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld --static-lib
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld --static-lib
-        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld --static-lib
-        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld --static-lib
-      fi
+        test_compiler_c_cpp --${bits} --lld --static-lib
+        test_compiler_c_cpp --${bits} --gc --lld --static-lib
+        test_compiler_c_cpp --${bits} --lto --lld --static-lib
+        test_compiler_c_cpp --${bits} --gc --lto --lld --static-lib
 
-      # (.text+0x22a): undefined reference to `_Unwind_Resume'
-      if false
-      then
-        # -static.
-        # This combination also seems not supported.
+        if [[ ${distro} == Arch ]]
+        then
+          # Arch: undefined reference to `fmod' (static)
+          # Arch: cannot find -latomic (static)
+          echo
+          echo "Skipping all static on ${distro}..."
+        else
+          # -static.
+          test_compiler_c_cpp --${bits} --static
+          test_compiler_c_cpp --${bits} --gc --static
+          test_compiler_c_cpp --${bits} --lto --static
+          test_compiler_c_cpp --${bits} --gc --lto --static
 
-        # With compiler-rt & libc++.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind --static
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --static
-        test_compiler_c_cpp --32 --lto --lld --libc++ --crt --libunwind --static
-        test_compiler_c_cpp --32 --gc --lto --lld --libc++ --crt --libunwind --static
+          # Again with lld.
+          test_compiler_c_cpp --${bits} --lld --static
+          test_compiler_c_cpp --${bits} --gc --lld --static
+          test_compiler_c_cpp --${bits} --lto --lld --static
+          test_compiler_c_cpp --${bits} --gc --lto --lld --static
+        fi
 
-        # Again with lld.
-        test_compiler_c_cpp --32 --libc++ --crt --libunwind --lld --static
-        test_compiler_c_cpp --32 --gc --libc++ --crt --libunwind --lld --static
-        test_compiler_c_cpp --32 --lto --libc++ --crt --libunwind --lld --static
-        test_compiler_c_cpp --32 --gc --lto --libc++ --crt --libunwind --lld --static
-      fi
-    fi
+        # ---------------------------------------------------------------------
+        # Second test LLVM runtime and libc++.
+
+        (
+          # The shared libraries are in a custom location and require setting
+          # the path explicitly.
+
+          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m${bits})"
+          LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+          LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
+          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+          echo
+          echo "LDFLAGS=${LDFLAGS}"
+
+          # With compiler-rt.
+          test_compiler_c_cpp --${bits} --crt --libunwind
+          test_compiler_c_cpp --${bits} --gc --crt --libunwind
+          test_compiler_c_cpp --${bits} --lto --crt --libunwind
+          test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp --${bits} --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --gc --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --lto --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind --lld
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind
+          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind
+          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind
+
+          # Again with lld.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld
+          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld
+        )
+
+        if false
+        then
+          # -static-libgcc -static-libgcc.
+          # This combination seems not supported.
+
+          # clang++: warning: argument unused during compilation: '-static-libgcc'
+
+          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
+          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp --${bits} --lto --lld --libc++ --crt --libunwind --static-lib
+          test_compiler_c_cpp --${bits} --gc --lto --lld --libc++ --crt --libunwind --static-lib
+
+          # Again with lld.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld --static-lib
+          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld --static-lib
+        fi
+
+        if false
+        then
+          # -static.
+          # This combination also seems not supported.
+
+          # With compiler-rt & libc++.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --static
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --static
+          test_compiler_c_cpp --${bits} --lto --lld --libc++ --crt --libunwind --static
+          test_compiler_c_cpp --${bits} --gc --lto --lld --libc++ --crt --libunwind --static
+
+          # Again with lld.
+          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld --static
+          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld --static
+        fi
+      )
+    done
+
   else
-    # arm & aarch64.
+    # arm & aarch64, non-multilib, no explicit -m32/-m64.
 
     # ---------------------------------------------------------------------
     # First test using the system GCC runtime and libstdc++.
