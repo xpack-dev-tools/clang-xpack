@@ -175,7 +175,8 @@ repository, in the `xpack-dev-tools/llvm-project` Git repo:
 - move to `patches`
 - rename `llvm-18.1.8-1.git.patch`
 
-Note: currently the patch is required to fix the CLT library path.
+Note: the patch is required to fix the CLT library path up to
+clang 17, starting with 18 the patch was accepted upstream.
 
 ### Update Windows specifics
 
@@ -258,7 +259,7 @@ For a debug build:
 xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-The build takes about 80 minutes (1h20).
+The build takes about 85 minutes (1h25).
 
 The tests report is:
 
@@ -305,9 +306,9 @@ archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
-total 229672
--rw-r--r--  1 ilg  staff  101978812 Jun 13 21:23 xpack-clang-18.1.8-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff        105 Jun 13 21:23 xpack-clang-18.1.8-1-darwin-x64.tar.gz.sha
+total 230824
+-rw-r--r--  1 ilg  staff  101961650 Jun 20 11:43 xpack-clang-18.1.8-1-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Jun 20 11:43 xpack-clang-18.1.8-1-darwin-x64.tar.gz.sha
 ```
 
 The tests report is:
@@ -366,14 +367,14 @@ xpm install --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run build-develop --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 37 minutes later, the output of the build script is a compressed
+About 40 minutes later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
-total 197848
--rw-r--r--  1 ilg  staff  95637479 Jun 13 20:28 xpack-clang-18.1.8-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jun 13 20:28 xpack-clang-18.1.8-1-darwin-arm64.tar.gz.sha
+total 198208
+-rw-r--r--  1 ilg  staff  95634615 Jun 20 10:48 xpack-clang-18.1.8-1-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jun 20 10:48 xpack-clang-18.1.8-1-darwin-arm64.tar.gz.sha
 ```
 
 The tests report is:
@@ -428,14 +429,14 @@ xpm run docker-link-deps --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 110 minutes later (1h50), the output of the build script is a compressed
+About 130 minutes later (2h10), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
 total 215724
--rw-r--r-- 1 ilg ilg 220891481 Jun 13 18:17 xpack-clang-18.1.8-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jun 13 18:17 xpack-clang-18.1.8-1-linux-x64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 220891664 Jun 20 09:55 xpack-clang-18.1.8-1-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jun 20 09:55 xpack-clang-18.1.8-1-linux-x64.tar.gz.sha
 ```
 
 The tests report is:
@@ -443,16 +444,8 @@ The tests report is:
 ```txt
 Tests summary for clang 18.1.8-1 on linux-x64 (Ubuntu 18.04)
 
-2518 test cases passed, 0 skipped, 56 failed:
+2654 test cases passed, 0 skipped, 56 failed:
 
-- xfail: static-sleepy-threads-cv-64
-- xfail: static-gc-sleepy-threads-cv-64
-- xfail: static-lto-sleepy-threads-cv-64
-- xfail: static-gc-lto-sleepy-threads-cv-64
-- xfail: static-lld-sleepy-threads-cv-64
-- xfail: static-gc-lld-sleepy-threads-cv-64
-- xfail: static-lto-lld-sleepy-threads-cv-64
-- xfail: static-gc-lto-lld-sleepy-threads-cv-64
 - xfail: static-sleepy-threads-cv-32
 - xfail: static-gc-sleepy-threads-cv-32
 - xfail: static-lto-sleepy-threads-cv-32
@@ -501,6 +494,14 @@ Tests summary for clang 18.1.8-1 on linux-x64 (Ubuntu 18.04)
 - xfail: static-gc-lto-lld-cnrt-test-32
 - xfail: static-gc-lto-lld-hello-weak2-cpp-32
 - xfail: static-gc-lto-lld-overload-new-cpp-32
+- xfail: static-sleepy-threads-cv-64
+- xfail: static-gc-sleepy-threads-cv-64
+- xfail: static-lto-sleepy-threads-cv-64
+- xfail: static-gc-lto-sleepy-threads-cv-64
+- xfail: static-lld-sleepy-threads-cv-64
+- xfail: static-gc-lld-sleepy-threads-cv-64
+- xfail: static-lto-lld-sleepy-threads-cv-64
+- xfail: static-gc-lto-lld-sleepy-threads-cv-64
 
 Verdict: tests reluctantly accepted
 ```
@@ -523,14 +524,14 @@ xpm run docker-link-deps --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 180 minutes later (3h00), the output of the build script is a compressed
+About 230 minutes later (3h50), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
-total 403676
--rw-r--r-- 1 ilg ilg 413355016 Apr  6 23:56 xpack-clang-18.1.8-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Apr  6 23:56 xpack-clang-18.1.8-1-win32-x64.zip.sha
+total 421076
+-rw-r--r-- 1 ilg ilg 431171311 Jun 20 10:50 xpack-clang-18.1.8-1-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Jun 20 10:50 xpack-clang-18.1.8-1-win32-x64.zip.sha
 ```
 
 The tests report is:
