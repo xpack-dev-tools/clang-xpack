@@ -1,6 +1,6 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "18.1.6-1.1.pre",
+  "version": "17.0.6-3.1.pre",
   "description": "A binary xPack with the LLVM clang executables",
   "main": "",
   "scripts": {
@@ -145,7 +145,7 @@
       "widl": "./.content/bin/widl"
     },
     "devDependencies": {
-      "@xpack-dev-tools/xbb-helper": "^2.1.20"
+      "@xpack-dev-tools/xbb-helper": "^2.1.21"
     },
     "properties": {
       "appName": "LLVM clang",
