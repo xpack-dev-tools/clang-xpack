@@ -4,7 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-06-20
 
-* v18.1.8-1 prepared
+* v17.0.6-3 prepared
+* 1c389a7 README update
+* c096f01 prepare v18.1.8-1
+* b71198a prepare v18.1.8-1
 * a4ad300 llvm.sh: cosmetics
 * 6ebdfd2 llvm.sh: ignore some more arm 32 tests
 * 86cbd29 llvm.sh: loop 32 64 in x64 tests

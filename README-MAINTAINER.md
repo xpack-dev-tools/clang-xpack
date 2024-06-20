@@ -118,8 +118,8 @@ even X.Y.8.
 
 ### Increase the version
 
-Determine the version (like `18.1.8`) and update the `scripts/VERSION`
-file; the format is `18.1.8-1`. The fourth number is the xPack release number
+Determine the version (like `17.0.6`) and update the `scripts/VERSION`
+file; the format is `17.0.6-3`. The fourth number is the xPack release number
 of this version. A fifth number will be added when publishing
 the package on the `npm` server.
 
@@ -129,7 +129,7 @@ Check GitHub issues and pull requests:
 
 - <https://github.com/xpack-dev-tools/clang-xpack/issues/>
 
-and fix them; assign them to a milestone (like `18.1.8-1`).
+and fix them; assign them to a milestone (like `17.0.6-3`).
 
 ### Check `README.md`
 
@@ -144,14 +144,14 @@ but in the web release files.
 
 ### Update version in `package.json` to a pre-release
 
-Use the new version, suffixed by `pre`, like `18.1.8-1.pre`.
+Use the new version, suffixed by `pre`, like `17.0.6-3.pre`.
 
 ### Update `CHANGELOG.md`
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
-- add a new entry like _* v18.1.8-1 prepared_
-- commit with a message like _prepare v18.1.8-1_
+- add a new entry like _* v17.0.6-3 prepared_
+- commit with a message like _prepare v17.0.6-3_
 
 ### Update the version specific code
 
@@ -164,16 +164,16 @@ To keep the development repository fork in sync with the upstream LLVM
 repository, in the `xpack-dev-tools/llvm-project` Git repo:
 
 - fetch `upstream`
-- checkout the `llvmorg-18.1.8` tag in detached state HEAD
-- create a branch like `v18.1.8-xpack`
+- checkout the `llvmorg-17.0.6` tag in detached state HEAD
+- create a branch like `v17.0.6-xpack`
 - cherry pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
   enable commit immediately
 - push branch to `origin`
-- add a `v18.1.8-1-xpack` tag; enable push to origin
+- add a `v17.0.6-3-xpack` tag; enable push to origin
 - select the commit with the patch
 - save as patch
 - move to `patches`
-- rename `llvm-18.1.8-1.git.patch`
+- rename `llvm-17.0.6-3.git.patch`
 
 Note: the patch is required to fix the CLT library path up to
 clang 17, starting with 18 the patch was accepted upstream.
@@ -264,7 +264,7 @@ The build takes about 85 minutes (1h25).
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on darwin-x64 (macOS 14.3.1)
+Tests summary for clang 17.0.6-3 on darwin-x64 (macOS 14.3.1)
 
 272 test cases passed, 0 skipped, 4 failed:
 
@@ -307,14 +307,14 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-x64/deploy
 total 230824
--rw-r--r--  1 ilg  staff  101961650 Jun 20 11:43 xpack-clang-18.1.8-1-darwin-x64.tar.gz
--rw-r--r--  1 ilg  staff        105 Jun 20 11:43 xpack-clang-18.1.8-1-darwin-x64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  101961650 Jun 20 11:43 xpack-clang-17.0.6-3-darwin-x64.tar.gz
+-rw-r--r--  1 ilg  staff        105 Jun 20 11:43 xpack-clang-17.0.6-3-darwin-x64.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on darwin-x64 (MacOSX 10.14.6)
+Tests summary for clang 17.0.6-3 on darwin-x64 (MacOSX 10.14.6)
 
 256 test cases passed, 0 skipped, 20 failed:
 
@@ -373,14 +373,14 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/darwin-arm64/deploy
 total 198208
--rw-r--r--  1 ilg  staff  95634615 Jun 20 10:48 xpack-clang-18.1.8-1-darwin-arm64.tar.gz
--rw-r--r--  1 ilg  staff       107 Jun 20 10:48 xpack-clang-18.1.8-1-darwin-arm64.tar.gz.sha
+-rw-r--r--  1 ilg  staff  95634615 Jun 20 10:48 xpack-clang-17.0.6-3-darwin-arm64.tar.gz
+-rw-r--r--  1 ilg  staff       107 Jun 20 10:48 xpack-clang-17.0.6-3-darwin-arm64.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on darwin-arm64 (macOS 11.7.10)
+Tests summary for clang 17.0.6-3 on darwin-arm64 (macOS 11.7.10)
 
 262 test cases passed, 0 skipped, 14 failed:
 
@@ -435,14 +435,14 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/deploy
 total 215724
--rw-r--r-- 1 ilg ilg 220891664 Jun 20 09:55 xpack-clang-18.1.8-1-linux-x64.tar.gz
--rw-r--r-- 1 ilg ilg       104 Jun 20 09:55 xpack-clang-18.1.8-1-linux-x64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 220891664 Jun 20 09:55 xpack-clang-17.0.6-3-linux-x64.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jun 20 09:55 xpack-clang-17.0.6-3-linux-x64.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on linux-x64 (Ubuntu 18.04)
+Tests summary for clang 17.0.6-3 on linux-x64 (Ubuntu 18.04)
 
 2654 test cases passed, 0 skipped, 56 failed:
 
@@ -530,14 +530,14 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/win32-x64/deploy
 total 421076
--rw-r--r-- 1 ilg ilg 431171311 Jun 20 10:50 xpack-clang-18.1.8-1-win32-x64.zip
--rw-r--r-- 1 ilg ilg       101 Jun 20 10:50 xpack-clang-18.1.8-1-win32-x64.zip.sha
+-rw-r--r-- 1 ilg ilg 431171311 Jun 20 10:50 xpack-clang-17.0.6-3-win32-x64.zip
+-rw-r--r-- 1 ilg ilg       101 Jun 20 10:50 xpack-clang-17.0.6-3-win32-x64.zip.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on win32-x64 (Ubuntu 18.04)
+Tests summary for clang 17.0.6-3 on win32-x64 (Ubuntu 18.04)
 
 1532 test cases passed, 0 skipped
 Verdict: tests accepted
@@ -574,14 +574,14 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
 total 192976
--rw-r--r-- 1 ilg ilg 197597695 Jun 13 19:13 xpack-clang-18.1.8-1-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jun 13 19:13 xpack-clang-18.1.8-1-linux-arm64.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 197597695 Jun 13 19:13 xpack-clang-17.0.6-3-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jun 13 19:13 xpack-clang-17.0.6-3-linux-arm64.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 18.1.8-1 on linux-arm64 (Ubuntu 18.04)
+Tests summary for clang 17.0.6-3 on linux-arm64 (Ubuntu 18.04)
 
 1332 test cases passed, 0 skipped, 8 failed:
 
@@ -628,8 +628,8 @@ archive and its SHA signature, created in the `deploy` folder:
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
 total 174560
--rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-18.1.8-1-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-18.1.8-1-linux-arm.tar.gz.sha
+-rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-17.0.6-3-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-17.0.6-3-linux-arm.tar.gz.sha
 ```
 
 The tests report is:
@@ -989,15 +989,15 @@ xattr -cr ${HOME}/Downloads/xpack-*
 On GNU/Linux and macOS systems, use:
 
 ```sh
-.../xpack-clang-18.1.8-1/bin/clang --version
-xPack x86_64 clang version 18.1.8
+.../xpack-clang-17.0.6-3/bin/clang --version
+xPack x86_64 clang version 17.0.6
 ```
 
 On Windows use:
 
 ```dos
-...\xpack-clang-18.1.8-1\bin\clang --version
-xPack x86_64 clang version 18.1.8
+...\xpack-clang-17.0.6-3\bin\clang --version
+xPack x86_64 clang version 17.0.6
 ```
 
 ### Running the tests with the system clang
@@ -1024,7 +1024,7 @@ bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system --skip-32
 
 ## Create a new GitHub pre-release draft
 
-- in `CHANGELOG.md`, add the release date and a message like _* v18.1.8-1 released_
+- in `CHANGELOG.md`, add the release date and a message like _* v17.0.6-3 released_
 - commit with _CHANGELOG update_
 - check and possibly update the `templates/body-github-release-liquid.md`
 - push the `xpack-develop` branch
@@ -1035,8 +1035,8 @@ The workflow result and logs are available from the
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases/)
-tagged like **v18.1.8-1** (mind the dash in the middle!) and
-named like **xPack LLVM clang v18.1.8-1** (mind the dash),
+tagged like **v17.0.6-3** (mind the dash in the middle!) and
+named like **xPack LLVM clang v17.0.6-3** (mind the dash),
 with all binaries attached.
 
 - edit the draft and attach it to the `xpack-develop` branch (important!)
@@ -1060,7 +1060,7 @@ If any, refer to closed
 ## Update the preview Web
 
 - commit the `develop` branch of `xpack/web-jekyll` GitHub repo;
-  use a message like _xPack LLVM clang v18.1.8-1 released_
+  use a message like _xPack LLVM clang v17.0.6-3 released_
 - push to GitHub
 - wait for the GitHub Pages build to complete
 - the preview web is <https://xpack.github.io/web-preview/news/>
@@ -1101,18 +1101,18 @@ watching this project.
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes, use a message like
-  _package.json: update urls for 18.1.8-1.1 release_ (without _v_)
+  _package.json: update urls for 17.0.6-3.1 release_ (without _v_)
 
 ## Publish on the npmjs.com server
 
 - select the `xpack-develop` branch
 - check the latest commits `npm run git-log`
-- update `CHANGELOG.md`, add a line like _* v18.1.8-1.1 published on npmjs.com_
-- commit with a message like _CHANGELOG: publish npm v18.1.8-1.1_
+- update `CHANGELOG.md`, add a line like _* v17.0.6-3.1 published on npmjs.com_
+- commit with a message like _CHANGELOG: publish npm v17.0.6-3.1_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
-- `npm version 18.1.8-1.1`; the first 4 numbers are the same as the
+- `npm version 17.0.6-3.1`; the first 4 numbers are the same as the
   GitHub release; the fifth number is the npm specific version
 - the commits and the tag should have been pushed by the `postversion` script;
   if not, push them with `git push origin --tags`
@@ -1136,13 +1136,13 @@ The Windows tests take more than 20 minutes to complete.
 ## Prepare the test results page
 
 Download the `tests-report` artefact, unpack it and copy
-the `18.1.8-1.md` file to the web site `pages/dev-tools/clang/tests` folder.
+the `17.0.6-3.md` file to the web site `pages/dev-tools/clang/tests` folder.
 
 Generating the tests results for a specific version can be done with the
 command:
 
 ```bash
-bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-test-xpm.sh --package-version 18.1.8-1.1
+bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/github-actions/trigger-workflow-test-xpm.sh --package-version 17.0.6-3.1
 ```
 
 ## Update the repo
@@ -1155,12 +1155,12 @@ bash ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper/g
 When the release is considered stable, promote it as `latest`:
 
 - `npm dist-tag ls @xpack-dev-tools/clang`
-- `npm dist-tag add @xpack-dev-tools/clang@18.1.8-1.1 latest`
+- `npm dist-tag add @xpack-dev-tools/clang@17.0.6-3.1 latest`
 - `npm dist-tag ls @xpack-dev-tools/clang`
 
 In case the previous version is not functional and needs to be unpublished:
 
-- `npm unpublish @xpack-dev-tools/clang@18.1.8-1.1`
+- `npm unpublish @xpack-dev-tools/clang@17.0.6-3.1`
 
 ## Update the Web
 
@@ -1182,7 +1182,7 @@ In case the previous version is not functional and needs to be unpublished:
 
 - in a separate browser windows, open [X/Twitter](https://twitter.com)
 - using the `@xpack_project` account
-- paste the release name like **xPack LLVM clang v18.1.8-1 released**
+- paste the release name like **xPack LLVM clang v17.0.6-3 released**
 - paste the link to the Web page
   [release](https://xpack.github.io/clang/releases/)
 - click the **Tweet** button
