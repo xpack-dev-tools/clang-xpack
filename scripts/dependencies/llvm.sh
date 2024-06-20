@@ -1481,7 +1481,7 @@ function test_linux()
       export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
     fi
   elif [ ${LLVM_VERSION_MAJOR} -eq 17 ] || \
-        [ ${LLVM_VERSION_MAJOR} -eq 18 ]
+       [ ${LLVM_VERSION_MAJOR} -eq 18 ]
   then
     if [ "${XBB_HOST_ARCH}" == "x64" ]
     then
