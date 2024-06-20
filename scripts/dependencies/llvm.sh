@@ -476,19 +476,25 @@ function llvm_build()
               config_options+=("-DLLVM_RUNTIME_TARGETS=i386-unknown-linux-gnu;x86_64-unknown-linux-gnu")
             elif [ "${XBB_HOST_ARCH}" == "arm64" ]
             then
-              # config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf;aarch64-unknown-linux-gnu")
-              config_options+=("-DLLVM_RUNTIME_TARGETS=aarch64-unknown-linux-gnu")
+              if [ ${llvm_version_major} -le 16 ]
+              then
+                # config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf;aarch64-unknown-linux-gnu")
+                config_options+=("-DLLVM_RUNTIME_TARGETS=aarch64-unknown-linux-gnu")
+              fi
             elif [ "${XBB_HOST_ARCH}" == "arm" ]
             then
-              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398288811
-              config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
+              if [ ${llvm_version_major} -le 16 ]
+              then
+                # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398288811
+                config_options+=("-DLLVM_RUNTIME_TARGETS=armv7l-unknown-linux-gnueabihf")
 
-              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398640255
-              # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_DEFAULT_TARGET_ONLY=ON")
+                # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1398640255
+                # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_DEFAULT_TARGET_ONLY=ON")
 
-              # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1397024105
-              # config_options+=("-DRUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF")
-              # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_BUILD_GWP_ASAN=OFF")
+                # https://github.com/llvm/llvm-project/issues/60115#issuecomment-1397024105
+                # config_options+=("-DRUNTIMES_COMPILER_RT_BUILD_GWP_ASAN=OFF")
+                # config_options+=("-DRUNTIMES_armv7l-unknown-linux-gnueabihf_COMPILER_RT_BUILD_GWP_ASAN=OFF")
+              fi
             else
               echo "Unsupported XBB_HOST_ARCH=${XBB_HOST_ARCH} in ${FUNCNAME[0]}() "
               exit 1
