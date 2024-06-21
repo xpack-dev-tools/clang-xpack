@@ -2141,6 +2141,15 @@ function test_linux()
       export XBB_IGNORE_TEST_LTO_CRT_WEAK_USE_C="y"
       export XBB_IGNORE_TEST_GC_LTO_CRT_WEAK_USE_C="y"
     fi
+
+    if [[ ${distro} == CentOS ]] || \
+       [[ ${distro} == RedHat* ]] || \
+       [[ ${distro} == Fedora ]] || \
+       [[ ${distro} == openSUSE ]] || \
+       [[ ${distro} == Arch ]]
+    then
+      export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
+    fi
   fi
 
   # It is mandatory for the compiler to run properly without any
