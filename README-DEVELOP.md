@@ -96,7 +96,59 @@ issue with the old 32-bit libraries:
   xfail: static-lld-simple-hello-cout-one-32
 ```
 
+## Run tests on docker images
 
+Some examples:
+
+```sh
+docker run -it redhat/ubi8
+docker run -it fedora:latest
+```
+
+Minimum prerequisites:
+
+```sh
+yum update --assumeyes
+yum install --assumeyes git
+```
+
+Common to all distributions:
+
+```sh
+rm -rf ~/Work/xpack-dev-tools/clang-xpack.git && \
+mkdir -p ~/Work/xpack-dev-tools && \
+git clone \
+--branch xpack-develop \
+https://github.com/xpack-dev-tools/clang-xpack.git \
+~/Work/xpack-dev-tools/clang-xpack.git
+
+rm -rf ~/Work/xpack-dev-tools/xbb-helper-xpack.git && \
+mkdir -p ~/Work/xpack-dev-tools && \
+git clone \
+--branch xpack-develop \
+https://github.com/xpack-dev-tools/xbb-helper-xpack.git \
+~/Work/xpack-dev-tools/xbb-helper-xpack.git
+
+rm -rf ~/Work/xpack-dev-tools/clang-xpack.git/xpacks
+mkdir -pv ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools
+ln -sv ~/Work/xpack-dev-tools/xbb-helper-xpack.git ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper
+
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image redhat/ubi8 --version 17.0.6-3 --base-url pre-release
+```
+
+Other commands:
+
+```sh
+git -C ~/Work/xpack-dev-tools/clang-xpack.git pull
+git -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git pull
+
+git -C ~/Work/xpack-dev-tools/clang-xpack.git status
+git -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git status
+
+vi ~/Work/xpack-dev-tools/xbb-helper-xpack.git/scripts/build-tests.sh
+vi /root/Work/xpack-dev-tools/clang-xpack.git/build/linux-x64/tests/results/summary
+vi ~/Work/xpack-dev-tools/clang-xpack.git/scripts/tests/run.sh
+```
 
 ## Oracle ampere tests
 
