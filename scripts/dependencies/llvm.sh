@@ -1513,8 +1513,8 @@ function test_linux()
       # fail: static-lto-sleepy-threads-cv-32
       # fail: static-gc-lto-sleepy-threads-32
       # fail: static-gc-lto-sleepy-threads-cv-32
-      # fail: static-lld-simple-hello1-cpp-one-32
-      # fail: static-lld-simple-hello1-cpp-two-32
+      # fail: static-lld-simple-hello-cout-one-32
+      # fail: static-lld-simple-hello-cout-two-32
       # fail: static-lld-simple-exception-32
       # fail: static-lld-simple-str-exception-32
       # fail: static-lld-simple-int-exception-32
@@ -1525,8 +1525,8 @@ function test_linux()
       # fail: static-lld-crt-test-32
       # fail: static-lld-hello-weak-cpp-32
       # fail: static-lld-overload-new-cpp-32
-      # fail: static-gc-lld-simple-hello1-cpp-one-32
-      # fail: static-gc-lld-simple-hello1-cpp-two-32
+      # fail: static-gc-lld-simple-hello-cout-one-32
+      # fail: static-gc-lld-simple-hello-cout-two-32
       # fail: static-gc-lld-simple-exception-32
       # fail: static-gc-lld-simple-str-exception-32
       # fail: static-gc-lld-simple-int-exception-32
@@ -1537,8 +1537,8 @@ function test_linux()
       # fail: static-gc-lld-crt-test-32
       # fail: static-gc-lld-hello-weak-cpp-32
       # fail: static-gc-lld-overload-new-cpp-32
-      # fail: static-lto-lld-simple-hello1-cpp-one-32
-      # fail: static-lto-lld-simple-hello1-cpp-two-32
+      # fail: static-lto-lld-simple-hello-cout-one-32
+      # fail: static-lto-lld-simple-hello-cout-two-32
       # fail: static-lto-lld-simple-exception-32
       # fail: static-lto-lld-simple-str-exception-32
       # fail: static-lto-lld-simple-int-exception-32
@@ -1549,8 +1549,8 @@ function test_linux()
       # fail: static-lto-lld-crt-test-32
       # fail: static-lto-lld-hello-weak-cpp-32
       # fail: static-lto-lld-overload-new-cpp-32
-      # fail: static-gc-lto-lld-simple-hello1-cpp-one-32
-      # fail: static-gc-lto-lld-simple-hello1-cpp-two-32
+      # fail: static-gc-lto-lld-simple-hello-cout-one-32
+      # fail: static-gc-lto-lld-simple-hello-cout-two-32
       # fail: static-gc-lto-lld-simple-exception-32
       # fail: static-gc-lto-lld-simple-str-exception-32
       # fail: static-gc-lto-lld-simple-int-exception-32
@@ -1595,13 +1595,13 @@ function test_linux()
       # >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
       # clang++: error: linker command failed with exit code 1 (use -v to see invocation)
 
-      # simple-hello1-cpp-one.
+      # simple-hello-cout-one.
       export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
       export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
       export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
 
-      # simple-hello1-cpp-two.
+      # simple-hello-cout-two.
       export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
       export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
