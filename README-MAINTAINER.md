@@ -264,7 +264,7 @@ The build takes about 85 minutes (1h25).
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on darwin-x64 (macOS 14.3.1)
+Tests summary for clang 18.1.8-1 on darwin-x64 (macOS 14.3.1)
 
 272 test cases passed, 0 skipped, 4 failed:
 
@@ -314,7 +314,7 @@ total 230824
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on darwin-x64 (MacOSX 10.14.6)
+Tests summary for clang 18.1.8-1 on darwin-x64 (MacOSX 10.14.6)
 
 256 test cases passed, 0 skipped, 20 failed:
 
@@ -380,7 +380,7 @@ total 198208
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on darwin-arm64 (macOS 11.7.10)
+Tests summary for clang 18.1.8-1 on darwin-arm64 (macOS 11.7.10)
 
 262 test cases passed, 0 skipped, 14 failed:
 
@@ -442,7 +442,7 @@ total 215724
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on linux-x64 (Ubuntu 18.04)
+Tests summary for clang 18.1.8-1 on linux-x64 (Ubuntu 18.04)
 
 2654 test cases passed, 0 skipped, 56 failed:
 
@@ -537,7 +537,7 @@ total 421076
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on win32-x64 (Ubuntu 18.04)
+Tests summary for clang 18.1.8-1 on win32-x64 (Ubuntu 18.04)
 
 1532 test cases passed, 0 skipped
 Verdict: tests accepted
@@ -568,20 +568,20 @@ xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xp
 xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 12h later (2h30 on ampere), the output of the build script is a compressed
+About 13h later (2h30 on ampere), the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/deploy
-total 192976
--rw-r--r-- 1 ilg ilg 197597695 Jun 13 19:13 xpack-clang-17.0.6-3-linux-arm64.tar.gz
--rw-r--r-- 1 ilg ilg       106 Jun 13 19:13 xpack-clang-17.0.6-3-linux-arm64.tar.gz.sha
+total 192968
+-rw-r--r-- 1 ilg ilg 197589811 Jun 20 20:22 xpack-clang-18.1.8-1-linux-arm64.tar.gz
+-rw-r--r-- 1 ilg ilg       106 Jun 20 20:22 xpack-clang-18.1.8-1-linux-arm64.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-Tests summary for clang 17.0.6-3 on linux-arm64 (Ubuntu 18.04)
+Tests summary for clang 18.1.8-1 on linux-arm64 (Ubuntu 18.04)
 
 1332 test cases passed, 0 skipped, 8 failed:
 
@@ -622,151 +622,141 @@ xpm run docker-link-deps --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpac
 xpm run docker-build-develop --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
-About 10h30 later, the output of the build script is a compressed
+About 11 hours later, the output of the build script is a compressed
 archive and its SHA signature, created in the `deploy` folder:
 
 ```console
 $ ls -l ~/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/deploy
-total 174560
--rw-r--r-- 1 ilg ilg 178739683 Apr  7 07:24 xpack-clang-17.0.6-3-linux-arm.tar.gz
--rw-r--r-- 1 ilg ilg       104 Apr  7 07:24 xpack-clang-17.0.6-3-linux-arm.tar.gz.sha
+total 180704
+-rw-r--r-- 1 ilg ilg 185033387 Jun 20 18:09 xpack-clang-18.1.8-1-linux-arm.tar.gz
+-rw-r--r-- 1 ilg ilg       104 Jun 20 18:09 xpack-clang-18.1.8-1-linux-arm.tar.gz.sha
 ```
 
 The tests report is:
 
 ```txt
-1246 test(s) passed, 130 failed:
+Tests summary for clang 18.1.8-1 on linux-arm (Ubuntu 18.04)
 
-fail: lto-adder-shared
-fail: lto-simple-exception
-fail: lto-sleepy-threads
-fail: lto-hello-cpp
-fail: lto-longjmp-cleanup
-fail: lto-hello-weak-cpp
-fail: lto-normal
-fail: lto-weak-undef-c
-fail: lto-weak-defined-c
-fail: lto-weak-use-c
-fail: lto-weak-override-c
-fail: gc-lto-adder-shared
-fail: gc-lto-simple-exception
-fail: gc-lto-sleepy-threads
-fail: gc-lto-hello-cpp
-fail: gc-lto-longjmp-cleanup
-fail: gc-lto-hello-weak-c
-fail: gc-lto-hello-weak-cpp
-fail: gc-lto-normal
-fail: gc-lto-weak-undef-c
-fail: gc-lto-weak-defined-c
-fail: gc-lto-weak-use-c
-fail: gc-lto-weak-override-c
-fail: static-lib-lto-adder-shared
-fail: static-lib-lto-simple-exception
-fail: static-lib-lto-sleepy-threads
-fail: static-lib-lto-longjmp-cleanup
-fail: static-lib-lto-hello-weak-c
-fail: static-lib-lto-normal
-fail: static-lib-lto-weak-undef-c
-fail: static-lib-lto-weak-defined-c
-fail: static-lib-lto-weak-use-c
-fail: static-lib-lto-weak-override-c
-fail: static-lib-gc-lto-adder-shared
-fail: static-lib-gc-lto-simple-exception
-fail: static-lib-gc-lto-sleepy-threads
-fail: static-lib-gc-lto-hello-cpp
-fail: static-lib-gc-lto-longjmp-cleanup
-fail: static-lib-gc-lto-hello-weak-c
-fail: static-lib-gc-lto-hello-weak-cpp
-fail: static-lib-gc-lto-normal
-fail: static-lib-gc-lto-weak-undef-c
-fail: static-lib-gc-lto-weak-defined-c
-fail: static-lib-gc-lto-weak-use-c
-fail: static-lib-gc-lto-weak-override-c
-fail: static-sleepy-threads
-fail: static-sleepy-threads-cv
-fail: static-gc-sleepy-threads
-fail: static-gc-sleepy-threads-cv
-fail: static-lto-simple-exception
-fail: static-lto-sleepy-threads
-fail: static-lto-sleepy-threads-cv
-fail: static-lto-longjmp-cleanup
-fail: static-lto-exception-reduced
-fail: static-lto-hello-weak-c
-fail: static-lto-normal
-fail: static-lto-weak-undef-c
-fail: static-lto-weak-defined-c
-fail: static-lto-weak-use-c
-fail: static-lto-weak-override-c
-fail: static-gc-lto-simple-exception
-fail: static-gc-lto-simple-str-exception
-fail: static-gc-lto-sleepy-threads
-fail: static-gc-lto-sleepy-threads-cv
-fail: static-gc-lto-hello-cpp
-fail: static-gc-lto-longjmp-cleanup
-fail: static-gc-lto-exception-reduced
-fail: static-gc-lto-hello-weak-c
-fail: static-gc-lto-normal
-fail: static-gc-lto-weak-undef-c
-fail: static-gc-lto-weak-defined-c
-fail: static-gc-lto-weak-use-c
-fail: static-gc-lto-weak-override-c
-fail: static-lld-sleepy-threads
-fail: static-lld-sleepy-threads-cv
-fail: static-gc-lld-sleepy-threads
-fail: static-gc-lld-sleepy-threads-cv
-fail: static-lto-lld-sleepy-threads
-fail: static-lto-lld-sleepy-threads-cv
-fail: static-gc-lto-lld-sleepy-threads
-fail: static-gc-lto-lld-sleepy-threads-cv
-fail: crt-hello-exception
-fail: crt-exception-locale
-fail: crt-exception-reduced
-fail: gc-crt-hello-exception
-fail: gc-crt-exception-locale
-fail: gc-crt-exception-reduced
-fail: lto-crt-adder-shared
-fail: lto-crt-simple-exception
-fail: lto-crt-sleepy-threads
-fail: lto-crt-hello-cpp
-fail: lto-crt-longjmp-cleanup
-fail: lto-crt-hello-exception
-fail: lto-crt-exception-locale
-fail: lto-crt-exception-reduced
-fail: lto-crt-hello-weak-c
-fail: lto-crt-normal
-fail: lto-crt-weak-undef-c
-fail: lto-crt-weak-defined-c
-fail: lto-crt-weak-use-c
-fail: lto-crt-weak-override-c
-fail: lto-crt-weak-duplicate-c
-fail: gc-lto-crt-adder-shared
-fail: gc-lto-crt-simple-exception
-fail: gc-lto-crt-sleepy-threads
-fail: gc-lto-crt-hello-cpp
-fail: gc-lto-crt-longjmp-cleanup
-fail: gc-lto-crt-hello-exception
-fail: gc-lto-crt-exception-locale
-fail: gc-lto-crt-exception-reduced
-fail: gc-lto-crt-hello-weak-c
-fail: gc-lto-crt-hello-weak-cpp
-fail: gc-lto-crt-normal
-fail: gc-lto-crt-weak-undef-c
-fail: gc-lto-crt-weak-defined-c
-fail: gc-lto-crt-weak-use-c
-fail: gc-lto-crt-weak-override-c
-fail: gc-lto-crt-weak-duplicate-c
-fail: crt-lld-hello-exception
-fail: crt-lld-exception-locale
-fail: crt-lld-exception-reduced
-fail: gc-crt-lld-hello-exception
-fail: gc-crt-lld-exception-locale
-fail: gc-crt-lld-exception-reduced
-fail: lto-crt-lld-hello-exception
-fail: lto-crt-lld-exception-locale
-fail: lto-crt-lld-exception-reduced
-fail: gc-lto-crt-lld-hello-exception
-fail: gc-lto-crt-lld-exception-locale
-fail: gc-lto-crt-lld-exception-reduced
+1224 test cases passed, 0 skipped, 116 failed:
+
+- xfail: lto-simple-exception
+- xfail: lto-hello2-cpp
+- xfail: lto-longjmp-cleanup
+- xfail: lto-hello-weak2-cpp
+- xfail: lto-normal
+- xfail: lto-weak-undef-c
+- xfail: lto-weak-defined-c
+- xfail: lto-weak-use-c
+- xfail: lto-weak-override-c
+- xfail: lto-throwcatch-main
+- xfail: gc-lto-simple-exception
+- xfail: gc-lto-hello2-cpp
+- xfail: gc-lto-longjmp-cleanup
+- xfail: gc-lto-hello-weak1-c
+- xfail: gc-lto-hello-weak2-cpp
+- xfail: gc-lto-normal
+- xfail: gc-lto-weak-undef-c
+- xfail: gc-lto-weak-defined-c
+- xfail: gc-lto-weak-use-c
+- xfail: gc-lto-weak-override-c
+- xfail: gc-lto-throwcatch-main
+- xfail: static-lib-lto-simple-exception
+- xfail: static-lib-lto-simple-int-exception
+- xfail: static-lib-lto-longjmp-cleanup
+- xfail: static-lib-lto-exception-reduced
+- xfail: static-lib-lto-hello-weak1-c
+- xfail: static-lib-lto-normal
+- xfail: static-lib-lto-weak-undef-c
+- xfail: static-lib-lto-weak-defined-c
+- xfail: static-lib-lto-weak-use-c
+- xfail: static-lib-lto-weak-override-c
+- xfail: static-lib-lto-throwcatch-main
+- xfail: static-lib-gc-lto-simple-exception
+- xfail: static-lib-gc-lto-hello2-cpp
+- xfail: static-lib-gc-lto-longjmp-cleanup
+- xfail: static-lib-gc-lto-exception-reduced
+- xfail: static-lib-gc-lto-hello-weak2-cpp
+- xfail: static-lib-gc-lto-normal
+- xfail: static-lib-gc-lto-weak-undef-c
+- xfail: static-lib-gc-lto-weak-defined-c
+- xfail: static-lib-gc-lto-weak-use-c
+- xfail: static-lib-gc-lto-weak-override-c
+- xfail: static-lib-gc-lto-throwcatch-main
+- xfail: static-sleepy-threads-cv
+- xfail: static-gc-sleepy-threads-cv
+- xfail: static-lto-simple-exception
+- xfail: static-lto-sleepy-threads-cv
+- xfail: static-lto-longjmp-cleanup
+- xfail: static-lto-exception-reduced
+- xfail: static-lto-hello-weak1-c
+- xfail: static-lto-normal
+- xfail: static-lto-weak-undef-c
+- xfail: static-lto-weak-defined-c
+- xfail: static-lto-weak-use-c
+- xfail: static-lto-weak-override-c
+- xfail: static-gc-lto-simple-exception
+- xfail: static-gc-lto-sleepy-threads-cv
+- xfail: static-gc-lto-hello2-cpp
+- xfail: static-gc-lto-longjmp-cleanup
+- xfail: static-gc-lto-exception-reduced
+- xfail: static-gc-lto-hello-weak1-c
+- xfail: static-gc-lto-hello-weak2-cpp
+- xfail: static-gc-lto-normal
+- xfail: static-gc-lto-weak-undef-c
+- xfail: static-gc-lto-weak-defined-c
+- xfail: static-gc-lto-weak-use-c
+- xfail: static-gc-lto-weak-override-c
+- xfail: static-lld-sleepy-threads-cv
+- xfail: static-gc-lld-sleepy-threads-cv
+- xfail: static-lto-lld-sleepy-threads-cv
+- xfail: static-gc-lto-lld-sleepy-threads-cv
+- xfail: crt-hello-exception
+- xfail: crt-exception-locale
+- xfail: crt-exception-reduced
+- xfail: gc-crt-hello-exception
+- xfail: gc-crt-exception-locale
+- xfail: gc-crt-exception-reduced
+- xfail: lto-crt-simple-exception
+- xfail: lto-crt-hello2-cpp
+- xfail: lto-crt-longjmp-cleanup
+- xfail: lto-crt-hello-exception
+- xfail: lto-crt-exception-locale
+- xfail: lto-crt-exception-reduced
+- xfail: lto-crt-hello-weak1-c
+- xfail: lto-crt-normal
+- xfail: lto-crt-weak-undef-c
+- xfail: lto-crt-weak-defined-c
+- xfail: lto-crt-weak-use-c
+- xfail: lto-crt-weak-override-c
+- xfail: lto-crt-throwcatch-main
+- xfail: gc-lto-crt-simple-exception
+- xfail: gc-lto-crt-hello2-cpp
+- xfail: gc-lto-crt-longjmp-cleanup
+- xfail: gc-lto-crt-hello-exception
+- xfail: gc-lto-crt-exception-locale
+- xfail: gc-lto-crt-exception-reduced
+- xfail: gc-lto-crt-hello-weak1-c
+- xfail: gc-lto-crt-hello-weak2-cpp
+- xfail: gc-lto-crt-normal
+- xfail: gc-lto-crt-weak-undef-c
+- xfail: gc-lto-crt-weak-defined-c
+- xfail: gc-lto-crt-weak-use-c
+- xfail: gc-lto-crt-weak-override-c
+- xfail: gc-lto-crt-throwcatch-main
+- xfail: crt-lld-hello-exception
+- xfail: crt-lld-exception-locale
+- xfail: crt-lld-exception-reduced
+- xfail: gc-crt-lld-hello-exception
+- xfail: gc-crt-lld-exception-locale
+- xfail: gc-crt-lld-exception-reduced
+- xfail: lto-crt-lld-hello-exception
+- xfail: lto-crt-lld-exception-locale
+- xfail: lto-crt-lld-exception-reduced
+- xfail: gc-lto-crt-lld-hello-exception
+- xfail: gc-lto-crt-lld-exception-locale
+- xfail: gc-lto-crt-lld-exception-reduced
+
+Verdict: tests reluctantly accepted
 ```
 
 ### Update README-MAINTAINER listing output
@@ -903,11 +893,12 @@ These commands use the `xpack-develop` branch of this repo.
 
 The builds take more than 11 hours to complete:
 
-- `xbbmi`: 1h33 (nuc)
-- `xbbma`: 0h38
-- `xbbli`: 1h59 Linux, 2h48 Windows
-- `xbbla`: 12h24
-- `xbbla32`: 10h29
+- `darwin-x64`: 1h38 (nuc)
+- `darwin-arm64`: 0h38 (m1)
+- `linux-x64`: 2h15 (amd)
+- `win32-x64`: 4h04 (amd)
+- `linux-arm64`: 12h43 (rpi4)
+- `linux-arm`: 11h26 (rpi4)
 
 The workflow result and logs are available from the
 [Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/) page.
