@@ -1654,6 +1654,20 @@ function test_linux()
       export XBB_IGNORE_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
       export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+
+      if [[ ${distro} == CentOS ]] || \
+         [[ ${distro} == RedHat* ]] || \
+         [[ ${distro} == Fedora ]] || \
+         [[ ${distro} == openSUSE ]] || \
+         [[ ${distro} == Arch ]]
+      then
+        # cnrt-test.c:(.text+0x1a03b): undefined reference to `fmod'
+        # cnrt-test.
+        export XBB_IGNORE_TEST_STATIC_CNRT_TEST_32="y"
+        export XBB_IGNORE_TEST_STATIC_GC_CNRT_TEST_32="y"
+        export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST_32="y"
+        export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST_32="y"
+      fi
     elif [ "${XBB_HOST_ARCH}" == "arm64" ]
     then
       # arm64
@@ -2148,6 +2162,7 @@ function test_linux()
        [[ ${distro} == openSUSE ]] || \
        [[ ${distro} == Arch ]]
     then
+      # cannot find -latomic (with -static)
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
   fi
