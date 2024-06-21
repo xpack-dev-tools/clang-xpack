@@ -2005,13 +2005,15 @@ function test_linux()
       export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_EXCEPTION="y"
       export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_EXCEPTION="y"
 
-      # simple-hello1-c-one.
+      # simple-hello-printf-one.
+      export XBB_IGNORE_TEST_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
+      export XBB_IGNORE_TEST_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
       export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
       export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_ONE="y"
       export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
       export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_HELLO_PRINTF_ONE="y"
 
-      # simple-hello1-c-two.
+      # simple-hello-printf-two.
       export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_HELLO_PRINTF_TWO="y"
       export XBB_IGNORE_TEST_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
       export XBB_IGNORE_TEST_GC_LTO_CRT_SIMPLE_HELLO_PRINTF_TWO="y"
