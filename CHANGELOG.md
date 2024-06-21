@@ -2,8 +2,17 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-06-22
+
+* v18.1.8-1 prepared
+* 375d1fb package.json: bump deps
+* ef54f13 re-generate workflows
+
 ## 2024-06-21
 
+* 3eadee3 re-generate workflows
+* c84d50d 17.0.6-3.1
+* 5eba4df CHANGELOG: publish npm v17.0.6-3.1
 * v17.0.6-3.1 published on npmjs.com
 * 5e31ab4 package.json: update urls for 17.0.6-3.1 release
 * 52a8c5c README update
