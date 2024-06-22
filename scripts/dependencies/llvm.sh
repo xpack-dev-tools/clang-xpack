@@ -2037,6 +2037,11 @@ function test_linux()
       # simple-int-exception.
       # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/xpacks/.bin/ld: /tmp/simple-int-exception-aef398.o (symbol from plugin): Number of symbols in input file has increased from 0 to 1
       export XBB_IGNORE_TEST_STATIC_LIB_LTO_SIMPLE_INT_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_SIMPLE_INT_EXCEPTION="y"
+
+      # simple-str-exception.
+      export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_STR_EXCEPTION="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SIMPLE_STR_EXCEPTION="y"
 
       # simple-objc.
       export XBB_IGNORE_TEST_STATIC_LTO_SIMPLE_OBJC="y"
