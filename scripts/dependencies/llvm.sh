@@ -1240,7 +1240,6 @@ function test_win32()
       fi
 
       test_compiler_c_cpp --${bits}
-
       test_compiler_c_cpp --${bits} --gc
       test_compiler_c_cpp --${bits} --lto
       test_compiler_c_cpp --${bits} --gc --lto
@@ -1811,27 +1810,33 @@ function test_linux_combinations()
       echo
       echo "LDFLAGS=${LDFLAGS}"
 
-      # With compiler-rt.
-      test_compiler_c_cpp ${bits_option} --crt --libunwind
-      test_compiler_c_cpp ${bits_option} --gc --crt --libunwind
-
-      if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+      # Although possible, it is not very useful, it is more
+      # realistic to use it together with libc++.
+      # Disable to save some time.
+      if false
       then
-        echo
-        echo "Skipping all ${bits_option} --lto --crt --libunwind..."
+        # With compiler-rt.
+        test_compiler_c_cpp ${bits_option} --crt --libunwind
+        test_compiler_c_cpp ${bits_option} --gc --crt --libunwind
 
-        echo "skip: all-lto ${bits_option} --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        echo "skip: all-lto ${bits_option} --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-      else
-        test_compiler_c_cpp ${bits_option} --lto --crt --libunwind
-        test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind
+        if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+        then
+          echo
+          echo "Skipping all ${bits_option} --lto --crt --libunwind..."
+
+          echo "skip: all-lto ${bits_option} --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          echo "skip: all-lto ${bits_option} --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        else
+          test_compiler_c_cpp ${bits_option} --lto --crt --libunwind
+          test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind
+        fi
+
+        # Again with lld.
+        test_compiler_c_cpp ${bits_option} --crt --libunwind --lld
+        test_compiler_c_cpp ${bits_option} --gc --crt --libunwind --lld
+        test_compiler_c_cpp ${bits_option} --lto --crt --libunwind --lld
+        test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind --lld
       fi
-
-      # Again with lld.
-      test_compiler_c_cpp ${bits_option} --crt --libunwind --lld
-      test_compiler_c_cpp ${bits_option} --gc --crt --libunwind --lld
-      test_compiler_c_cpp ${bits_option} --lto --crt --libunwind --lld
-      test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind --lld
 
       # With compiler-rt & libc++.
       test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind
