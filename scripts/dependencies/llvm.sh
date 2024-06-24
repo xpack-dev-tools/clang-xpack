@@ -1490,108 +1490,6 @@ function test_linux()
   then
     if [ "${XBB_HOST_ARCH}" == "x64" ]
     then
-
-      # x64
-      # 72 test(s) failed:
-
-      # fail: static-sleepy-threads-64
-      # fail: static-sleepy-threads-cv-64
-      # fail: static-gc-sleepy-threads-64
-      # fail: static-gc-sleepy-threads-cv-64
-      # fail: static-lto-sleepy-threads-64
-      # fail: static-lto-sleepy-threads-cv-64
-      # fail: static-gc-lto-sleepy-threads-64
-      # fail: static-gc-lto-sleepy-threads-cv-64
-      # fail: static-lld-sleepy-threads-64
-      # fail: static-lld-sleepy-threads-cv-64
-      # fail: static-gc-lld-sleepy-threads-64
-      # fail: static-gc-lld-sleepy-threads-cv-64
-      # fail: static-lto-lld-sleepy-threads-64
-      # fail: static-lto-lld-sleepy-threads-cv-64
-      # fail: static-gc-lto-lld-sleepy-threads-64
-      # fail: static-gc-lto-lld-sleepy-threads-cv-64
-      # fail: static-sleepy-threads-32
-      # fail: static-sleepy-threads-cv-32
-      # fail: static-gc-sleepy-threads-32
-      # fail: static-gc-sleepy-threads-cv-32
-      # fail: static-lto-sleepy-threads-32
-      # fail: static-lto-sleepy-threads-cv-32
-      # fail: static-gc-lto-sleepy-threads-32
-      # fail: static-gc-lto-sleepy-threads-cv-32
-      # fail: static-lld-simple-hello-cout-one-32
-      # fail: static-lld-simple-hello-cout-two-32
-      # fail: static-lld-simple-exception-32
-      # fail: static-lld-simple-str-exception-32
-      # fail: static-lld-simple-int-exception-32
-      # fail: static-lld-sleepy-threads-32
-      # fail: static-lld-sleepy-threads-cv-32
-      # fail: static-lld-hello-cpp-32
-      # fail: static-lld-exception-locale-32
-      # fail: static-lld-crt-test-32
-      # fail: static-lld-hello-weak-cpp-32
-      # fail: static-lld-overload-new-cpp-32
-      # fail: static-gc-lld-simple-hello-cout-one-32
-      # fail: static-gc-lld-simple-hello-cout-two-32
-      # fail: static-gc-lld-simple-exception-32
-      # fail: static-gc-lld-simple-str-exception-32
-      # fail: static-gc-lld-simple-int-exception-32
-      # fail: static-gc-lld-sleepy-threads-32
-      # fail: static-gc-lld-sleepy-threads-cv-32
-      # fail: static-gc-lld-hello-cpp-32
-      # fail: static-gc-lld-exception-locale-32
-      # fail: static-gc-lld-crt-test-32
-      # fail: static-gc-lld-hello-weak-cpp-32
-      # fail: static-gc-lld-overload-new-cpp-32
-      # fail: static-lto-lld-simple-hello-cout-one-32
-      # fail: static-lto-lld-simple-hello-cout-two-32
-      # fail: static-lto-lld-simple-exception-32
-      # fail: static-lto-lld-simple-str-exception-32
-      # fail: static-lto-lld-simple-int-exception-32
-      # fail: static-lto-lld-sleepy-threads-32
-      # fail: static-lto-lld-sleepy-threads-cv-32
-      # fail: static-lto-lld-hello-cpp-32
-      # fail: static-lto-lld-exception-locale-32
-      # fail: static-lto-lld-crt-test-32
-      # fail: static-lto-lld-hello-weak-cpp-32
-      # fail: static-lto-lld-overload-new-cpp-32
-      # fail: static-gc-lto-lld-simple-hello-cout-one-32
-      # fail: static-gc-lto-lld-simple-hello-cout-two-32
-      # fail: static-gc-lto-lld-simple-exception-32
-      # fail: static-gc-lto-lld-simple-str-exception-32
-      # fail: static-gc-lto-lld-simple-int-exception-32
-      # fail: static-gc-lto-lld-sleepy-threads-32
-      # fail: static-gc-lto-lld-sleepy-threads-cv-32
-      # fail: static-gc-lto-lld-hello-cpp-32
-      # fail: static-gc-lto-lld-exception-locale-32
-      # fail: static-gc-lto-lld-crt-test-32
-      # fail: static-gc-lto-lld-hello-weak-cpp-32
-      # fail: static-gc-lto-lld-overload-new-cpp-32
-
-      # Weird, -static crashes the threads.
-      # 201486 Segmentation fault      (core dumped)
-
-      # sleepy-threads.
-      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
-
-      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
-
-      # sleepy-threads-cv.
-      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
-
-      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-
       # -------------------------------------------------------------------
       # -static and lld seem to have a problem with C++, but only on 32-bit.
 
@@ -1675,65 +1573,27 @@ function test_linux()
       fi
     elif [ "${XBB_HOST_ARCH}" == "arm64" ]
     then
-      # arm64
-      # 16 test(s) failed:
-
-      # fail: static-sleepy-threads
-      # fail: static-sleepy-threads-cv
-      # fail: static-gc-sleepy-threads
-      # fail: static-gc-sleepy-threads-cv
-      # fail: static-lto-sleepy-threads
-      # fail: static-lto-sleepy-threads-cv
-      # fail: static-gc-lto-sleepy-threads
-      # fail: static-gc-lto-sleepy-threads-cv
-      # fail: static-lld-sleepy-threads
-      # fail: static-lld-sleepy-threads-cv
-      # fail: static-gc-lld-sleepy-threads
-      # fail: static-gc-lld-sleepy-threads-cv
-      # fail: static-lto-lld-sleepy-threads
-      # fail: static-lto-lld-sleepy-threads-cv
-      # fail: static-gc-lto-lld-sleepy-threads
-      # fail: static-gc-lto-lld-sleepy-threads-cv
-
-      # sleepy-threads.
-      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_SL="y"
-
-      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_SL="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_SL="y"
-
-      # sleepy-threads-cv.
-      # terminate called after throwing an instance of 'std::system_error'
-      #   what():  Unknown error 5774344
-
-      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
-
-      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      # arm 64-bit
+      : # seems ok
     elif [ "${XBB_HOST_ARCH}" == "arm" ]
     then
-
-      # arm
-      # Basically LTO is unreliable, use LLD.
+      # arm 32-bit
+      # Basically LTO is unreliable; use LLD.
       export XBB_SKIP_TESTS_ALL_LTO_LD="y"
 
-      # Static is also unreliable.
-
+      if [[ ${distro} == Arch ]]
+      then
+        # Arch: undefined reference to `fmod' (static)
+        export XBB_SKIP_TESTS_ALL_STATIC="y"
+      fi
 
       # exception-locale.
       export XBB_IGNORE_TEST_CRT_EXCEPTION_LOCALE="y"
       export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_LOCALE="y"
       export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_LOCALE="y"
       export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_LOCALE="y"
 
       # exception-reduced.
       # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm/xpacks/.bin/ld: /tmp/exception-reduced-290bc9.o (symbol from plugin): Number of symbols in input file has increased from 0 to 1
@@ -1741,19 +1601,24 @@ function test_linux()
       export XBB_IGNORE_TEST_GC_CRT_EXCEPTION_REDUCED="y"
       export XBB_IGNORE_TEST_CRT_LLD_EXCEPTION_REDUCED="y"
       export XBB_IGNORE_TEST_GC_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_EXCEPTION_REDUCED="y"
 
       # hello-exception.
       export XBB_IGNORE_TEST_CRT_HELLO_EXCEPTION="y"
       export XBB_IGNORE_TEST_GC_CRT_HELLO_EXCEPTION="y"
       export XBB_IGNORE_TEST_CRT_LLD_HELLO_EXCEPTION="y"
       export XBB_IGNORE_TEST_GC_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_CRT_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_CRT_LLD_HELLO_EXCEPTION="y"
 
       # sleepy-threads-cv.
       export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
     fi
 
     if [[ ${distro} == CentOS ]] || \
@@ -1765,294 +1630,168 @@ function test_linux()
       # cannot find -latomic (with -static)
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
+
+    # -static crashes the threads.
+    # 201486 Segmentation fault      (core dumped)
+    export XBB_SKIP_TEST_ALL_STATIC_SLEEPY_THREADS_CV="y"
   fi
 
   # It is mandatory for the compiler to run properly without any
   # explicit libraries or other options, otherwise tools used
   # during configuration (like meson) might fail probing for
   # capabilities.
-  test_compiler_c_cpp
+  test_compiler_c_cpp --probe
 
   # aarch64 multilib not yet available
   # if [ "${XBB_HOST_BITS}" == "64" ]
   if [ "${XBB_HOST_ARCH}" == "x64" ]
   then
-    # x64 with multilib. Two runs, -m64 & -m32.
+    # x64 with multilib.
 
+    # First a run without -m
+    test_compiler_c_cpp
+
+    # Then two runs, -m32 & -m64.
     for bits in 32 64
     do
-      (
-        if [ ${bits} -eq 32 ]
-        then
-          local skip_32_tests=""
-          if is_variable_set "XBB_SKIP_32_BIT_TESTS"
-          then
-            skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
-          else
-            local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
-            if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
-            then
-              # If the compiler does not find the full path of the
-              # 32-bit c++ library, multilib support is not installed; skip.
-              skip_32_tests="y"
-            fi
-          fi
-
-          if [ "${skip_32_tests}" == "y" ]
-          then
-            echo
-            echo "Skipping clang -m32 tests..."
-            continue
-          fi
-        fi
-
-        # ---------------------------------------------------------------------
-        # First test using the system GCC runtime and libstdc++.
-
-        test_compiler_c_cpp --${bits}
-        test_compiler_c_cpp --${bits} --gc
-
-        if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
-        then
-          echo
-          echo "Skipping all --lto..."
-          echo "skip: all --${bits} --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          echo "skip: all --${bits} --gc --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        else
-          test_compiler_c_cpp --${bits} --lto
-          test_compiler_c_cpp --${bits} --gc --lto
-        fi
-
-        # Again with lld.
-        test_compiler_c_cpp --${bits} --lld
-        test_compiler_c_cpp --${bits} --gc --lld
-        test_compiler_c_cpp --${bits} --lto --lld
-        test_compiler_c_cpp --${bits} --gc --lto --lld
-
-        # -static-libgcc -static-libgcc.
-        test_compiler_c_cpp --${bits} --static-lib
-        test_compiler_c_cpp --${bits} --gc --static-lib
-
-        if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
-        then
-          echo
-          echo "Skipping all --${bits} --lto --static-lib..."
-          echo "skip: all --${bits} --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          echo "skip: all --${bits} --gc --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        else
-          test_compiler_c_cpp --${bits} --lto --static-lib
-          test_compiler_c_cpp --${bits} --gc --lto --static-lib
-        fi
-
-        # Again with lld.
-        test_compiler_c_cpp --${bits} --lld --static-lib
-        test_compiler_c_cpp --${bits} --gc --lld --static-lib
-        test_compiler_c_cpp --${bits} --lto --lld --static-lib
-        test_compiler_c_cpp --${bits} --gc --lto --lld --static-lib
-
-        if [[ ${distro} == Arch ]]
-        then
-          # Arch: undefined reference to `fmod' (static)
-          # Arch: cannot find -latomic (static)
-          echo
-          echo "Skipping all --${bits} --static on ${distro}..."
-          echo "skip: all --${bits} --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          echo "skip: all --${bits} --gc --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        else
-          # -static.
-          test_compiler_c_cpp --${bits} --static
-          test_compiler_c_cpp --${bits} --gc --static
-
-          if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
-          then
-            echo
-            echo "Skipping all --${bits} --lto --static..."
-            echo "skip: all --${bits} --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-            echo "skip: all --${bits} --gc --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          else
-            test_compiler_c_cpp --${bits} --lto --static
-            test_compiler_c_cpp --${bits} --gc --lto --static
-          fi
-
-          # Again with lld.
-          test_compiler_c_cpp --${bits} --lld --static
-          test_compiler_c_cpp --${bits} --gc --lld --static
-          test_compiler_c_cpp --${bits} --lto --lld --static
-          test_compiler_c_cpp --${bits} --gc --lto --lld --static
-        fi
-
-        # ---------------------------------------------------------------------
-        # Second test LLVM runtime and libc++.
-
-        (
-          # The shared libraries are in a custom location and require setting
-          # the path explicitly.
-
-          local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m${bits})"
-
-          LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-          export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-
-          LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
-          export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
-
-          echo
-          echo "LDFLAGS=${LDFLAGS}"
-
-          # With compiler-rt.
-          test_compiler_c_cpp --${bits} --crt --libunwind
-          test_compiler_c_cpp --${bits} --gc --crt --libunwind
-
-          if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
-          then
-            echo
-            echo "Skipping all --${bits} --lto --crt --libunwind..."
-            echo "skip: all --${bits} --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-            echo "skip: all --${bits} --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          else
-            test_compiler_c_cpp --${bits} --lto --crt --libunwind
-            test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind
-          fi
-
-          # Again with lld.
-          test_compiler_c_cpp --${bits} --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --gc --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --lto --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind --lld
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind
-
-          if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
-          then
-            echo
-            echo "Skipping all --${bits} --lto --libc++ --crt --libunwind..."
-            echo "skip: all --${bits} --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-            echo "skip: all --${bits} --gc --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-          else
-            test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind
-            test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind
-          fi
-
-          # Again with lld.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld
-          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld
-        )
-
-        if false
-        then
-          # -static-libgcc -static-libgcc.
-          # This combination seems not supported.
-
-          # clang++: warning: argument unused during compilation: '-static-libgcc'
-
-          # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/xpacks/.bin/ld: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build/linux-arm64/application/bin/../lib/aarch64-unknown-linux-gnu/libc++.a(iostream.cpp.o): in function `std::__1::ios_base::Init::Init()':
-          # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp --${bits} --lto --lld --libc++ --crt --libunwind --static-lib
-          test_compiler_c_cpp --${bits} --gc --lto --lld --libc++ --crt --libunwind --static-lib
-
-          # Again with lld.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld --static-lib
-          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld --static-lib
-        fi
-
-        if false
-        then
-          # -static.
-          # This combination also seems not supported.
-
-          # With compiler-rt & libc++.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --static
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --static
-          test_compiler_c_cpp --${bits} --lto --lld --libc++ --crt --libunwind --static
-          test_compiler_c_cpp --${bits} --gc --lto --lld --libc++ --crt --libunwind --static
-
-          # Again with lld.
-          test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind --lld --static
-          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind --lld --static
-        fi
-      )
+      test_linux_combinations --${bits}
     done
-
   else
-    # arm & aarch64, non-multilib, no explicit -m32/-m64.
+    # arm & aarch64, non-multilib.
+
+    # No explicit -m32/-m64.
+    test_linux_combinations
+  fi
+}
+
+function test_linux_combinations()
+{
+  local bits=0
+  local bits_option=""
+
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+      --32 )
+        bits=32
+        bits_option="--32"
+        shift
+        ;;
+
+      --64 )
+        bits=64
+        bits_option="--64"
+        shift
+        ;;
+
+      * )
+        echo "Unsupported argument $1 in ${FUNCNAME[0]}()"
+        exit 1
+        ;;
+    esac
+  done
+
+  (
+    if [ ${bits} -eq 32 ]
+    then
+      local skip_32_tests=""
+      if is_variable_set "XBB_SKIP_32_BIT_TESTS"
+      then
+        skip_32_tests="${XBB_SKIP_32_BIT_TESTS}"
+      else
+        local libstdcpp_file_path="$(${CXX} -m32 -print-file-name=libstdc++.so)"
+        if [ "${libstdcpp_file_path}" == "libstdc++.so" ]
+        then
+          # If the compiler does not find the full path of the
+          # 32-bit c++ library, multilib support is not installed; skip.
+          skip_32_tests="y"
+        fi
+      fi
+
+      if [ "${skip_32_tests}" == "y" ]
+      then
+        echo
+        echo "Skipping clang -m32 tests..."
+        continue
+      fi
+    fi
 
     # ---------------------------------------------------------------------
     # First test using the system GCC runtime and libstdc++.
 
-    # test_compiler_c_cpp # Already done.
-    test_compiler_c_cpp --gc
+    test_compiler_c_cpp ${bits_option}
+    test_compiler_c_cpp ${bits_option} --gc
 
     if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
     then
       echo
-      echo "Skipping all --lto..."
-      echo "skip: all --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-      echo "skip: all --gc --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "Skipping all ${bits_option} --lto..."
+
+      echo "skip: all-lto ${bits_option} --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all-lto ${bits_option} --gc --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
     else
-      test_compiler_c_cpp --lto
-      test_compiler_c_cpp --gc --lto
+      test_compiler_c_cpp ${bits_option} --lto
+      test_compiler_c_cpp ${bits_option} --gc --lto
     fi
 
     # Again with lld.
-    test_compiler_c_cpp --lld
-    test_compiler_c_cpp --gc --lld
-    test_compiler_c_cpp --lto --lld
-    test_compiler_c_cpp --gc --lto --lld
+    test_compiler_c_cpp ${bits_option} --lld
+    test_compiler_c_cpp ${bits_option} --gc --lld
+    test_compiler_c_cpp ${bits_option} --lto --lld
+    test_compiler_c_cpp ${bits_option} --gc --lto --lld
 
     # -static-libgcc -static-libgcc.
-    # WARNING: check if they run on RH!
-    test_compiler_c_cpp --static-lib
-    test_compiler_c_cpp --gc --static-lib
+    test_compiler_c_cpp ${bits_option} --static-lib
+    test_compiler_c_cpp ${bits_option} --gc --static-lib
 
     if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
     then
       echo
-      echo "Skipping all --lto --static-lib..."
-      echo "skip: all --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-      echo "skip: all --gc --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "Skipping all ${bits_option} --lto --static-lib..."
+
+      echo "skip: all-lto ${bits_option} --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all-lto ${bits_option} --gc --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
     else
-      test_compiler_c_cpp --lto --static-lib
-      test_compiler_c_cpp --gc --lto --static-lib
+      test_compiler_c_cpp ${bits_option} --lto --static-lib
+      test_compiler_c_cpp ${bits_option} --gc --lto --static-lib
     fi
 
     # Again with lld.
-    test_compiler_c_cpp --lld --static-lib
-    test_compiler_c_cpp --gc --lld --static-lib
-    test_compiler_c_cpp --lto --lld --static-lib
-    test_compiler_c_cpp --gc --lto --lld --static-lib
+    test_compiler_c_cpp ${bits_option} --lld --static-lib
+    test_compiler_c_cpp ${bits_option} --gc --lld --static-lib
+    test_compiler_c_cpp ${bits_option} --lto --lld --static-lib
+    test_compiler_c_cpp ${bits_option} --gc --lto --lld --static-lib
 
-    # -static.
-    test_compiler_c_cpp --static
-    test_compiler_c_cpp --gc --static
-
-    if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+    if is_variable_set "XBB_SKIP_TESTS_ALL_STATIC"
     then
       echo
-      echo "Skipping all --lto --static..."
-      echo "skip: all --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-      echo "skip: all --gc --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-    else
-      test_compiler_c_cpp --lto --static
-      test_compiler_c_cpp --gc --lto --static
-    fi
+      echo "Skipping all ${bits_option} --static on ${distro}..."
 
-    # Again with lld.
-    test_compiler_c_cpp --lld --static
-    test_compiler_c_cpp --gc --lld --static
-    test_compiler_c_cpp --lto --lld --static
-    test_compiler_c_cpp --gc --lto --lld --static
+      echo "skip: all-lto ${bits_option} --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all-lto ${bits_option} --gc --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+    else
+      # -static.
+      test_compiler_c_cpp ${bits_option} --static
+      test_compiler_c_cpp ${bits_option} --gc --static
+
+      if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+      then
+        echo
+        echo "Skipping all ${bits_option} --lto --static..."
+
+        echo "skip: all-lto ${bits_option} --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "skip: all-lto ${bits_option} --gc --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      else
+        test_compiler_c_cpp ${bits_option} --lto --static
+        test_compiler_c_cpp ${bits_option} --gc --lto --static
+      fi
+
+      # Again with lld.
+      test_compiler_c_cpp ${bits_option} --lld --static
+      test_compiler_c_cpp ${bits_option} --gc --lld --static
+      test_compiler_c_cpp ${bits_option} --lto --lld --static
+      test_compiler_c_cpp ${bits_option} --gc --lto --lld --static
+    fi
 
     # ---------------------------------------------------------------------
     # Second test LLVM runtime and libc++.
@@ -2060,57 +1799,61 @@ function test_linux()
     (
       # The shared libraries are in a custom location and require setting
       # the path explicitly.
-      local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}")"
+
+      local toolchain_library_path="$(xbb_get_toolchain_library_path "${CXX}" -m${bits})"
+
+      LDFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
       export LDFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
+      LDXXFLAGS+=" $(xbb_expand_linker_library_paths "${toolchain_library_path}")"
       export LDXXFLAGS+=" $(xbb_expand_linker_rpaths "${toolchain_library_path}")"
+
       echo
       echo "LDFLAGS=${LDFLAGS}"
 
-      # The Linux system linker may fail with -flto, use the included lld.
-      # For example, on Raspberry Pi OS 32-bit:
-      # error: unable to execute command: Segmentation fault (core dumped)
-
       # With compiler-rt.
-      test_compiler_c_cpp --crt --libunwind
-      test_compiler_c_cpp --gc --crt --libunwind
+      test_compiler_c_cpp ${bits_option} --crt --libunwind
+      test_compiler_c_cpp ${bits_option} --gc --crt --libunwind
 
       if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
       then
         echo
-        echo "Skipping all --lto --crt --libunwind..."
-        echo "skip: all --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        echo "skip: all --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "Skipping all ${bits_option} --lto --crt --libunwind..."
+
+        echo "skip: all-lto ${bits_option} --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "skip: all-lto ${bits_option} --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
       else
-        test_compiler_c_cpp --lto --crt --libunwind
-        test_compiler_c_cpp --gc --lto --crt --libunwind
+        test_compiler_c_cpp ${bits_option} --lto --crt --libunwind
+        test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind
       fi
 
       # Again with lld.
-      test_compiler_c_cpp --crt --libunwind --lld
-      test_compiler_c_cpp --gc --crt --libunwind --lld
-      test_compiler_c_cpp --lto --crt --libunwind --lld
-      test_compiler_c_cpp --gc --lto --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --gc --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --lto --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --gc --lto --crt --libunwind --lld
 
       # With compiler-rt & libc++.
-      test_compiler_c_cpp --libc++ --crt --libunwind
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind
 
       if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
       then
         echo
-        echo "Skipping all --lto --libc++ --crt --libunwind..."
-        echo "skip: all --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
-        echo "skip: all --gc --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "Skipping all ${bits_option} --lto --libc++ --crt --libunwind..."
+
+        echo "skip: all-lto ${bits_option} --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "skip: all-lto ${bits_option} --gc --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
       else
-        test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind
-        test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind
+        test_compiler_c_cpp ${bits_option} --lto --libc++ --crt --libunwind
+        test_compiler_c_cpp ${bits_option} --gc --lto --libc++ --crt --libunwind
       fi
 
       # Again with lld.
-      test_compiler_c_cpp --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld
-      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --lto --libc++ --crt --libunwind --lld
+      test_compiler_c_cpp ${bits_option} --gc --lto --libc++ --crt --libunwind --lld
     )
 
     if false
@@ -2124,16 +1867,16 @@ function test_linux()
       # iostream.cpp:(.text._ZNSt3__18ios_base4InitC2Ev+0x30): undefined reference to `__cxa_guard_acquire'
 
       # With compiler-rt & libc++.
-      test_compiler_c_cpp --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind --static-lib
-      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp ${bits_option} --lto --lld --libc++ --crt --libunwind --static-lib
+      test_compiler_c_cpp ${bits_option} --gc --lto --lld --libc++ --crt --libunwind --static-lib
 
       # Again with lld.
-      test_compiler_c_cpp --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld --static-lib
-      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp ${bits_option} --lto --libc++ --crt --libunwind --lld --static-lib
+      test_compiler_c_cpp ${bits_option} --gc --lto --libc++ --crt --libunwind --lld --static-lib
     fi
 
     if false
@@ -2142,18 +1885,19 @@ function test_linux()
       # This combination also seems not supported.
 
       # With compiler-rt & libc++.
-      test_compiler_c_cpp --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind --static
-      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind --static
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind --static
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind --static
+      test_compiler_c_cpp ${bits_option} --lto --lld --libc++ --crt --libunwind --static
+      test_compiler_c_cpp ${bits_option} --gc --lto --lld --libc++ --crt --libunwind --static
 
       # Again with lld.
-      test_compiler_c_cpp --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --gc --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --lto --libc++ --crt --libunwind --lld --static
-      test_compiler_c_cpp --gc --lto --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp ${bits_option} --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp ${bits_option} --gc --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp ${bits_option} --lto --libc++ --crt --libunwind --lld --static
+      test_compiler_c_cpp ${bits_option} --gc --lto --libc++ --crt --libunwind --lld --static
     fi
-  fi
+  )
+
 }
 
 # -----------------------------------------------------------------------------
