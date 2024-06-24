@@ -1811,10 +1811,13 @@ function test_linux()
 
         test_compiler_c_cpp --${bits}
         test_compiler_c_cpp --${bits} --gc
+
         if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
         then
           echo
-          echo "Skipping all LTO LD..."
+          echo "Skipping all --lto..."
+          echo "skip: all --${bits} --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          echo "skip: all --${bits} --gc --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
         else
           test_compiler_c_cpp --${bits} --lto
           test_compiler_c_cpp --${bits} --gc --lto
@@ -1829,10 +1832,13 @@ function test_linux()
         # -static-libgcc -static-libgcc.
         test_compiler_c_cpp --${bits} --static-lib
         test_compiler_c_cpp --${bits} --gc --static-lib
+
         if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
         then
           echo
-          echo "Skipping all LTO LD..."
+          echo "Skipping all --${bits} --lto --static-lib..."
+          echo "skip: all --${bits} --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          echo "skip: all --${bits} --gc --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
         else
           test_compiler_c_cpp --${bits} --lto --static-lib
           test_compiler_c_cpp --${bits} --gc --lto --static-lib
@@ -1849,15 +1855,20 @@ function test_linux()
           # Arch: undefined reference to `fmod' (static)
           # Arch: cannot find -latomic (static)
           echo
-          echo "Skipping all static on ${distro}..."
+          echo "Skipping all --${bits} --static on ${distro}..."
+          echo "skip: all --${bits} --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          echo "skip: all --${bits} --gc --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
         else
           # -static.
           test_compiler_c_cpp --${bits} --static
           test_compiler_c_cpp --${bits} --gc --static
+
           if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
           then
             echo
-            echo "Skipping all LTO LD..."
+            echo "Skipping all --${bits} --lto --static..."
+            echo "skip: all --${bits} --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+            echo "skip: all --${bits} --gc --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
           else
             test_compiler_c_cpp --${bits} --lto --static
             test_compiler_c_cpp --${bits} --gc --lto --static
@@ -1891,8 +1902,17 @@ function test_linux()
           # With compiler-rt.
           test_compiler_c_cpp --${bits} --crt --libunwind
           test_compiler_c_cpp --${bits} --gc --crt --libunwind
-          test_compiler_c_cpp --${bits} --lto --crt --libunwind
-          test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind
+
+          if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+          then
+            echo
+            echo "Skipping all --${bits} --lto --crt --libunwind..."
+            echo "skip: all --${bits} --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+            echo "skip: all --${bits} --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          else
+            test_compiler_c_cpp --${bits} --lto --crt --libunwind
+            test_compiler_c_cpp --${bits} --gc --lto --crt --libunwind
+          fi
 
           # Again with lld.
           test_compiler_c_cpp --${bits} --crt --libunwind --lld
@@ -1903,8 +1923,17 @@ function test_linux()
           # With compiler-rt & libc++.
           test_compiler_c_cpp --${bits} --libc++ --crt --libunwind
           test_compiler_c_cpp --${bits} --gc --libc++ --crt --libunwind
-          test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind
-          test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind
+
+          if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+          then
+            echo
+            echo "Skipping all --${bits} --lto --libc++ --crt --libunwind..."
+            echo "skip: all --${bits} --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+            echo "skip: all --${bits} --gc --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+          else
+            test_compiler_c_cpp --${bits} --lto --libc++ --crt --libunwind
+            test_compiler_c_cpp --${bits} --gc --lto --libc++ --crt --libunwind
+          fi
 
           # Again with lld.
           test_compiler_c_cpp --${bits} --libc++ --crt --libunwind --lld
@@ -1964,8 +1993,17 @@ function test_linux()
 
     # test_compiler_c_cpp # Already done.
     test_compiler_c_cpp --gc
-    test_compiler_c_cpp --lto
-    test_compiler_c_cpp --gc --lto
+
+    if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+    then
+      echo
+      echo "Skipping all --lto..."
+      echo "skip: all --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all --gc --lto" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+    else
+      test_compiler_c_cpp --lto
+      test_compiler_c_cpp --gc --lto
+    fi
 
     # Again with lld.
     test_compiler_c_cpp --lld
@@ -1977,8 +2015,17 @@ function test_linux()
     # WARNING: check if they run on RH!
     test_compiler_c_cpp --static-lib
     test_compiler_c_cpp --gc --static-lib
-    test_compiler_c_cpp --lto --static-lib
-    test_compiler_c_cpp --gc --lto --static-lib
+
+    if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+    then
+      echo
+      echo "Skipping all --lto --static-lib..."
+      echo "skip: all --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all --gc --lto --static-lib" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+    else
+      test_compiler_c_cpp --lto --static-lib
+      test_compiler_c_cpp --gc --lto --static-lib
+    fi
 
     # Again with lld.
     test_compiler_c_cpp --lld --static-lib
@@ -1989,8 +2036,17 @@ function test_linux()
     # -static.
     test_compiler_c_cpp --static
     test_compiler_c_cpp --gc --static
-    test_compiler_c_cpp --lto --static
-    test_compiler_c_cpp --gc --lto --static
+
+    if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+    then
+      echo
+      echo "Skipping all --lto --static..."
+      echo "skip: all --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      echo "skip: all --gc --lto --static" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+    else
+      test_compiler_c_cpp --lto --static
+      test_compiler_c_cpp --gc --lto --static
+    fi
 
     # Again with lld.
     test_compiler_c_cpp --lld --static
@@ -2017,8 +2073,17 @@ function test_linux()
       # With compiler-rt.
       test_compiler_c_cpp --crt --libunwind
       test_compiler_c_cpp --gc --crt --libunwind
-      test_compiler_c_cpp --lto --crt --libunwind
-      test_compiler_c_cpp --gc --lto --crt --libunwind
+
+      if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+      then
+        echo
+        echo "Skipping all --lto --crt --libunwind..."
+        echo "skip: all --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "skip: all --gc --lto --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      else
+        test_compiler_c_cpp --lto --crt --libunwind
+        test_compiler_c_cpp --gc --lto --crt --libunwind
+      fi
 
       # Again with lld.
       test_compiler_c_cpp --crt --libunwind --lld
@@ -2029,8 +2094,17 @@ function test_linux()
       # With compiler-rt & libc++.
       test_compiler_c_cpp --libc++ --crt --libunwind
       test_compiler_c_cpp --gc --libc++ --crt --libunwind
-      test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind
-      test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind
+
+      if is_variable_set "XBB_SKIP_TESTS_ALL_LTO_LD"
+      then
+        echo
+        echo "Skipping all --lto --libc++ --crt --libunwind..."
+        echo "skip: all --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+        echo "skip: all --gc --lto --libc++ --crt --libunwind" >> "${XBB_TEST_RESULTS_SUMMARY_FILE_PATH}"
+      else
+        test_compiler_c_cpp --lto --lld --libc++ --crt --libunwind
+        test_compiler_c_cpp --gc --lto --lld --libc++ --crt --libunwind
+      fi
 
       # Again with lld.
       test_compiler_c_cpp --libc++ --crt --libunwind --lld
