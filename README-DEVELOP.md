@@ -98,19 +98,7 @@ issue with the old 32-bit libraries:
 
 ## Run tests on docker images
 
-Some examples:
-
-```sh
-docker run -it redhat/ubi8
-docker run -it fedora:latest
-```
-
-Minimum prerequisites:
-
-```sh
-yum update --assumeyes
-yum install --assumeyes git
-```
+For prerequisites, see [xbb-helper-xpack.git/README-DEVELOPER.md](https://github.com/xpack-dev-tools/xbb-helper-xpack/blob/xpack-develop/README-DEVELOPER.md#prerequisites-to-run-tests-on-docker-images).
 
 Common to all distributions:
 
@@ -132,8 +120,15 @@ https://github.com/xpack-dev-tools/xbb-helper-xpack.git \
 rm -rf ~/Work/xpack-dev-tools/clang-xpack.git/xpacks
 mkdir -pv ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools
 ln -sv ~/Work/xpack-dev-tools/xbb-helper-xpack.git ~/Work/xpack-dev-tools/clang-xpack.git/xpacks/@xpack-dev-tools/xbb-helper
+```
 
-bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image redhat/ubi8 --version 17.0.6-3 --base-url pre-release
+Pass the distribution name, since at this point the docker image cannot identify itself,
+`lsb_release` is not yet available.
+
+```sh
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image redhat --base-url pre-release --version 18.1.8-1
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image debian --base-url pre-release --version 18.1.8-1
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image ubuntu --base-url pre-release --version 18.1.8-1
 ```
 
 Other commands:
