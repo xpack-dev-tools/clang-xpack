@@ -2,9 +2,25 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-06-25
+
+* v18.1.8-1 released
+* f78ebfe README update
+
+## 2024-06-24
+
+* 4802079 package.json: bump deps
+* 3c15b59 README update
+* a40b446 llvm.sh: skip --crt without --libc++
+* 4abc439 llvm.sh: XBB_SKIP_TESTS_ALL_LTO_LD
+* 974e109 llvm.sh: XBB_SKIP_TESTS_ALL_LTO_LD for arm
+* d980ac9 package.json: bump deps
+* a68af3a llvm.sh: XBB_SKIP_TESTS_ALL_LTO_LD
+
 ## 2024-06-22
 
-* v18.1.8-1 prepared
+* 7e04f4d llvm.sh: update arm ignores
+* f684c4e prepare v18.1.8-1
 * 375d1fb package.json: bump deps
 * ef54f13 re-generate workflows
 
