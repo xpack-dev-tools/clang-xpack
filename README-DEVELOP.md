@@ -86,8 +86,7 @@ ld.lld: error: undefined symbol: __declspec(dllimport) std::__1::cout
 On Ubuntu 18, x64, 32-bit static lld tests fail, most probably due to an
 issue with the old 32-bit libraries:
 
-
-```
+```console
   ld.lld: error: duplicate symbol: __x86.get_pc_thunk.cx
   >>> defined at locale.o:(.text.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/32/libstdc++.a
   >>> defined at stpncpy-sse2.o:(.gnu.linkonce.t.__x86.get_pc_thunk.cx+0x0) in archive /usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib32/libc.a
@@ -129,6 +128,7 @@ Pass the distribution name, since at this point the docker image cannot identify
 bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image redhat --base-url pre-release --version 18.1.8-1
 bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image debian --base-url pre-release --version 18.1.8-1
 bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image ubuntu --base-url pre-release --version 18.1.8-1
+bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --image archlinux --base-url pre-release --version 18.1.8-1
 ```
 
 Other commands:
