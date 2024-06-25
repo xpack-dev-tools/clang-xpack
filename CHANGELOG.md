@@ -4,6 +4,7 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-06-25
 
+* v18.1.8-1.1 published on npmjs.com
 * v18.1.8-1 released
 * f78ebfe README update
 
