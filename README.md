@@ -109,9 +109,9 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.8-1.1/.conten
 ├── README.md
 ├── bin
 │   ├── analyze-build
-│   ├── clang -> clang-17
+│   ├── clang -> clang-18
 │   ├── clang++ -> clang
-│   ├── clang-17
+│   ├── clang-18
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
@@ -137,9 +137,9 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.8-1.1/.conten
 │   ├── lld-link -> lld
 │   ├── lldb
 │   ├── lldb-argdumper
+│   ├── lldb-dap
 │   ├── lldb-instr
 │   ├── lldb-server
-│   ├── lldb-vscode
 │   ├── lli
 │   ├── llvm-addr2line -> llvm-symbolizer
 │   ├── llvm-ar
@@ -168,14 +168,13 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.8-1.1/.conten
 │   ├── llvm-rc
 │   ├── llvm-readelf -> llvm-readobj
 │   ├── llvm-readobj
-│   ├── llvm-remark-size-diff
+│   ├── llvm-readtapi
 │   ├── llvm-remarkutil
 │   ├── llvm-sim
 │   ├── llvm-size
 │   ├── llvm-strings
 │   ├── llvm-strip -> llvm-objcopy
 │   ├── llvm-symbolizer
-│   ├── llvm-tapi-diff
 │   ├── llvm-tblgen
 │   ├── llvm-tli-checker
 │   ├── llvm-windres -> llvm-rc
@@ -199,6 +198,7 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.8-1.1/.conten
 │   ├── LLVMPolly.so
 │   ├── clang
 │   ├── cmake
+│   ├── libLLVM-18.dylib -> libLLVM.dylib
 │   ├── libLLVM-C.dylib
 │   ├── libLLVM.dylib
 │   ├── libLTO.dylib
@@ -239,8 +239,8 @@ $ tree -L 2 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/18.1.8-1.1/.conten
 │   ├── libncurses.6.dylib
 │   ├── libpanel.6.dylib
 │   ├── libxml2.2.dylib
-│   ├── libz.1.2.13.dylib
-│   └── libz.1.dylib -> libz.1.2.13.dylib
+│   ├── libz.1.3.1.dylib
+│   └── libz.1.dylib -> libz.1.3.1.dylib
 └── share
     ├── clang
     ├── opt-viewer
