@@ -991,11 +991,11 @@ On Windows use:
 xPack x86_64 clang version 18.1.8
 ```
 
-### Running the tests with the system clang
+### Running the tests with the system binaries
 
 To calibrate the tests with the system compiler:
 
-```
+```sh
 bash ~/Work/xpack-dev-tools/clang-xpack.git/scripts/test.sh --system
 ```
 
@@ -1005,7 +1005,11 @@ On Ubuntu, to install clang and libraries, use:
 sudo apt-get install --yes clang lld libc++-dev libc++abi-dev
 ```
 
-On Manjaro, install `clang lld libc++ libc++abi`.
+On Manjaro, to install clang and libraries, use:
+
+```sh
+pacman --sync clang lld libc++ libc++abi
+```
 
 On Linux x64, the 32-bit clang libraries are not available, skip the tests:
 
