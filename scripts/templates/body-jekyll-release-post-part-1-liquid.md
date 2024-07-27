@@ -17,7 +17,7 @@ download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ XB
 
 comments: true
 
-date:   {{ RELEASE_DATE }}
+date: {{ RELEASE_DATE }}
 
 # For Jekyll releases selection.
 categories:
