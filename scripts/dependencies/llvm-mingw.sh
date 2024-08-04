@@ -94,7 +94,7 @@ function llvm_mingw_build_first()
 
           config_options=()
 
-          if is_develop
+          if is_development
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -163,7 +163,7 @@ function llvm_mingw_build_first()
         echo
         echo "Running ${name_prefix}llvm-first build..."
 
-        if is_develop
+        if is_development
         then
           run_verbose_timed cmake \
             --build . \
@@ -304,7 +304,7 @@ function llvm_mingw_build_compiler_rt()
 
           config_options=()
 
-          if is_develop
+          if is_development
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -388,7 +388,7 @@ function llvm_mingw_build_compiler_rt()
       fi
 
       (
-        if is_develop
+        if is_development
         then
           run_verbose_timed "${CMAKE}" \
             --build . \
@@ -480,7 +480,7 @@ function llvm_mingw_build_libcxx()
 
           config_options=()
 
-          if is_develop
+          if is_development
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -606,7 +606,7 @@ function llvm_mingw_build_libcxx()
         #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a" \
         #         "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libunwind.a"
 
-        if is_develop
+        if is_development
         then
           run_verbose "${NM}" "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}/lib/libc++.a"
         fi

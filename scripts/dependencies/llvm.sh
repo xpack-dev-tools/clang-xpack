@@ -188,7 +188,7 @@ function llvm_build()
 
           config_options=()
 
-          if is_develop
+          if is_development
           then
             config_options+=("-LAH") # display help for each variable
           fi
@@ -634,7 +634,7 @@ function llvm_build()
         echo
         echo "Running llvm build..."
 
-        if is_develop
+        if is_development
         then
           run_verbose_timed "${CMAKE}" \
             --build . \
@@ -769,7 +769,7 @@ function llvm_build()
           # dlltool-wrapper windres-wrapper llvm-wrapper
           for exec in clang-target-wrapper
           do
-            run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_TARGET_TRIPLET}\"
+            run_verbose ${CC} "${XBB_BUILD_ROOT_PATH}/wrappers/${exec}.c" -o "${exec}.exe" -O2 -Wl,-s -municode -DCLANG=\"clang-${llvm_version_major}\" -DDEFAULT_TARGET=\"${XBB_TARGET_TRIPLET}\"
           done
 
           if [ ! -L clang.exe ] && [ -f clang.exe ] && [ ! -f clang-${llvm_version_major}.exe ]
