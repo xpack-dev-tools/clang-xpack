@@ -26,13 +26,13 @@ function clang_add_mingw_wrappers()
       # Add wrappers for the mingw-w64 binaries.
       run_verbose cd "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin"
 
-      run_verbose cp -pv "${XBB_BUILD_GIT_PATH}/wrappers"/*-wrapper.sh .
+      run_verbose cp -pv "${XBB_BUILD_ROOT_PATH}/wrappers"/*-wrapper.sh .
       run_verbose chmod +x *-wrapper.sh
 
       for name in clang-target-wrapper llvm-wrapper
       do
         # -s for strip
-        run_verbose ${CC} "${XBB_BUILD_GIT_PATH}/wrappers/${name}.c" -O2 -v -o ${name} -Wl,-s
+        run_verbose ${CC} "${XBB_BUILD_ROOT_PATH}/wrappers/${name}.c" -O2 -v -o ${name} -Wl,-s
       done
 
       for triplet in "${XBB_MINGW_TRIPLETS[@]}"
