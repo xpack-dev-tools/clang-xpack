@@ -250,13 +250,13 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git
 
 xpm run deep-clean --config darwin-x64  -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run build-development --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 For a debug build:
 
 ```sh
-xpm run build-develop-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run build-development-debug --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 The build takes about 85 minutes (1h25).
@@ -298,7 +298,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 \
 xpm run deep-clean --config darwin-x64  -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm install --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run build-develop --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run build-development --config darwin-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 93 minutes later (1h33), the output of the build script is a compressed
@@ -364,7 +364,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 \
 xpm run deep-clean --config darwin-arm64  -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm install --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run build-develop --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run build-development --config darwin-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 40 minutes later, the output of the build script is a compressed
@@ -426,7 +426,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run deep-clean --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-prepare --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-link-deps --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run docker-build-develop --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run docker-build-development --config linux-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 130 minutes later (2h10), the output of the build script is a compressed
@@ -521,7 +521,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run deep-clean --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-prepare --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-link-deps --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run docker-build-develop --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run docker-build-development --config win32-x64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 230 minutes later (3h50), the output of the build script is a compressed
@@ -565,7 +565,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run deep-clean --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-prepare --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-link-deps --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run docker-build-develop --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run docker-build-development --config linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 13h later (2h30 on ampere), the output of the build script is a compressed
@@ -619,7 +619,7 @@ xpm run link-deps -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run deep-clean --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-prepare --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git && \
 xpm run docker-link-deps --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git && \
-xpm run docker-build-develop --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git
+xpm run docker-build-development --config linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git
 ```
 
 About 11 hours later, the output of the build script is a compressed
@@ -778,8 +778,8 @@ or even in the libraries functions.
 
 For these cases, the build script accepts the `--debug` options.
 
-There are also xPack actions that use this option (`build-develop-debug`
-and `docker-build-develop-debug`).
+There are also xPack actions that use this option (`build-development-debug`
+and `docker-build-development-debug`).
 
 ### Files cache
 
