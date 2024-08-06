@@ -1,0 +1,254 @@
+---
+title:  xPack LLVM clang v17.0.6-3 released
+
+date: 2024-06-21 23:44:59 +0300
+
+authors: ilg-ul
+
+# To be listed in the Releases page.
+tags:
+  - releases
+
+# ----- Custom properties -----------------------------------------------------
+
+clang_version: "17.0.6"
+clang_date: "28 Nov 2023"
+
+version: "17.0.6-3"
+npm_subversion: "1"
+
+download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v17.0.6-3/
+
+---
+
+Version **17.0.6-3** is a maintenance release; it fixes the arm 32-bit binaries.
+
+<!-- truncate -->
+
+import Image from '@theme/IdealImage';
+
+[The xPack LLVM clang](https://xpack.github.io/clang/)
+is a standalone cross-platform binary distribution of
+[LLVM clang](https://clang.llvm.org).
+
+There are separate binaries for **Windows** (Intel 64-bit),
+**macOS** (Intel 64-bit, Apple Silicon 64-bit)
+and **GNU/Linux** (Intel 64-bit, Arm 32/64-bit).
+
+:::note Raspberry Pi
+
+The main targets for the GNU/Linux Arm
+binaries are the **Raspberry Pi** class devices (armv7l and aarch64;
+armv6 is not supported).
+
+:::
+
+## Download
+
+The binary files are available from <a href={ frontMatter.download_url }>GitHub Releases</a>.
+
+## Prerequisites
+
+- GNU/Linux Intel 64-bit: any system with **GLIBC 2.27** or higher
+  (like Ubuntu 18 or later, Debian 10 or later, RedHat 8 or later,
+  Fedora 29 or later, etc)
+- GNU/Linux Arm 32/64-bit: any system with **GLIBC 2.27** or higher
+  (like Raspberry Pi OS, Ubuntu 18 or later, Debian 10 or later, RedHat 8 or later,
+  Fedora 29 or later, etc)
+- Intel Windows 64-bit: Windows 7 with the Universal C Runtime
+  ([UCRT](https://support.microsoft.com/en-us/topic/update-for-universal-c-runtime-in-windows-c0514201-7fe6-95a3-b0a5-287930f3560c)),
+  Windows 8, Windows 10
+- Intel macOS 64-bit: 10.13 or later
+- Apple Silicon macOS 64-bit: 11.6 or later
+
+## Install
+
+The full details of installing the **xPack LLVM clang** on various platforms
+are presented in the [Install Guide](/docs/install/).
+
+## Compliance
+
+The xPack LLVM clang generally follows the official
+[LLVM clang](https://clang.llvm.org) releases.
+
+The current version is based on:
+
+- LLVM clang version [{ frontMatter.clang_version }](https://releases.llvm.org/download.html#{ frontMatter.clang_version }), from { frontMatter.clang_date }.
+
+For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
+
+## LLVM libraries
+
+On macOS and Windows the compiler defaults are set to the LLVM libraries
+(`libc++` and `compiler-rt`).
+
+For historical reasons, on GNU/Linux, the defaults are set to the host
+system (`libstdc++` and `glibc`).
+
+To use the LLVM libraries, add the following options:
+
+```sh
+-stdlib=libc++ -rtlib=compiler-rt -lunwind
+```
+
+For LTO builds, also use LLD:
+
+```sh
+-flto -fuse-ld=lld
+```
+
+## `-m32` / `-m64`
+
+For Intel Linux and Windows, multilib libraries are provided
+and can be selected using the `-m32` / `-m64` options.
+
+## `-print-search-dirs`
+
+Since the toolchain can be installed in any location, and the binaries
+compiled with it need to access the libraries, it is necessary to
+get the actual path and pass it via `LD_LIBRARY_PATH` and/or
+set the `-rpath`.
+
+This can be achieved by querying the compiler
+for `-print-search-dirs` and processing the output.
+
+For example, for the 32-bit libraries:
+
+```sh
+${CXX} -m32 -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||'
+```
+
+On Windows the DLLs are usually in `bin`, but for consistency within GCC,
+they are also copied to `lib`; it is recommended to ask the compiler for
+the actual path.
+
+For example, for the 32-bit libraries:
+
+```sh
+${CXX} -m32 -print-file-name=libc++.dll
+```
+
+## Changes
+
+Compared to the upstream, there are no major functional changes.
+
+Since 15.0.7-4, there is a small patch in Driver.cpp that fixes the
+function that computes
+`InstalledDir` when clang is invoked via a link from a different folder.
+
+## Bug fixes
+
+- none
+
+## Enhancements
+
+- none
+
+## Known problems
+
+Please see the separate
+[tests results page](/dev-tools/clang/tests/17.0.6-3/).
+
+## Documentation
+
+The original documentation is available
+[online](https://clang.llvm.org/docs/UsersManual.html).
+
+## Build
+
+The binaries for all supported platforms
+(Windows, macOS and GNU/Linux) were built using the
+[xPack Build Box (XBB)](https://xpack.github.io/xbb/), a set
+of build environments based on slightly older distributions, that should be
+compatible with most recent systems.
+
+For the prerequisites and more details on the build procedure, please see the
+[Maintainer Info](/docs/maintainer-info/) page.
+
+## CI tests
+
+Before publishing, a set of simple tests were performed on an exhaustive
+set of platforms. The results are available from:
+
+- [GitHub Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/)
+- [Travis CI](https://app.travis-ci.com/github/xpack-dev-tools/clang-xpack/builds/)
+
+## Tests
+
+The binaries were tested on a variety of platforms,
+but mainly to check the integrity of the
+build, not the compiler functionality.
+
+## Checksums
+
+The SHA-256 hashes for the files are:
+
+```txt
+b1379cfd4ad32e4b67d1da8f9eb50584fd12ef538d7aacce21a85b660831c980
+xpack-clang-17.0.6-3-darwin-arm64.tar.gz
+
+643e70da4ba5262ed5db16157f08d7086d465efbffcfd95efcd737742ef7e357
+xpack-clang-17.0.6-3-darwin-x64.tar.gz
+
+238855d304d7b3453823bc93c8d6dddfe5a81bf1944374f602c09b9a0e1cce14
+xpack-clang-17.0.6-3-linux-arm.tar.gz
+
+9e66e5b911a8ab8449a8d71067b57f7aab36b964181269572e43a2c18a3ac70c
+xpack-clang-17.0.6-3-linux-arm64.tar.gz
+
+c2a20ceda9599a0b64b257a484dad1eefd95d2b6570f5c0df53f0608f4b2e524
+xpack-clang-17.0.6-3-linux-x64.tar.gz
+
+71e158e878770d586114cdac0262ed725d15672d21a954f7da7b274eb16d2967
+xpack-clang-17.0.6-3-win32-x64.zip
+
+```
+
+## Deprecation notices
+
+### Linux minimum requirements
+
+The minimum requirement is **GLIBC 2.27**, available starting
+with Ubuntu 18, Debian 10 and RedHat 8.
+Support for RedHat 7 was dropped in 2022.
+
+### 32-bit support
+
+Support for 32-bit Intel Linux and Intel Windows was
+dropped in 2022.
+
+### Pre-deprecation notice for 32-bit Arm Linux
+
+Due to the large user base of 32-bit Raspberry Pi systems,
+support for 32-bit Arm Linux (armv7l) will be preserved
+for a little while, but expect it to be dropped by 2025,
+so it is recommended to consider an upgrade to a RPi 4 or 5 with
+at least 4 GB (preferably 8 GB) of RAM.
+
+## Pre-deprecation notice for Ubuntu 18.04
+
+Ubuntu 18.04 LTS _Bionic Beaver_ reached the end of the standard five-year
+maintenance window for Long-Term Support (LTS) release on 31 May 2023.
+
+As a courtesy, the xPack GNU/Linux releases will continue to be based on
+Ubuntu 18.04 for another year.
+
+From 2025 onwards, the GNU/Linux binaries will be built on **Debian 10**,
+(**GLIBC 2.28**), and are also expected to run on RedHat 8.
+
+Users are urged to update their build and test infrastructure to
+ensure a smooth transition to the next xPack releases.
+
+## Download analytics
+
+- GitHub [xpack-dev-tools/clang-xpack](https://github.com/xpack-dev-tools/clang-xpack/)
+  - this release <a href={ `https://github.com/xpack-dev-tools/clang-xpack/releases/v${ frontMatter.version }/` } ><Image img={ `https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v${ frontMatter.version }/total.svg` } alt='Github Release' /></a>
+  - all xPack releases [![Github All Releases](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/total.svg)](https://github.com/xpack-dev-tools/clang-xpack/releases/)
+  - [individual file counters](https://somsubhra.github.io/github-release-stats/?username=xpack-dev-tools&repository=clang-xpack) (grouped per release)
+- npmjs.com [@xpack-dev-tools/clang](https://www.npmjs.com/package/@xpack-dev-tools/clang)
+  - latest releases [![npm](https://img.shields.io/npm/dw/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+  - all @xpack-dev-tools releases [![npm](https://img.shields.io/npm/dt/@xpack-dev-tools/clang.svg)](https://www.npmjs.com/package/@xpack-dev-tools/clang/)
+
+Credit to [Shields IO](https://shields.io) for the badges and to
+[Somsubhra/github-release-stats](https://github.com/Somsubhra/github-release-stats)
+for the individual file counters.
