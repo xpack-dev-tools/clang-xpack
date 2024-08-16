@@ -34,7 +34,7 @@ portable archives.
 
 The easiest (and recommended) way to install LLVM clang
 is by using the **binary xPack**, available
-as <a href={ `https://www.npmjs.com/package/@xpack-dev-tools/clang` }><code>@xpack-dev-tools/clang</code></a> from
+as <a href={`https://www.npmjs.com/package/@xpack-dev-tools/clang`}><code>@xpack-dev-tools/clang</code></a> from
 the [`npmjs.com`](https://www.npmjs.com) registry.
 
 <details>
@@ -53,7 +53,7 @@ these executables are created in a `.bin` folder,
 eliminating the need to add multiple folders to the `PATH`.
 
 Given that some binary xPacks, such as toolchains, can be quite large,
-the archives are extracted only once into a central/global location to
+the archives are extracted only once into a user global location to
 conserve space. In projects, instead of duplicating the content of these
 archives, symbolic links are created.
 
@@ -141,20 +141,20 @@ and prefered to possible system tools.
 </details>
 
 <details>
-<summary>Global installs and the central xPacks store</summary>
+<summary>Global installs and the user global xPacks store</summary>
 
 Given that some binary tools (such as toolchains) can be very large
 (hundreds of megabytes or more), it is impractical to keep multiple
 copies of these tools, one for each project.
 
 Instead, **xpm** installs the binary packages only once
-into a central store (a platform-dependent folder
+into a user global store (a platform-dependent folder
 within the home folder), thereby conserving disk space when the same
 tools are used across multiple projects.
 
 In order to allow the projects to access the binary tools installed in the
-central store, instead of unpacking the archives in `xpacks`,
-**xpm** adds symbolic links pointing to the **central xPacks store**.
+user global store, instead of unpacking the archives in `xpacks`,
+**xpm** adds symbolic links pointing to the **user global xPacks store**.
 
 The outcome is functionally equivalent to installing the tools into
 each project, but without the wasted disk space.
@@ -166,13 +166,13 @@ by passing `--copy` to `xpm install`.
 
 :::
 
-If needed, it is also possible to install packages only globally, without
+if necessary, it is also possible to install packages only globally, without
 creating local links/forwarders (see below).
 
 </details>
 
 <details>
-<summary>The central xPacks cache</summary>
+<summary>The user xPacks cache</summary>
 
 To save download time, all archives are first stored in a
 cache, and all subsequent downloads are replaced with the
@@ -214,10 +214,11 @@ The next step is to install the
 **clang** package into the project:
 
 <CodeBlock language="sh"> {
-`xpm install @xpack-dev-tools/clang@latest --verbose`
-} </CodeBlock>
+`xpm install @xpack-dev-tools/clang@latest --verbose
+`} </CodeBlock>
 
 <Tabs groupId="operating-systems">
+
 <TabItem value="windows" label="Windows" default>
 
 The main result is a set
@@ -225,8 +226,8 @@ of forwarders in
 the `.bin` folder:
 
 <CodeBlock language="console"> {
-`dir xpacks\\.bin`
-} </CodeBlock>
+`dir xpacks\\.bin
+`} </CodeBlock>
 
 <details>
 <summary>PATH setup</summary>
@@ -248,6 +249,7 @@ adjust the syntax for the corresponding Windows specific shell.
 </details>
 
 </TabItem>
+
 <TabItem value="macos" label="macOS">
 
 The main result is a set
@@ -255,8 +257,8 @@ of links in
 the `.bin` folder:
 
 <CodeBlock language="console"> {
-`ls -l xpacks/.bin`
-} </CodeBlock>
+`ls -l xpacks/.bin
+`} </CodeBlock>
 
 <details>
 <summary>PATH setup</summary>
@@ -270,6 +272,7 @@ export PATH=<...project-path...>/xpacks/.bin:$PATH
 </details>
 
 </TabItem>
+
 <TabItem value="linux" label="GNU/Linux">
 
 The main result is a set
@@ -277,8 +280,8 @@ of links in
 the `.bin` folder:
 
 <CodeBlock language="console"> {
-`ls -l xpacks/.bin`
-} </CodeBlock>
+`ls -l xpacks/.bin
+`} </CodeBlock>
 
 <details>
 <summary>PATH setup</summary>
@@ -292,6 +295,7 @@ export PATH=<...project-path...>/xpacks/.bin:$PATH
 </details>
 
 </TabItem>
+
 </Tabs>
 
 <details>
@@ -302,12 +306,12 @@ The above `xpm install` command will do the following:
 * identify the platform specific archive for the latest available version
   of LLVM clang, download it into a cache and unpack
   it into a versioned folder
-  in the **central xPacks store** (if not already there);
+  in the **user global xPacks store** (if not already there);
   check the output of the `xpm install` command for the actual
   folder used on your platform;
 * create a local symbolic link
   like <code>xpacks/@xpack-dev-tools/clang</code> pointing to the
-  versioned folder in the central xPacks store
+  versioned folder in the user global xPacks store
 * add links/forwarders into
   the local `xpacks/.bin` folder, referring to the binaries in
   <code>xpacks/@xpack-dev-tools/clang/.content/bin</code>;
@@ -344,7 +348,7 @@ The result looks like this:
     "dependencies": {},
     "devDependencies": {
       "@xpack-dev-tools/clang": {
-        "specifier": "${ customField('upstreamVersion') }-${ customField('xpackSubversion') }.${ customField('npmSubversion') }",
+        "specifier": "${customField('upstreamVersion')}-${customField('xpackSubversion')}.${customField('npmSubversion')}",
         "local": "link",
         "platforms": "all"
       }
@@ -352,8 +356,8 @@ The result looks like this:
     "properties": {},
     "actions": {},
     "buildConfigurations": {}
-  }`
-} </CodeBlock>
+  }
+`} </CodeBlock>
 
 If the `package.json` is saved in the revision system, the above
 definition acts as a hard reference to the specific version of
@@ -370,20 +374,20 @@ This is particularly useful for CI/CD environments.
 
 For older development environments,
 it is also possible to install LLVM clang only globally in
-the **central xPacks store**, without any
+the **user global xPacks store**, without any
 local links/forwarders; it
 is the developer's responsibility to configure the path to the tools.
 
 No other files are installed in any system folders or other locations.
 
 <CodeBlock language="sh"> {
-`xpm install @xpack-dev-tools/clang@latest --global --verbose`
-} </CodeBlock>
+`xpm install @xpack-dev-tools/clang@latest --global --verbose
+`} </CodeBlock>
 
 :::note
 
 Installing packages locally into a project always installs the
-packages in the **central xPacks store**; subsequent attempts to
+packages in the **user global xPacks store**; subsequent attempts to
 install the packages globally will fail with _already installed_.
 
 :::
@@ -393,15 +397,16 @@ install the packages globally will fail with _already installed_.
 <summary>PATH setup</summary>
 
 In order to access the GNU RISC-V Embedded GCC binaries installed in
-the central xPacks store,
+the user global xPacks store,
 the project build configurations need a PATH adjustment:
 
 <Tabs groupId="operating-systems">
+
 <TabItem value="windows" label="Windows" default>
 
 <CodeBlock language="sh"> {
-`export PATH=$HOME/AppData/Roaming/xPacks/\@pack-dev-tools/clang /${ customField('upstreamVersion') }-${ customField('xpackSubversion') }.${ customField('npmSubversion') }/.content/bin:$PATH`
-} </CodeBlock>
+`export PATH=$HOME/AppData/Roaming/xPacks/\@pack-dev-tools/clang /${customField('upstreamVersion')}-${customField('xpackSubversion')}.${customField('npmSubversion')}/.content/bin:$PATH
+`} </CodeBlock>
 
 :::tip
 
@@ -411,20 +416,23 @@ corresponding shell.
 :::
 
 </TabItem>
+
 <TabItem value="macos" label="macOS">
 
 <CodeBlock language="sh"> {
-`export PATH=$HOME/Library/xPacks/\@pack-dev-tools/clang /${ customField('upstreamVersion') }-${ customField('xpackSubversion') }.${ customField('npmSubversion') }/.content/bin:$PATH`
-} </CodeBlock>
+`export PATH=$HOME/Library/xPacks/\@pack-dev-tools/clang /${customField('upstreamVersion')}-${customField('xpackSubversion')}.${customField('npmSubversion')}/.content/bin:$PATH
+`} </CodeBlock>
 
 </TabItem>
+
 <TabItem value="linux" label="GNU/Linux">
 
 <CodeBlock language="sh"> {
-`export PATH=$HOME/.local/xPacks/@xpack-dev-tools/clang /${ customField('upstreamVersion') }-${ customField('xpackSubversion') }.${ customField('npmSubversion') }/.content/bin:$PATH`
-} </CodeBlock>
+`export PATH=$HOME/.local/xPacks/@xpack-dev-tools/clang /${customField('upstreamVersion')}-${customField('xpackSubversion')}.${customField('npmSubversion')}/.content/bin:$PATH
+`} </CodeBlock>
 
 </TabItem>
+
 </Tabs>
 
 </details>
@@ -434,12 +442,12 @@ corresponding shell.
 
 The binaries do not use any form of installer; instead they
 are distributed as
-portable { props.isWindows ? <code>.zip</code> : <code>.tar.gz</code> } archives;
+portable {props.isWindows ? <code>.zip</code> : <code>.tar.gz</code>} archives;
 therefore they do not require to run any uninstaller; simply removing the
-links and possibly the central xPack store folder and
-the central cache folder is enough.
+links and possibly the user global xPack store folder and
+the user xPack cache folder is enough.
 
-To remove the <LinksVsForwarders isWindows={ props.isWindows }/> created by
+To remove the <LinksVsForwarders isWindows={props.isWindows}/> created by
 **xpm** in the current project,
 go to the project folder:
 
@@ -450,14 +458,14 @@ cd my-project
 and ask **xpm** to uninstall the package:
 
 <CodeBlock language="sh"> {
-`xpm uninstall @xpack-dev-tools/clang --verbose`
-} </CodeBlock>
+`xpm uninstall @xpack-dev-tools/clang --verbose
+`} </CodeBlock>
 
-To completely remove the package from the central xPack store:
+To completely remove the package from the user global xPack store:
 
 <CodeBlock language="sh"> {
-`xpm uninstall --global @xpack-dev-tools/clang --verbose`
-} </CodeBlock>
+`xpm uninstall --global @xpack-dev-tools/clang --verbose
+`} </CodeBlock>
 
 <details>
 <summary>Clean-ups</summary>
@@ -465,30 +473,34 @@ To completely remove the package from the central xPack store:
 For a thorough clean-up, please note that **xpm** uses only two folders:
 
 <Tabs groupId="operating-systems">
+
 <TabItem value="windows" label="Windows" default>
 
 - `%APPDATA%\Roaming\xPacks`
 - `%APPDATA%\Local\Caches\xPacks`
 
 </TabItem>
+
 <TabItem value="macos" label="macOS">
 
 - `${HOME}/Library/xPacks`
 - `${HOME}/Library/Caches/xPacks`
 
 </TabItem>
+
 <TabItem value="linux" label="GNU/Linux">
 
 - `${HOME}/.local/xPacks`
 - `${HOME}/.cache/xPacks`
 
 </TabItem>
+
 </Tabs>
 
 They can be removed at any time and space reclaimed;
 **xpm** will recreate them on new installs.
 
-However, projects linking to the central xPack store will fail with
+However, projects linking to the user global xPack store will fail with
 broken paths.
 
 </details>
@@ -501,18 +513,19 @@ For all platforms, the **xPack LLVM clang** binaries are released as portable
 archives that can be installed in any location.
 
 The archives can be downloaded from
-the <a href={ `https://github.com/xpack-dev-tools/clang-xpack/releases/` }>GitHub Releases</a> pages.
+the <a href={`https://github.com/xpack-dev-tools/clang-xpack/releases/`}>GitHub Releases</a> pages.
 
 ### Download & unpack {#manual-install-download-and-unpack}
 
 <Tabs groupId="operating-systems">
+
 <TabItem value="windows" label="Windows" default>
 
 The Windows versions of **xPack LLVM clang**
 are packed as `.zip` files.
 Download the latest version named like:
 
-* <code>xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }-win32-x64.zip</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-win32-x64.zip</code>
 
 :::note
 
@@ -527,7 +540,7 @@ unpack the archive and move it to a location of your choice.
 
 The recommended location is
 the <code>%USERPROFILE%\\AppData\\Roaming\\xPacks\\clang</code> folder, for
-example <code>C:\\Users\\ilg\\AppData\\Roaming\\xPacks\\clang\\xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }</code>.
+example <code>C:\\Users\\ilg\\AppData\\Roaming\\xPacks\\clang\\xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}</code>.
 
 :::note
 
@@ -537,14 +550,15 @@ installing user specific packages.
 :::
 
 </TabItem>
+
 <TabItem value="macos" label="macOS">
 
 The macOS versions of **xPack LLVM clang**
 are packed as `.tar.gz` archives.
 Download the latest version named like:
 
-* <code>xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }-darwin-x64.tar.gz</code>
-* <code>xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }-darwin-arm64.tar.gz</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-darwin-x64.tar.gz</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-darwin-arm64.tar.gz</code>
 
 :::note
 
@@ -558,25 +572,27 @@ unpack the archive and move it to a location of your choice.
 
 The recommended location is
 the <code>~/Library/xPacks/clang</code> folder, for
-example <code>/Users/ilg/Library/xPacks/clang/xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }</code>:
+example <code>/Users/ilg/Library/xPacks/clang/xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}</code>:
 
 <CodeBlock language="console"> {
 `mkdir -p ~/Library/xPacks/clang
 cd ~/Library/xPacks/clang
 
-tar xvf ~/Downloads/xpack-clang-${ customField('upstreamVersion') }-${ customField('xpackSubversion') }-darwin-x64.tar.gz
-chmod -R -w xpack-clang-${ customField('upstreamVersion') }-${ customField('xpackSubversion') }`
-} </CodeBlock>
+tar xvf ~/Downloads/xpack-clang-${customField('upstreamVersion')}-${customField('xpackSubversion')}-darwin-x64.tar.gz
+chmod -R -w xpack-clang-${customField('upstreamVersion')}-${customField('xpackSubversion')}
+`} </CodeBlock>
 
 </TabItem>
+
 <TabItem value="linux" label="GNU/Linux">
 
 The GNU/Linux versions of **xPack LLVM clang**
 are packed as `.tar.gz` archives.
 Download the latest version named like:
 
-* <code>xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }-darwin-x64.tar.gz</code>
-* <code>xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }-darwin-arm64.tar.gz</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-darwin-x64.tar.gz</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-darwin-arm64.tar.gz</code>
+* <code>xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}-darwin-arm.tar.gz</code>
 
 :::note
 
@@ -590,17 +606,18 @@ unpack the archive and move it to a location of your choice.
 
 The recommended location is
 the <code>~/.local/xPacks/clang</code> folder, for
-example <code>/home/ilg/.local/xPacks/clang/xpack-clang-{ customField('upstreamVersion') }-{ customField('xpackSubversion') }</code>:
+example <code>/home/ilg/.local/xPacks/clang/xpack-clang-{customField('upstreamVersion')}-{customField('xpackSubversion')}</code>:
 
 <CodeBlock language="console"> {
 `mkdir -p ~/.local/xPacks/clang
 cd ~/.local/xPacks/clang
 
-tar xvf ~/Downloads/xpack-clang-${ customField('upstreamVersion') }-${ customField('xpackSubversion') }-linux-x64.tar.gz
-chmod -R -w xpack-clang-${ customField('upstreamVersion') }-${ customField('xpackSubversion') }`
-} </CodeBlock>
+tar xvf ~/Downloads/xpack-clang-${customField('upstreamVersion')}-${customField('xpackSubversion')}-linux-x64.tar.gz
+chmod -R -w xpack-clang-${customField('upstreamVersion')}-${customField('xpackSubversion')}
+`} </CodeBlock>
 
 </TabItem>
+
 </Tabs>
 
 :::info
@@ -608,7 +625,7 @@ chmod -R -w xpack-clang-${ customField('upstreamVersion') }-${ customField('xpac
 For manual installs, the recommended
 install location is slightly different then the folders created by `xpm install`,
 which use the `@xpack-dev-tools` scope to group different tools,
-and `.content` to store the unpacked archive."
+and `.content` to store the unpacked archive.
 
 :::
 
