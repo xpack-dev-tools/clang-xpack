@@ -1,122 +1,69 @@
 ---
 title:  xPack LLVM clang v{{ XBB_RELEASE_VERSION }} released
 
-TODO: select one summary
+date: {{ RELEASE_DATE }}
 
-summary: "Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fixes <...>."
+authors: ilg-ul
 
-summary: "Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release."
+# To be listed in the Releases page.
+tags:
+  - releases
+
+# ----- Custom properties -----------------------------------------------------
 
 clang_version: "18.1.8"
 clang_date: "19 Jun 2024"
+
+binutils_version: "{{customFields.binutilsVersionMajor}}.{{customFields.binutilsVersionMinor}}"
+mingw_version: "{{customFields.mingwVersion}}"
 
 version: "{{ XBB_RELEASE_VERSION }}"
 npm_subversion: "1"
 
 download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ XBB_RELEASE_VERSION }}/
 
-comments: true
-
-date: {{ RELEASE_DATE }}
-
-# For Jekyll releases selection.
-categories:
-  - releases
-  - clang
-
-# For navigation; use scripts/createtag.sh in Jekyll.
-tags:
-  - releases
-  - clang
-
 ---
 
-The [xPack LLVM clang](https://xpack-dev-tools.github.io/clang-xpack/)
+TODO: select one summary
+
+Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fixes ...
+
+Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release.
+
+<!-- truncate -->
+
+import Image from '@theme/IdealImage';
+import CodeBlock from '@theme/CodeBlock';
+
+import Prerequisites from './_common/_prerequisites-glib-2.27.mdx'
+import DeprecationNotices from './_common/_deprecation-notices-glib-2.27.mdx'
+import DownloadAnalytics from './_common/_download-analytics.mdx'
+
+The [xPack GNU AArch64 Embedded GCC](https://xpack.github.io/aarch64-none-elf-gcc/)
 is a standalone cross-platform binary distribution of
-[LLVM clang](https://clang.llvm.org).
+[Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain).
 
 There are separate binaries for **Windows** (x64),
-**macOS** (x64 and arm64)
-and **GNU/Linux** (x64, arm64 and arm).
+**macOS** (x64 and arm64) and **GNU/Linux** (x64, arm64 and arm).
 
-{% raw %}{% include note.html content="The main targets for the Arm binaries
-are the **Raspberry Pi** class devices (armv7l and aarch64;
-armv6 is not supported)." %}{% endraw %}
+:::note Raspberry Pi
+
+The main targets for the GNU/Linux Arm
+binaries are the **Raspberry Pi** class devices (armv7l and aarch64;
+armv6 is not supported).
+
+:::
 
 ## Download
 
-The binary files are available from GitHub [Releases]({% raw %}{{ page.download_url }}{% endraw %}).
+The binary files are available from <a href={frontMatter.download_url}>GitHub Releases</a>.
 
-## Prerequisites
-
-- GNU/Linux Intel 64-bit: any system with **GLIBC 2.27** or higher
-  (like Ubuntu 18 or later, Debian 10 or later, RedHat 8 or later,
-  Fedora 29 or later, etc)
-- GNU/Linux Arm 32/64-bit: any system with **GLIBC 2.27** or higher
-  (like Raspberry Pi OS, Ubuntu 18 or later, Debian 10 or later, RedHat 8 or later,
-  Fedora 29 or later, etc)
-- Intel Windows 64-bit: Windows 7 with the Universal C Runtime
-  ([UCRT](https://support.microsoft.com/en-us/topic/update-for-universal-c-runtime-in-windows-c0514201-7fe6-95a3-b0a5-287930f3560c)),
-  Windows 8, Windows 10
-- Intel macOS 64-bit: 10.13 or later
-- Apple Silicon macOS 64-bit: 11.6 or later
+<Prerequisites/>
 
 ## Install
 
-The full details of installing the **xPack LLVM clang** on various platforms
-are presented in the separate
-[Install]({% raw %}{{ site.baseurl }}{% endraw %}/dev-tools/clang/install/) page.
-
-### Easy install
-
-The easiest way to install LLVM clang is with
-[`xpm`]({% raw %}{{ site.baseurl }}{% endraw %}/xpm/)
-by using the **binary xPack**, available as
-[`@xpack-dev-tools/clang`](https://www.npmjs.com/package/@xpack-dev-tools/clang)
-from the [`npmjs.com`](https://www.npmjs.com) registry.
-
-With the `xpm` tool available, installing
-the latest version of the package and adding it as
-a development dependency for a project is quite easy:
-
-```sh
-cd my-project
-xpm init # Add a package.json if not already present
-
-xpm install @xpack-dev-tools/clang@latest --verbose
-
-ls -l xpacks/.bin
-```
-
-To install this specific version, use:
-
-```sh
-xpm install @xpack-dev-tools/clang@{% raw %}{{ page.version }}.{{ page.npm_subversion }}{% endraw %} --verbose
-```
-
-It is also possible to install LLVM clang globally, in the user home folder,
-but this requires xPack aware tools to automatically identify them and
-manage paths.
-
-```sh
-xpm install --global @xpack-dev-tools/clang@latest --verbose
-```
-
-### Uninstall
-
-To remove the links created by xpm in the current project:
-
-```sh
-cd my-project
-
-xpm uninstall @xpack-dev-tools/clang
-```
-
-To completely remove the package from the central xPack store:
-
-```sh
-xpm uninstall --global @xpack-dev-tools/clang
-```
+The full details of installing the **xPack GNU AArch64 Embedded GCC** on various platforms
+are presented in the [Install Guide](/docs/install/).
 
 ## Compliance
 
@@ -125,7 +72,9 @@ The xPack LLVM clang generally follows the official
 
 The current version is based on:
 
-- LLVM clang version [{% raw %}{{ page.clang_version }}{% endraw %}](https://releases.llvm.org/download.html#{% raw %}{{ page.clang_version }}{% endraw %}), from {% raw %}{{ page.clang_date }}{% endraw %}.
+- LLVM clang version [{frontMatter.clang_version}](https://releases.llvm.org/download.html#{frontMatter.clang_version}), from {frontMatter.clang_date}
+- binutils {frontMatter.binutils_version}
+- mingw-w64 {frontMatter.mingw_version}
 
 For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
 
