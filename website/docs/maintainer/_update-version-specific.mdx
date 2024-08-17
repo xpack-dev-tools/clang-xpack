@@ -5,6 +5,29 @@
 
 - open the `build-assets/scripts/versioning.sh` file
 - add a new `if` with the new version before the existing code
-- TODO
 
-(`_update-version-specific.mdx`)
+### Update Windows specifics
+
+Identify the release and the tag at:
+
+- https://github.com/mstorsjo/llvm-mingw/releases
+
+```sh
+rm -rf ~/Work/mstorsjo/llvm-mingw.git
+mkdir -pv ~/Work/mstorsjo
+git clone https://github.com/mstorsjo/llvm-mingw ~/Work/mstorsjo/llvm-mingw.git
+
+git -C ~/Work/mstorsjo/llvm-mingw.git checkout 20231128
+```
+
+Compare with the previous release. If the differences are small, possibly
+make the necessary adjustments and proceed.
+
+If the changes are major, run the llvm-mingw build as documented in the
+[README-DEVELOP-MSTORSJO](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack-development/build-assets/README-DEVELOP-MSTORSJO.md) to understand the
+extend of the changes.
+
+Check if there are changes in the tests, and update.
+
+Check if there are changes in the wrappers, and update.
+

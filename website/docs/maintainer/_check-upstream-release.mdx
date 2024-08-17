@@ -1,12 +1,18 @@
 
+import versionMajor from '@site/src/libs/versionMajor';
+import versionMinor from '@site/src/libs/versionMinor';
+
 {/* ------------------------------------------------------------------------ */}
 
 ### Check the latest upstream release
 
-(`_check-upstream-release.mdx`)
-
 The current release must be announced in
-TODO.
+LLVM GitHub [Releases](https://github.com/llvm/llvm-project/releases).
+Find the latest release that seems stable, usually
+like {versionMajor()}.{versionMinor()}.6,
+sometimes {versionMajor()}.{versionMinor()}.7,
+even {versionMajor()}.{versionMinor()}.8.
+
 Compare the latest upstream release with the current xPack
 [release](https://github.com/xpack-dev-tools/clang-xpack/releases).
 If necessary, update the triplet, otherwise increase the fourth number,

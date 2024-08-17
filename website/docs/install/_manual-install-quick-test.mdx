@@ -1,16 +1,13 @@
 
-import ManualInstallQuickTest from './_common/_manual-install-quick-test.mdx'
+import customField from '@site/src/libs/customField';
 
-export const appName = 'LLVM clang';
-export const appLcName = 'clang';
-export const programName = 'clang';
-export const branding = 'clang (xPack LLVM clang x86_64) ';
+import ManualInstallQuickTest from './_common/_manual-install-quick-test.mdx'
 
 {/* ------------------------------------------------------------------------ */}
 
 <ManualInstallQuickTest
-  appName={appName}
-  appLcName={appLcName}
-  programName={programName}
-  branding={branding}
+  appName={customField('appName')}
+  appLcName={customField('appLcName')}
+  programName={customField('programName')}
+  branding={customField('branding')}
 />

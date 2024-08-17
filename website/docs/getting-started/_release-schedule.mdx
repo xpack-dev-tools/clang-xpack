@@ -1,9 +1,20 @@
 
+import versionMajor from '@site/src/libs/versionMajor';
+import versionMinor from '@site/src/libs/versionMinor';
+
 {/* ------------------------------------------------------------------------ */}
 
 ## Release schedule
 
-This distribution generally follows the official
-TODO.
+This distribution follows the official
+[LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
+but only the final patch of each version is released
+(like {versionMajor()}.{versionMinor()}.[5678]).
+The rule is to wait for the new upstream release
+(like {versionMajor()+1}.{versionMinor()}.0), and
+release the previous one ({versionMajor()}.{versionMinor()}.[5678])
 
-(`_release-schedule.mdx`)
+However, in order to spot possible issues, it is recommended to run
+builds as soon as new versions are available
+(like {versionMajor()}.{versionMinor()}.1),
+without making public releases.
