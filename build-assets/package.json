@@ -16,6 +16,7 @@
       "customFields": {
         "programName": "clang",
         "branding": "xPack x86_64 clang version ",
+        "clangReleaseDate": "19 Jun 2024",
         "binutilsVersionMajor": "2",
         "binutilsVersionMinor": "42",
         "mingwVersion": "11.0.1"
