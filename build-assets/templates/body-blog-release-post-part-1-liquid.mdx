@@ -78,57 +78,6 @@ The current version is based on:
 
 For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
 
-## LLVM libraries
-
-On macOS and Windows the compiler defaults are set to the LLVM libraries
-(`libc++` and `compiler-rt`).
-
-For historical reasons, on GNU/Linux, the defaults are set to the host
-system (`libstdc++` and `glibc`).
-
-To use the LLVM libraries, add the following options:
-
-```sh
--stdlib=libc++ -rtlib=compiler-rt -lunwind
-```
-
-For LTO builds, also use LLD:
-
-```sh
--flto -fuse-ld=lld
-```
-
-## `-m32` / `-m64`
-
-For Intel Linux and Windows, multilib libraries are provided
-and can be selected using the `-m32` / `-m64` options.
-
-## `-print-search-dirs`
-
-Since the toolchain can be installed in any location, and the binaries
-compiled with it need to access the libraries, it is necessary to
-get the actual path and pass it via `LD_LIBRARY_PATH` and/or
-set the `-rpath`.
-
-This can be achieved by querying the compiler
-for `-print-search-dirs` and processing the output.
-
-For example, for the 32-bit libraries:
-
-```sh
-${CXX} -m32 -print-search-dirs | grep 'libraries: =' | sed -e 's|libraries: =||'
-```
-
-On Windows the DLLs are usually in `bin`, but for consistency within GCC,
-they are also copied to `lib`; it is recommended to ask the compiler for
-the actual path.
-
-For example, for the 32-bit libraries:
-
-```sh
-${CXX} -m32 -print-file-name=libc++.dll
-```
-
 ## Changes
 
 Compared to the upstream, there are no major functional changes.
@@ -149,36 +98,6 @@ function that computes
 
 Please see the separate
 [tests results page](/docs/tests/{{ XBB_RELEASE_VERSION }}/).
-
-## Shared libraries
-
-On all platforms the packages are standalone, and expect only the standard
-runtime to be present on the host.
-
-All dependencies that are build as shared libraries are copied locally
-in the `libexec` folder (or in the same folder as the executable for Windows).
-
-### `DT_RPATH` and `LD_LIBRARY_PATH`
-
-On GNU/Linux the binaries are adjusted to use a relative path:
-
-```console
-$ readelf -d library.so | grep runpath
- 0x000000000000001d (RPATH)            Library rpath: [$ORIGIN]
-```
-
-In the GNU ld.so search strategy, the `DT_RPATH` has
-the highest priority, higher than `LD_LIBRARY_PATH`, so if this later one
-is set in the environment, it should not interfere with the xPack binaries.
-
-Please note that previous versions, up to mid-2020, used `DT_RUNPATH`, which
-has a priority lower than `LD_LIBRARY_PATH`, and does not tolerate setting
-it in the environment.
-
-### `@rpath` and `@loader_path`
-
-Similarly, on macOS, the binaries are adjusted with `install_name_tool` to use a
-relative path.
 
 ## Documentation
 
