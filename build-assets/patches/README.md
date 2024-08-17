@@ -3,6 +3,28 @@
 For macOS, check [HomeBrew](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm.rb).
 For Windows, check [llvm-mingw](https://github.com/mstorsjo/llvm-mingw/releases).
 
+---
+
+To keep the development repository fork in sync with the upstream LLVM
+repository, in the `xpack-dev-tools/llvm-project` Git repo:
+
+- fetch `upstream`
+- checkout the `llvmorg-18.1.8` tag in detached state HEAD
+- create a branch like `v18.1.8-xpack`
+- cherry pick the commit to _clang: add /Library/... to headers search path_ from a previous release;
+  enable commit immediately
+- push branch to `origin`
+- add a `v18.1.8-1-xpack` tag; enable push to origin
+- select the commit with the patch
+- save as patch
+- move to `patches`
+- rename `llvm-18.1.8-1.git.patch`
+
+Note: the patch is required to fix the CLT library path up to
+clang 17, starting with 18 the patch was accepted upstream.
+
+---
+
 ## llvm-18.*
 
 - none :-)
@@ -65,3 +87,6 @@ system C++ headers.
 The patch was generated with git by comparing the `12.0.1-xpack` branch
 with the official `llvmorg-12.0.1` tag in the llvm-project.git fork,
 then the paths were manually edited to remove the a/b parts.
+
+---
+
