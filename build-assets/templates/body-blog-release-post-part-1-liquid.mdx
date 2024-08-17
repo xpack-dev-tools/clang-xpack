@@ -1,7 +1,7 @@
 ---
-title:  xPack LLVM clang v{{ XBB_RELEASE_VERSION }} released
+title:  xPack LLVM clang v{{releaseVersion}} released
 
-date: {{ RELEASE_DATE }}
+date: {{releaseDate}}
 
 authors: ilg-ul
 
@@ -11,24 +11,24 @@ tags:
 
 # ----- Custom properties -----------------------------------------------------
 
-clang_version: "18.1.8"
-clang_date: "19 Jun 2024"
+clang_release_version: "{{upstreamVersion}}"
+clang_release_date: "{{customFields.clangReleaseDate}}"
 
 binutils_version: "{{customFields.binutilsVersionMajor}}.{{customFields.binutilsVersionMinor}}"
 mingw_version: "{{customFields.mingwVersion}}"
 
-version: "{{ XBB_RELEASE_VERSION }}"
+version: "{{releaseVersion}}"
 npm_subversion: "1"
 
-download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{ XBB_RELEASE_VERSION }}/
+download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v{{releaseVersion}}/
 
 ---
 
 TODO: select one summary
 
-Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release; it fixes ...
+Version **{{releaseVersion}}** is a maintenance release; it fixes ...
 
-Version **{{ XBB_RELEASE_VERSION }}** is a new release; it follows the upstream release.
+Version **{{releaseVersion}}** is a new release; it follows the upstream release.
 
 <!-- truncate -->
 
@@ -72,7 +72,7 @@ The xPack LLVM clang generally follows the official
 
 The current version is based on:
 
-- LLVM clang version [{frontMatter.clang_version}](https://releases.llvm.org/download.html#{frontMatter.clang_version}), from {frontMatter.clang_date}
+- LLVM clang version [{frontMatter.clang_release_version}](https://releases.llvm.org/download.html#{frontMatter.clang_release_version}), from {frontMatter.clang_release_date}
 - binutils {frontMatter.binutils_version}
 - mingw-w64 {frontMatter.mingw_version}
 
@@ -97,7 +97,7 @@ function that computes
 ## Known problems
 
 Please see the separate
-[tests results page](/docs/tests/{{ XBB_RELEASE_VERSION }}/).
+[tests results page](/docs/tests/{{releaseVersion}}/).
 
 ## Documentation
 

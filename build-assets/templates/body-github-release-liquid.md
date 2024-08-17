@@ -1,10 +1,10 @@
-![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v{{ XBB_RELEASE_VERSION }}/total.svg)
+![Github Releases (by Release)](https://img.shields.io/github/downloads/xpack-dev-tools/clang-xpack/v{{releaseVersion}}/total.svg)
 
 TODO: select one
 
-Version **{{ XBB_RELEASE_VERSION }}** is a maintenance release of the **xPack LLVM clang** package; it fixes ...
+Version **{{releaseVersion}}** is a maintenance release of the **xPack LLVM clang** package; it fixes ...
 
-Version **{{ XBB_RELEASE_VERSION }}** is a new release of the **xPack LLVM clang** package, following the upstream LLVM clang [release](https://releases.llvm.org).
+Version **{{releaseVersion}}** is a new release of the **xPack LLVM clang** package, following the upstream LLVM clang [release](https://releases.llvm.org).
 
 [Continue reading »](will-be-updated-shortly)
 
