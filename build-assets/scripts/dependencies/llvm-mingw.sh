@@ -56,12 +56,11 @@ function llvm_mingw_build_first()
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
+  llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
+
   local llvm_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
-
-    llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
-
     (
       mkdir -p "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"
       run_verbose_develop cd "${XBB_BUILD_FOLDER_PATH}/${llvm_folder_name}"

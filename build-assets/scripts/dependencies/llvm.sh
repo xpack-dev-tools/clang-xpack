@@ -84,11 +84,11 @@ function llvm_build()
 
   mkdir -pv "${XBB_LOGS_FOLDER_PATH}/${llvm_folder_name}"
 
+  llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
+
   local llvm_stamp_file_path="${XBB_STAMPS_FOLDER_PATH}/stamp-${llvm_folder_name}-installed"
   if [ ! -f "${llvm_stamp_file_path}" ]
   then
-
-    llvm_download "${XBB_ACTUAL_LLVM_VERSION}"
 
     if [ "${XBB_HOST_PLATFORM}" == "darwin" ]
     then
