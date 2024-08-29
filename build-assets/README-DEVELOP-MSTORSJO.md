@@ -37,14 +37,18 @@ find ~/Work/mstorsjo/llvm-mingw.git -name '*.sh' ! -iname '*-wrapper.sh' \
 
 docker system prune --force
 
-# Build the development docker image, the cross binaries, the regular binaries.
 cd ~/Work/mstorsjo/llvm-mingw.git
 
-LLVM_VERSION="$(grep "LLVM_VERSION:=" build-llvm.sh | sed -e "s|^.*-||" | sed -e s"|}||")"
+LLVM_VERSION="$(grep "LLVM_VERSION:=" build-llvm.sh | sed -e "s|^.*llvmorg-||" | sed -e s"|}||")"
+echo "LLVM_VERSION=${LLVM_VERSION}"
+
+# Build the development docker image.
 docker build --no-cache --progress plain -f Dockerfile.dev -t mstorsjo/llvm-mingw:dev . 2>&1 | tee "../build-output-x-dev-$(date -u +%Y%m%d-%H%M%S)-${LLVM_VERSION}.txt"
 
+# Build the cross binaries.
 docker build --no-cache --progress plain -f Dockerfile.cross -t mstorsjo/llvm-mingw:cross . 2>&1 | tee "../build-output-x-cross-$(date -u +%Y%m%d-%H%M%S)-${LLVM_VERSION}.txt"
 
+# Build the regular binaries. (?)
 docker build --progress plain -t mstorsjo/llvm-mingw . 2>&1 | tee "../build-output-x-$(date -u +%Y%m%d-%H%M%S)-${LLVM_VERSION}.txt"
 ```
 
