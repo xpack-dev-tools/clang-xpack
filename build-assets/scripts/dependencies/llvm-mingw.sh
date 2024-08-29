@@ -249,6 +249,7 @@ function llvm_mingw_build_compiler_rt()
 
   local triplet="${XBB_TARGET_TRIPLET}" # "x86_64-w64-mingw32"
   local name_prefix="mingw-w64-"
+  local is_bootstrap=""
 
   while [ $# -gt 0 ]
   do
@@ -256,6 +257,11 @@ function llvm_mingw_build_compiler_rt()
       --triplet=* )
         triplet=$(xbb_parse_option "$1")
         name_prefix="${triplet}-"
+        shift
+        ;;
+
+      --bootstrap )
+        is_bootstrap="y"
         shift
         ;;
 
@@ -360,10 +366,13 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
           config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
 
-          config_options+=("-DCOMPILER_RT_BUILD_PROFILE=ON")
-          config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=ON")
-          config_options+=("-DCOMPILER_RT_BUILD_XRAY=ON")
-          config_options+=("-DCOMPILER_RT_BUILD_XRAY_NO_PREINIT=OFF")
+          if [ "${is_bootstrap}" != "y" ]
+          then
+            config_options+=("-DCOMPILER_RT_BUILD_PROFILE=ON")
+            config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=ON")
+            config_options+=("-DCOMPILER_RT_BUILD_XRAY=ON")
+            config_options+=("-DCOMPILER_RT_BUILD_XRAY_NO_PREINIT=OFF")
+          fi
 
           config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
           config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
@@ -382,9 +391,18 @@ function llvm_mingw_build_compiler_rt()
           # -DCMAKE_C_FLAGS_INIT=-mguard=cf MS
           # -DCMAKE_CXX_FLAGS_INIT=-mguard=cf
 
-          run_verbose "${CMAKE}" \
-            "${config_options[@]}" \
-            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt"
+          if [ "${is_bootstrap}" == "y" ]
+          then
+            # Only the builtins are built for the bootstrap.
+            run_verbose "${CMAKE}" \
+              "${config_options[@]}" \
+              "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
+          else
+            # The entire compiler-rt is built.
+            run_verbose "${CMAKE}" \
+              "${config_options[@]}" \
+              "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt"
+          fi
 
           touch "cmake.done"
 

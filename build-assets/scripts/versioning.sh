@@ -124,7 +124,7 @@ function clang_build_mingw_bootstrap()
 
         # The library is installed in
         # x86_64-pc-linux-gnu/install/lib/clang/16.0.6/lib/windows/libclang_rt.builtins-i386.a
-        llvm_mingw_build_compiler_rt --triplet="${triplet}"
+        llvm_mingw_build_compiler_rt --triplet="${triplet}" --bootstrap
 
         llvm_mingw_build_libcxx --triplet="${triplet}"
 
