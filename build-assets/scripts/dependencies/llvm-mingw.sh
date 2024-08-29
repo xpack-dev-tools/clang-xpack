@@ -360,6 +360,11 @@ function llvm_mingw_build_compiler_rt()
           config_options+=("-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON") # MS
           config_options+=("-DCOMPILER_RT_BUILD_BUILTINS=ON") # MS
 
+          config_options+=("-DCOMPILER_RT_BUILD_PROFILE=ON")
+          config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=ON")
+          config_options+=("-DCOMPILER_RT_BUILD_XRAY=ON")
+          config_options+=("-DCOMPILER_RT_BUILD_XRAY_NO_PREINIT=OFF")
+
           config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
           config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY") # MS
           config_options+=("-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY") # MS
