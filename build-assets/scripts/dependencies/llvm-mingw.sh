@@ -372,6 +372,10 @@ function llvm_mingw_build_compiler_rt()
             config_options+=("-DCOMPILER_RT_BUILD_SANITIZERS=ON")
             config_options+=("-DCOMPILER_RT_BUILD_XRAY=ON")
             config_options+=("-DCOMPILER_RT_BUILD_XRAY_NO_PREINIT=OFF")
+
+            config_options+=("-DSANITIZER_USE_STATIC_CXX_ABI=ON")
+            config_options+=("-DSANITIZER_USE_STATIC_LLVM_UNWINDER=ON")
+            config_options+=("-DSANITIZER_USE_STATIC_TEST_CXX=ON")
           fi
 
           config_options+=("-DCMAKE_FIND_ROOT_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/${triplet}") # MS
@@ -428,6 +432,23 @@ function llvm_mingw_build_compiler_rt()
           run_verbose "${CMAKE}" \
             --build . \
             --target install/strip
+        fi
+
+        if [ "${is_bootstrap}" != "y" ]
+        then
+          # The dynamic sanitizers require architecture specific
+          # libc++.dll and libunwind.dll, currently not supported by
+          # the post-processing step.
+          if [ "${triplet}" == "x86_64-w64-mingw32" ]
+          then
+            run_verbose rm "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows"/libclang_rt.asan_dynamic-x86_64.dll*
+          elif [ "${triplet}" == "i686-w64-mingw32" ]
+          then
+            run_verbose rm "${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/lib/clang/${llvm_version_major}/lib/windows"/libclang_rt.asan_dynamic-i386.dll*
+          else
+            echo "Unsupported triplet=${triplet} in ${FUNCNAME[0]}()"
+            exit 1
+          fi
         fi
 
       ) 2>&1 | tee "${XBB_LOGS_FOLDER_PATH}/${llvm_compiler_rt_folder_name}/build-output-$(ndate).txt"
