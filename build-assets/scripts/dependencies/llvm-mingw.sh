@@ -384,7 +384,7 @@ function llvm_mingw_build_compiler_rt()
 
           run_verbose "${CMAKE}" \
             "${config_options[@]}" \
-            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt/lib/builtins"
+            "${XBB_SOURCES_FOLDER_PATH}/${llvm_src_folder_name}/compiler-rt"
 
           touch "cmake.done"
 
