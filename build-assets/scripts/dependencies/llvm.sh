@@ -1733,6 +1733,11 @@ function test_linux_combinations()
       test_compiler_c_cpp ${bits_option} --gc --lto
     fi
 
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      test_compiler_c_cpp ${bits_option} --coverage
+    fi
+
     # Again with lld.
     test_compiler_c_cpp ${bits_option} --lld
     test_compiler_c_cpp ${bits_option} --gc --lld
@@ -2172,6 +2177,11 @@ function test_darwin()
       test_compiler_c_cpp --gc --lld
       test_compiler_c_cpp --lto --lld
       test_compiler_c_cpp --gc --lto --lld
+    fi
+
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      test_compiler_c_cpp --coverage
     fi
   )
 
