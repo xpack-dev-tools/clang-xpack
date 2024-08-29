@@ -685,12 +685,15 @@ function test_mingw_llvm()
   name_prefix="${triplet}-"
 
   local bits
+  local bits_option=""
   if [ "${triplet}" == "x86_64-w64-mingw32" ]
   then
     bits="64"
+    bits_option="--64"
   elif [ "${triplet}" == "i686-w64-mingw32" ]
   then
     bits="32"
+    bits_option="--32"
   else
     echo "Unsupported triplet ${triplet}"
     exit 1
@@ -910,27 +913,27 @@ function test_mingw_llvm()
       export WINEPATH="$(dirname $(echo "${libcxx_file_path}"))"
       echo "WINEPATH=${WINEPATH}"
 
-      test_compiler_c_cpp --${bits} "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --gc "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --lto "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --gc --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --gc "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --gc --lto "${bootstrap_option}"
 
       if [ "${XBB_HOST_ARCH}" == "x64" ] && [ "${is_bootstrap}" != "y" ]
       then
-        test_compiler_c_cpp ${bits} --${bits} --coverage
+        test_compiler_c_cpp ${bits} ${bits_option} --coverage
       fi
     )
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      test_compiler_c_cpp --${bits} --static-lib "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --gc "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --lto "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --gc --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --gc "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --gc --lto "${bootstrap_option}"
 
-      test_compiler_c_cpp --${bits} --static "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --gc "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --lto "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --gc --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --gc "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --lto "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --gc --lto "${bootstrap_option}"
     fi
 
     (
@@ -944,23 +947,23 @@ function test_mingw_llvm()
       echo "WINEPATH=${WINEPATH}"
 
       # Once again with --crt
-      test_compiler_c_cpp --${bits} --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --gc --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --lto --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --gc --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --gc --lto --crt "${bootstrap_option}"
     )
 
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
     then
-      test_compiler_c_cpp --${bits} --static-lib --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --gc --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --lto --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static-lib --gc --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static-lib --gc --lto --crt "${bootstrap_option}"
 
-      test_compiler_c_cpp --${bits} --static --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --gc --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --lto --crt "${bootstrap_option}"
-      test_compiler_c_cpp --${bits} --static --gc --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --gc --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --lto --crt "${bootstrap_option}"
+      test_compiler_c_cpp ${bits_option} --static --gc --lto --crt "${bootstrap_option}"
     fi
 
     # -------------------------------------------------------------------------
