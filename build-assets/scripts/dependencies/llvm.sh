@@ -2110,6 +2110,7 @@ function test_darwin()
     export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
     export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
     export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+    export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
 
     # exceptions-reduced.
     # Segmentation fault: 11 on macOS 10.14
@@ -2120,6 +2121,7 @@ function test_darwin()
     export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
     export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
     export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+    export XBB_IGNORE_TEST_COVERAGE_EXCEPTION_REDUCED="y"
 
     if [ "${XBB_HOST_ARCH}" == "x64" ]
     then
@@ -2179,10 +2181,7 @@ function test_darwin()
       test_compiler_c_cpp --gc --lto --lld
     fi
 
-    if [ "${XBB_HOST_ARCH}" == "x64" ]
-    then
-      test_compiler_c_cpp --coverage
-    fi
+    test_compiler_c_cpp --coverage
   )
 
   # ld: library not found for -lcrt0.o
