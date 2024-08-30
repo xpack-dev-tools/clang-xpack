@@ -1733,7 +1733,7 @@ function test_linux_combinations()
       test_compiler_c_cpp ${bits_option} --gc --lto
     fi
 
-    test_compiler_c_cpp ${bits_option} --coverage
+    test_compiler_c_cpp ${bits_option} --clang-coverage
 
     # Again with lld.
     test_compiler_c_cpp ${bits_option} --lld
@@ -2178,7 +2178,7 @@ function test_darwin()
       test_compiler_c_cpp --gc --lto --lld
     fi
 
-    test_compiler_c_cpp --coverage
+    test_compiler_c_cpp --clang-coverage
   )
 
   # ld: library not found for -lcrt0.o

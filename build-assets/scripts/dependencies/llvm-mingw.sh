@@ -941,7 +941,7 @@ function test_mingw_llvm()
 
       if [ "${XBB_HOST_ARCH}" == "x64" ] && [ "${is_bootstrap}" != "y" ]
       then
-        test_compiler_c_cpp ${bits} ${bits_option} --coverage
+        test_compiler_c_cpp ${bits} ${bits_option} --clang-coverage
       fi
     )
     if [ "${XBB_APPLICATION_BOOTSTRAP_ONLY:-"n"}" == "y" ]
