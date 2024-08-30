@@ -1733,10 +1733,7 @@ function test_linux_combinations()
       test_compiler_c_cpp ${bits_option} --gc --lto
     fi
 
-    if [ "${XBB_HOST_ARCH}" == "x64" ]
-    then
-      test_compiler_c_cpp ${bits_option} --coverage
-    fi
+    test_compiler_c_cpp ${bits_option} --coverage
 
     # Again with lld.
     test_compiler_c_cpp ${bits_option} --lld
