@@ -2,10 +2,108 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-08-30
+
+* v18.1.8-2 prepared
+* d80a02c llvm*.sh: use --clang-coverage
+* 0ce42b5 llvm.sh: run coverage test on all Linux architectures
+* 0ecd41d llvm.sh: run coverage test on arm64 macOS too
+* feb08d9 llvm-mingw.sh: fix dynamic sanitizers
+
+## 2024-08-29
+
+* 9e45b32 llvm-mingw.sh: use ${bits_option}
+* 40b67e9 llvm*.sh: add --coverage
+* 8f131a3 build compiler_rt --bootstrap
+* 3ee65c7 README update
+* f188482 llvm-mingw.sh: build entire /compiler-rt
+* 0202bc5 llvm-mingw.sh: explicit COMPILER_RT_BUILD_PROFILE & SANITIZERS
+* da5433f llvm*.sh: move download up
+
+## 2024-08-17
+
+* c2dec6c website update
+* 9479c60 build-assets/package.json update
+* df27ccd templates updates
+* d5dab63 re-generate workflows
+* 1906cc0 website update
+* baaaf4b website update
+* 11d7eca build-assets/templates updates
+* e654fc4 website: add tests folder
+* ea7c91a website update
+* b43eb92 README update
+* d23bbf9 build-assets/templates updates
+* 9ab400e build-assets/package.json: customFields
+
+## 2024-08-16
+
+* d6db961 website: re-generate commons
+* cc5fb08 build-assets/package.json: bump deps
+* 4bcf7a2 re-generate workflows
+* 04a9ee5 templates/body-github: update
+
+## 2024-08-14
+
+* c98b155 build-assets/package.json: updates
+
+## 2024-08-09
+
+* 6b15d6d READMEs update
+* c97e2a4 package.json: git+https
+* f778202 build-assets/package.json: updates
+* 2d66b44 templates/body-blog update
+
+## 2024-08-07
+
+* 4af3b48 build-assets/package.json: updates
+* 16c7116 build-assets/package.json: updates
+* 5774a08 website: preliminary content
+* 48e192f re-generate workflows
+* 0e3d952 move to build-assets
+
+## 2024-08-06
+
+* b813718 package.json: bump deps
+
+## 2024-08-04
+
+* 99e52f7 package.json: bump deps
+* ece6517 package.json: update generate-workflows
+* bcf677f templates/jekyll update
+* edf40e9 versioning.sh: use XBB_BUILD_ROOT_PATH
+* 1729925 llvm-*.sh : use is_development
+* 8ce8779 READMEs update
+* 4534895 package.json: add actions, bump deps
+
+## 2024-07-27
+
+* 5d6d6f9 package.json: add actions, bump deps
+* 8b0848b templates/jekyll update
+
+## 2024-07-23
+
+* b7f2706 READMEs update
+* cdf37cb README update
+* 8dc991a body-jekyll update
+* c3c8f3f re-generate workflows
+* f1e097b package.json: rework generate workflows
+* dcd2e78 package.json: loglevel info
+* c846cfb package.json: bump deps
+
 ## 2024-06-25
 
-* v18.1.8-1.1 published on npmjs.com
-* v18.1.8-1 released
+* bde765e 18.1.8-1.1
+* 4cd3176 CHANGELOG: publish npm v18.1.8-1.1
+* fa26cc8 package.json: update urls for 18.1.8-1.1 release
+* cb8c90e README update
+* b5da3f0 body-jekyll update
+* e21ced6 CHANGELOG update
+* bde765e 18.1.8-1.1
+* 4cd3176 CHANGELOG: publish npm v18.1.8-1.1
+* fa26cc8 package.json: update urls for 18.1.8-1.1 release
+* cb8c90e README update
+* b5da3f0 body-jekyll update
+* e21ced6 CHANGELOG update
 * f78ebfe README update
 
 ## 2024-06-24
