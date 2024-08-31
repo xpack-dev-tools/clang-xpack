@@ -4,7 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2024-08-31
 
-* v18.1.8-2 released
+* v18.1.8-2 published on npmjs.com
+* e94424e package.json: update urls for 18.1.8-2.1 release
+* e0762fd blog post release 18.1.8-2 published
+* b2546bf CHANGELOG update
 * 7540776 llvm.sh: ignore two coverage tests
 
 ## 2024-08-30
