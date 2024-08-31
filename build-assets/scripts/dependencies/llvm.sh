@@ -2132,6 +2132,11 @@ function test_darwin()
       export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
       export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
       export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+      # /usr/bin/ld: /github/workspace/build-assets/build/linux-x64/x86_64-pc-linux-gnu/tests/xpack-clang-18.1.8-2/lib/clang/18/lib/x86_64-unknown-linux-gnu/libclang_rt.profile.a(InstrProfilingPlatformLinux.c.o): relocation R_X86_64_PC32 against undefined hidden symbol `__ehdr_start' can not be used when making a shared object
+      # /usr/bin/ld: final link failed: nonrepresentable section on output
+      export XBB_IGNORE_TEST_COVERAGE_ADDER_SHARED_64="y"
+      export XBB_IGNORE_TEST_COVERAGE_THROWCATCH_MAIN_64="y"
     fi
   fi
 
