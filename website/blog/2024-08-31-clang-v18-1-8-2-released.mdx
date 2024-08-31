@@ -1,0 +1,155 @@
+---
+title:  xPack LLVM clang v18.1.8-2 released
+
+date: 2024-08-31 22:22:44 +0300
+
+authors: ilg-ul
+
+# To be listed in the Releases page.
+tags:
+  - releases
+
+# ----- Custom properties -----------------------------------------------------
+
+clang_release_version: "18.1.8"
+clang_release_date: "19 Jun 2024"
+
+binutils_version: "2.42"
+mingw_version: "11.0.1"
+
+version: "18.1.8-2"
+npm_subversion: "1"
+
+download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v18.1.8-2/
+
+---
+
+Version **18.1.8-2** is a maintenance release;  it fixes the missing coverage libraries on Windows.
+
+<!-- truncate -->
+
+import Image from '@theme/IdealImage';
+import CodeBlock from '@theme/CodeBlock';
+
+import Prerequisites from './_common/_prerequisites-glib-2.27.mdx'
+import DeprecationNotices from './_common/_deprecation-notices-glib-2.27.mdx'
+import DownloadAnalytics from './_common/_download-analytics.mdx'
+
+The [xPack GNU AArch64 Embedded GCC](https://xpack.github.io/aarch64-none-elf-gcc/)
+is a standalone cross-platform binary distribution of
+[Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain).
+
+There are separate binaries for **Windows** (x64),
+**macOS** (x64 and arm64) and **GNU/Linux** (x64, arm64 and arm).
+
+:::note Raspberry Pi
+
+The main targets for the GNU/Linux Arm
+binaries are the **Raspberry Pi** class devices (armv7l and aarch64;
+armv6 is not supported).
+
+:::
+
+## Download
+
+The binary files are available from <a href={frontMatter.download_url}>GitHub Releases</a>.
+
+<Prerequisites/>
+
+## Install
+
+The full details of installing the **xPack GNU AArch64 Embedded GCC** on various platforms
+are presented in the [Install Guide](/docs/install/).
+
+## Compliance
+
+The xPack LLVM clang generally follows the official
+[LLVM clang](https://clang.llvm.org) releases.
+
+The current version is based on:
+
+- LLVM clang version [{frontMatter.clang_release_version}](https://releases.llvm.org/download.html#{frontMatter.clang_release_version}), from {frontMatter.clang_release_date}
+- binutils {frontMatter.binutils_version}
+- mingw-w64 {frontMatter.mingw_version}
+
+For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
+
+## Changes
+
+Compared to the upstream, there are no major functional changes.
+
+Since 15.0.7-4, there is a small patch in Driver.cpp that fixes the
+function that computes
+`InstalledDir` when clang is invoked via a link from a different folder.
+
+## Bug fixes
+
+- none
+
+## Enhancements
+
+- none
+
+## Known problems
+
+Please see the separate
+[tests results page](/docs/tests/18.1.8-2/).
+
+## Documentation
+
+The original documentation is available
+[online](https://clang.llvm.org/docs/UsersManual.html).
+
+## Build
+
+The binaries for all supported platforms
+(Windows, macOS and GNU/Linux) were built using the
+[xPack Build Box (XBB)](https://xpack.github.io/xbb/), a set
+of build environments based on slightly older distributions, that should be
+compatible with most recent systems.
+
+For the prerequisites and more details on the build procedure, please see the
+[How to build](https://github.com/xpack-dev-tools/clang-xpack/blob/xpack/README-BUILD.md) page.
+
+## CI tests
+
+Before publishing, a set of simple tests were performed on an exhaustive
+set of platforms. The results are available from:
+
+- [GitHub Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/)
+- [Travis CI](https://app.travis-ci.com/github/xpack-dev-tools/clang-xpack/builds/)
+
+## Tests
+
+The binaries were tested on a variety of platforms,
+but mainly to check the integrity of the
+build, not the compiler functionality.
+
+## Checksums
+
+The SHA-256 hashes for the files are:
+
+```txt
+d6ed70dfb7fcde6ae1adcac51403b9376ec0d8147a28995b04f81bac0813f787
+xpack-clang-18.1.8-2-darwin-arm64.tar.gz
+
+c12dcd8fa3683db890482faf9f7b8e319cc2750f2013807ed8b6e1b4e9a0c220
+xpack-clang-18.1.8-2-darwin-x64.tar.gz
+
+2c8d06ee86121b0f64f21ae47ca0dbb9b267bafecfc9734995f7c0cd2a90e45a
+xpack-clang-18.1.8-2-linux-arm.tar.gz
+
+90a4fff134c65925209163a15747d7b2aba8a66f06d6205697f307f3179976c1
+xpack-clang-18.1.8-2-linux-arm64.tar.gz
+
+3e98fd5889102b8b6ee6fc124a5d005d51faa55d7256ada00502d510df0926c6
+xpack-clang-18.1.8-2-linux-x64.tar.gz
+
+ad196a6ff55944f2d732d9302d564d84318baffd57da08d273a1067689a9def2
+xpack-clang-18.1.8-2-win32-x64.zip
+
+```
+
+<DeprecationNotices/>
+
+<DownloadAnalytics version={frontMatter.version}/>
