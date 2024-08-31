@@ -2,9 +2,16 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2024-08-31
+
+* v18.1.8-2 released
+* 7540776 llvm.sh: ignore two coverage tests
+
 ## 2024-08-30
 
-* v18.1.8-2 prepared
+* 590ed0b build-assets/package.json bump deps
+* d1ab8c0 website/development-durations update
+* 5dc6fa9 prepare v18.1.8-2
 * d80a02c llvm*.sh: use --clang-coverage
 * 0ce42b5 llvm.sh: run coverage test on all Linux architectures
 * 0ecd41d llvm.sh: run coverage test on arm64 macOS too
