@@ -5,6 +5,7 @@ title: Test results
 
 ## Reports by version
 
+- [18.1.8-2](/docs/tests/18.1.8-2/)
 - [18.1.8-1](/docs/tests/18.1.8-1/)
 - [17.0.6-3](/docs/tests/17.0.6-3/)
 - [17.0.6-2](/docs/tests/17.0.6-2/)
