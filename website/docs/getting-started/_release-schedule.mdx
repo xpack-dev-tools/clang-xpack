@@ -6,9 +6,14 @@ import versionMinor from '@site/src/libs/versionMinor';
 
 ## Release schedule
 
-This distribution follows the official
-[LLVM clang](https://github.com/llvm/llvm-project/releases/) releases,
-but only the final patch of each version is released
+This distribution generally follows the official
+LLVM clang [releases](https://github.com/llvm/llvm-project/releases/),
+which are 2 major releases per year.
+
+Given that between the major releases there are 5-8
+intermediate releases
+(spaced 2 weeks apart),
+only the final patch of each minor version is retained
 (like {versionMajor()}.{versionMinor()}.[5678]).
 The rule is to wait for the new upstream release
 (like {versionMajor()+1}.{versionMinor()}.0), and

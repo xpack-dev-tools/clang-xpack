@@ -1,7 +1,9 @@
 
 {/* ------------------------------------------------------------------------ */}
 
-## LLVM libraries
+## Miscellaneous
+
+### LLVM libraries
 
 On macOS and Windows the compiler defaults are set to the LLVM libraries
 (`libc++` and `compiler-rt`).
@@ -21,12 +23,12 @@ For LTO builds, also use LLD:
 -flto -fuse-ld=lld
 ```
 
-## `-m32` / `-m64`
+### `-m32` / `-m64`
 
 For Intel Linux and Windows, multilib libraries are provided
 and can be selected using the `-m32` / `-m64` options.
 
-## `-print-search-dirs`
+### `-print-search-dirs`
 
 Since the toolchain can be installed in any location, and the binaries
 compiled with it need to access the libraries, it is necessary to
@@ -51,7 +53,3 @@ For example, for the 32-bit libraries:
 ```sh
 ${CXX} -m32 -print-file-name=libc++.dll
 ```
-
-## Using clang in testing
-
-TODO
