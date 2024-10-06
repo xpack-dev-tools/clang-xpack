@@ -35,12 +35,13 @@ import Prerequisites from './_common/_prerequisites-glib-2.27.mdx'
 import DeprecationNotices from './_common/_deprecation-notices-glib-2.27.mdx'
 import DownloadAnalytics from './_common/_download-analytics.mdx'
 
-The [xPack GNU AArch64 Embedded GCC](https://xpack.github.io/aarch64-none-elf-gcc/)
+The [xPack LLVM clang](https://xpack.github.io/clang/)
 is a standalone cross-platform binary distribution of
-[Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain).
+[LLVM clang](https://clang.llvm.org).
 
 There are separate binaries for **Windows** (x64),
-**macOS** (x64 and arm64) and **GNU/Linux** (x64, arm64 and arm).
+**macOS** (x64 and arm64)
+and **GNU/Linux** (x64, arm64 and arm).
 
 :::note Raspberry Pi
 
@@ -78,7 +79,7 @@ The current version is based on:
 - binutils {frontMatter.binutils_version}
 - mingw-w64 {frontMatter.mingw_version}
 
-For Intel Linux and Windows, multilib (32/64-bit) libraries are provided.
+For x64 Linux and Windows, multilib (32/64-bit) libraries are provided.
 
 ## Changes
 
@@ -103,8 +104,10 @@ Please see the separate
 
 ## Documentation
 
-The original documentation is available
-[online](https://clang.llvm.org/docs/UsersManual.html).
+The original documentation is available from
+the project web site:
+
+- https://clang.llvm.org/docs/UsersManual.html
 
 ## Build
 
