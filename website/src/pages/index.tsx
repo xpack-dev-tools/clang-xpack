@@ -41,9 +41,9 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <Layout
-      title={`Hello from xPack Binary Development Tools`}
-      description="A binary package with the LLVM clang executables">
+    <Layout 
+      title={`Hello from clang`}
+      description="A binary package with the clang executables">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

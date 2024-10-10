@@ -1,0 +1,104 @@
+
+import CodeBlock from '@theme/CodeBlock';
+
+import customField from '@site/src/libs/customField';
+
+{/* ------------------------------------------------------------------------ */}
+
+<CodeBlock language="console"> {
+`C:\> tree /f %USERPROFILE%\\AppData\\Roaming\\xPacks\\@xpack-dev-tools\\clang\\${customField('xpackVersion')}\\.content
+Folder PATH listing
+Volume serial number is B02D-925C
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang++.exe
+│   ├── clang-18.exe
+│   ├── clang-check.exe
+│   ├── clang-cl.exe
+│   ├── clang-cpp.exe
+│   ├── clang-doc.exe
+│   ├── clang-format.exe
+│   ├── clang-include-cleaner.exe
+│   ├── clang-linker-wrapper.exe
+│   ├── clang-refactor.exe
+│   ├── clang-rename.exe
+│   ├── clang-repl.exe
+│   ├── clang-scan-deps.exe
+│   ├── clang-target-wrapper.exe
+│   ├── clang-tidy.exe
+│   ├── clang.exe
+│   ├── clangd.exe
+│   ├── diagtool.exe
+│   ├── gendef.exe
+│   ├── git-clang-format
+│   ├── git-clang-format.bat
+│   ├── hmaptool
+│   ├── ld.lld.exe
+│   ├── libLTO.dll
+│   ├── libRemarks.dll
+│   ├── libc++.dll
+│   ├── liblldb.dll
+│   ├── libunwind.dll
+│   ├── lld.exe
+│   ├── lldb-argdumper.exe
+│   ├── lldb-dap.exe
+│   ├── lldb-instr.exe
+│   ├── lldb-server.exe
+│   ├── lldb.exe
+│   ├── llvm-addr2line.exe
+│   ├── llvm-ar.exe
+│   ├── llvm-cov.exe
+│   ├── llvm-cxxfilt.exe
+│   ├── llvm-dlltool.exe
+│   ├── llvm-nm.exe
+│   ├── llvm-objcopy.exe
+│   ├── llvm-objdump.exe
+│   ├── llvm-profdata.exe
+│   ├── llvm-ranlib.exe
+│   ├── llvm-rc.exe
+│   ├── llvm-readelf.exe
+│   ├── llvm-readobj.exe
+│   ├── llvm-size.exe
+│   ├── llvm-strings.exe
+│   ├── llvm-strip.exe
+│   ├── llvm-symbolizer.exe
+│   ├── llvm-windres.exe
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   └── widl.exe
+├── distro-info
+│   └── licenses
+├── i686-w64-mingw32
+│   ├── bin
+│   ├── include
+│   └── lib
+├── include
+├── lib
+│   ├── clang
+│   ├── cmake
+│   ├── libLTO.dll.a
+│   ├── libRemarks.dll.a
+│   ├── libear
+│   └── libscanbuild
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── c++-analyzer.bat
+│   ├── ccc-analyzer
+│   ├── ccc-analyzer.bat
+│   ├── intercept-c++
+│   └── intercept-cc
+├── share
+│   ├── clang
+│   ├── opt-viewer
+│   ├── scan-build
+│   └── scan-view
+└── x86_64-w64-mingw32
+    ├── bin
+    ├── include
+    └── lib
+
+24 directories, 67 files
+`} </CodeBlock>

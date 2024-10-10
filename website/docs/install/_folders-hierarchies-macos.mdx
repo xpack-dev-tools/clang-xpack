@@ -1,0 +1,153 @@
+
+import CodeBlock from '@theme/CodeBlock';
+
+import customField from '@site/src/libs/customField';
+
+{/* ------------------------------------------------------------------------ */}
+
+<CodeBlock language="console"> {
+`$ tree -L 2 ~/Library/xPacks/\@xpack-dev-tools/clang/${customField('xpackVersion')}/.content/
+/Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/${customField('xpackVersion')}/.content/
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang -> clang-18
+│   ├── clang++ -> clang
+│   ├── clang-18
+│   ├── clang-check
+│   ├── clang-cl -> clang
+│   ├── clang-cpp -> clang
+│   ├── clang-doc
+│   ├── clang-format
+│   ├── clang-include-cleaner
+│   ├── clang-linker-wrapper
+│   ├── clang-refactor
+│   ├── clang-rename
+│   ├── clang-repl
+│   ├── clang-scan-deps
+│   ├── clang-tblgen
+│   ├── clang-tidy
+│   ├── clangd
+│   ├── darwin-debug
+│   ├── diagtool
+│   ├── git-clang-format
+│   ├── hmaptool
+│   ├── ld.lld -> lld
+│   ├── ld64.lld -> lld
+│   ├── llc
+│   ├── lld
+│   ├── lld-link -> lld
+│   ├── lldb
+│   ├── lldb-argdumper
+│   ├── lldb-dap
+│   ├── lldb-instr
+│   ├── lldb-server
+│   ├── lli
+│   ├── llvm-addr2line -> llvm-symbolizer
+│   ├── llvm-ar
+│   ├── llvm-as
+│   ├── llvm-bitcode-strip -> llvm-objcopy
+│   ├── llvm-config
+│   ├── llvm-cov
+│   ├── llvm-cxxdump
+│   ├── llvm-cxxfilt
+│   ├── llvm-cxxmap
+│   ├── llvm-debuginfo-analyzer
+│   ├── llvm-debuginfod
+│   ├── llvm-debuginfod-find
+│   ├── llvm-diff
+│   ├── llvm-dis
+│   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-dwarfutil
+│   ├── llvm-lib -> llvm-ar
+│   ├── llvm-libtool-darwin
+│   ├── llvm-nm
+│   ├── llvm-objcopy
+│   ├── llvm-objdump
+│   ├── llvm-otool -> llvm-objdump
+│   ├── llvm-profdata
+│   ├── llvm-ranlib -> llvm-ar
+│   ├── llvm-rc
+│   ├── llvm-readelf -> llvm-readobj
+│   ├── llvm-readobj
+│   ├── llvm-readtapi
+│   ├── llvm-remarkutil
+│   ├── llvm-sim
+│   ├── llvm-size
+│   ├── llvm-strings
+│   ├── llvm-strip -> llvm-objcopy
+│   ├── llvm-symbolizer
+│   ├── llvm-tblgen
+│   ├── llvm-tli-checker
+│   ├── llvm-windres -> llvm-rc
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   ├── set-xcode-analyzer
+│   ├── split-file
+│   └── wasm-ld -> lld
+├── distro-info
+│   └── licenses
+├── include
+│   ├── __libunwind_config.h
+│   ├── c++
+│   ├── libunwind.h
+│   ├── libunwind.modulemap
+│   ├── mach-o
+│   ├── unwind.h
+│   ├── unwind_arm_ehabi.h
+│   └── unwind_itanium.h
+├── lib
+│   ├── LLVMPolly.so
+│   ├── clang
+│   ├── cmake
+│   ├── libLLVM-18.dylib -> libLLVM.dylib
+│   ├── libLLVM-C.dylib
+│   ├── libLLVM.dylib
+│   ├── libLTO.dylib
+│   ├── libPolly.a
+│   ├── libPollyISL.a
+│   ├── libRemarks.dylib
+│   ├── libc++.1.0.dylib
+│   ├── libc++.1.dylib -> libc++.1.0.dylib
+│   ├── libc++.a
+│   ├── libc++.dylib -> libc++.1.dylib
+│   ├── libc++abi.1.0.dylib
+│   ├── libc++abi.1.dylib -> libc++abi.1.0.dylib
+│   ├── libc++abi.a
+│   ├── libc++abi.dylib -> libc++abi.1.dylib
+│   ├── libc++experimental.a
+│   ├── libclang-cpp.dylib
+│   ├── libclang.dylib
+│   ├── libear
+│   ├── liblldb.18.1.8.dylib
+│   ├── liblldb.dylib -> liblldb.18.1.8.dylib
+│   ├── libscanbuild
+│   ├── libunwind.1.0.dylib
+│   ├── libunwind.1.dylib -> libunwind.1.0.dylib
+│   ├── libunwind.a
+│   └── libunwind.dylib -> libunwind.1.dylib
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── ccc-analyzer
+│   ├── intercept-c++
+│   ├── intercept-cc
+│   ├── libedit.0.dylib
+│   ├── libffi.8.dylib
+│   ├── libform.6.dylib
+│   ├── libiconv.2.dylib
+│   ├── liblzma.5.dylib
+│   ├── libncurses.6.dylib
+│   ├── libpanel.6.dylib
+│   ├── libxml2.2.dylib
+│   ├── libz.1.3.1.dylib
+│   └── libz.1.dylib -> libz.1.3.1.dylib
+└── share
+    ├── clang
+    ├── opt-viewer
+    ├── scan-build
+    └── scan-view
+
+18 directories, 123 files
+`} </CodeBlock>
