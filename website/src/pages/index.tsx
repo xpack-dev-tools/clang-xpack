@@ -42,7 +42,7 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout 
-      title={`Hello from clang`}
+      title={`Welcome to clang`}
       description="A binary package with the clang executables">
       <HomepageHeader />
       <main>
