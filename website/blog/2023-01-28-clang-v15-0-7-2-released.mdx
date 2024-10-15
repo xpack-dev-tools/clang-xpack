@@ -1,5 +1,6 @@
 ---
 title: xPack LLVM clang v15.0.7-2 released
+seo_title: Version 15.0.7-2 released
 description: Version 15.0.7-2 is a maintenance release of xPack LLVM clang.
 keywords:
   - xpack
@@ -25,17 +26,15 @@ download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v15.0.
 
 ---
 
-<head>
-  <title>{frontMatter.title}</title>
-  <meta property="og:title" content={frontMatter.title} />
-</head>
+import {PageMetadata} from '@docusaurus/theme-common';
+import Image from '@theme/IdealImage';
+import CodeBlock from '@theme/CodeBlock';
 
 Version **15.0.7-2** is a maintenance release; it fixes the missing run-time libraries in the macOS binaries.
 
 <!-- truncate -->
 
-import Image from '@theme/IdealImage';
-import CodeBlock from '@theme/CodeBlock';
+<PageMetadata title={frontMatter.seo_title} />
 
 The [xPack LLVM clang](https://xpack-dev-tools.github.io/clang-xpack/)
 is a standalone cross-platform binary distribution of
