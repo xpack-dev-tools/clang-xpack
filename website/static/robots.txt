@@ -1,0 +1,7 @@
+Sitemap: https://xpack-dev-tools.github.io/clang-xpack/sitemap.xml
+
+User-agent: *
+Disallow: /clang-xpack/blog/archive/
+Disallow: /clang-xpack/blog/authors/
+Disallow: /clang-xpack/blog/page/
+Disallow: /clang-xpack/blog/tags/
