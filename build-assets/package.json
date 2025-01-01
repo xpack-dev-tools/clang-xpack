@@ -19,7 +19,7 @@
         "$link": "https://github.com/llvm/llvm-project/tags/",
         "clangReleaseDate": "19 Jun 2024",
         "binutilsVersionMajor": "2",
-        "binutilsVersionMinor": "42",
+        "binutilsVersionMinor": "43",
         "mingwVersion": "11.0.1",
         "showTestsResults": "true",
         "hasCustomUserSidebar": "true"
