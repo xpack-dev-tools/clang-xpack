@@ -3,11 +3,13 @@
 
 ### Bootstrap
 
-The first step is to build and test only the bootstrap;
-for this, un-comment a line in `application.sh`:
+For Windows, it is necessary to build a bootstrap;
+for a better control, it is recommended to do a first run only to
+build and test only the bootstrap;
+for this un-comment a line in `application.sh`:
 
 ```sh
 XBB_APPLICATION_BOOTSTRAP_ONLY="y"
 ```
 
-After the bootstrap passes the tests, comment out this line and repeat.
+After the bootstrap passes the tests, comment out this line and repeat to build the final binaries.
