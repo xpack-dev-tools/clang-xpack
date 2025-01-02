@@ -220,13 +220,6 @@ and fix them; assign them to a milestone (like <code>{customField('xpackVersion'
 
 ### Update `CHANGELOG.md`
 
-- open the `CHANGELOG.md` file
-- check if all previous fixed issues are in
-- check the latest commits `xpm run git-log`; if necessary, copy/paste lines,
-  group by dates and edit them using the below regular expressions
-- add a new entry like _**\* v{customField('xpackVersion')} prepared**_
-- commit with the message _**prepare v{customField('xpackVersion')}**_
-
 To turn the dates into headings, change from:
 
 ```txt
@@ -256,6 +249,14 @@ to:
 ```txt
 *
 ```
+
+- open the `CHANGELOG.md` file
+- check if all previous fixed issues are in
+- check the latest commits `xpm run git-log`; if necessary, copy/paste lines,
+  group by dates and edit them using the below regular expressions
+- add a new entry like _**\* v{customField('xpackVersion')} prepared**_
+- commit with the message _**prepare v{customField('xpackVersion')}**_
+
 
 ### Push the changes to the `xpack-development` branch
 
@@ -619,7 +620,7 @@ xpm run trigger-workflow-build-linux-arm64 -C ~/Work/xpack-dev-tools/clang-xpack
 xpm run trigger-workflow-build-linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
 ```
 
-The scripts behind these actions require the `XPACK_DEV_TOOLS_FG_DISPATCH_TOKEN`
+The scripts behind these actions require the `GITHUB_API_DISPATCH_TOKEN`
 variable to be present
 in the environment, and the organization `PUBLISH_TOKEN` to be visible in the
 Settings → Action →
@@ -663,7 +664,7 @@ xpm run trigger-workflow-test-docker-linux-x64 -C ~/Work/xpack-dev-tools/clang-x
 xpm run trigger-workflow-test-docker-linux-arm -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
 ```
 
-The scripts behind these accessible require the `XPACK_DEV_TOOLS_FG_DISPATCH_TOKEN` variable to be present
+The scripts behind these accessible require the `GITHUB_API_DISPATCH_TOKEN` variable to be present
 in the environment.
 
 These actions use the `xpack-development` branch of this repo and the
@@ -784,7 +785,7 @@ xpm run generate-website-blog-post -C ~/Work/xpack-dev-tools/clang-xpack.git/bui
 
 ### Check the list of links in top package.json
 
-- open the `package.json` file
+- open the top `package.json` file
 - check if the links in the `bin` property cover the actual binaries
 - if necessary, also check on Windows
 
@@ -907,7 +908,7 @@ and the X/Twitter announcement
 - switch to https://xpack-dev-tools.github.io/clang-xpack/docs/maintainer/#update-the-xpack-branch
 
 The `website` branch may be subsequently updated, as long as the
-version in `package.json` is not changed.
+version in the top `package.json` is not changed.
 
 ### Update the `xpack` branch
 
