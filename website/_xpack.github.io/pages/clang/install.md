@@ -120,7 +120,7 @@ GitHub [releases](https://github.com/xpack-dev-tools/clang-xpack/releases/) page
 To check if the xpm installed GCC starts, use something like:
 
 ```doscon
-C:\>%USERPROFILE%\AppData\Roaming\xPacks\@xpack-dev-tool\clang\{{ page.version }}-{{ page.xpack-subversion }}.1\.content\bin\clang.exe" --version
+C:\>%USERPROFILE%\AppData\Roaming\xPacks\@xpack-dev-tools\clang\{{ page.version }}-{{ page.xpack-subversion }}.1\.content\bin\clang.exe" --version
 xPack MinGW-w64 x86_64 clang version {{ page.version }}
 Target: x86_64-w64-windows-gnu
 Thread model: posix
