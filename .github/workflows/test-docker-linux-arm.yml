@@ -309,17 +309,17 @@ jobs:
           ref: ${{github.event.inputs.helper-git-ref}}
           fetch-depth: 3
 
-      - name: 'OpenSUSE 15.4 arm64'
-        uses: docker://opensuse/leap:15.4
+      - name: 'OpenSUSE 15.6 arm64'
+        uses: docker://opensuse/leap:15.6
         with:
           entrypoint: /bin/bash
-          args: /github/workspace/build-assets/scripts/test.sh --image opensuse/leap:15.4 --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
+          args: /github/workspace/build-assets/scripts/test.sh --image opensuse/leap:15.6 --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
 
-      - name: 'OpenSUSE 15.3 arm64'
-        uses: docker://opensuse/leap:15.3
+      - name: 'OpenSUSE 15.5 arm64'
+        uses: docker://opensuse/leap:15.5
         with:
           entrypoint: /bin/bash
-          args: /github/workspace/build-assets/scripts/test.sh --image opensuse/leap:15.3 --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
+          args: /github/workspace/build-assets/scripts/test.sh --image opensuse/leap:15.5 --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
 
   # ---------------------------------------------------------------------------
 
