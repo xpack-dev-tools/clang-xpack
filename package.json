@@ -157,6 +157,7 @@
   },
   "topConfig": {
     "longName": "LLVM clang",
+    "shortName": "clang",
     "showTestsResults": "true"
   },
   "engines": {
