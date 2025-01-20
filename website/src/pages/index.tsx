@@ -34,7 +34,7 @@ function HomepageHeader() {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
 
         <div className={styles.installWithCopy}>
-          <InstallWithCopy>xpm install @xpack-dev-tools/clang@{customField('version')} --verbose</InstallWithCopy>
+          <InstallWithCopy>xpm install @xpack-dev-tools/clang@{customField('releaseVersion')} --verbose</InstallWithCopy>
         </div>
 
       </div>
