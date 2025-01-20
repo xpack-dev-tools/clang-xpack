@@ -18,10 +18,10 @@ tags:
 # ----- Custom properties -----------------------------------------------------
 
 clang_release_version: "{{upstreamVersion}}"
-clang_release_date: "{{customFields.clangReleaseDate}}"
+clang_release_date: "{{packageWebsiteConfig.clangReleaseDate}}"
 
-binutils_version: "{{customFields.binutilsVersionMajor}}.{{customFields.binutilsVersionMinor}}"
-mingw_version: "{{customFields.mingwVersion}}"
+binutils_version: "{{packageWebsiteConfig.binutilsVersionMajor}}.{{packageWebsiteConfig.binutilsVersionMinor}}"
+mingw_version: "{{packageWebsiteConfig.mingwVersion}}"
 
 version: "{{releaseVersion}}"
 npm_subversion: "1"

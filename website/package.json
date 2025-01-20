@@ -57,18 +57,15 @@
     ]
   },
   "websiteConfig": {
-    "customFields": {
-      "programName": "clang",
-      "branding": "xPack x86_64 clang version ",
-      "$link": "https://github.com/llvm/llvm-project/tags/",
-      "clangReleaseDate": "1x Jan 2025",
-      "binutilsVersionMajor": "2",
-      "binutilsVersionMinor": "43",
-      "mingwVersion": "12.0.0",
-      "llvmMingwTag": "20241217",
-      "showTestsResults": "true",
-      "hasCustomUserSidebar": "true"
-    }
+    "programName": "clang",
+    "branding": "xPack x86_64 clang version ",
+    "hasCustomUserSidebar": "true",
+    "$link": "https://github.com/llvm/llvm-project/tags/",
+    "clangReleaseDate": "1x Jan 2025",
+    "binutilsVersionMajor": "2",
+    "binutilsVersionMinor": "43",
+    "mingwVersion": "12.0.0",
+    "llvmMingwTag": "20241217"
   },
   "engines": {
     "node": ">=18.0"
