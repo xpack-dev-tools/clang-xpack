@@ -275,7 +275,7 @@ const config: Config = {
           label: 'GitHub',
           items: [
             {
-              label: `clang-xpack`,
+              label: `clang-xpack project`,
               href: `https://github.com/xpack-dev-tools/clang-xpack/`,
             },
             {
@@ -348,7 +348,7 @@ const config: Config = {
               href: 'https://www.paypal.com/donate/?hosted_button_id=5MFRG9ZRBETQ8',
             },
             {
-              label: 'GitHub clang-xpack',
+              label: 'GitHub clang-xpack project',
               href: 'https://github.com/xpack-dev-tools/clang-xpack/',
             },
             {
