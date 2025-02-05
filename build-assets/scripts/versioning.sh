@@ -293,8 +293,7 @@ function clang_build_common()
     then
       # Build ld.gold to support LTO.
       # ld.gold was deprecated since binutils 2.44.
-      # binutils_build_ld_gold "${XBB_BINUTILS_VERSION}"
-      :
+      binutils_build_ld_gold "${XBB_BINUTILS_VERSION}"
     fi
 
     if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "darwin" ]
@@ -356,7 +355,8 @@ function application_build_versioned_components()
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
-    # XBB_BINUTILS_VERSION="2.44"
+    # Must use binutils-with-gold-2.44!
+    XBB_BINUTILS_VERSION="2.44"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
     XBB_MINGW_VERSION="12.0.0"

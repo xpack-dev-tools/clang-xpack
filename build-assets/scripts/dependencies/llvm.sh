@@ -457,7 +457,7 @@ function llvm_build()
             config_options+=("-DLLDB_ENABLE_LZMA=ON")
 
             # binutils no longer used since 2.44.
-            # config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
+            config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
 
             config_options+=("-DLLVM_ENABLE_FFI=ON") # Arch
@@ -505,7 +505,9 @@ function llvm_build()
               exit 1
             fi
 
-            config_options+=("-DLLVM_TOOL_GOLD_BUILD=OFF")
+            # Without gold it fails with:
+            # error loading plugin: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build-assets/build/linux-x64/application/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
+            # config_options+=("-DLLVM_TOOL_GOLD_BUILD=OFF")
 
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size;llvm-cxxfilt")
 
