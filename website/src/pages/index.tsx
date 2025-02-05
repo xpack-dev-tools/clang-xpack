@@ -38,7 +38,7 @@ function HomepageHeader() {
         </span>
         </p>
         <div className={styles.installWithCopy}>
-          <InstallWithCopy>xpm install @xpack-dev-tools/clang@19.1.6-1.1 --verbose</InstallWithCopy>
+          <InstallWithCopy>xpm install @xpack-dev-tools/clang@19.1.7-1.1 --verbose</InstallWithCopy>
         </div>
       </div>
     </header>

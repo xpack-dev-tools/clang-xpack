@@ -8,6 +8,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 import customField from '@site/src/libs/customField';
 import isXpackSubversionDouble from '@site/src/libs/isXpackSubversionDouble';
+import dateYYYYMMDD from '@site/src/libs/dateYYYYMMDD';
 
 import ReleaseSchedule from '../../_shared/_release-schedule.mdx';
 import GitHubActionsDurations from '../../_shared/_github-actions-durations.mdx';
@@ -138,16 +139,16 @@ update the dependencies in `build-assets/package.json`.
 
 ### Increase the version and update it in the top `package.json`
 
-- determine the version (like <code>19.1.6-1.1</code>)
+- determine the version (like <code>19.1.7-1.1</code>)
 - update the version in top `package.json`
 - use the new version, suffixed by `.pre`,
-like <code>19.1.6-1.1.pre</code>.
+like <code>19.1.7-1.1.pre</code>.
 
 ### Increase the version and update VERSION
 
-Determine the version (like <code>19.1.6-1</code>)
+Determine the version (like <code>19.1.7-1</code>)
 and update the `build-assets/scripts/VERSION` file; the format
-is <code>19.1.6-1</code>.
+is <code>19.1.7-1</code>.
 {isXpackSubversionDouble() ?
 'The fourth & fifth numbers are the xPack release number of this version. A sixth' :
 'The fourth number is the xPack release number of this version. A fifth'} number will be added to the version in `package.json` when the package is published to the `npm` server.
@@ -156,13 +157,30 @@ is <code>19.1.6-1</code>.
 
 - update the release specific properties (if any)
 
+### Generate the top commons
+
+Run the top **generate-top-commons** npm script to update the
+`build-assets/package.json` and the GitHub workflow files.
+
+```sh
+npm run generate-top-commons -C ~/Work/xpack-dev-tools/clang-xpack.git
+```
+
+### Commit the top changes
+
+Commit with the message _**re-generate top commons**_.
+
 ### Update the website commons
 
-Run the `website-generate-commons` actions from `website`.
+Run the **generate-website-commons** npm script from `website/package.json`.
+
+### Commit the website changes
+
+Commit with the message _**website: re-generate commons**_.
 
 ### Start the local web server
 
-Execute the npm script `clean` then `start` in the website sub-project,
+Execute the npm script **clean** then **start** in the website sub-project,
 or run the following in a terminal:
 
 ```sh
@@ -170,7 +188,7 @@ or run the following in a terminal:
 ```
 
 Navigate to the **Maintainer Info** page,
-the **Update the version specific code** section.
+the **[Update the version specific code](http://localhost:3000/openocd-xpack/docs/maintainer/#update-the-version-specific-code)** section.
 
 <UpdateVersionSpecific/>
 
@@ -181,46 +199,38 @@ Check GitHub issues and pull requests:
 - https://github.com/xpack-dev-tools/clang-xpack/issues
 - https://github.com/xpack-dev-tools/clang-xpack/pulls
 
-and fix them; assign them to a milestone (like <code>19.1.6-1</code>).
+and fix them; assign them to a milestone (like <code>19.1.7-1</code>).
 
 ### Update `CHANGELOG.md`
-
-To turn the dates into headings, change from:
-
-```txt
-
-
-([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) [*]
-```
-
-to:
-
-```txt
-
-
-## $1
-
-*
-```
-
-To remove the rest of the dates, change from:
-
-```txt
-^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [*]
-```
-
-to:
-
-```txt
-*
-```
 
 - open the `CHANGELOG.md` file
 - check if all previous fixed issues are in
 - check the latest commits `xpm run git-log`; if necessary, copy/paste lines,
   group by dates and edit them using the below regular expressions
-- add a new entry like _**\* v19.1.6-1 prepared**_
-- commit with the message _**prepare v19.1.6-1**_
+- to turn the dates into headings, change from:
+  ```txt
+
+
+  ([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) [*]
+  ```
+  to:
+  ```txt
+
+
+  ## $1
+
+  *
+  ```
+- to remove the rest of the dates, change from:
+  ```txt
+  ^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [*]
+  ```
+  to:
+  ```txt
+  *
+  ```
+- add a new entry like _**\* v19.1.7-1 prepared**_
+- commit with the message _**prepare v19.1.7-1**_
 
 
 ### Push the changes to the `xpack-development` branch
@@ -388,7 +398,7 @@ Copy the trees displayed at the end of the test builds and paste to
 - `website/docs/install/_project/_folders-hierarchies-windows.mdx`
 
 If present, replace the actual version
-(like **19.1.6**) with the following expression:
+(like **19.1.7**) with the following expression:
 
 ```txt
 ${customField('upstreamVersion')}
@@ -420,8 +430,8 @@ In some cases it is necessary to run a debug session with the binaries.
 
 For these cases, the build script accepts the `--debug` options.
 
-There are also xpm actions that use this option (`build-development-debug`
-and `docker-build-development-debug`).
+There are also xpm actions that use this option (**build-development-debug**
+and **docker-build-development-debug**).
 
 ### Files cache
 
@@ -519,19 +529,6 @@ Publish a new release of the helper on **npmjs**.
 In `templates/_xpack-dev-tools/build-assets/package-merge-liquid.json`, update the reference
 to `"@xpack-dev-tools/xbb-helper":`.
 
-### Generate the top commons
-
-Run the top **generate-top-commons** npm script to update the
-`build-assets/package.json` and the GitHub workflow files.
-
-```sh
-npm run generate-top-commons -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
-
-### Commit the changes
-
-Commit with the message _**re-generate top commons**_.
-
 ### Check for disk space
 
 Check if the build machines have enough free space and eventually
@@ -577,8 +574,11 @@ rm -rf ~/Work/xpack-dev-tools/*/build-assets/build
 
 ### Commit and push
 
-- commit with the message **re-generate workflows**
 - push the `xpack-development` branch to GitHub
+
+### Check if the helper is pushed and published
+
+The helper `xpack` branch must be updated and the npm package published.
 
 <FirstProductionRun/>
 
@@ -672,7 +672,7 @@ with previous runs.
 Since GitHub Actions provides a limited range of versions for the macOS
 runner, the multi-version macOS tests run on Travis.
 
-To trigger the Travis test, run the **trigger-travis-macos** xpm/xPack action:
+To trigger the Travis test, run the **trigger-travis-macos** xpm action:
 
 ```sh
 xpm run trigger-travis-macos -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
@@ -713,11 +713,11 @@ xattr -cr ${HOME}/Downloads/xpack-*
 ### Create a new GitHub pre-release
 
 - in `CHANGELOG.md`, add the release date and a message
-  like _**\* v19.1.6-1 released**_
+  like _**\* v19.1.7-1 released**_
 - commit with the message _**CHANGELOG update**_
 - check and possibly update the `build-assets/templates/body-github-release-liquid.mdx`
 - push the `xpack-development` branch to GitHub
-- run the **trigger-workflow-publish-release** xpm/xPack action:
+- run the **trigger-workflow-publish-release** xpm action:
 
 ```sh
 xpm run trigger-workflow-publish-release -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
@@ -728,8 +728,8 @@ The workflow result and logs are available from the
 
 The result is a
 [draft pre-release](https://github.com/xpack-dev-tools/clang-xpack/releases)
-tagged like **v19.1.6-1** (mind the dash in the middle!) and
-named like **xPack LLVM clang v19.1.6-1** (mind the dash),
+tagged like **v19.1.7-1** (mind the dash in the middle!) and
+named like **xPack LLVM clang v19.1.7-1** (mind the dash),
 with all binaries attached.
 
 - edit the draft and be sure it is attached to the `xpack-development` branch (important!)
@@ -748,7 +748,7 @@ watching the clang-xpack project.
 ### Prepare a new blog post
 
 - check and possibly update the `website/blog/_templates/blog-post-release-part-[12]-liquid.md`
-- run the **generate-website-blog-post** xpm/xPack action;
+- run the **generate-website-blog-post** xpm action;
 this will add a file in the `website/blog` folder:
 
 ```sh
@@ -757,7 +757,7 @@ xpm run generate-website-blog-post -C ~/Work/xpack-dev-tools/clang-xpack.git/bui
 
 - edit the front matter properties
 - select the correct summary
-- commit with the message _**website: blog post release 19.1.6-1 published**_
+- commit with the message _**website: blog post release 19.1.7-1 published**_
 
 ### Update the web install page
 
@@ -776,7 +776,7 @@ xpm run generate-website-blog-post -C ~/Work/xpack-dev-tools/clang-xpack.git/bui
 
 - select the `xpack-development` branch
 - be sure that the binaries were attached to the pre-release
-- run the **update-package-binaries** xpm/xPack action:
+- run the **update-package-binaries** xpm action:
 
 ```sh
 xpm run update-package-binaries -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
@@ -789,14 +789,14 @@ xpm run update-package-binaries -C ~/Work/xpack-dev-tools/clang-xpack.git/build-
 - compare the SHA sums with those shown by `cat *.sha`
 - check the executable names
 - commit all changes with the message
-  _**package.json: update urls for 19.1.6-1.1 release**_
+  _**package.json: update urls for 19.1.7-1.1 release**_
 
 ### Publish on the npmjs.com server
 
 - select the `xpack-development` branch
 - check the latest commits `xpm run git-log`
-- update `CHANGELOG.md`, add a line like _**\* v19.1.6-1.1 published on npmjs.com**_
-- commit with the message _**CHANGELOG: publish npm v19.1.6-1.1**_
+- update `CHANGELOG.md`, add a line like _**\* v19.1.7-1.1 published on npmjs.com**_
+- commit with the message _**CHANGELOG: publish npm v19.1.7-1.1**_
 - `npm pack` and check the content of the archive, which should list
   only the `package.json`, the `README.md`, `LICENSE` and `CHANGELOG.md`;
   possibly adjust `.npmignore`
@@ -804,7 +804,7 @@ xpm run update-package-binaries -C ~/Work/xpack-dev-tools/clang-xpack.git/build-
   GitHub release; the fifth number is the npm specific version:
 
 <CodeBlock language="sh"> {
-`npm version 19.1.6-1.1
+`npm version 19.1.7-1.1
 `} </CodeBlock>
 
 - the commits and the tag should have been pushed by the `postversion` script;
@@ -826,7 +826,7 @@ After a few moments the version will be visible at
 
 ### Test if the binaries can be installed with xpm
 
-Run the **trigger-workflow-test-xpm** xpm/xPack action:
+Run the **trigger-workflow-test-xpm** xpm action:
 
 ```sh
 xpm run trigger-workflow-test-xpm -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
@@ -852,7 +852,7 @@ Commit with the message _**website: add tests results**_.
 When the release is considered stable, promote it as `latest`:
 
 <CodeBlock language="sh"> {
-`npm dist-tag add @xpack-dev-tools/clang@19.1.6-1.1 latest
+`npm dist-tag add @xpack-dev-tools/clang@19.1.7-1.1 latest
 `} </CodeBlock>
 
 Check the result:
@@ -864,7 +864,7 @@ Check the result:
 In case the release proves problematic and needs to be unpublished:
 
 <CodeBlock language="sh"> {
-`npm unpublish @xpack-dev-tools/clang@19.1.6-1.1
+`npm unpublish @xpack-dev-tools/clang@19.1.7-1.1
 `} </CodeBlock>
 
 ### Build the static website locally
@@ -885,12 +885,11 @@ npm run build -C website
   :::info
   At this moment an automated GitHub Action will generate and publish the website.
   :::
-- add a new tag like `web-YYYYMMDD`
+- add a new tag like <code>web-{dateYYYYMMDD()}</code>
 - the new release blog post is
 in https://xpack-dev-tools.github.io/clang-xpack/blog/
 - remember the post URL, since it must be used to update the release page
 and the X/Twitter announcement
-- switch to https://xpack-dev-tools.github.io/clang-xpack/docs/maintainer/#update-the-xpack-branch
 
 The `website` branch may be subsequently updated, as long as the
 version in the top `package.json` is not changed.
@@ -932,7 +931,7 @@ Avoid further updates to the `xpack` branch until the next release.
 
 ### Clean the work area
 
-Run the **trigger-workflow-deep-clean** xpm/xPack action
+Run the **trigger-workflow-deep-clean** xpm action
 
 ```sh
 xpm run trigger-workflow-deep-clean -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
@@ -956,7 +955,7 @@ Close those that were addressed.
 
 - in a separate browser windows, open [X/Twitter](https://twitter.com)
 - using the **`@xpack_project`** account
-- paste the release name like _**xPack LLVM clang v19.1.6-1 released**_
+- paste the release name like _**xPack LLVM clang v19.1.7-1 released**_
 - paste the link to the blog post
   [release](https://github.com/xpack-dev-tools/clang-xpack/releases)
 - click the **Tweet** button

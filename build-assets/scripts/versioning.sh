@@ -354,27 +354,26 @@ function application_build_versioned_components()
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftp.gnu.org/gnu/binutils/
-    XBB_BINUTILS_VERSION="2.43" # "2.42"
+    XBB_BINUTILS_VERSION="2.44" 
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
-    XBB_MINGW_VERSION="12.0.0" # "11.0.1"
+    XBB_MINGW_VERSION="12.0.0"
 
     # https://zlib.net/fossils/
-    XBB_ZLIB_VERSION="1.3.1" # "1.2.13"
+    XBB_ZLIB_VERSION="1.3.1"
     # https://github.com/libffi/libffi/releases
-    XBB_LIBFFI_VERSION="3.4.6" # "3.4.4"
+    XBB_LIBFFI_VERSION="3.4.6"
     # https://ftp.gnu.org/gnu/ncurses/
-    XBB_NCURSES_VERSION="6.5" # "6.4"
+    XBB_NCURSES_VERSION="6.5"
     # https://ftp.gnu.org/pub/gnu/libiconv/
-    XBB_LIBICONV_VERSION="1.18" # "1.17"
+    XBB_LIBICONV_VERSION="1.18"
     # https://sourceforge.net/projects/lzmautils/files/
     # Avoid 5.6.[01]!
-    XBB_XZ_VERSION="5.6.3" # "5.4.6"
+    XBB_XZ_VERSION="5.6.4"
     # https://download.gnome.org/sources/libxml2/
-    XBB_LIBXML2_VERSION="2.13.5" # "2.12.7" # "2.12.1"
+    XBB_LIBXML2_VERSION="2.13.5"
     # https://www.thrysoee.dk/editline/
-    XBB_LIBEDIT_VERSION="20240808-3.1" # "20240517-3.1" # "20230828-3.1"
-
+    XBB_LIBEDIT_VERSION="20250104-3.1"
     clang_build_common
 
     # -------------------------------------------------------------------------

@@ -70,11 +70,11 @@
     "branding": "xPack x86_64 clang version ",
     "hasCustomUserSidebar": "true",
     "$link": "https://github.com/llvm/llvm-project/tags/",
-    "clangReleaseDate": "1x Jan 2025",
+    "clangReleaseDate": "15 Jan 2025",
     "binutilsVersionMajor": "2",
-    "binutilsVersionMinor": "43",
+    "binutilsVersionMinor": "44",
     "mingwVersion": "12.0.0",
-    "llvmMingwTag": "20241217"
+    "llvmMingwTag": "20250114"
   },
   "engines": {
     "node": ">=18.0"

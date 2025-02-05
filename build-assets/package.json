@@ -13,7 +13,7 @@
   "xpack": {
     "minimumXpmRequired": "0.16.3",
     "devDependencies": {
-      "@xpack-dev-tools/xbb-helper": "^3.1.4"
+      "@xpack-dev-tools/xbb-helper": "^3.1.5"
     },
     "properties": {
       "platforms": "all",
@@ -208,7 +208,7 @@
         "devDependencies": {
           "@xpack-dev-tools/gcc": "13.2.0-2.1",
           "@xpack-dev-tools/mingw-w64-gcc": "13.2.0-1.1",
-          "@xpack-dev-tools/wine": "8.0.2-1.1"
+          "@xpack-dev-tools/wine": "10.0.0-1.1"
         },
         "properties": {
           "dockerImage": "ilegeul/ubuntu:amd64-18.04-xbb-v5.2.2"

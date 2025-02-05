@@ -2,9 +2,239 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2025-02-05
+
+* v19.1.7-1 prepared
+
+## 2025-02-04
+
+* 78607ea website: re-generate commons
+* ee96be8 build-assets: update generate-website-blog-post
+
+## 2025-02-03
+
+* 8a1d3d7 build-assets: bump deps
+* 44f93e3 website: re-generate commons
+* 2b63764 website: re-generate commons
+
+## 2025-02-02
+
+* 5178b37 website: re-generate commons
+
+## 2025-01-31
+
+* 2b1daa9 website: updates and final common rework
+
+## 2025-01-30
+
+* 8a86a0f website: rework getting-started
+* a1dedca website: more rework with commons
+
+## 2025-01-29
+
+* 47651c4 website: more rework with commons
+
+## 2025-01-27
+
+* ddd07b5 website: cosmetise imports
+
+## 2025-01-26
+
+* bdcc698 website: rework with _project
+
+## 2025-01-23
+
+* c6b09e4 website: re-generate commons
+
+## 2025-01-22
+
+* 81c2157 website: re-generate commons
+
+## 2025-01-21
+
+* be052cb build-assets: cleanup actions
+* 959a3a9 website: re-generate commons
+* 6c122e7 website: re-generate commons
+* 6a5044e website: re-generate commons
+
+## 2025-01-20
+
+* 8bbf176 re-generate commons
+* 07389d0 website: re-generate commons
+
+## 2025-01-19
+
+* 14a8ff4 website: remove unused customField.js
+* 37c2789 build-assets: move customFields to websiteConfig
+* 4ecd692 website: re-generate commons
+
+## 2025-01-17
+
+* 9e6f50d website: re-generate commons
+* ccef35a re-generate commons
+* ad179ce website: re-generate commons
+
+## 2025-01-16
+
+* 24a6668 website: re-generate commons
+* 2e45720 re-generate commons
+
+## 2025-01-15
+
+* fc67ab4 website: updates
+* 745be0c re-generate commons
+
+## 2025-01-14
+
+* d7a517e re-generate commons
+* 0d8f860 re-generate commons
+
+## 2025-01-13
+
+* 897f50d re-generate workflows
+* 40105a5 copyright updates
+* 7617b35 copyright updates
+
+## 2025-01-10
+
+* 6f57b21 website: fix blog 18.1.8-2 trailing slash
+* 4918435 website: updates
+* 26347db website: updates
+* 611896e website: updates
+
+## 2025-01-09
+
+* d25cc33 build-assets/package.json: bump deps
+* e5c5560 website: updates
+
+## 2025-01-02
+
+* d2bb136 top package.json: fix homepage url
+* 7dedbeb website/_xpack fix tools path
+* 9039e72 website: updates
+* 26aad96 build-assets/package.json: bump deps
+
+## 2025-01-01
+
+* 2d90830 application.sh: disable bootstrap only
+* 9d13cb8 website: updates
+* 802b1da llvm.sh: ignore tests for 19
+* a09e51c llvm.sh: ignore tests for 19
+* 8e381fd prepare 9.1.6
+* 385b6d5 website: re-generate commons
+* b84aab4 re-generate commons
+* b4b6b5d build-assets/package.json bump updates
+
+## 2024-12-31
+
+* 088a96e website: updates
+
+## 2024-12-30
+
+* ac5e877 package.json: bump deps
+* 7534419 website: updates
+
+## 2024-12-24
+
+* 8bc969e website: updates
+* 3c94a76 website: updates
+
+## 2024-12-22
+
+* af4f2f4 website: add predefined-macros
+* b2a8d5d website: updates
+* acd14ad website: add _xpack.github.io
+
+## 2024-12-20
+
+* 1d8c916 website: updates
+* 998a241 website: updates
+* 6385191 website: updates
+
+## 2024-12-11
+
+* c7992e0 website: updates
+* 6bcb2c6 website/blog updates
+* b68fc42 website/blog/_templates/blog-post-release*
+
+## 2024-12-04
+
+* 66b0b60 website: updates
+* 6b96358 build-assets/package.json: bump deps
+
+## 2024-10-15
+
+* 3904cdf website: updates
+* 53c8522 website: updates
+
+## 2024-10-14
+
+* 25d94e0 website: updates
+
+## 2024-10-13
+
+* a02904d website: updates
+* 2a3726f website: updates
+* a9c6032 website: updates
+
+## 2024-10-11
+
+* 806f869 website: updates
+* 8aa9a9b website/blog/_templates/blog-post-release*
+* 83691ae website/blog/_templates/blog-post-release*
+
+## 2024-10-10
+
+* 9f56081 website: updates
+* bcc4934 website: updates
+
+## 2024-10-09
+
+* 289fe35 website move blog post templates
+* 6022353 website: updates
+* c60236b website: updates
+
+## 2024-10-07
+
+* 84bb1ba website: updates
+* fd4686c body-blog* update
+* cafabf3 website: updates
+
+## 2024-10-06
+
+* 9039904 website: updates
+* 6e8bf22 website: updates
+* 636a0bd re-generate workflows
+
+## 2024-10-04
+
+* 0d158a6 website: updates
+* d137deb templates/body-blog update
+
+## 2024-09-18
+
+* 437d63a website: updates
+* ce78696 website update
+* cba6155 build-assets/package.json: bump deps
+* 0d3974e build-assets/package.json: update customFields
+* 7bea165 build-assets/templates updates
+
+## 2024-09-12
+
+* 2f30ea8 update scripts copyright notices
+
+## 2024-09-01
+
+* b416a7d showTestsResults
+* 9d7d49b website: add tests results
+* b74c1b4 re-generate workflows
+
 ## 2024-08-31
 
-* v18.1.8-2 published on npmjs.com
+## 2024-08-31
+
+* 9fe1680 18.1.8-2.1
+* 0f44450 CHANGELOG: publish npm v18.1.8-2.1
 * e94424e package.json: update urls for 18.1.8-2.1 release
 * e0762fd blog post release 18.1.8-2 published
 * b2546bf CHANGELOG update
@@ -968,7 +1198,7 @@ Entries in this file are in reverse chronological order.
 * cb0b6a7 llvm.sh: cosmetics
 * d0a8171 llvm.sh: do not use lld at all for macOS
 * eef775a llvm.sh: do not use lld on new macOS
-2023-01-18 * 858c604 llvm.sh: multilib tests only on x64
+* 858c604 llvm.sh: multilib tests only on x64
 
 ## 2023-01-18
 
