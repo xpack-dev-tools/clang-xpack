@@ -459,9 +459,9 @@ function llvm_build()
             # binutils no longer used since 2.44.
             if [ "${XBB_BINUTILS_WITH_GOLD:-""}" == "y" ]
             then
-              config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
-            else
               config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-with-gold-${XBB_BINUTILS_VERSION}/include")
+            else
+              config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
             fi
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
 
