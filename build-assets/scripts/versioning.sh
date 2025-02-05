@@ -357,6 +357,7 @@ function application_build_versioned_components()
     # https://ftp.gnu.org/gnu/binutils/
     # Must use binutils-with-gold-2.44!
     XBB_BINUTILS_VERSION="2.44"
+    XBB_BINUTILS_WITH_GOLD="y"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
     XBB_MINGW_VERSION="12.0.0"
