@@ -1739,6 +1739,17 @@ function test_linux()
       export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+    elif [ "${XBB_HOST_ARCH}" == "arm" ]
+    then
+      # arm 32-bit
+      # Basically LTO is unreliable; use LLD.
+      export XBB_SKIP_TESTS_ALL_LTO_LD="y"
+
+      if [[ ${distro} == Arch ]]
+      then
+        # Arch: undefined reference to `fmod' (static)
+        export XBB_SKIP_TESTS_ALL_STATIC="y"
+      fi
     fi
   fi
 
