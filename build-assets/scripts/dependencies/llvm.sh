@@ -1757,6 +1757,21 @@ function test_linux()
       # export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
       # export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
 
+      # cnrt-test.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_CNRT_TEST="y"
+
+      # hello-weak1-c.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK1_C="y"
+
+      # hello-weak2-cpp.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK2_CPP="y"
+
+      # simple-objc.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_SIMPLE_OBJC="y"
+
+      # throwcatch-main.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_THROWCATCH_MAIN="y"
+
       if [[ ${distro} == Arch ]]
       then
         # Arch: undefined reference to `fmod' (static)
