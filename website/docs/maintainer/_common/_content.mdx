@@ -16,6 +16,7 @@ import {developmentDurations} from '../../_shared/_development-durations.mdx';
 
 import PlatformNativeBuild from '../_common/_platform-native-build.mdx';
 import PlatformDockerBuild from '../_common/_platform-docker-build.mdx';
+import GenerateTopCommons from '../_common/_generate-top-commons.mdx';
 
 import MoreRepos from '../_project/_more-repos.mdx';
 import CheckUpstreamRelease from '../_project/_check-upstream-release.mdx';
@@ -157,18 +158,7 @@ is <code>19.1.7-1</code>.
 
 - update the release specific properties (if any)
 
-### Generate the top commons
-
-Run the top **generate-top-commons** npm script to update the
-`build-assets/package.json` and the GitHub workflow files.
-
-```sh
-npm run generate-top-commons -C ~/Work/xpack-dev-tools/clang-xpack.git
-```
-
-### Commit the top changes
-
-Commit with the message _**re-generate top commons**_.
+<GenerateTopCommons />
 
 ### Update the website commons
 
@@ -279,6 +269,13 @@ sudo systemctl restart docker
 Check if both the **current project** and the **helper** are
 on the `xpack-development` branch and the latest
 commits are pushed to GitHub.
+
+:::caution
+
+This is particularly crucial for extensive projects; otherwise,
+the build may proceed with the previous version.
+
+:::
 
 ### Build the x64 macOS binaries
 
@@ -528,6 +525,8 @@ Publish a new release of the helper on **npmjs**.
 
 In `templates/_xpack-dev-tools/build-assets/package-merge-liquid.json`, update the reference
 to `"@xpack-dev-tools/xbb-helper":`.
+
+<GenerateTopCommons />
 
 ### Check for disk space
 
