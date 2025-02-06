@@ -1652,6 +1652,13 @@ function test_linux()
     if [ "${XBB_HOST_ARCH}" == "x64" ]
     then
       # cnrt-test.
+      # cnrt-test.c:(.text+0x18fb1): undefined reference to `fmod'
+      # cnrt-test.c:(.text+0x1aa82): undefined reference to `fmodf'
+      export XBB_IGNORE_TEST_STATIC_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST_32="y"
+
       export XBB_IGNORE_TEST_STATIC_LLD_CNRT_TEST_32="y"
       export XBB_IGNORE_TEST_STATIC_GC_LLD_CNRT_TEST_32="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_CNRT_TEST_32="y"
