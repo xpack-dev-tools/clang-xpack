@@ -1745,13 +1745,17 @@ function test_linux()
       # Basically LTO is unreliable; use LLD.
       export XBB_SKIP_TESTS_ALL_LTO_LD="y"
 
-      # sleepy-threads-cv.
-      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      # -static crashes the threads.
+      # 201486 Segmentation fault      (core dumped)
+      export XBB_SKIP_TEST_ALL_STATIC_SLEEPY_THREADS_CV="y"
+
+      # # sleepy-threads-cv.
+      # export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
 
       if [[ ${distro} == Arch ]]
       then
