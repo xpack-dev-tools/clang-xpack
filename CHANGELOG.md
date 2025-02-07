@@ -4,7 +4,10 @@ Entries in this file are in reverse chronological order.
 
 ## 2025-02-07
 
-* v19.1.7-1 released
+* v19.1.7-1.1 published on npmjs.com
+* 95f98f6 package.json: update urls for 19.1.7-1.1 release
+* 5f915e0 website: blog post release 19.1.7-1 published
+* 0adcbbc CHANGELOG update
 * f03fd1b website: update actions durations
 * 379a4cf website: blog-post* update
 * 2c64300 website: update actions durations
