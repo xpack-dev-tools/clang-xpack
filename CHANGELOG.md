@@ -2,9 +2,37 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2025-02-07
+
+* v19.1.7-1 released
+* f03fd1b website: update actions durations
+* 379a4cf website: blog-post* update
+* 2c64300 website: update actions durations
+
+## 2025-02-06
+
+* eb54748 llvm.sh: skip some static cnrt tests
+* 49a26e7 llvm.sh: skip some tests on arm 32-bit
+* c9dc80a website: update development durations
+* 5ec8a86 website: update folder hierarchies
+* adb4eba website: re-generate commons
+* c39f9a0 re-generate top commons to bump deps
+* a9c9e31 llvm.sh: skip some tests on arm 32-bit
+* f27d2e9 llvm.sh: ignore some tests on arm 32-bit
+* 488c8d1 llvm.sh: skip lto tests on arm 32-bit
+* 132e94b package.json: update executables links
+* 8048468 website: update folder hierarchies
+* 90c5a03 website: update development durations
+* 64b1f6e llvm.sh: fix LLVM_BINUTILS_INCDIR
+
 ## 2025-02-05
 
-* v19.1.7-1 prepared
+* ceb9300 set XBB_BINUTILS_WITH_GOLD
+* 969e71f re-enable gold for 2.44
+* dc74263 scripts: comment out binutils and LLVM_TOOL_GOLD_BUILD=OFF
+* 78d1a3e versioning.sh: disable ld.gold
+* ecdf57f build-assets/package-lock.json update
+* 8a9aa2a prepare v19.1.6-1
 
 ## 2025-02-04
 
