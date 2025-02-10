@@ -365,7 +365,14 @@ function application_build_versioned_components()
     # https://zlib.net/fossils/
     XBB_ZLIB_VERSION="1.3.1"
     # https://github.com/libffi/libffi/releases
-    XBB_LIBFFI_VERSION="3.4.6"
+    if [[ "${XBB_RELEASE_VERSION}" =~ 19[.].*[.].*-2 ]]
+    then
+      # On arm64 macOS, with clang 19, 3.4.6 fails with:
+      # error: invalid CFI advance_loc expression
+      XBB_LIBFFI_VERSION="3.4.7" # "3.4.6"
+    else
+      XBB_LIBFFI_VERSION="3.4.6"
+    fi
     # https://ftp.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.5"
     # https://ftp.gnu.org/pub/gnu/libiconv/
