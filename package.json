@@ -53,10 +53,6 @@
           "fileName": "xpack-clang-19.1.7-1-linux-arm64.tar.gz",
           "sha256": "c4185f7c604c48e3f74cff73a79df212a546a3ef21ab0345b165e3126fe936e2"
         },
-        "linux-arm": {
-          "fileName": "xpack-clang-19.1.7-1-linux-arm.tar.gz",
-          "sha256": "02a2fcf084d29f50e95f588b3ba67f44f894f093c305f5eed373dfc43c91b752"
-        },
         "linux-x64": {
           "fileName": "xpack-clang-19.1.7-1-linux-x64.tar.gz",
           "sha256": "7de8da00b960943ecc83f70a37cf3a2241c49eab0da388bf3702f5f591e7595a"
