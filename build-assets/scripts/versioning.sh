@@ -70,7 +70,7 @@ function clang_build_mingw_bootstrap()
   (
     # Build libraries refered by LLVM.
     zlib_build "${XBB_ZLIB_VERSION}"
-    ncurses_build "${XBB_NCURSES_VERSION}"
+    ncurses_build "${XBB_NCURSES_VERSION}" --hack-links
     libiconv_build "${XBB_LIBICONV_VERSION}"
     xz_build "${XBB_XZ_VERSION}"
 
@@ -193,7 +193,7 @@ function clang_build_common()
 
       # Build libraries refered by LLVM.
       zlib_build "${XBB_ZLIB_VERSION}"
-      ncurses_build "${XBB_NCURSES_VERSION}"
+      ncurses_build "${XBB_NCURSES_VERSION}" --hack-links
       libiconv_build "${XBB_LIBICONV_VERSION}"
       xz_build "${XBB_XZ_VERSION}"
 
@@ -274,7 +274,7 @@ function clang_build_common()
     zlib_build "${XBB_ZLIB_VERSION}"
     libffi_build "${XBB_LIBFFI_VERSION}"
 
-    ncurses_build "${XBB_NCURSES_VERSION}"
+    ncurses_build "${XBB_NCURSES_VERSION}" --hack-links
 
     xz_build "${XBB_XZ_VERSION}"
     libxml2_build "${XBB_LIBXML2_VERSION}"
