@@ -155,9 +155,10 @@
     "liquidjs": "^10.19.1"
   },
   "topConfig": {
-    "longName": "LLVM clang",
-    "shortName": "clang",
-    "showTestsResults": "true"
+    "descriptiveName": "LLVM clang",
+    "permalinkName": "clang",
+    "showTestsResults": "true",
+    "useSelfHostedRunners": "true"
   },
   "engines": {
     "node": " >=18.0.0"
