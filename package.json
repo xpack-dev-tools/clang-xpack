@@ -158,6 +158,7 @@
     "descriptiveName": "LLVM clang",
     "permalinkName": "clang",
     "showTestsResults": "true",
+    "skipCiTests": "true",
     "useSelfHostedRunners": "true"
   },
   "engines": {
