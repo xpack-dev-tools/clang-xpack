@@ -80,7 +80,8 @@
     "binutilsVersionMajor": "2",
     "binutilsVersionMinor": "44",
     "mingwVersion": "12.0.0",
-    "llvmMingwTag": "20250114"
+    "llvmMingwTag": "20250114",
+    "shareOnTwitter": "true"
   },
   "engines": {
     "node": ">=18.0"
