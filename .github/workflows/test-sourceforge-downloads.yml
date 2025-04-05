@@ -49,20 +49,15 @@
 
             # 2025
             platforms="win32-x64,linux-x64,linux-arm64,darwin-x64,darwin-arm64"
-            download_sourceforge "${name}" "19.1.7-1" ${threshold} "${platforms}"
 
             # 2024
             platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
+
+            download_sourceforge "${name}" "19.1.7-1" ${threshold} "${platforms}"
             download_sourceforge "${name}" "18.1.8-2" ${threshold} "${platforms}"
             download_sourceforge "${name}" "17.0.6-3" ${threshold} "${platforms}"
-
-            # 2023
-            platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
             download_sourceforge "${name}" "16.0.6-1" ${threshold} "${platforms}"
             download_sourceforge "${name}" "15.0.7-4" ${threshold} "${platforms}"
-
-            # 2022
-            platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
             download_sourceforge "${name}" "14.0.6-2" ${threshold} "${platforms}"
             download_sourceforge "${name}" "13.0.1-1" ${threshold} "${platforms}"
             download_sourceforge "${name}" "12.0.1-2" ${threshold} "${platforms}"
