@@ -14,7 +14,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "generate-typedoc": "docusaurus generate-typedoc",
+    "generate-typedoc": "typedoc",
     "typecheck": "tsc",
     "npm-outdated": "npm outdated",
     "npm-install": "npm install",
@@ -32,26 +32,27 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@docusaurus/core": "3.6.3",
-    "@docusaurus/plugin-client-redirects": "3.6.3",
-    "@docusaurus/plugin-ideal-image": "3.6.3",
-    "@docusaurus/preset-classic": "3.6.3",
-    "@docusaurus/theme-search-algolia": "3.6.3",
-    "@mdx-js/react": "^3.1.0",
+    "@docusaurus/core": "3.8.1",
+    "@docusaurus/plugin-client-redirects": "3.8.1",
+    "@docusaurus/plugin-ideal-image": "3.8.1",
+    "@docusaurus/preset-classic": "3.8.1",
+    "@docusaurus/theme-search-algolia": "3.8.1",
+    "@mdx-js/react": "^3.0.0",
     "clean-css": "~5.3.3",
-    "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "clsx": "^2.0.0",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@docusaurus/faster": "3.8.1"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.6.3",
-    "@docusaurus/tsconfig": "3.6.3",
-    "@docusaurus/types": "3.6.3",
+    "@docusaurus/module-type-aliases": "3.8.1",
+    "@docusaurus/tsconfig": "3.8.1",
+    "@docusaurus/types": "3.8.1",
     "del-cli": "^6.0.0",
     "json": "^11.0.0",
     "liquidjs": "^10.20.1",
-    "typescript": "~5.6.3"
+    "typescript": "~5.8.3"
   },
   "$devDependenciesUrls": [
     "https://www.npmjs.com/package/del-cli",
@@ -75,15 +76,20 @@
     "programName": "clang",
     "branding": "xPack x86_64 clang version ",
     "hasCustomUserSidebar": "true",
-    "$link": "https://github.com/llvm/llvm-project/tags/",
-    "clangReleaseDate": "15 Jan 2025",
+    "$links": [
+      "https://github.com/llvm/llvm-project/tags/",
+      "https://github.com/mstorsjo/llvm-mingw/releases",
+      "https://ftpmirror.gnu.org/gnu/binutils/",
+      "https://www.mingw-w64.org/source/"
+    ],
+    "clangReleaseDate": "9 Jul 2025",
     "binutilsVersionMajor": "2",
-    "binutilsVersionMinor": "44",
-    "mingwVersion": "12.0.0",
-    "llvmMingwTag": "20250114",
+    "binutilsVersionMinor": "45",
+    "mingwVersion": "13.0.0",
+    "llvmMingwTag": "20250709",
     "shareOnTwitter": "true"
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.0"
   }
 }
