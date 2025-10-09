@@ -354,7 +354,7 @@ function application_build_versioned_components()
     # XBB_DO_REQUIRE_RPATH="n"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     # Must use binutils-with-gold-2.44!
     XBB_BINUTILS_VERSION="2.44"
     XBB_BINUTILS_WITH_GOLD="y"
@@ -373,7 +373,7 @@ function application_build_versioned_components()
     else
       XBB_LIBFFI_VERSION="3.4.6"
     fi
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.5"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.18"
@@ -400,7 +400,7 @@ function application_build_versioned_components()
     # XBB_DO_REQUIRE_RPATH="n"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.42" # "2.41"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -410,7 +410,7 @@ function application_build_versioned_components()
     XBB_ZLIB_VERSION="1.3.1" # "1.2.13"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.4.6" # "3.4.4"
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.5" # "6.4"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
@@ -433,7 +433,7 @@ function application_build_versioned_components()
     # XBB_DO_REQUIRE_RPATH="n"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.41" # "2.40" # "2.39"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -443,7 +443,7 @@ function application_build_versioned_components()
     XBB_ZLIB_VERSION="1.2.13"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.4.4"
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.4"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
@@ -465,7 +465,7 @@ function application_build_versioned_components()
     # XBB_DO_REQUIRE_RPATH="n"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.40" # "2.39"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -475,7 +475,7 @@ function application_build_versioned_components()
     XBB_ZLIB_VERSION="1.2.13"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.4.4"
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.4"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
@@ -497,7 +497,7 @@ function application_build_versioned_components()
     # XBB_DO_REQUIRE_RPATH="n"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.39" # "2.38"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -507,7 +507,7 @@ function application_build_versioned_components()
     XBB_ZLIB_VERSION="1.2.13" # "1.2.12"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.4.4" # "3.4.2"
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.4" # "6.3"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17"
@@ -527,7 +527,7 @@ function application_build_versioned_components()
     XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
 
     # Also used in -DLLVM_BINUTILS_INCDIR
-    # https://ftp.gnu.org/gnu/binutils/
+    # https://ftpmirror.gnu.org/gnu/binutils/
     XBB_BINUTILS_VERSION="2.39" # "2.38"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -537,7 +537,7 @@ function application_build_versioned_components()
     XBB_ZLIB_VERSION="1.2.12" # "1.2.11"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.4.2" # "3.3"
-    # https://ftp.gnu.org/gnu/ncurses/
+    # https://ftpmirror.gnu.org/gnu/ncurses/
     XBB_NCURSES_VERSION="6.3"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.17" # "1.16"
