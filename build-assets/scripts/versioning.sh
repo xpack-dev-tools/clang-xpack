@@ -277,6 +277,8 @@ function clang_build_common()
     ncurses_build "${XBB_NCURSES_VERSION}" --hack-links
 
     xz_build "${XBB_XZ_VERSION}"
+
+    icu4c_build "${XBB_ICU4C_VERSION}"
     libxml2_build "${XBB_LIBXML2_VERSION}"
 
     # Requires ncurses.
@@ -328,7 +330,7 @@ function application_build_versioned_components()
   fi
 
   # https://github.com/llvm/llvm-project/releases/
-  # There are bug-fix releases every two weeks until X.0.5 or X.0.6 (if necessary).
+  # There are bug-fix releases every two weeks until X.0.[5678] (if necessary).
   XBB_LLVM_VERSION="$(echo "${XBB_RELEASE_VERSION}" | sed -e 's|-.*||')"
   XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_LLVM_VERSION}.git.patch"
 
@@ -341,7 +343,50 @@ function application_build_versioned_components()
 
   # ---------------------------------------------------------------------------
 
-  if [[ "${XBB_RELEASE_VERSION}" =~ 19[.].*[.].*-.* ]]
+  if [[ "${XBB_RELEASE_VERSION}" =~ 20[.].*[.].*-.* ]]
+  then
+
+    # Used only during initial testing.
+    # XBB_LLVM_VERSION="18.1.0rc2"
+    # XBB_LLVM_SRC_FOLDER_NAME="llvm-project-18.1.0rc2.src"
+    # XBB_LLVM_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.0-rc2/llvm-project-18.1.0rc2.src.tar.xz"
+
+    XBB_LLVM_PATCH_FILE_NAME="llvm-${XBB_RELEASE_VERSION}.git.patch"
+
+    # XBB_DO_REQUIRE_RPATH="n"
+
+    # Also used in -DLLVM_BINUTILS_INCDIR
+    # https://ftpmirror.gnu.org/gnu/binutils/
+    # Must use binutils-with-gold-2.44!
+    XBB_BINUTILS_VERSION="2.45" # "2.44"
+    XBB_BINUTILS_WITH_GOLD="y"
+
+    # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
+    XBB_MINGW_VERSION="13.0.0" # "12.0.0"
+
+    # https://zlib.net/fossils/
+    XBB_ZLIB_VERSION="1.3.1"
+    # https://github.com/libffi/libffi/releases
+    XBB_LIBFFI_VERSION="3.5.2" # "3.4.6"
+
+    # https://ftpmirror.gnu.org/gnu/ncurses/
+    XBB_NCURSES_VERSION="6.5"
+    # https://ftp.gnu.org/pub/gnu/libiconv/
+    XBB_LIBICONV_VERSION="1.18"
+    # https://sourceforge.net/projects/lzmautils/files/
+    # Avoid 5.6.[01]!
+    XBB_XZ_VERSION="5.8.1" # "5.6.4"
+    # https://github.com/unicode-org/icu/releases
+    XBB_ICU4C_VERSION="77.1"
+    # https://download.gnome.org/sources/libxml2/
+    XBB_LIBXML2_VERSION="2.15.0" # "2.13.5"
+    # https://www.thrysoee.dk/editline/
+    XBB_LIBEDIT_VERSION="20250104-3.1"
+
+    clang_build_common
+
+    # -------------------------------------------------------------------------
+  elif [[ "${XBB_RELEASE_VERSION}" =~ 19[.].*[.].*-.* ]]
   then
 
     # Used only during initial testing.

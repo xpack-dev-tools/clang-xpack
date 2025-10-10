@@ -2,8 +2,74 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2025-10-09
+
+* v19.1.7-1 prepared
+* e4f5fbd re-generate website commons
+* 4bc04b2 re-generate top commons
+* 2deb758 test-sourceforge*: on every Saturday
+
+## 2025-04-06
+
+* 457f737 test-sourceforge-downloads.yml update
+
+## 2025-04-05
+
+* e112afb test-sourceforge-downloads.yml update
+* 0a5255a test-sourceforge-downloads.yml update
+* 55f71f4 add test-sourceforge-downloads.yml
+
+## 2025-03-23
+
+* 9003f2c update /licenses/MIT
+* f5dd8e9 website: re-generate commons
+* 3d2b9ec re-generate commons
+* 5776b4b website package.json shareOnTwitter update
+* bdf2f9f website package.json author update
+* 607bcce website generate-website-commons update
+
+## 2025-02-24
+
+* 5b35eb9 website: re-generate descriptive & permalink names
+* c6392e2 re-generate descriptive & permalink names
+
+## 2025-02-23
+
+* 5cb8267 website: re-generate commons
+* 00b8a4c re-generate commons
+
+## 2025-02-18
+
+* 763765a package.json: bump minimumXpmRequired 0.20.5
+* de92bbe package.json: bump xpm 0.20.5
+
+## 2025-02-16
+
+* 386f743 build-assets/package-lock.json update
+
+## 2025-02-14
+
+* a451b9d llvm.sh: fix SHLIB_EXT
+* 6f99791 llvm.sh: explicit paths to ncurses
+* 614e708 re-generate commons
+* 4ba64b5 re-generate commons
+
+## 2025-02-13
+
+* c2b66a9 versioning.sh: ncurses --hack-link
+* 919e0cc re-generate commons
+
+## 2025-02-10
+
+* 8605ddd 19.1.7-2 ffi 3.4.7
+
 ## 2025-02-07
 
+* 401045a website: re-generate commons
+* 3ac1ba9 website: fix post markdown
+* 66107c8 website: add tests results
+* 1b8d7bd 19.1.7-1.1
+* 431e86d CHANGELOG: publish npm v19.1.7-1.1
 * v19.1.7-1.1 published on npmjs.com
 * 95f98f6 package.json: update urls for 19.1.7-1.1 release
 * 5f915e0 website: blog post release 19.1.7-1 published
