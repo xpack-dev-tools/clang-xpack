@@ -357,9 +357,9 @@ function application_build_versioned_components()
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftpmirror.gnu.org/gnu/binutils/
-    # Must use binutils-with-gold-2.44!
     XBB_BINUTILS_VERSION="2.45" # "2.44"
-    XBB_BINUTILS_WITH_GOLD="y"
+    # There is no binutils-with-gold-2.45!
+    XBB_BINUTILS_WITH_GOLD="n"
 
     # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
     XBB_MINGW_VERSION="13.0.0" # "12.0.0"
