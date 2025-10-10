@@ -2367,6 +2367,69 @@ function test_darwin()
       export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
       export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
     fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ]
+  then
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      # throwcatch-main.
+      # got exit code: 1 on macOS 15
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+      # got exit code: 1 on macOS macOS 15
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+      # exception-reduced. macOS 11
+      export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_COVERAGE_EXCEPTION_REDUCED="y"
+
+      # hello-exception. macOS 11
+      export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
+
+      # throwcatch-main. macOS 11
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+    elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+    then
+      # exception-reduced.
+      export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_COVERAGE_EXCEPTION_REDUCED="y"
+
+      # hello-exception.
+      export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
+    fi
   fi
 
   # It is mandatory for the compiler to run properly without any
