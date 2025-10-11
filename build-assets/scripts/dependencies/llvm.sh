@@ -329,7 +329,7 @@ function llvm_build()
             # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
             config_options+=("-DCMAKE_LINKER=ld") # HB
 
-            # To help find the locally compiled `ld.gold`.
+            # To help find the locally compiled `ld.gold` (deprecated since binutis 2.44).
             # https://cmake.org/cmake/help/v3.4/variable/CMAKE_PROGRAM_PATH.html
             # https://cmake.org/cmake/help/v3.4/command/find_program.html
             config_options+=("-DCMAKE_PROGRAM_PATH=${XBB_EXECUTABLES_INSTALL_FOLDER_PATH}/bin")

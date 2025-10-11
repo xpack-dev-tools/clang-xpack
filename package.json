@@ -91,7 +91,6 @@
       "git-clang-format": "./.content/bin/git-clang-format",
       "git-clang-format.bat": "./.content/bin/git-clang-format.bat",
       "hmaptool": "./.content/bin/hmaptool",
-      "ld.gold": "./.content/bin/ld.gold",
       "ld.lld": "./.content/bin/ld.lld",
       "ld64.lld": "./.content/bin/ld64.lld",
       "llc": "./.content/bin/llc",

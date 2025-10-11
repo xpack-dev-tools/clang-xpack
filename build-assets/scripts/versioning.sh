@@ -291,7 +291,7 @@ function clang_build_common()
     xbb_set_libraries_install_path "${XBB_DEPENDENCIES_INSTALL_FOLDER_PATH}"
 
     # macOS has its own linker, cannot use the binutils ones.
-    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "linux" ]
+    if [ "${XBB_REQUESTED_HOST_PLATFORM}" == "linux" && "${XBB_BINUTILS_WITH_GOLD}" == "y" ]
     then
       # Build ld.gold to support LTO.
       # ld.gold was deprecated since binutils 2.44.
