@@ -460,12 +460,13 @@ function llvm_build()
 
             config_options+=("-DLLDB_ENABLE_LZMA=ON")
 
-            # binutils no longer used since 2.44.
+            # ld.gold no longer used since 2.44.
             if [ "${XBB_BINUTILS_WITH_GOLD:-""}" == "y" ]
             then
               config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-with-gold-${XBB_BINUTILS_VERSION}/include")
             else
-              config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
+              # config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
+              config_options+=("-DGOLD_EXECUTABLE=\"\"")
             fi
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
 
