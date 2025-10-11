@@ -924,6 +924,8 @@ function test_mingw_llvm()
       export XBB_IGNORE_TEST_ALL_BUFFEROVERFLOW="y"
     fi
 
+    # 19 & 20 are fine.
+    
     (
       # The DLLs are usually in bin, but for consistency within GCC, they are
       # also copied to lib; it is recommended to ask the compiler for the
