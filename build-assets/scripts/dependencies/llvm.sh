@@ -516,7 +516,11 @@ function llvm_build()
 
             # Without gold it fails with:
             # error loading plugin: /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build-assets/build/linux-x64/application/bin/../lib/LLVMgold.so: cannot open shared object file: No such file or directory
-            # config_options+=("-DLLVM_TOOL_GOLD_BUILD=OFF")
+
+            # /home/ilg/Work/xpack-dev-tools/clang-xpack.git/build-assets/build/linux-x64/sources/llvm-project-llvmorg-20.1.8/llvm/tools/gold/gold-plugin.cpp:40:10: fatal error: plugin-api.h: No such file or directory
+            # 40 | #include <plugin-api.h>
+
+            config_options+=("-DLLVM_TOOL_GOLD_BUILD=OFF")
 
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size;llvm-cxxfilt")
 
