@@ -159,7 +159,7 @@
     "permalinkName": "clang",
     "showTestsResults": "true",
     "skipCiTests": "true",
-    "useSelfHostedRunners": "false"
+    "useSelfHostedRunners": "true"
   },
   "engines": {
     "node": " >=20.0"
