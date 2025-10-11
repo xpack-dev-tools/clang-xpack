@@ -466,7 +466,6 @@ function llvm_build()
               config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-with-gold-${XBB_BINUTILS_VERSION}/include")
             else
               # config_options+=("-DLLVM_BINUTILS_INCDIR=${XBB_SOURCES_FOLDER_PATH}/binutils-${XBB_BINUTILS_VERSION}/include")
-              config_options+=("-DGOLD_EXECUTABLE=\"\"")
             fi
             config_options+=("-DLLVM_BUILD_LLVM_DYLIB=ON") # Arch
 
@@ -1658,6 +1657,157 @@ function test_linux()
     export XBB_SKIP_TEST_ALL_STATIC_SLEEPY_THREADS_CV="y"
   elif [ ${LLVM_VERSION_MAJOR} -eq 19 ]
   then
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      # cnrt-test.
+      # cnrt-test.c:(.text+0x18fb1): undefined reference to `fmod'
+      # cnrt-test.c:(.text+0x1aa82): undefined reference to `fmodf'
+      export XBB_IGNORE_TEST_STATIC_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_CNRT_TEST_32="y"
+
+      export XBB_IGNORE_TEST_STATIC_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_CNRT_TEST_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_CNRT_TEST_32="y"
+
+      # exception-locale.
+      export XBB_IGNORE_TEST_STATIC_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_EXCEPTION_LOCALE_32="y"
+
+      # hello-weak2-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO_WEAK2_CPP_32="y"
+
+      # hello2-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_HELLO2_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_HELLO2_CPP_32="y"
+
+      # overload-new-cpp.
+      export XBB_IGNORE_TEST_STATIC_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_OVERLOAD_NEW_CPP_32="y"
+
+      # simple-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_EXCEPTION_32="y"
+
+      # simple-hello-cout-one.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_ONE_32="y"
+
+      # simple-hello-cout-two.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_HELLO_COUT_TWO_32="y"
+
+      # simple-int-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_INT_EXCEPTION_32="y"
+
+      # simple-str-exception.
+      export XBB_IGNORE_TEST_STATIC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SIMPLE_STR_EXCEPTION_32="y"
+
+      # sleepy-threads-cv.
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV_32="y"
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV_64="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV_64="y"
+    elif [ "${XBB_HOST_ARCH}" == "arm64" ]
+    then
+      # sleepy-threads-cv.
+      export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+    elif [ "${XBB_HOST_ARCH}" == "arm" ]
+    then
+      # arm 32-bit
+      # Basically LTO is unreliable; use LLD.
+      export XBB_SKIP_TESTS_ALL_LTO_LD="y"
+
+      # -static crashes the threads.
+      # 201486 Segmentation fault      (core dumped)
+      export XBB_SKIP_TEST_ALL_STATIC_SLEEPY_THREADS_CV="y"
+
+      # # sleepy-threads-cv.
+      # export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
+      # export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
+
+      # cnrt-test.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_CNRT_TEST="y"
+
+      # hello-weak1-c.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK1_C="y"
+
+      # hello-weak2-cpp.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK2_CPP="y"
+
+      # simple-objc.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_SIMPLE_OBJC="y"
+
+      # throwcatch-main.
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_THROWCATCH_MAIN="y"
+
+      if [[ ${distro} == Arch ]]
+      then
+        # Arch: undefined reference to `fmod' (static)
+        export XBB_SKIP_TESTS_ALL_STATIC="y"
+      fi
+
+      if [[ ${distro} == CentOS ]] || \
+         [[ ${distro} == RedHat* ]] || \
+         [[ ${distro} == Fedora ]] || \
+         [[ ${distro} == openSUSE ]] || \
+         [[ ${distro} == Arch ]]
+      then
+        # cannot find -latomic (with -static)
+        export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
+      fi
+    fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ]
+  then
+    # There is no ld.gold anymore.
+    export XBB_SKIP_TESTS_ALL_LTO_LD="y"
+
     if [ "${XBB_HOST_ARCH}" == "x64" ]
     then
       # cnrt-test.
