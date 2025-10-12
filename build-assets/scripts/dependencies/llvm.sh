@@ -1905,54 +1905,16 @@ function test_linux()
       export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
       export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-    elif [ "${XBB_HOST_ARCH}" == "arm" ]
+    fi
+
+    if [[ ${distro} == CentOS ]] || \
+        [[ ${distro} == RedHat* ]] || \
+        [[ ${distro} == Fedora ]] || \
+        [[ ${distro} == openSUSE ]] || \
+        [[ ${distro} == Arch ]]
     then
-      # arm 32-bit
-      # Basically LTO is unreliable; use LLD.
-      export XBB_SKIP_TESTS_ALL_LTO_LD="y"
-
-      # -static crashes the threads.
-      # 201486 Segmentation fault      (core dumped)
-      export XBB_SKIP_TEST_ALL_STATIC_SLEEPY_THREADS_CV="y"
-
-      # # sleepy-threads-cv.
-      # export XBB_IGNORE_TEST_STATIC_SLEEPY_THREADS_CV="y"
-      # export XBB_IGNORE_TEST_STATIC_GC_SLEEPY_THREADS_CV="y"
-      # export XBB_IGNORE_TEST_STATIC_LLD_SLEEPY_THREADS_CV="y"
-      # export XBB_IGNORE_TEST_STATIC_GC_LLD_SLEEPY_THREADS_CV="y"
-      # export XBB_IGNORE_TEST_STATIC_LTO_LLD_SLEEPY_THREADS_CV="y"
-      # export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_SLEEPY_THREADS_CV="y"
-
-      # cnrt-test.
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_CNRT_TEST="y"
-
-      # hello-weak1-c.
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK1_C="y"
-
-      # hello-weak2-cpp.
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_HELLO_WEAK2_CPP="y"
-
-      # simple-objc.
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_SIMPLE_OBJC="y"
-
-      # throwcatch-main.
-      export XBB_IGNORE_TEST_STATIC_LIB_GC_THROWCATCH_MAIN="y"
-
-      if [[ ${distro} == Arch ]]
-      then
-        # Arch: undefined reference to `fmod' (static)
-        export XBB_SKIP_TESTS_ALL_STATIC="y"
-      fi
-
-      if [[ ${distro} == CentOS ]] || \
-         [[ ${distro} == RedHat* ]] || \
-         [[ ${distro} == Fedora ]] || \
-         [[ ${distro} == openSUSE ]] || \
-         [[ ${distro} == Arch ]]
-      then
-        # cannot find -latomic (with -static)
-        export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
-      fi
+      # cannot find -latomic (with -static)
+      export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
   fi
 
