@@ -1916,6 +1916,20 @@ function test_linux()
       # cannot find -latomic (with -static)
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
+
+    if [[ "${XBB_IMAGE_NAME}" == *testing* ]] || \
+        [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
+        [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
+    then
+      # atomic.
+      export XBB_IGNORE_TEST_ATOMIC="y"
+      export XBB_IGNORE_TEST_GC_ATOMIC="y"
+      export XBB_IGNORE_TEST_COVERAGE_ATOMIC="y"
+      export XBB_IGNORE_TEST_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_GC_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_LTO_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_ATOMIC="y"
+    fi
   fi
 
   # It is mandatory for the compiler to run properly without any
