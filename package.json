@@ -38,28 +38,28 @@
     "minimumXpmRequired": "0.20.5",
     "binaries": {
       "destination": "./.content",
-      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v19.1.7-1",
+      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v20.1.8-1",
       "skip": 1,
       "platforms": {
         "darwin-arm64": {
-          "fileName": "xpack-clang-19.1.7-1-darwin-arm64.tar.gz",
-          "sha256": "9bd4914505d419fb744695722d23620015d363855de04740eb316f7572359f76"
+          "fileName": "xpack-clang-20.1.8-1-darwin-arm64.tar.gz",
+          "sha256": "e36292621cb5d03c96ca99f5e41638e8fce9140d9865b4308e7b7f5fda545968"
         },
         "darwin-x64": {
-          "fileName": "xpack-clang-19.1.7-1-darwin-x64.tar.gz",
-          "sha256": "39166b98ee0cd4505ef628b70f4ad67a43d20e0c45032b43ab542f4ae1ad3c18"
+          "fileName": "xpack-clang-20.1.8-1-darwin-x64.tar.gz",
+          "sha256": "2715d6513b13fad66243044e66f0a45cdf37b409ad92aa35b9a744b5027273a9"
         },
         "linux-arm64": {
-          "fileName": "xpack-clang-19.1.7-1-linux-arm64.tar.gz",
-          "sha256": "c4185f7c604c48e3f74cff73a79df212a546a3ef21ab0345b165e3126fe936e2"
+          "fileName": "xpack-clang-20.1.8-1-linux-arm64.tar.gz",
+          "sha256": "ae9c70f8e9a785dc7608565fdcc80bed9f87ea2c407c461e32e55efc40b21404"
         },
         "linux-x64": {
-          "fileName": "xpack-clang-19.1.7-1-linux-x64.tar.gz",
-          "sha256": "7de8da00b960943ecc83f70a37cf3a2241c49eab0da388bf3702f5f591e7595a"
+          "fileName": "xpack-clang-20.1.8-1-linux-x64.tar.gz",
+          "sha256": "8d8b40ec9dc7dfd979f9908d61bccb376e48796b6180742a036ad0d7329ac96c"
         },
         "win32-x64": {
-          "fileName": "xpack-clang-19.1.7-1-win32-x64.zip",
-          "sha256": "08578e6b8540a1f6abbc9d7a99cdd201e21959d3d9a25e37ac2d9e314c8644d7"
+          "fileName": "xpack-clang-20.1.8-1-win32-x64.zip",
+          "sha256": "b6cf9bf51c5a349b3af6888b994128bd1dd0dcbe5ade085ec8b4b458ea2a2da5"
         }
       }
     },
@@ -107,7 +107,6 @@
       "llvm-bitcode-strip": "./.content/bin/llvm-bitcode-strip",
       "llvm-cgdata": "./.content/bin/llvm-cgdata",
       "llvm-config": "./.content/bin/llvm-config",
-      "llvm-cgdata": "./.content/bin/llvm-cgdata",
       "llvm-cov": "./.content/bin/llvm-cov",
       "llvm-ctxprof-util": "./.content/bin/llvm-ctxprof-util",
       "llvm-cxxdump": "./.content/bin/llvm-cxxdump",
