@@ -4,6 +4,13 @@ Entries in this file are in reverse chronological order.
 
 ## 2025-10-12
 
+* v20.1.8-1.1 published on npmjs.com
+* 2cfa243 package.json: update URLs for 20.1.8-1.1 release
+* 70e4f55 website cleanup
+* 53ad9da website update xpack.executables
+* efa78e2 package.json update executables links
+* b3ce2cb website: blog post release 20.1.8-1.1 published
+* 0721cbf CHANGELOG update
 * v20.1.8-1 released
 * c16a965 llvm.sh fix lsb_release -is
 * 1752e23 llvm.sh: skip atomic on latest
