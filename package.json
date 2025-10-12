@@ -1,6 +1,6 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "20.1.8-1.1.pre",
+  "version": "20.1.8-1.1",
   "description": "A binary xpm package with the LLVM clang executables",
   "main": "",
   "scripts": {
