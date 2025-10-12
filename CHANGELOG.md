@@ -4,6 +4,9 @@ Entries in this file are in reverse chronological order.
 
 ## 2025-10-12
 
+* eecb341 website: update test results
+* dfd8192 20.1.8-1.1
+* b6a3eea CHANGELOG: publish npm v20.1.8-1.1
 * v20.1.8-1.1 published on npmjs.com
 * 2cfa243 package.json: update URLs for 20.1.8-1.1 release
 * 70e4f55 website cleanup
