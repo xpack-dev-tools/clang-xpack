@@ -1221,6 +1221,8 @@ function test_win32()
     : # export XBB_SKIP_TEST_ALL_BUFFEROVERFLOW="y"
   fi
 
+  env | sort
+
   for bits in 32 64
   do
     (
@@ -1287,6 +1289,7 @@ function test_linux()
 {
   local distro=$(lsb_release -is)
   echo
+  run_verbose lsb_release --is
   run_verbose lsb_release -a
 
   # Defaults:
@@ -1929,8 +1932,22 @@ function test_linux()
       export XBB_IGNORE_TEST_GC_LLD_ATOMIC="y"
       export XBB_IGNORE_TEST_LTO_LLD_ATOMIC="y"
       export XBB_IGNORE_TEST_GC_LTO_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_LTO_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LIB_GC_LTO_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_GC_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_LTO_LLD_ATOMIC="y"
+      export XBB_IGNORE_TEST_STATIC_GC_LTO_LLD_ATOMIC="y"
     fi
   fi
+
+  env | sort
 
   # It is mandatory for the compiler to run properly without any
   # explicit libraries or other options, otherwise tools used
@@ -2562,6 +2579,8 @@ function test_darwin()
       export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
     fi
   fi
+
+  env | sort
 
   # It is mandatory for the compiler to run properly without any
   # explicit libraries or other options, otherwise tools used
