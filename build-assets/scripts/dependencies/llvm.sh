@@ -1289,7 +1289,7 @@ function test_linux()
 {
   local distro=$(lsb_release -is)
   echo
-  run_verbose lsb_release --is
+  run_verbose lsb_release -is
   run_verbose lsb_release -a
 
   # Defaults:
