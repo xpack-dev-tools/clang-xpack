@@ -79,6 +79,7 @@ jobs:
         run: |
           uname -a
           lsb_release -sd
+          df -BG -H /
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           ls -lLA
@@ -159,6 +160,7 @@ jobs:
         run: |
           uname -a
           systeminfo # lsb_release -sd
+          df -BG -H /
           echo "whoami: $(whoami)"
           echo "pwd: $(pwd)"
           ls -lLA
