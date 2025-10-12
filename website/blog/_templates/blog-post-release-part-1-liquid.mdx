@@ -51,7 +51,7 @@ Version **{{releaseVersion}}** is a new release; it follows the upstream release
 
 <PageMetadata title={frontMatter.seo_title} />
 
-The [xPack LLVM clang](https://xpack-dev-tools.github.io/clang-xpack/\)
+The [xPack LLVM clang](https://xpack-dev-tools.github.io/clang-xpack/)
 is a standalone cross-platform binary distribution of
 [LLVM clang](https://clang.llvm.org).
 
@@ -117,6 +117,13 @@ function that computes
 
 Please see the separate
 [tests results page](/docs/tests/{{xpackVersion}}/).
+
+On GNU/Linux, LTO (Link Time Optimization) is supported only with
+`-fuse-ld=lld`.
+
+Starting with 2.44, binutils deprecated `ld.gold`, and it is no longer
+provided.
+
 
 ## Documentation
 
