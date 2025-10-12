@@ -2,6 +2,39 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2025-10-12
+
+* v20.1.8-1 released
+* c16a965 llvm.sh fix lsb_release -is
+* 1752e23 llvm.sh: skip atomic on latest
+* b993553 llvm.sh: skip atomic on latest
+* 94ba1ae re-generate workflows remove arch-arm64-latest
+* a136a61 re-generate workflows df -gH /
+* 4eccc63 workflows fix arch-arm64-latest
+* 3e7cfe2 llvm.sh tests skip static atomic
+* a937d15 website: update actions durations
+
+## 2025-10-11
+
+* 7fcf465 website update
+* 648e4eb website: update folder hierarchies
+* 988ff05 website: update development durations
+* 2210554 llvm-mingw.sh 19 & 20 ok
+* 238bd4a re-generate top commons for self-hosted runners
+* 3307556 llvm.sh no LLVM_BINUTILS_INCDIR
+* 12bfdb7 versioning.sh fix syntax
+* f23ffda llvm.sh skip lto ld tests
+* 7a64619 llvm.sh: disable DLLVM_BINUTILS_INCDIR and GOLD_EXECUTABLE
+* d601c90 package.json bump deps
+* dbc83f5 no ld.gold
+* a725994 no ld.gold
+
+## 2025-10-10
+
+* 81f00fe llvm.sh ignore tests
+* a97799c versioning.sh with_gold="n"
+* 3c8b627 prepare v19.1.7-1
+
 ## 2025-10-09
 
 * v19.1.7-1 prepared
