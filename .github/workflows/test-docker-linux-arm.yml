@@ -518,40 +518,7 @@ jobs:
           args: /github/workspace/build-assets/scripts/test.sh --image opensuse/tumbleweed --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
 
   # - https://hub.docker.com/_/archlinux
-  arch-arm64-latest:
-    name: 'arm64 clang ${{github.event.inputs.version}} test on Arch latest'
-    # runs-on: [self-hosted, linux, arm64, xbbla]
-    runs-on: ubuntu-24.04-arm
-
-    steps:
-      - name: 'Show environment'
-        run: |
-          uname -a
-          lsb_release -sd
-          echo "whoami: $(whoami)"
-          echo "pwd: $(pwd)"
-          ls -lLA
-          env | sort | grep -E '^[^ \t]+='
-
-      # https://github.com/actions/checkout
-      - name: 'Checkout project'
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 3
-
-      - name: 'Checkout helper ${{github.event.inputs.helper-git-ref}}'
-        uses: actions/checkout@v5
-        with:
-          repository: xpack-dev-tools/xbb-helper-xpack
-          path: build-assets/xpacks/@xpack-dev-tools/xbb-helper
-          ref: ${{github.event.inputs.helper-git-ref}}
-          fetch-depth: 3
-
-      - name: 'Arch latest arm64'
-        uses: docker://archlinux:latest
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/build-assets/scripts/test.sh --image archlinux:latest --version ${{github.event.inputs.version}} --base-url ${{github.event.inputs.base_url}}
+  # arch-arm64-latest: - amd64 only
 
 
 
