@@ -521,7 +521,7 @@ jobs:
   arch-arm64-latest:
     name: 'arm64 clang ${{github.event.inputs.version}} test on Arch latest'
     # runs-on: [self-hosted, linux, arm64, xbbla]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - name: 'Show environment'
