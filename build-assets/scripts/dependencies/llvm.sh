@@ -1911,10 +1911,10 @@ function test_linux()
     fi
 
     if [[ ${distro} == CentOS ]] || \
-        [[ ${distro} == RedHat* ]] || \
-        [[ ${distro} == Fedora ]] || \
-        [[ ${distro} == openSUSE ]] || \
-        [[ ${distro} == Arch ]]
+       [[ ${distro} == RedHat* ]] || \
+       [[ ${distro} == Fedora ]] || \
+       [[ ${distro} == openSUSE ]] || \
+       [[ ${distro} == Arch ]]
     then
       # cannot find -latomic (with -static)
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
