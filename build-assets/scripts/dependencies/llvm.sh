@@ -1921,8 +1921,8 @@ function test_linux()
     fi
 
     if [[ "${XBB_IMAGE_NAME}" == *testing* ]] || \
-        [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
-        [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
+       [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
+       [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
     then
       # atomic.
       export XBB_IGNORE_TEST_ATOMIC="y"
