@@ -1806,7 +1806,8 @@ function test_linux()
         export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
       fi
     fi
-  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ]
+  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ] || \
+       [ ${LLVM_VERSION_MAJOR} -eq 21 ] 
   then
     # There is no ld.gold anymore.
     export XBB_SKIP_TESTS_ALL_LTO_LD="y"
