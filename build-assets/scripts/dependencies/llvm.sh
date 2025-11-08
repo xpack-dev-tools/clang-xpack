@@ -7,7 +7,7 @@
 # for any purpose is hereby granted, under the terms of the MIT license.
 #
 # If a copy of the license was not distributed with this file, it can
-# be obtained from https://opensource.org/licenses/MIT.
+# be obtained from https://opensource.org/licenses/mit.
 #
 # -----------------------------------------------------------------------------
 
@@ -1807,7 +1807,7 @@ function test_linux()
       fi
     fi
   elif [ ${LLVM_VERSION_MAJOR} -eq 20 ] || \
-       [ ${LLVM_VERSION_MAJOR} -eq 21 ] 
+       [ ${LLVM_VERSION_MAJOR} -eq 21 ]
   then
     # There is no ld.gold anymore.
     export XBB_SKIP_TESTS_ALL_LTO_LD="y"
