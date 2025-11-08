@@ -11,6 +11,7 @@
 #
 # -----------------------------------------------------------------------------
 
+# https://github.com/xpack-dev-tools/clang-xpack/actions/workflows/test-sourceforge-downloads.yml
 name: 'Test SourceForge downloads'
 
 on:
@@ -43,9 +44,10 @@ jobs:
 
           date
 
+          # https://github.com/xpack-dev-tools/clang-xpack/tags
           # https://sourceforge.net/projects/clang-xpack/files/
           name="clang"
-          threshold=16383 # (50%)
+          threshold=13107 # (60%, i.e. 32767 * (100-60)/100)
 
           # 2025
           platforms="win32-x64,linux-x64,linux-arm64,darwin-x64,darwin-arm64"
@@ -53,6 +55,7 @@ jobs:
           # 2024
           platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
 
+          download_sourceforge "${name}" "20.1.8-1" ${threshold} "${platforms}"
           download_sourceforge "${name}" "19.1.7-1" ${threshold} "${platforms}"
           download_sourceforge "${name}" "18.1.8-2" ${threshold} "${platforms}"
           download_sourceforge "${name}" "17.0.6-3" ${threshold} "${platforms}"
