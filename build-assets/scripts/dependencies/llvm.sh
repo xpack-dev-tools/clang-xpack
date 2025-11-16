@@ -1,13 +1,13 @@
 # -----------------------------------------------------------------------------
 #
 # This file is part of the xPack project (http://xpack.github.io).
-# Copyright (c) 2020 Liviu Ionescu. All rights reserved.
+# Copyright (c) 2020-2025 Liviu Ionescu. All rights reserved.
 #
 # Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 #
 # If a copy of the license was not distributed with this file, it can
-# be obtained from https://opensource.org/licenses/MIT.
+# be obtained from https://opensource.org/licenses/mit.
 #
 # -----------------------------------------------------------------------------
 
@@ -367,7 +367,7 @@ function llvm_build()
 
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
             # HB builds the compiler-rt as RUNTIMES
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
@@ -1806,7 +1806,8 @@ function test_linux()
         export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
       fi
     fi
-  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ]
+  elif [ ${LLVM_VERSION_MAJOR} -eq 20 ] || \
+       [ ${LLVM_VERSION_MAJOR} -eq 21 ]
   then
     # There is no ld.gold anymore.
     export XBB_SKIP_TESTS_ALL_LTO_LD="y"
@@ -1911,18 +1912,18 @@ function test_linux()
     fi
 
     if [[ ${distro} == CentOS ]] || \
-        [[ ${distro} == RedHat* ]] || \
-        [[ ${distro} == Fedora ]] || \
-        [[ ${distro} == openSUSE ]] || \
-        [[ ${distro} == Arch ]]
+       [[ ${distro} == RedHat* ]] || \
+       [[ ${distro} == Fedora ]] || \
+       [[ ${distro} == openSUSE ]] || \
+       [[ ${distro} == Arch ]]
     then
       # cannot find -latomic (with -static)
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
 
     if [[ "${XBB_IMAGE_NAME}" == *testing* ]] || \
-        [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
-        [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
+       [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
+       [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
     then
       # atomic.
       export XBB_IGNORE_TEST_ATOMIC="y"

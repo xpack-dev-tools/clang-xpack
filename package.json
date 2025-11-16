@@ -1,6 +1,6 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "20.1.8-1.1",
+  "version": "21.1.5-1.1.pre",
   "description": "A binary xpm package with the LLVM clang executables",
   "main": "",
   "scripts": {
@@ -149,9 +149,9 @@
     }
   },
   "devDependencies": {
-    "del-cli": "^6.0.0",
+    "del-cli": "^7.0.0",
     "json": "^11.0.0",
-    "liquidjs": "^10.19.1"
+    "liquidjs": "^10.23.0"
   },
   "topConfig": {
     "descriptiveName": "xPack LLVM clang",

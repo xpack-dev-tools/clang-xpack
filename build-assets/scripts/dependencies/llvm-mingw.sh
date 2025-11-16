@@ -1,13 +1,13 @@
 # -----------------------------------------------------------------------------
 #
 # This file is part of the xPack project (http://xpack.github.io).
-# Copyright (c) 2020 Liviu Ionescu. All rights reserved.
+# Copyright (c) 2020-2025 Liviu Ionescu. All rights reserved.
 #
 # Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 #
 # If a copy of the license was not distributed with this file, it can
-# be obtained from https://opensource.org/licenses/MIT.
+# be obtained from https://opensource.org/licenses/mit.
 #
 # -----------------------------------------------------------------------------
 
@@ -925,7 +925,7 @@ function test_mingw_llvm()
     fi
 
     # 19 & 20 are fine.
-    
+
     (
       # The DLLs are usually in bin, but for consistency within GCC, they are
       # also copied to lib; it is recommended to ask the compiler for the

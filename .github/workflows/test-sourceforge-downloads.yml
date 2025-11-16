@@ -7,57 +7,60 @@
 # for any purpose is hereby granted, under the terms of the MIT license.
 #
 # If a copy of the license was not distributed with this file, it can
-# be obtained from https://opensource.org/licenses/MIT.
+# be obtained from https://opensource.org/licenses/mit.
 #
 # -----------------------------------------------------------------------------
 
-  name: 'Test SourceForge downloads'
+# https://github.com/xpack-dev-tools/clang-xpack/actions/workflows/test-sourceforge-downloads.yml
+name: 'Test SourceForge downloads'
 
-  on:
-    schedule:
-      - cron: '37 13 * * 6' # every Saturday
-    workflow_dispatch:
+on:
+  schedule:
+    - cron: '37 13 * * 6' # every Saturday
+  workflow_dispatch:
 
-  jobs:
-    test:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-          with:
-            repository: xpack-dev-tools/xbb-helper-xpack
-            ref: 'xpack-development'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: xpack-dev-tools/xbb-helper-xpack
+          ref: 'xpack-development'
 
-        - name: Show environment
-          run: |
-            ls -lLA
-            env | sort | grep -E '^[^ \t]+='
+      - name: Show environment
+        run: |
+          ls -lLA
+          env | sort | grep -E '^[^ \t]+='
 
-        - name: Run test
-          run: |
-            #!/usr/bin/env bash
-            set -e
+      - name: Run test
+        run: |
+          #!/usr/bin/env bash
+          set -e
 
-            # The script is in the xbb-helper-xpack repo.
-            source maintenance-scripts/download-sourceforge-source.sh
+          # The script is in the xbb-helper-xpack repo.
+          source maintenance-scripts/download-sourceforge-source.sh
 
-            date
+          date
 
-            # https://sourceforge.net/projects/clang-xpack/files/
-            name="clang"
-            threshold=16383 # (50%)
+          # https://github.com/xpack-dev-tools/clang-xpack/tags
+          # https://sourceforge.net/projects/clang-xpack/files/
+          name="clang"
+          threshold=13107 # (60%, i.e. 32767 * (100-60)/100)
 
-            # 2025
-            platforms="win32-x64,linux-x64,linux-arm64,darwin-x64,darwin-arm64"
+          # 2025
+          platforms="win32-x64,linux-x64,linux-arm64,darwin-x64,darwin-arm64"
 
-            # 2024
-            platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
+          # 2024
+          platforms="win32-x64,linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64"
 
-            download_sourceforge "${name}" "19.1.7-1" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "18.1.8-2" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "17.0.6-3" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "16.0.6-1" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "15.0.7-4" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "14.0.6-2" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "13.0.1-1" ${threshold} "${platforms}"
-            download_sourceforge "${name}" "12.0.1-2" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "20.1.8-1" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "19.1.7-1" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "18.1.8-2" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "17.0.6-3" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "16.0.6-1" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "15.0.7-4" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "14.0.6-2" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "13.0.1-1" ${threshold} "${platforms}"
+          download_sourceforge "${name}" "12.0.1-2" ${threshold} "${platforms}"
