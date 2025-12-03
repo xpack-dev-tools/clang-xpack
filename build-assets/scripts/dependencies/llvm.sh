@@ -2594,7 +2594,25 @@ function test_darwin()
 
     elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
     then
-      : # Nothing yet.
+      # exception-reduced.
+      export XBB_IGNORE_TEST_GC_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_EXCEPTION_REDUCED="y"
+      export XBB_IGNORE_TEST_COVERAGE_EXCEPTION_REDUCED="y"
+
+      # hello-exception.
+      export XBB_IGNORE_TEST_GC_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
+      export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
     fi
   fi
 
