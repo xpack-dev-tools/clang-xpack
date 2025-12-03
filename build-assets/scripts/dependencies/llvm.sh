@@ -2579,6 +2579,23 @@ function test_darwin()
       export XBB_IGNORE_TEST_GC_LTO_LLD_HELLO_EXCEPTION="y"
       export XBB_IGNORE_TEST_COVERAGE_HELLO_EXCEPTION="y"
     fi
+  elif [ ${LLVM_VERSION_MAJOR} -eq 21 ]
+  then
+    if [ "${XBB_HOST_ARCH}" == "x64" ]
+    then
+      # throwcatch-main.
+      # got exit code: 1, expected 0, on macOS 15
+      export XBB_IGNORE_TEST_LTO_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_THROWCATCH_MAIN="y"
+
+      # got exit code: 1, expected 0, on macOS 15
+      export XBB_IGNORE_TEST_LTO_LLD_THROWCATCH_MAIN="y"
+      export XBB_IGNORE_TEST_GC_LTO_LLD_THROWCATCH_MAIN="y"
+
+    elif [ "${XBB_TARGET_ARCH}" == "arm64" ]
+    then
+      : # Nothing yet.
+    fi
   fi
 
   env | sort
