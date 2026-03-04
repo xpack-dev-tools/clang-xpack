@@ -619,7 +619,7 @@ function llvm_mingw_build_libcxx()
           # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
           config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
 
-          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
+          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx;openmp") # Extra
 
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 

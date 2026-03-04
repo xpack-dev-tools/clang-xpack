@@ -365,7 +365,7 @@ function llvm_build()
             # this fails with system libtool.
             config_options+=("-DLLVM_ENABLE_LTO=OFF") # HB uses Thin
 
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             # HB builds the compiler-rt as RUNTIMES
             config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
 
@@ -476,8 +476,8 @@ function llvm_build()
             config_options+=("-DLLVM_POLLY_LINK_INTO_TOOLS=ON") # HB
 
             # Starting with 15, the runtimes must be specified separately.
-            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly;")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
+            config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
@@ -2624,7 +2624,7 @@ function test_darwin()
   # capabilities.
   # However this is not usable, since it uses the new headers
   # with the system libraries.
-  test_compiler_c_cpp
+  test_compiler_c_cpp --no-rpath
 
   (
     # The shared libraries are in a custom location and require setting
