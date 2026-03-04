@@ -356,7 +356,7 @@ function application_build_versioned_components()
 
     # Also used in -DLLVM_BINUTILS_INCDIR
     # https://ftpmirror.gnu.org/gnu/binutils/
-    XBB_BINUTILS_VERSION="2.45" # "2.44"
+    XBB_BINUTILS_VERSION="2.46" # "2.44"
     # There is no binutils-with-gold-2.45!
     XBB_BINUTILS_WITH_GOLD="n"
 
@@ -364,7 +364,7 @@ function application_build_versioned_components()
     XBB_MINGW_VERSION="13.0.0" # "12.0.0"
 
     # https://zlib.net/fossils/
-    XBB_ZLIB_VERSION="1.3.1"
+    XBB_ZLIB_VERSION="1.3.2" # "1.3.1"
     # https://github.com/libffi/libffi/releases
     XBB_LIBFFI_VERSION="3.5.2" # "3.4.6"
 
@@ -412,18 +412,18 @@ function application_build_versioned_components()
     XBB_LIBFFI_VERSION="3.5.2" # "3.4.6"
 
     # https://ftpmirror.gnu.org/gnu/ncurses/
-    XBB_NCURSES_VERSION="6.5"
+    XBB_NCURSES_VERSION="6.6" # "6.5"
     # https://ftp.gnu.org/pub/gnu/libiconv/
     XBB_LIBICONV_VERSION="1.18"
     # https://sourceforge.net/projects/lzmautils/files/
     # Avoid 5.6.[01]!
-    XBB_XZ_VERSION="5.8.1" # "5.6.4"
+    XBB_XZ_VERSION="5.8.2" # "5.6.4"
     # https://github.com/unicode-org/icu/releases
-    XBB_ICU4C_VERSION="77.1"
+    XBB_ICU4C_VERSION="78.2" # "77.1"
     # https://download.gnome.org/sources/libxml2/
-    XBB_LIBXML2_VERSION="2.15.0" # "2.13.5"
+    XBB_LIBXML2_VERSION="2.15.2" # "2.13.5"
     # https://www.thrysoee.dk/editline/
-    XBB_LIBEDIT_VERSION="20250104-3.1"
+    XBB_LIBEDIT_VERSION="20251016-3.1" # "20250104-3.1"
 
     clang_build_common
 

@@ -2,8 +2,91 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2026-03-04
+
+* v21.1.8-1 prepared
+* b850e23 re-generate top commons
+
+## 2026-02-26
+
+* cedd3c2 copyright updates
+
+## 2026-02-01
+
+* b7d71e5 Merge branch 'xpack' into xpack-development
+* 66d5475 chore: update keepalive timestamp [skip ci]
+* 9c418c4 Merge branch 'xpack' into xpack-development
+* 2dc11a9 chore: update keepalive timestamp [skip ci]
+
+## 2025-12-03
+
+* 88a9c17 llvm.sh update test for darwin
+* 045ea0a llvm.sh update test for darwin
+* 02625c1 21.1.7
+
+## 2025-12-01
+
+* c7e3b4c .github/workflows/keepalive.yml: update
+* ec2dc76 chore: update keepalive timestamp [skip ci]
+
+## 2025-11-16
+
+* 2f932ad test-sourceforge-downloads.yml update
+* 5459d06 test-sourceforge-downloads.yml update
+* 73f823f test-source-forge-downloads update
+
+## 2025-11-08
+
+* 2495088 test-sourceforge-downloads.yml update
+* 8c6b876 add workflows/keepalive.yml
+* 005d697 add workflows/keepalive.yml
+* 3e8fc7b update copyright notices
+* 4ed52c4 update copyright notices
+
+## 2025-11-04
+
+* 6b6db7f llvm.sh update skipped tests for 21
+* c197860 prepare 21.1.5-1
+
+## 2025-11-01
+
+* 04b7f46 website: re-generate commons
+* 4ffe6e7 re-generate top commons
+* aaff7f1 re-generate top commons
+
+## 2025-10-31
+
+* d1588ac re-generate top commons
+
+## 2025-10-27
+
+* a73dd21 website tests update titles
+* a473a3b website tests index update
+* e05ae92 llvm.sh formatting
+* f634752 llvm.sh formatting
+
+## 2025-10-26
+
+* 66eba49 re-generate top commons
+
+## 2025-10-24
+
+* 4cbe799 website: re-generate commons
+* 50092f3 re-generate top commons
+* 43b3303 re-generate top commons
+
+## 2025-10-19
+
+* f6e6615 website: re-generate commons
+* a9d9c88 re-generate commons
+* 1084089 re-generate commons
+
 ## 2025-10-12
 
+## 2025-10-12
+
+* af1c60f package-lock.json update
+* f69e2f4 CHANGELOG: update
 * eecb341 website: update test results
 * dfd8192 20.1.8-1.1
 * b6a3eea CHANGELOG: publish npm v20.1.8-1.1
