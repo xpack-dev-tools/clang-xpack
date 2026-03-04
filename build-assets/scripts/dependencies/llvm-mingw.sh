@@ -619,7 +619,10 @@ function llvm_mingw_build_libcxx()
           # config_options+=("-DLIBUNWIND_ENABLE_CROSS_UNWINDING=OFF")
           config_options+=("-DLIBUNWIND_USE_COMPILER_RT=ON") # MS
 
-          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx;openmp") # Extra
+          # openmp is intentionally excluded: its CMake config runs
+          # GetClangResourceDir.cmake which executes the cross-compiler and
+          # fails to parse its output in the MinGW cross-build context.
+          config_options+=("-DLLVM_ENABLE_RUNTIMES=libunwind;libcxxabi;libcxx") # Extra
 
           config_options+=("-DLLVM_ENABLE_WARNINGS=OFF")
 
