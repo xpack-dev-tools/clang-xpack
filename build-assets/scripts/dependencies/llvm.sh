@@ -367,7 +367,8 @@ function llvm_build()
 
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
             # HB builds the compiler-rt as RUNTIMES
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
+            # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
 
             config_options+=("-DLLVM_HOST_TRIPLE=${XBB_TARGET_TRIPLET}")
             config_options+=("-DLLVM_INSTALL_UTILS=ON") # HB
@@ -477,12 +478,13 @@ function llvm_build()
 
             # Starting with 15, the runtimes must be specified separately.
             config_options+=("-DLLVM_ENABLE_PROJECTS=clang;lld;lldb;clang-tools-extra;polly")
-            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
+            # config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx;openmp")
+            config_options+=("-DLLVM_ENABLE_RUNTIMES=compiler-rt;libunwind;libcxxabi;libcxx")
 
             # Disable the OpenMP debugger (OMPD) GDB plugin, which requires
             # Python headers; when building i386 runtimes on a 64-bit host,
             # the 64-bit system Python headers cause a LONG_BIT mismatch error.
-            config_options+=("-DLIBOMP_OMPD_GDB_SUPPORT=OFF")
+            # config_options+=("-DLIBOMP_OMPD_GDB_SUPPORT=OFF")
 
             config_options+=("-DLLVM_LINK_LLVM_DYLIB=ON") # Arch
 
