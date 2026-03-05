@@ -8,10 +8,12 @@ import customField from '@site/src/libs/customField';
 <CodeBlock language="console"> {
 `$ tree -L 2 ~/Library/xPacks/\@xpack-dev-tools/clang/${customField('xpackVersion')}/.content/
 /Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/${customField('xpackVersion')}/.content/
+├── README.md
 ├── bin
 │   ├── analyze-build
-│   ├── clang -> clang-20
-│   ├── clang-20
+│   ├── clang -> clang-21
+│   ├── clang++ -> clang
+│   ├── clang-21
 │   ├── clang-check
 │   ├── clang-cl -> clang
 │   ├── clang-cpp -> clang
@@ -27,7 +29,6 @@ import customField from '@site/src/libs/customField';
 │   ├── clang-sycl-linker
 │   ├── clang-tblgen
 │   ├── clang-tidy
-│   ├── clang++ -> clang
 │   ├── clangd
 │   ├── darwin-debug
 │   ├── diagtool
@@ -64,6 +65,7 @@ import customField from '@site/src/libs/customField';
 │   ├── llvm-dwarfutil
 │   ├── llvm-lib -> llvm-ar
 │   ├── llvm-libtool-darwin
+│   ├── llvm-ml64 -> llvm-ml
 │   ├── llvm-nm
 │   ├── llvm-objcopy
 │   ├── llvm-objdump
@@ -81,8 +83,10 @@ import customField from '@site/src/libs/customField';
 │   ├── llvm-strip -> llvm-objcopy
 │   ├── llvm-symbolizer
 │   ├── llvm-tblgen
+│   ├── llvm-test-mustache-spec
 │   ├── llvm-tli-checker
 │   ├── llvm-windres -> llvm-rc
+│   ├── offload-arch
 │   ├── reduce-chunk-list
 │   ├── run-clang-tidy
 │   ├── scan-build-py
@@ -97,12 +101,20 @@ import customField from '@site/src/libs/customField';
 │   ├── libunwind.h
 │   ├── libunwind.modulemap
 │   ├── mach-o
+│   ├── unwind.h
 │   ├── unwind_arm_ehabi.h
-│   ├── unwind_itanium.h
-│   └── unwind.h
+│   └── unwind_itanium.h
 ├── lib
+│   ├── LLVMPolly.so
 │   ├── clang
 │   ├── cmake
+│   ├── libLLVM-21.dylib -> libLLVM.dylib
+│   ├── libLLVM-C.dylib
+│   ├── libLLVM.dylib
+│   ├── libLTO.dylib
+│   ├── libPolly.a
+│   ├── libPollyISL.a
+│   ├── libRemarks.dylib
 │   ├── libc++.1.0.dylib
 │   ├── libc++.1.dylib -> libc++.1.0.dylib
 │   ├── libc++.a
@@ -116,21 +128,13 @@ import customField from '@site/src/libs/customField';
 │   ├── libclang-cpp.dylib
 │   ├── libclang.dylib
 │   ├── libear
-│   ├── liblldb.20.1.8.dylib
-│   ├── liblldb.dylib -> liblldb.20.1.8.dylib
-│   ├── libLLVM-20.dylib -> libLLVM.dylib
-│   ├── libLLVM-C.dylib
-│   ├── libLLVM.dylib
-│   ├── libLTO.dylib
-│   ├── libPolly.a
-│   ├── libPollyISL.a
-│   ├── libRemarks.dylib
+│   ├── liblldb.21.1.8.dylib
+│   ├── liblldb.dylib -> liblldb.21.1.8.dylib
 │   ├── libscanbuild
 │   ├── libunwind.1.0.dylib
 │   ├── libunwind.1.dylib -> libunwind.1.0.dylib
 │   ├── libunwind.a
-│   ├── libunwind.dylib -> libunwind.1.dylib
-│   └── LLVMPolly.so
+│   └── libunwind.dylib -> libunwind.1.dylib
 ├── libexec
 │   ├── analyze-c++
 │   ├── analyze-cc
@@ -143,7 +147,6 @@ import customField from '@site/src/libs/customField';
 │   ├── libedit.0.dylib
 │   ├── libffi.8.dylib
 │   ├── libformw.6.dylib
-│   ├── libiconv.2.dylib
 │   ├── libicudata.77.1.dylib
 │   ├── libicudata.77.dylib -> libicudata.77.1.dylib
 │   ├── libicuuc.77.1.dylib
@@ -153,9 +156,8 @@ import customField from '@site/src/libs/customField';
 │   ├── libpanelw.6.dylib
 │   ├── libunwind.1.0.dylib
 │   ├── libxml2.16.dylib
-│   ├── libz.1.3.1.dylib
-│   └── libz.1.dylib -> libz.1.3.1.dylib
-├── README.md
+│   ├── libz.1.3.2.dylib
+│   └── libz.1.dylib -> libz.1.3.2.dylib
 └── share
     ├── clang
     ├── clang-doc
@@ -164,7 +166,7 @@ import customField from '@site/src/libs/customField';
     ├── scan-build
     └── scan-view
 
-20 directories, 136 files
+20 directories, 138 files
 `} </CodeBlock>
 
 The resulting `xpack.executables` definitions in `package.json` are:
@@ -172,7 +174,8 @@ The resulting `xpack.executables` definitions in `package.json` are:
 ```json
       "analyze-build": "./.content/bin/analyze-build",
       "clang": "./.content/bin/clang",
-      "clang-20": "./.content/bin/clang-20",
+      "clang++": "./.content/bin/clang++",
+      "clang-21": "./.content/bin/clang-21",
       "clang-check": "./.content/bin/clang-check",
       "clang-cl": "./.content/bin/clang-cl",
       "clang-cpp": "./.content/bin/clang-cpp",
@@ -188,7 +191,6 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "clang-sycl-linker": "./.content/bin/clang-sycl-linker",
       "clang-tblgen": "./.content/bin/clang-tblgen",
       "clang-tidy": "./.content/bin/clang-tidy",
-      "clang++": "./.content/bin/clang++",
       "clangd": "./.content/bin/clangd",
       "darwin-debug": "./.content/bin/darwin-debug",
       "diagtool": "./.content/bin/diagtool",
@@ -225,6 +227,7 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "llvm-dwarfutil": "./.content/bin/llvm-dwarfutil",
       "llvm-lib": "./.content/bin/llvm-lib",
       "llvm-libtool-darwin": "./.content/bin/llvm-libtool-darwin",
+      "llvm-ml64": "./.content/bin/llvm-ml64",
       "llvm-nm": "./.content/bin/llvm-nm",
       "llvm-objcopy": "./.content/bin/llvm-objcopy",
       "llvm-objdump": "./.content/bin/llvm-objdump",
@@ -242,8 +245,10 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "llvm-strip": "./.content/bin/llvm-strip",
       "llvm-symbolizer": "./.content/bin/llvm-symbolizer",
       "llvm-tblgen": "./.content/bin/llvm-tblgen",
+      "llvm-test-mustache-spec": "./.content/bin/llvm-test-mustache-spec",
       "llvm-tli-checker": "./.content/bin/llvm-tli-checker",
       "llvm-windres": "./.content/bin/llvm-windres",
+      "offload-arch": "./.content/bin/offload-arch",
       "reduce-chunk-list": "./.content/bin/reduce-chunk-list",
       "run-clang-tidy": "./.content/bin/run-clang-tidy",
       "scan-build-py": "./.content/bin/scan-build-py",

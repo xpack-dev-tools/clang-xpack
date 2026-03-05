@@ -13,7 +13,7 @@ Volume serial number is B02D-925C
 ├── bin
 │   ├── analyze-build
 │   ├── clang++.exe -> clang-target-wrapper.exe
-│   ├── clang-20.exe
+│   ├── clang-21.exe
 │   ├── clang-check.exe
 │   ├── clang-cl.exe -> clang-target-wrapper.exe
 │   ├── clang-cpp.exe -> clang-target-wrapper.exe
@@ -66,6 +66,7 @@ Volume serial number is B02D-925C
 │   ├── llvm-strip.exe -> llvm-objcopy.exe
 │   ├── llvm-symbolizer.exe
 │   ├── llvm-windres.exe -> llvm-rc.exe
+│   ├── offload-arch.exe
 │   ├── run-clang-tidy
 │   ├── scan-build-py
 │   └── widl.exe
@@ -105,7 +106,7 @@ Volume serial number is B02D-925C
     ├── lib
     └── share
 
-26 directories, 69 files
+26 directories, 70 files
 `} </CodeBlock>
 
 The resulting `xpack.executables` definitions in `package.json` are:
@@ -114,7 +115,7 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "analyze-build": "./.content/bin/analyze-build",
       "clang": "./.content/bin/clang",
       "clang++": "./.content/bin/clang++",
-      "clang-20": "./.content/bin/clang-20",
+      "clang-21": "./.content/bin/clang-21",
       "clang-check": "./.content/bin/clang-check",
       "clang-cl": "./.content/bin/clang-cl",
       "clang-cpp": "./.content/bin/clang-cpp",
@@ -127,6 +128,7 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "clang-refactor": "./.content/bin/clang-refactor",
       "clang-repl": "./.content/bin/clang-repl",
       "clang-scan-deps": "./.content/bin/clang-scan-deps",
+      "clang-sycl-linker": "./.content/bin/clang-sycl-linker",
       "clang-target-wrapper": "./.content/bin/clang-target-wrapper",
       "clang-tidy": "./.content/bin/clang-tidy",
       "clangd": "./.content/bin/clangd",
@@ -160,6 +162,7 @@ The resulting `xpack.executables` definitions in `package.json` are:
       "llvm-strip": "./.content/bin/llvm-strip",
       "llvm-symbolizer": "./.content/bin/llvm-symbolizer",
       "llvm-windres": "./.content/bin/llvm-windres",
+      "offload-arch": "./.content/bin/offload-arch",
       "run-clang-tidy": "./.content/bin/run-clang-tidy",
       "scan-build-py": "./.content/bin/scan-build-py",
       "widl": "./.content/bin/widl",
