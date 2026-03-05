@@ -1,0 +1,641 @@
+---
+
+title: xPack LLVM clang v21.1.8-1 released
+seo_title: Version 21.1.8-1 released
+description: Version 21.1.8-1 is a new release.
+keywords:
+  - xpack
+  - clang
+  - release
+
+date: 2026-03-05 17:01:12 +0200
+
+authors: ilg-ul
+
+# To be listed in the Releases page.
+tags:
+  - releases
+
+# ----- Custom properties -----------------------------------------------------
+
+clang_release_version: "21.1.8"
+clang_release_date: "16 Dec 2025"
+
+binutils_version: "2.45"
+mingw_version: "13.0.0"
+
+version: "21.1.8-1"
+npm_subversion: "1"
+
+download_url: https://github.com/xpack-dev-tools/clang-xpack/releases/tag/v21.1.8-1/
+
+---
+
+import {PageMetadata} from '@docusaurus/theme-common';
+import Image from '@theme/IdealImage';
+import CodeBlock from '@theme/CodeBlock';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+import customField from '@site/src/libs/customField';
+
+import Prerequisites from './_common/_prerequisites-glib-2.28.mdx';
+import DeprecationNotices from './_common/_deprecation-notices-glib-2.28.mdx';
+import DownloadAnalytics from './_common/_download-analytics.mdx';
+
+Version **21.1.8-1.1** is a new release; it follows the upstream release.
+
+<!-- truncate -->
+
+<PageMetadata title={frontMatter.seo_title} />
+
+The [xPack LLVM clang](https://xpack-dev-tools.github.io/clang-xpack/)
+is a standalone cross-platform binary distribution of
+[LLVM clang](https://clang.llvm.org).
+
+There are separate binaries for **Windows** (x64),
+**macOS** (x64 and arm64)
+and **GNU/Linux** (x64 and arm64).
+
+:::note Raspberry Pi
+
+The main targets for the GNU/Linux Arm
+binaries are the **Raspberry Pi** class devices (aarch64 only;
+armv6 and armv7l are no longer supported).
+
+:::
+
+## Download
+
+The binary files are available from <a href={frontMatter.download_url}>GitHub Releases</a>.
+
+<Prerequisites/>
+
+## Install
+
+The easiest way to install this specific version, is by using **xpm**:
+
+<CodeBlock language="console"> {
+`xpm install @xpack-dev-tools/clang@${frontMatter.version}.${frontMatter.npm_subversion} -verbose
+`} </CodeBlock>
+
+Comprehensive instructions for installing **xPack xPack LLVM clang** on different platforms
+can be found in the [Install Guide](/docs/install/).
+
+## Compliance
+
+The **xPack LLVM clang** is based on the official
+[LLVM clang](https://clang.llvm.org) sources.
+
+The current version is based on:
+
+- LLVM clang version [{frontMatter.clang_release_version}](https://releases.llvm.org/download.html#{frontMatter.clang_release_version}), from {frontMatter.clang_release_date}
+- binutils {frontMatter.binutils_version}
+- mingw-w64 {frontMatter.mingw_version}
+
+For x64 Linux and Windows, multilib (32/64-bit) libraries are provided.
+
+## Changes
+
+Compared to the upstream, there are no major functional changes.
+
+## Bug fixes
+
+- none
+
+## Enhancements
+
+- none
+
+## Known problems
+
+Please see the separate
+[tests results page](/docs/tests/21.1.8-1/).
+
+On GNU/Linux, LTO (Link Time Optimization) is supported only with
+`-fuse-ld=lld`.
+
+Starting with 2.44, binutils deprecated `ld.gold`, and it is no longer
+provided.
+
+
+## Documentation
+
+The original documentation is available from
+the project web site:
+
+- https://clang.llvm.org/docs/UsersManual.html
+
+## Build
+
+The binaries for all supported platforms
+(Windows, macOS and GNU/Linux) were built using the
+[xPack Build Box (XBB)](https://xpack.github.io/xbb/), a set
+of build environments based on slightly older distributions, that should be
+compatible with most recent systems.
+
+For the prerequisites and more details on the build procedure, please see the
+[Maintainer Info](/docs/maintainer/) page.
+
+## CI tests
+
+Before publishing, a set of simple tests were performed on an exhaustive
+set of platforms. The results are available from:
+
+- [GitHub Actions](https://github.com/xpack-dev-tools/clang-xpack/actions/)
+
+## Tests
+
+The binaries were tested on a variety of platforms,
+but mainly to check the integrity of the
+build, not the compiler functionality.
+
+## Checksums
+
+The SHA-256 hashes for the files are:
+
+```txt
+562270fc3029fbec56cadde80223efe2ea33e9fde46954582447afb4832310ea
+xpack-clang-21.1.8-1-darwin-arm64.tar.gz
+
+eab22258684105f5c32bb29772e2b17bc2ec4eac49b3c4d1775e45b3d1baf385
+xpack-clang-21.1.8-1-darwin-x64.tar.gz
+
+be1eae2706c049ff9d1c5816e58bb5557d75810c9762cb929208472f7914617e
+xpack-clang-21.1.8-1-linux-arm64.tar.gz
+
+0db58136aedb58b9af8c605a1b1570defbe06618f82bff60d24d3327f81d8321
+xpack-clang-21.1.8-1-linux-x64.tar.gz
+
+b23d38e2c1c539182919e147e7158fd8b4e8bdd9e6ddc5dfe06f6488c6d9d516
+xpack-clang-21.1.8-1-win32-x64.zip
+
+```
+
+## Folders hierarchy
+
+After install, the package creates a hierarchy of folders like the following
+(only the first two depth levels are shown):
+
+<Tabs groupId="operating-systems">
+
+<TabItem value="windows" label="Windows" default>
+
+<CodeBlock language="console"> {
+`C:\> tree /f %USERPROFILE%\\AppData\\Roaming\\xPacks\\@xpack-dev-tools\\clang\\${frontMatter.version}.${frontMatter.npm_subversion}\\.content
+Folder PATH listing
+Volume serial number is B02D-925C
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang++.exe -> clang-target-wrapper.exe
+│   ├── clang-21.exe
+│   ├── clang-check.exe
+│   ├── clang-cl.exe -> clang-target-wrapper.exe
+│   ├── clang-cpp.exe -> clang-target-wrapper.exe
+│   ├── clang-doc.exe
+│   ├── clang-format.exe
+│   ├── clang-include-cleaner.exe
+│   ├── clang-installapi.exe
+│   ├── clang-linker-wrapper.exe
+│   ├── clang-nvlink-wrapper.exe
+│   ├── clang-refactor.exe
+│   ├── clang-repl.exe
+│   ├── clang-scan-deps.exe
+│   ├── clang-sycl-linker.exe
+│   ├── clang-target-wrapper.exe
+│   ├── clang-tidy.exe
+│   ├── clang.exe -> clang-target-wrapper.exe
+│   ├── clangd.exe
+│   ├── diagtool.exe
+│   ├── gendef.exe
+│   ├── git-clang-format
+│   ├── git-clang-format.bat
+│   ├── hmaptool
+│   ├── ld.lld.exe -> lld.exe
+│   ├── libLTO.dll
+│   ├── libRemarks.dll
+│   ├── libc++.dll
+│   ├── liblldb.dll
+│   ├── libunwind.dll
+│   ├── lld.exe
+│   ├── lldb-argdumper.exe
+│   ├── lldb-dap.exe
+│   ├── lldb-instr.exe
+│   ├── lldb-server.exe
+│   ├── lldb.exe
+│   ├── llvm-addr2line.exe -> llvm-symbolizer.exe
+│   ├── llvm-ar.exe
+│   ├── llvm-cov.exe
+│   ├── llvm-cxxfilt.exe
+│   ├── llvm-dlltool.exe -> llvm-ar.exe
+│   ├── llvm-nm.exe
+│   ├── llvm-objcopy.exe
+│   ├── llvm-objdump.exe
+│   ├── llvm-profdata.exe
+│   ├── llvm-ranlib.exe -> llvm-ar.exe
+│   ├── llvm-rc.exe
+│   ├── llvm-readelf.exe -> llvm-readobj.exe
+│   ├── llvm-readobj.exe
+│   ├── llvm-size.exe
+│   ├── llvm-strings.exe
+│   ├── llvm-strip.exe -> llvm-objcopy.exe
+│   ├── llvm-symbolizer.exe
+│   ├── llvm-windres.exe -> llvm-rc.exe
+│   ├── offload-arch.exe
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   └── widl.exe
+├── distro-info
+│   └── licenses
+├── i686-w64-mingw32
+│   ├── bin
+│   ├── include
+│   ├── lib
+│   └── share
+├── include
+├── lib
+│   ├── clang
+│   ├── cmake
+│   ├── libLTO.dll.a
+│   ├── libRemarks.dll.a
+│   ├── libear
+│   └── libscanbuild
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── c++-analyzer.bat
+│   ├── ccc-analyzer
+│   ├── ccc-analyzer.bat
+│   ├── intercept-c++
+│   └── intercept-cc
+├── share
+│   ├── clang
+│   ├── clang-doc
+│   ├── opt-viewer
+│   ├── scan-build
+│   └── scan-view
+└── x86_64-w64-mingw32
+    ├── bin
+    ├── include
+    ├── lib
+    └── share
+
+26 directories, 70 files
+`} </CodeBlock>
+
+</TabItem>
+
+<TabItem value="macos" label="macOS">
+
+<CodeBlock language="console"> {
+`$ tree -L 2 ~/Library/xPacks/\@xpack-dev-tools/clang/${frontMatter.version}.${frontMatter.npm_subversion}/.content/
+/Users/ilg/Library/xPacks/\@xpack-dev-tools/clang/${frontMatter.version}.${frontMatter.npm_subversion}/.content/
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang -> clang-21
+│   ├── clang++ -> clang
+│   ├── clang-21
+│   ├── clang-check
+│   ├── clang-cl -> clang
+│   ├── clang-cpp -> clang
+│   ├── clang-doc
+│   ├── clang-format
+│   ├── clang-include-cleaner
+│   ├── clang-installapi
+│   ├── clang-linker-wrapper
+│   ├── clang-nvlink-wrapper
+│   ├── clang-refactor
+│   ├── clang-repl
+│   ├── clang-scan-deps
+│   ├── clang-sycl-linker
+│   ├── clang-tblgen
+│   ├── clang-tidy
+│   ├── clangd
+│   ├── darwin-debug
+│   ├── diagtool
+│   ├── git-clang-format
+│   ├── hmaptool
+│   ├── ld.lld -> lld
+│   ├── ld64.lld -> lld
+│   ├── llc
+│   ├── lld
+│   ├── lld-link -> lld
+│   ├── lldb
+│   ├── lldb-argdumper
+│   ├── lldb-dap
+│   ├── lldb-instr
+│   ├── lldb-server
+│   ├── lli
+│   ├── llvm-addr2line -> llvm-symbolizer
+│   ├── llvm-ar
+│   ├── llvm-as
+│   ├── llvm-bitcode-strip -> llvm-objcopy
+│   ├── llvm-cgdata
+│   ├── llvm-config
+│   ├── llvm-cov
+│   ├── llvm-ctxprof-util
+│   ├── llvm-cxxdump
+│   ├── llvm-cxxfilt
+│   ├── llvm-cxxmap
+│   ├── llvm-debuginfo-analyzer
+│   ├── llvm-debuginfod
+│   ├── llvm-debuginfod-find
+│   ├── llvm-diff
+│   ├── llvm-dis
+│   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-dwarfutil
+│   ├── llvm-lib -> llvm-ar
+│   ├── llvm-libtool-darwin
+│   ├── llvm-ml64 -> llvm-ml
+│   ├── llvm-nm
+│   ├── llvm-objcopy
+│   ├── llvm-objdump
+│   ├── llvm-otool -> llvm-objdump
+│   ├── llvm-profdata
+│   ├── llvm-ranlib -> llvm-ar
+│   ├── llvm-rc
+│   ├── llvm-readelf -> llvm-readobj
+│   ├── llvm-readobj
+│   ├── llvm-readtapi
+│   ├── llvm-remarkutil
+│   ├── llvm-sim
+│   ├── llvm-size
+│   ├── llvm-strings
+│   ├── llvm-strip -> llvm-objcopy
+│   ├── llvm-symbolizer
+│   ├── llvm-tblgen
+│   ├── llvm-test-mustache-spec
+│   ├── llvm-tli-checker
+│   ├── llvm-windres -> llvm-rc
+│   ├── offload-arch
+│   ├── reduce-chunk-list
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   ├── set-xcode-analyzer
+│   ├── split-file
+│   └── wasm-ld -> lld
+├── distro-info
+│   └── licenses
+├── include
+│   ├── __libunwind_config.h
+│   ├── c++
+│   ├── libunwind.h
+│   ├── libunwind.modulemap
+│   ├── mach-o
+│   ├── unwind.h
+│   ├── unwind_arm_ehabi.h
+│   └── unwind_itanium.h
+├── lib
+│   ├── LLVMPolly.so
+│   ├── clang
+│   ├── cmake
+│   ├── libLLVM-21.dylib -> libLLVM.dylib
+│   ├── libLLVM-C.dylib
+│   ├── libLLVM.dylib
+│   ├── libLTO.dylib
+│   ├── libPolly.a
+│   ├── libPollyISL.a
+│   ├── libRemarks.dylib
+│   ├── libc++.1.0.dylib
+│   ├── libc++.1.dylib -> libc++.1.0.dylib
+│   ├── libc++.a
+│   ├── libc++.dylib -> libc++.1.dylib
+│   ├── libc++.modules.json
+│   ├── libc++abi.1.0.dylib
+│   ├── libc++abi.1.dylib -> libc++abi.1.0.dylib
+│   ├── libc++abi.a
+│   ├── libc++abi.dylib -> libc++abi.1.dylib
+│   ├── libc++experimental.a
+│   ├── libclang-cpp.dylib
+│   ├── libclang.dylib
+│   ├── libear
+│   ├── liblldb.21.1.8.dylib
+│   ├── liblldb.dylib -> liblldb.21.1.8.dylib
+│   ├── libscanbuild
+│   ├── libunwind.1.0.dylib
+│   ├── libunwind.1.dylib -> libunwind.1.0.dylib
+│   ├── libunwind.a
+│   └── libunwind.dylib -> libunwind.1.dylib
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── ccc-analyzer
+│   ├── intercept-c++
+│   ├── intercept-cc
+│   ├── libc++.1.0.dylib
+│   ├── libc++abi.1.0.dylib
+│   ├── libedit.0.dylib
+│   ├── libffi.8.dylib
+│   ├── libformw.6.dylib
+│   ├── libicudata.77.1.dylib
+│   ├── libicudata.77.dylib -> libicudata.77.1.dylib
+│   ├── libicuuc.77.1.dylib
+│   ├── libicuuc.77.dylib -> libicuuc.77.1.dylib
+│   ├── liblzma.5.dylib
+│   ├── libncursesw.6.dylib
+│   ├── libpanelw.6.dylib
+│   ├── libunwind.1.0.dylib
+│   ├── libxml2.16.dylib
+│   ├── libz.1.3.2.dylib
+│   └── libz.1.dylib -> libz.1.3.2.dylib
+└── share
+    ├── clang
+    ├── clang-doc
+    ├── libc++
+    ├── opt-viewer
+    ├── scan-build
+    └── scan-view
+
+20 directories, 138 files
+`} </CodeBlock>
+
+</TabItem>
+
+<TabItem value="linux" label="GNU/Linux">
+
+<CodeBlock language="console"> {
+`$ tree -L 2 ~/.local/xPacks/\@xpack-dev-tools/clang/${frontMatter.version}.${frontMatter.npm_subversion}/.content/
+/home/ilg/.local/xPacks/\@xpack-dev-tools/clang/${frontMatter.version}.${frontMatter.npm_subversion}/.content/
+├── README.md
+├── bin
+│   ├── analyze-build
+│   ├── clang -> clang-21
+│   ├── clang++ -> clang
+│   ├── clang-21
+│   ├── clang-check
+│   ├── clang-cl -> clang
+│   ├── clang-cpp -> clang
+│   ├── clang-doc
+│   ├── clang-format
+│   ├── clang-include-cleaner
+│   ├── clang-installapi
+│   ├── clang-linker-wrapper
+│   ├── clang-nvlink-wrapper
+│   ├── clang-refactor
+│   ├── clang-repl
+│   ├── clang-scan-deps
+│   ├── clang-sycl-linker
+│   ├── clang-tblgen
+│   ├── clang-tidy
+│   ├── clangd
+│   ├── diagtool
+│   ├── git-clang-format
+│   ├── hmaptool
+│   ├── ld.lld -> lld
+│   ├── ld64.lld -> lld
+│   ├── llc
+│   ├── lld
+│   ├── lld-link -> lld
+│   ├── lldb
+│   ├── lldb-argdumper
+│   ├── lldb-dap
+│   ├── lldb-instr
+│   ├── lldb-server
+│   ├── lli
+│   ├── llvm-addr2line -> llvm-symbolizer
+│   ├── llvm-ar
+│   ├── llvm-as
+│   ├── llvm-bitcode-strip -> llvm-objcopy
+│   ├── llvm-cgdata
+│   ├── llvm-config
+│   ├── llvm-cov
+│   ├── llvm-ctxprof-util
+│   ├── llvm-cxxdump
+│   ├── llvm-cxxfilt
+│   ├── llvm-cxxmap
+│   ├── llvm-debuginfo-analyzer
+│   ├── llvm-debuginfod
+│   ├── llvm-debuginfod-find
+│   ├── llvm-diff
+│   ├── llvm-dis
+│   ├── llvm-dlltool -> llvm-ar
+│   ├── llvm-dwarfutil
+│   ├── llvm-lib -> llvm-ar
+│   ├── llvm-libtool-darwin
+│   ├── llvm-ml64 -> llvm-ml
+│   ├── llvm-nm
+│   ├── llvm-objcopy
+│   ├── llvm-objdump
+│   ├── llvm-otool -> llvm-objdump
+│   ├── llvm-profdata
+│   ├── llvm-ranlib -> llvm-ar
+│   ├── llvm-rc
+│   ├── llvm-readelf -> llvm-readobj
+│   ├── llvm-readobj
+│   ├── llvm-readtapi
+│   ├── llvm-remarkutil
+│   ├── llvm-sim
+│   ├── llvm-size
+│   ├── llvm-strings
+│   ├── llvm-strip -> llvm-objcopy
+│   ├── llvm-symbolizer
+│   ├── llvm-tblgen
+│   ├── llvm-test-mustache-spec
+│   ├── llvm-tli-checker
+│   ├── llvm-windres -> llvm-rc
+│   ├── offload-arch
+│   ├── reduce-chunk-list
+│   ├── run-clang-tidy
+│   ├── scan-build-py
+│   ├── split-file
+│   └── wasm-ld -> lld
+├── distro-info
+│   └── licenses
+├── include
+│   ├── __libunwind_config.h
+│   ├── c++
+│   ├── i386-unknown-linux-gnu
+│   ├── libunwind.h
+│   ├── libunwind.modulemap
+│   ├── mach-o
+│   ├── unwind.h
+│   ├── unwind_arm_ehabi.h
+│   ├── unwind_itanium.h
+│   └── x86_64-unknown-linux-gnu
+├── lib
+│   ├── LLVMPolly.so
+│   ├── clang
+│   ├── cmake
+│   ├── i386-unknown-linux-gnu
+│   ├── libLLVM-21.so -> libLLVM.so.21.1
+│   ├── libLLVM.so -> libLLVM.so.21.1
+│   ├── libLLVM.so.21.1
+│   ├── libLTO.so -> libLTO.so.21.1
+│   ├── libLTO.so.21.1
+│   ├── libPolly.a
+│   ├── libPollyISL.a
+│   ├── libRemarks.so -> libRemarks.so.21.1
+│   ├── libRemarks.so.21.1
+│   ├── libclang-cpp.so -> libclang-cpp.so.21.1
+│   ├── libclang-cpp.so.21.1
+│   ├── libclang.so -> libclang.so.21.1
+│   ├── libclang.so.21.1 -> libclang.so.21.1.8
+│   ├── libclang.so.21.1.8
+│   ├── libear
+│   ├── liblldb.so -> liblldb.so.21.1
+│   ├── liblldb.so.21.1 -> liblldb.so.21.1.8
+│   ├── liblldb.so.21.1.8
+│   ├── liblldbIntelFeatures.so -> liblldbIntelFeatures.so.21.1
+│   ├── liblldbIntelFeatures.so.21.1
+│   ├── libscanbuild
+│   └── x86_64-unknown-linux-gnu
+├── libexec
+│   ├── analyze-c++
+│   ├── analyze-cc
+│   ├── c++-analyzer
+│   ├── ccc-analyzer
+│   ├── intercept-c++
+│   ├── intercept-cc
+│   ├── libLLVM.so.21.1
+│   ├── libatomic.so.1 -> libatomic.so.1.2.0
+│   ├── libatomic.so.1.2.0
+│   ├── libclang-cpp.so.21.1
+│   ├── libedit.so.0 -> libedit.so.0.0.75
+│   ├── libedit.so.0.0.75
+│   ├── libffi.so.8 -> libffi.so.8.2.0
+│   ├── libffi.so.8.2.0
+│   ├── libformw.so.6 -> libformw.so.6.5
+│   ├── libformw.so.6.5
+│   ├── libgcc_s.so.1
+│   ├── libiconv.so.2 -> libiconv.so.2.7.0
+│   ├── libiconv.so.2.7.0
+│   ├── libicudata.so.77 -> libicudata.so.77.1
+│   ├── libicudata.so.77.1
+│   ├── libicuuc.so.77 -> libicuuc.so.77.1
+│   ├── libicuuc.so.77.1
+│   ├── liblldb.so.21.1 -> liblldb.so.21.1.8
+│   ├── liblldb.so.21.1.8
+│   ├── liblzma.so.5 -> liblzma.so.5.8.1
+│   ├── liblzma.so.5.8.1
+│   ├── libncursesw.so.6 -> libncursesw.so.6.5
+│   ├── libncursesw.so.6.5
+│   ├── libpanelw.so.6 -> libpanelw.so.6.5
+│   ├── libpanelw.so.6.5
+│   ├── libstdc++.so.6 -> libstdc++.so.6.0.34
+│   ├── libstdc++.so.6.0.34
+│   ├── libxml2.so.16 -> libxml2.so.16.1.0
+│   ├── libxml2.so.16.1.0
+│   ├── libz.so.1 -> libz.so.1.3.2
+│   └── libz.so.1.3.2
+└── share
+    ├── clang
+    ├── clang-doc
+    ├── libc++
+    ├── opt-viewer
+    ├── scan-build
+    └── scan-view
+
+23 directories, 145 files
+`} </CodeBlock>
+
+</TabItem>
+
+</Tabs>
+
+<DeprecationNotices/>
+
+<DownloadAnalytics version={frontMatter.version}/>
