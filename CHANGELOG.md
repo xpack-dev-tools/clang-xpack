@@ -4,7 +4,11 @@ Entries in this file are in reverse chronological order.
 
 ## 2026-03-05
 
-* v21.1.8-1 released
+* v21.1.8-1.1 published on npmjs.com
+* efaff98 package.json: update URLs for 21.1.8-1.1 release
+* fdc487c website: blog post release 21.1.8-1.1 published
+* caa12fe blog posts: no patch
+* a7345bb CHANGELOG update
 * 10a9f49 re-generate website commons
 * f9c1a24 re-generate top commons
 * 56c146f website: update actions durations
