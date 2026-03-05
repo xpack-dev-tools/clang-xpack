@@ -46,6 +46,7 @@ import CommonPlatformDockerBuild from '../_common/_platform-docker-build.mdx';
 
 import ProjectMoreRepos from '../_project/_more-repos.mdx';
 import ProjectCheckUpstreamRelease from '../_project/_check-upstream-release.mdx';
+import ProjectGetUpstreamVersions from '../_project/_get-upstream-versions.mdx';
 import ProjectUpdateVersionSpecific from '../_project/_update-version-specific.mdx';
 
 import ProjectMoreTests from '../_project/_more-tests.mdx';
@@ -104,6 +105,14 @@ update the dependencies in `build-assets/package.json`.
 
 <CommonIncreaseVersion />
 
+<CommonUpdateTopCommons />
+
+<CommonUpdateWebsiteCommons />
+
+<CommonStartLocalWebServer />
+
+<ProjectGetUpstreamVersions/>
+
 ### Update VERSION
 
 Update the `build-assets/scripts/VERSION` file; the format
@@ -114,11 +123,7 @@ is <code>21.1.8-1</code>.
 
 <CommonUpdateWebsiteConfig />
 
-<CommonUpdateTopCommons />
-
 <CommonUpdateWebsiteCommons />
-
-<CommonStartLocalWebServer />
 
 <ProjectUpdateVersionSpecific/>
 
@@ -690,9 +695,9 @@ Commit with the message _**website: add test results**_
 
 - https://sourceforge.net/projects/clang-xpack/files/
 
-### Add new entry in the SourceForge download test
+### Add a new entry in the SourceForge download test
 
-Edit the `.github/workflows/test-ai=ourceforge-downloads.yml` file
+Edit the `.github/workflows/test-sourceforge-downloads.yml` file
 and add one or more entries for the new release(s).
 
 ## Clean-ups
