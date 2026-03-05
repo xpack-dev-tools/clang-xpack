@@ -2,9 +2,24 @@
 
 Entries in this file are in reverse chronological order.
 
+## 2026-03-05
+
+* v21.1.8-1 released
+* 10a9f49 re-generate website commons
+* f9c1a24 re-generate top commons
+* 56c146f website: update actions durations
+* 706023d website: update runners
+* c11b808 package.json bump helper
+* 5778b78 website: update folder hierarchies
+* 80d008e website: update durations
+* 065619a llvm.sh: disable openmp
+* ccd741c llvm-mingw.sh: remove openmp
+* ea8f423 llvm.sh -DLIBOMP_OMPD_GDB_SUPPORT=OFF
+
 ## 2026-03-04
 
-* v21.1.8-1 prepared
+* ba39f6b llvm*.sh add openmp
+* 0e23db0 prepare v21.1.8-1
 * b850e23 re-generate top commons
 
 ## 2026-02-26
