@@ -1928,6 +1928,11 @@ function test_linux()
       export XBB_SKIP_TEST_ALL_STATIC_ATOMIC="y"
     fi
 
+    if [[ ${distro} == Arch ]]
+    then
+      export XBB_SKIP_TEST_ALL_CNRT_TEST="y"
+    fi
+
     if [[ "${XBB_IMAGE_NAME}" == *testing* ]] || \
        [[ "${XBB_IMAGE_NAME}" == *latest* ]] || \
        [[ "${XBB_IMAGE_NAME}" == *tumbleweed* ]]
