@@ -38,28 +38,28 @@
     "minimumXpmRequired": "0.20.5",
     "binaries": {
       "destination": "./.content",
-      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v20.1.8-1",
+      "baseUrl": "https://github.com/xpack-dev-tools/clang-xpack/releases/download/v21.1.8-1",
       "skip": 1,
       "platforms": {
         "darwin-arm64": {
-          "fileName": "xpack-clang-20.1.8-1-darwin-arm64.tar.gz",
-          "sha256": "e36292621cb5d03c96ca99f5e41638e8fce9140d9865b4308e7b7f5fda545968"
+          "fileName": "xpack-clang-21.1.8-1-darwin-arm64.tar.gz",
+          "sha256": "562270fc3029fbec56cadde80223efe2ea33e9fde46954582447afb4832310ea"
         },
         "darwin-x64": {
-          "fileName": "xpack-clang-20.1.8-1-darwin-x64.tar.gz",
-          "sha256": "2715d6513b13fad66243044e66f0a45cdf37b409ad92aa35b9a744b5027273a9"
+          "fileName": "xpack-clang-21.1.8-1-darwin-x64.tar.gz",
+          "sha256": "eab22258684105f5c32bb29772e2b17bc2ec4eac49b3c4d1775e45b3d1baf385"
         },
         "linux-arm64": {
-          "fileName": "xpack-clang-20.1.8-1-linux-arm64.tar.gz",
-          "sha256": "ae9c70f8e9a785dc7608565fdcc80bed9f87ea2c407c461e32e55efc40b21404"
+          "fileName": "xpack-clang-21.1.8-1-linux-arm64.tar.gz",
+          "sha256": "be1eae2706c049ff9d1c5816e58bb5557d75810c9762cb929208472f7914617e"
         },
         "linux-x64": {
-          "fileName": "xpack-clang-20.1.8-1-linux-x64.tar.gz",
-          "sha256": "8d8b40ec9dc7dfd979f9908d61bccb376e48796b6180742a036ad0d7329ac96c"
+          "fileName": "xpack-clang-21.1.8-1-linux-x64.tar.gz",
+          "sha256": "0db58136aedb58b9af8c605a1b1570defbe06618f82bff60d24d3327f81d8321"
         },
         "win32-x64": {
-          "fileName": "xpack-clang-20.1.8-1-win32-x64.zip",
-          "sha256": "b6cf9bf51c5a349b3af6888b994128bd1dd0dcbe5ade085ec8b4b458ea2a2da5"
+          "fileName": "xpack-clang-21.1.8-1-win32-x64.zip",
+          "sha256": "b23d38e2c1c539182919e147e7158fd8b4e8bdd9e6ddc5dfe06f6488c6d9d516"
         }
       }
     },
