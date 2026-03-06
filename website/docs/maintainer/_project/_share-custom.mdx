@@ -46,15 +46,15 @@ To remove all time stamps and restart all builds:
 bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --restart
 ```
 
-### Screen
+### Create a detached terminal
 
-To provide a persistent terminal session for the build, create a screen session:
+To provide a persistent terminal session for the build, create a tmux session:
 
 ```sh
-screen -S ba
+tmux new -s ba
 ```
 
-To detach from it, use `Ctrl-a d`.
+To detach from it, use `Ctrl-b d`.
 
 ### Build all
 
