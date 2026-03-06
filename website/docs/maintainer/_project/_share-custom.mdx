@@ -12,9 +12,25 @@ The full procedure is documented in a separate
 
 In short, run the builds on the two macOS build machines `xbbmi` and `xbbma`.
 
+### Update helper
+
+Be sure the most recent version of the helper project is used:
+
+```sh
+git -C ~/Work/xpack-dev-tools/xbb-helper-xpack.git pull
+```
+
+### Clone all xPack projects
+
+Clone all projects in the `xpack-dev-tools` collection:
+
+```sh
+bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --clone
+```
+
 ### Update dependency
 
-First edit the
+Edit the
 `npm-packages-helper.git/templates/common/_xpack-dev-tools/build-assets/package-merge-liquid.json`
 file and enter the new version:
 
@@ -22,17 +38,10 @@ file and enter the new version:
 `          "@xpack-dev-tools/clang": "${customField("releaseVersion")}",
 `}</CodeBlock>
 
-### Clone all
-
-To get all projects:
-
-```sh
-bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --clone
-```
 
 ### Update version in all projects
 
-To update the `build-assets/package.json` in all projects:
+Update the `build-assets/package.json` in all projects:
 
 ```sh
 bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --update-top
@@ -40,7 +49,7 @@ bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.s
 
 ### Restart all builds
 
-To remove all time stamps and restart all builds:
+Remove all time stamps and restart all builds:
 
 ```sh
 bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --restart
@@ -58,7 +67,7 @@ To detach from it, use `Ctrl-b d`.
 
 ### Build all
 
-To run all possible builds from scratch:
+Run all possible builds from scratch:
 
 ```sh
 time caffeinate nice bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --deep-clean
