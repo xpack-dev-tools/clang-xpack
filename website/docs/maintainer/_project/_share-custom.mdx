@@ -18,11 +18,9 @@ First edit the
 `npm-packages-helper.git/templates/common/_xpack-dev-tools/build-assets/package-merge-liquid.json`
 file and enter the new version:
 
-<CodeBlock language="console">
-  {" "}
-  {`          "@xpack-dev-tools/clang": "${customField("releaseVersion")}",
-`}{" "}
-</CodeBlock>
+<CodeBlock language="console"> {
+`          "@xpack-dev-tools/clang": "${customField("releaseVersion")}",
+`}</CodeBlock>
 
 ### Clone all
 
