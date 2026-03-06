@@ -1,2 +1,69 @@
+import CodeBlock from "@theme/CodeBlock";
+import customField from "@site/src/libs/customField";
 
 {/* ------------------------------------------------------------------------ */}
+
+## Test builds with the new compiler
+
+A good test is to build all binary xPacks with the new compiler.
+
+The full procedure is documented in a separate
+[README](https://github.com/xpack-dev-tools/xbb-helper-xpack/blob/xpack/maintenance-scripts/README.md).
+
+In short, run the builds on the two macOS build machines `xbbmi` and `xbbma`.
+
+### Update dependency
+
+First edit the
+`npm-packages-helper.git/templates/common/_xpack-dev-tools/build-assets/package-merge-liquid.json`
+file and enter the new version:
+
+<CodeBlock language="console">
+  {" "}
+  {`          "@xpack-dev-tools/clang": "${customField("releaseVersion")}",
+`}{" "}
+</CodeBlock>
+
+### Clone all
+
+To get all projects:
+
+```sh
+bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --clone
+```
+
+### Update version in all projects
+
+To update the `build-assets/package.json` in all projects:
+
+```sh
+bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --update-top
+```
+
+### Restart all builds
+
+To remove all time stamps and restart all builds:
+
+```sh
+bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --restart
+```
+
+### Screen
+
+To provide a persistent terminal session for the build, create a screen session:
+
+```sh
+screen -S ba
+```
+
+To detach from it, use `Ctrl-a d`.
+
+### Build all
+
+To run all possible builds from scratch:
+
+```sh
+time caffeinate nice bash ~/Work/xpack-dev-tools/xbb-helper-xpack.git/maintenance-scripts/build-all.sh --deep-clean
+```
+
+The builds may take from 5 hours (on `xbbma`) to 9 hours (on `xbbmi`).
