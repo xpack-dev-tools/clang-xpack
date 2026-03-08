@@ -1,5 +1,9 @@
 # Copilot Instructions
 
+## Project Overview
+
+This is the **xPack LLVM clang** project, part of the xPack Development Tools.
+
 ## Language and Tone
 
 - Use British English spelling and grammar (e.g., "behaviour", "colour", "organise", "analyse", "favour", "innitialise", etc.)
@@ -14,5 +18,5 @@
 
 ## Folder Structure
 
-- `/build-assets`: Contains the build scripts
+- `/build-assets`: Contains the build scripts, patches, etc
 - `/website`: Contains the project Docusaurus website
