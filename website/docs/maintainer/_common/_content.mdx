@@ -732,4 +732,19 @@ The results are available from the
 
 <ProjectShareCustom/>
 
+### Test the released binaries at a later stage
+
+To test the released binaries at a later stage on any platform, using the stable project branch, use:
+
+```sh
+rm -rf ~/Work/xpack-dev-tools/clang-xpack.git && \
+mkdir -p ~/Work/xpack-dev-tools && \
+git clone \
+  https://github.com/xpack-dev-tools/clang-xpack.git \
+  ~/Work/xpack-dev-tools/clang-xpack.git && \
+npm --prefix ~/Work/xpack-dev-tools/clang-xpack.git/build-assets install && \
+xpm install -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets && \
+xpm run test-release -C ~/Work/xpack-dev-tools/clang-xpack.git/build-assets
+```
+
 <CommonAnalytics />
