@@ -1,8 +1,7 @@
 {
   "name": "@xpack-dev-tools/clang",
-  "version": "21.1.8-1.1",
+  "version": "21.1.8-2.1.pre",
   "description": "A binary xpm package with the LLVM clang executables",
-  "main": "",
   "scripts": {
     "generate-top-commons": "bash node_modules/@xpack/npm-packages-helper/maintenance-scripts/generate-top-commons.sh --xpack-dev-tools",
     "npm-install": "npm install",
