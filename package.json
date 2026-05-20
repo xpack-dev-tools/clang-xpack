@@ -150,9 +150,14 @@
   "devDependencies": {
     "del-cli": "^7.0.0",
     "json": "^11.0.0",
-    "liquidjs": "^10.23.0"
+    "liquidjs": "^10.27.0"
   },
-  "topConfig": {
+  "$dependenciesUrls": {
+    "del-cli": "https://www.npmjs.com/package/del-cli",
+    "json": "https://www.npmjs.com/package/json",
+    "liquidjs": "https://www.npmjs.com/package/liquidjs"
+  },
+  "_topConfig": {
     "descriptiveName": "xPack LLVM clang",
     "upstreamDescriptiveName": "LLVM clang",
     "permalinkName": "clang",

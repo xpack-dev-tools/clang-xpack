@@ -1,0 +1,9 @@
+{
+  "descriptiveName": "xPack LLVM clang",
+  "permalinkName": "clang",
+  "preferredName": "xPack LLVM clang",
+  "upstreamDescriptiveName": "LLVM clang",
+  "showTestsResults": true,
+  "skipCiTests": true,
+  "useSelfHostedRunners": true
+}
