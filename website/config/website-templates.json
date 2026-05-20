@@ -1,0 +1,17 @@
+{
+  "$links": [
+    "https://github.com/llvm/llvm-project/tags/",
+    "https://github.com/mstorsjo/llvm-mingw/releases",
+    "https://ftpmirror.gnu.org/gnu/binutils/",
+    "https://www.mingw-w64.org/source/"
+  ],
+  "binutilsVersionMajor": "2",
+  "binutilsVersionMinor": "45",
+  "branding": "xPack x86_64 clang version ",
+  "clangReleaseDate": "16 Dec 2025",
+  "llvmMingwTag": "20251216",
+  "mingwVersion": "13.0.0",
+  "programName": "clang",
+  "hasCustomUserSidebar": true,
+  "shareOnTwitter": true
+}

@@ -18,7 +18,8 @@ For information on how to install and use this project, please refer to the
 ## Project source
 
 The source code of the current release is available on
-[GitHub tag v21.1.8-1.1 tree](https://github.com/xpack-dev-tools/clang-xpack/tree/v21.1.8-1.1).
+GitHub as [xpack-dev-tools/clang-xpack](https://github.com/xpack-dev-tools/clang-xpack),
+the [v21.1.8-1.1](https://github.com/xpack-dev-tools/clang-xpack/tree/v21.1.8-1.1) tree.
 
 ## License
 
