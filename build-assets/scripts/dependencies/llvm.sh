@@ -344,11 +344,15 @@ function llvm_build()
             # This distribution expects the SDK to be in this location.
             config_options+=("-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk") # HB
 
+            config_options+=("-DLIBCXX_INSTALL_MODULES=ON") # HB
+            config_options+=("-DLIBCXX_ENABLE_VENDOR_AVAILABILITY_ANNOTATIONS=ON") # HB
+
             config_options+=("-DLLDB_ENABLE_LZMA=ON") # HB
             config_options+=("-DLLDB_USE_SYSTEM_DEBUGSERVER=ON") # HB (Darwin only)
 
             # DO NOT!
             # compiler-rt is not built and later components fail with missing headers!
+            # fatal error: 'stdarg.h' file not found
 
             # config_options+=("-DLLVM_BUILD_EXTERNAL_COMPILER_RT=ON") # HB
 
@@ -395,6 +399,8 @@ function llvm_build()
 
             config_options+=("-DLLVM_TOOLCHAIN_TOOLS=llvm-ar;llvm-ranlib;llvm-objdump;llvm-rc;llvm-cvtres;llvm-nm;llvm-strings;llvm-readobj;llvm-dlltool;llvm-pdbutil;llvm-objcopy;llvm-strip;llvm-cov;llvm-profdata;llvm-addr2line;llvm-symbolizer;llvm-windres;llvm-ml;llvm-readelf;llvm-size;llvm-cxxfilt")
 
+            config_options+=("-DLLVM_USE_RELATIVE_PATHS_IN_FILES=ON")
+
             # Prevent CMake from defaulting to `lld` when it's found next to `clang`.
             # This can be removed after CMake 3.25. See:
             # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7671
@@ -403,6 +409,13 @@ function llvm_build()
             if [ ! -z "${MACOSX_DEPLOYMENT_TARGET:-""}" ]
             then
               config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
+            else
+              # Without an explicit minimum, CMake defaults to the current OS version
+              # (e.g. 15.7), which gets encoded into all compiler-rt object files.
+              # Users linking with any lower -platform_version would then see:
+              # "object file was built for newer 'macOS' version than being linked".
+              # LLVM 21 requires macOS 10.15 (Catalina) or later.
+              config_options+=("-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0")
             fi
 
             # macOS 10.13 libtool does not support recent format:
