@@ -1,0 +1,104 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Mon, 9 Mar 2026 10:00:00 +0200
+Subject: [PATCH] libcxxabi: add LIBCXXABI_REEXPORT_LIBUNWIND on Apple platforms
+
+Use LC_REEXPORT_DYLIB for libunwind in libc++abi.dylib when
+LIBCXXABI_REEXPORT_LIBUNWIND is set, instead of the default LC_LOAD_DYLIB.
+
+Without this, Apple's ld-prime linker (Xcode 15+) emits a warning when
+linking any binary that pulls in libc++abi.dylib:
+  "reexported library with install name '@rpath/libunwind.1.0.dylib'
+   found at '...' couldn't be matched with any parent library and will
+   be linked directly"
+
+The warning occurs because libc++abi re-exports libunwind symbols via
+-reexported_symbols_list, but libunwind is only declared as a regular
+LC_LOAD_DYLIB dependency; ld-prime expects it to be LC_REEXPORT_DYLIB.
+
+---
+ libcxxabi/src/CMakeLists.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/libcxxabi/src/CMakeLists.txt b/libcxxabi/src/CMakeLists.txt
+index 0000000..0000000 100644
+--- a/libcxxabi/src/CMakeLists.txt
++++ b/libcxxabi/src/CMakeLists.txt
+@@ -168,7 +168,15 @@
+       (DEFINED LIBUNWIND_ENABLE_SHARED AND NOT LIBUNWIND_ENABLE_SHARED))
+     target_link_libraries(cxxabi_shared_objects PUBLIC unwind_shared_objects) # propagate usage requirements
+     target_sources(cxxabi_shared_objects PUBLIC $<TARGET_OBJECTS:unwind_shared_objects>)
+-  else()
++  elseif(APPLE AND LIBCXXABI_REEXPORT_LIBUNWIND)
++    # On Apple platforms, use LC_REEXPORT_DYLIB for libunwind instead of
++    # LC_LOAD_DYLIB, so that Apple's ld-prime (Xcode 15+) correctly matches
++    # the re-exported unwind symbols back to their parent library and avoids:
++    # "reexported library ... couldn't be matched with any parent library".
++    add_dependencies(cxxabi_shared_objects unwind_shared)
++    target_link_libraries(cxxabi_shared_objects PUBLIC
++      "-Wl,-reexport_library,$<TARGET_FILE:unwind_shared>")
++  else()
+     target_link_libraries(cxxabi_shared_objects PUBLIC unwind_shared)
+   endif()
+ endif()
+-- 
+2.37.1 (Apple Git-137.1)
+
+From 0000000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: Liviu Ionescu <ilg@livius.net>
+Date: Mon, 9 Mar 2026 11:00:00 +0200
+Subject: [PATCH] Darwin.cpp: use 0x1000 sectalign on macOS x86_64
+
+macOS x86_64 uses 4K pages (0x1000), not 16K (0x4000).
+Using 0x4000 causes Apple's ld-prime linker to warn:
+  "reducing alignment of section __DATA,__llvm_prf_cnts from 0x4000
+   to 0x1000 because it exceeds segment maximum alignment"
+
+Pass the platform-correct page size by making addSectalignToPage take
+an explicit alignment argument. macOS x86_64 gets 0x1000; Apple Silicon
+macOS and all iOS/tvOS/watchOS targets keep 0x4000 (16K pages).
+
+---
+ clang/lib/Driver/ToolChains/Darwin.cpp | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/clang/lib/Driver/ToolChains/Darwin.cpp b/clang/lib/Driver/ToolChains/Darwin.cpp
+index 0000000..0000001 100644
+--- a/clang/lib/Driver/ToolChains/Darwin.cpp
++++ b/clang/lib/Driver/ToolChains/Darwin.cpp
+@@ -1462,12 +1462,13 @@
+ /// Add a sectalign directive for \p Segment and \p Section to the maximum
+ /// expected page size for Darwin.
+ ///
+-/// On iPhone 6+ the max supported page size is 16K. On macOS, the max is 4K.
+-/// Use a common alignment constant (16K) for now, and reduce the alignment on
+-/// macOS if it proves important.
++/// On iPhone 6+ the max supported page size is 16K (0x4000). On macOS x86_64
++/// the max is 4K (0x1000); arm64 macOS (Apple Silicon) uses 16K like iOS.
+ static void addSectalignToPage(const ArgList &Args, ArgStringList &CmdArgs,
+-                               StringRef Segment, StringRef Section) {
+-  for (const char *A : {"-sectalign", Args.MakeArgString(Segment),
+-                        Args.MakeArgString(Section), "0x4000"})
++                               StringRef Segment, StringRef Section,
++                               StringRef Alignment) {
++  for (const char *A : {"-sectalign", Args.MakeArgString(Segment),
++                        Args.MakeArgString(Section),
++                        Args.MakeArgString(Alignment)})
+     CmdArgs.push_back(A);
+ }
+ 
+@@ -1504,9 +1505,12 @@
+   if (!ForGCOV) {
+     for (auto IPSK : {llvm::IPSK_cnts, llvm::IPSK_bitmap, llvm::IPSK_data}) {
+       addSectalignToPage(
+           Args, CmdArgs, "__DATA",
+           llvm::getInstrProfSectionName(IPSK, llvm::Triple::MachO,
+-                                        /*AddSegmentInfo=*/false));
++                                        /*AddSegmentInfo=*/false),
++          // macOS x86_64 has 4K pages; arm64 macOS and all iOS have 16K pages.
++          (isTargetMacOSBased() && !isTargetAppleSiliconMac()) ? "0x1000"
++                                                               : "0x4000");
+     }
+   }
+ }
+
